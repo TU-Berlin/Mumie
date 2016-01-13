@@ -1,0 +1,144 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: applet_data_sheet.txt,v 1.1 2005/05/19 09:04:53 rassy Exp $
+
+
+                        DATA SHEET STRUKTUR FÜR APPLETS
+
+
+  Dieser Text beschreibt die speziellen Konventionen beim Aufbau von
+  Data-Sheets für Aufgaben-Applets. Data-Sheets selbst werden in einem anderen
+  Text (data_sheet_spec.txt) spezifiziert.
+
+
+
+1. Gliederung
+   ==========
+
+  1.1. Das gesamte Data-Sheet ist in zwei Units mit den Namen "common" und
+       "user" unterteilt. "common" enthält die Daten, die für alle Benutzer
+       gleich sind, "user" die für den Benutzer spezifischen Daten.
+
+  1.2. "common" ist noch einmal in zwei Units "meta" und "problem" unterteilt.
+       "problem" enthält die Daten zur Aufgabe (z.B. die Matrizen, die addiert
+       werden sollen), "meta" Konfigurations- und sonstige Daten.
+
+  1.3. "user" ist in fünf Units unterteilt: "meta", "problem", "answer",
+       "marking" und "session". "problem" enthält benutzerspezifische
+       Aufgabendaten (z.B. Matrizen mit zufällig generierten Zahlen), "answer"
+       die Antworten des Studenten, "marking" die XML-Vorlage für ein
+       benutzerspezifisches, menschenlesbares Lösungsblatt
+       (s. marking_spec.txt), "session" die Daten zur Wiederherstellung des
+       Applet-Zustands (s. applet_session.txt), "meta" benutzerspezifische
+       Konfigurations- und sonstige Daten.
+       
+
+  1.4. Somit ergibt sich folgende Struktur:
+        
+          |
+          +-common
+          |  |
+          |  +-meta
+          |  |
+          |  +-problem
+          |
+          +-user
+             |
+             +-meta
+             |
+             +-problem
+             |
+             +-answer
+             |
+             +-marking
+             |
+             +-session
+
+  1.5. Es müssen nicht alle Abschnitte vorhanden sein. "user/meta" und
+       "user/problem" werden in vielen Fällen ganz fehlen, andere Abaschnitte
+       je nachdem, in welchem Kontext das Data-Sheet auftritt (s. 2.).
+
+
+
+2. Data-Sheet in verschiedenen Kontexten
+   =====================================
+
+Ein Data-Sheet kann in verschiedenen Kontexten auftreten.  In manchen Kontexten
+enthält es nur Teile der in 1.4. angegebnen Struktur. Die Kontexte sind:
+
+  2.1. Speicherung der gemeinsamen Aufgabendaten in der Datenbank. Dies
+       erfolgt nicht im Data-Sheet-Format, sondern eingebettet im Content der
+       Aufgabe (hieraus kann dynamisch ein "richtiges" Data-Sheet erzeugt
+       werden). Umfasst naturgemäß nur den "common"-Teil.
+
+  2.2. Speicherung der Benutzer-Antworten und ggf. der benutzerspezifischen
+       Aufgaben-Daten in der Datenbank. Umfasst naturgemäß nur den
+       "user"-Teil.
+
+  2.3. Kommunikation Japs->Applet. Hierzu erzeugt der Japs aus 2.1. und 2.2.
+       unter Hinzunahme der benötigten Konfigurations- und sonstigen Daten
+       dynamisch ein Data-Sheet und schickt dieses zum Applet (als Response auf
+       einen HTTP-Request). Umfasst "common"- und "user"-Teil.
+
+  2.4. Kommunikation Applet->Japs. Hierzu erzeugt das Applet aus den Antworten
+       des Studenten und sonstigen Daten ein Data-Sheet und schickt es zum Japs
+       (als Wert eines Request-Parameters). Umfasst nur den "user"-Teil.
+
+
+
+3. Übermittlung der erreichten Punktzahl
+   =====================================
+
+Im Kontext 2.4 (Kommunikation Applet->Japs) soll das Data-Sheet immer einen
+Eintrag
+
+   user/meta/score
+
+haben, der die relative erreichte Punktzahl enthält. Dies ist eine Zahl x
+zwischen 0 und 1. Die tatsächlich erreichte Punktzahl ergibt sich nach
+
+  n = x * n_max
+
+wobei n_max die (vom Dozenten festgelegte) maximale Punktzahl ist.
+
+
+
+4. Beispiel
+   ========
+
+<data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+  <unit name="common">
+    <unit name="meta">
+      <!-- Meta-Daten -->
+    </unit>
+    <unit name="problem">
+      <unit name="matrix_pair">
+        <data name="left_matrix">
+          <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+            <!-- MathML-Code  -->
+          </mtable>
+        </data>
+        <data name="right_matrix">
+          <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+            <!-- MathML-Code -->
+          </mtable>
+        </data>
+      </unit>
+    </unit>
+  </unit>
+  <unit name="user">
+    <unit name="meta">
+      <data name="score">0.78</data>
+    </unit>
+    <unit name="answer">
+      <data name="matrix_sum">
+        <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+          <!-- MathML-Code -->
+        </mtable>
+      </data>
+    </unit>
+  </unit>
+</data_sheet>
+
+
+
+-- ENDE DER DATEI --

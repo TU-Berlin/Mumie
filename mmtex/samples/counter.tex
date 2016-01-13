@@ -1,0 +1,143 @@
+\documentclass{generic}
+
+
+\begin{document}
+\title{MMTex counter}
+\subtitle{Several samples of the counter use}
+
+
+\tableofcontents
+
+\section{firstSec}
+\subsection{first-first-subsection}
+\begin{table}
+arabic\{subsection\}:  & \arabic{subsection}   \\
+value\{subsection\}:  & \value{subsection}   \\
+Alph\{subsection\}:  & \Alph{subsection}   \\
+alph\{subsection\}:  & \alph{subsection}   \\
+Roman\{subsection\}: & \Roman{subsection}  \\
+roman\{subsection\}: & \roman{subsection} \\
+fnsymbol\{subsection\}: & \fnsymbol{subsection}
+
+\end{table}
+
+\subsection{first-second-subsection}
+\begin{table}
+arabic\{subsection\}:  & \arabic{subsection}   \\
+value\{subsection\}:  & \value{subsection}   \\
+Alph\{subsection\}:  & \Alph{subsection}   \\
+alph\{subsection\}:  & \alph{subsection}   \\
+Roman\{subsection\}: & \Roman{subsection}  \\
+roman\{subsection\}: & \roman{subsection} \\
+fnsymbol\{subsection\}: & \fnsymbol{subsection}
+\end{table}
+
+\section{secondSec}
+\begin{table}
+arabic\{section\}:  & \arabic{section}   \\
+value\{section\}:  & \value{section}   \\
+Alph\{section\}:  & \Alph{section}   \\
+alph\{section\}:  & \alph{section}   \\
+Roman\{section\}: & \Roman{section}  \\
+roman\{section\}: & \roman{section} \\
+fnsymbol\{section\}: & \fnsymbol{section} 
+\end{table}
+\section{thirdSec}
+
+
+\section{fourthSec}
+
+\begin{table}
+arabic\{section\}:  & \arabic{section}   \\
+value\{section\}:  & \value{section}   \\
+Alph\{section\}:  & \Alph{section}   \\
+alph\{section\}:  & \alph{section}   \\
+Roman\{section\}: & \Roman{section}  \\
+roman\{section\}: & \roman{section} \\
+fnsymbol\{section\}: & \fnsymbol{section} 
+\end{table}
+
+\subsection{fourth-first-subsection}
+\begin{table}
+arabic\{subsection\}:  & \arabic{subsection}   \\
+value\{subsection\}:  & \value{subsection}   \\
+Alph\{subsection\}:  & \Alph{subsection}   \\
+alph\{subsection\}:  & \alph{subsection}   \\
+Roman\{subsection\}: & \Roman{subsection}  \\
+roman\{subsection\}: & \roman{subsection} \\
+fnsymbol\{subsection\}: & \fnsymbol{subsection}
+\end{table}
+
+
+
+\section{User defined counters}
+
+\verbatim \newcounter{testcounter} \endverbatim
+\newcounter{testcounter}
+
+Now it is: \value{testcounter}
+
+\verbatim \stepcounter{testcounter} \endverbatim
+\stepcounter{testcounter}
+
+Now it is: \value{testcounter}
+
+\verbatim \stepcounter{testcounter} \endverbatim
+\stepcounter{testcounter}
+
+Now it is: \value{testcounter}
+
+\verbatim \addtocounter{testcounter}{7} \endverbatim
+\addtocounter{testcounter}{7}
+
+
+Now it is: \value{testcounter}
+
+\verbatim \setcounter{testcounter}{18} \endverbatim
+\setcounter{testcounter}{18}
+
+Now it is: \value{testcounter}
+
+And now, the last example, a short list with all possible display options..
+
+\newcounter{showcounter}
+
+\begin{table}
+\head
+Number & arabic & Alph & alph & roman & Roman & fnsymbol 
+\body 
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \fnsymbol{showcounter}  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} &   \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} &  \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} &   \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} & \stepcounter{showcounter}\\
+\value{showcounter} & \arabic{showcounter} &\Alph{showcounter} & \alph{showcounter} &
+\roman{showcounter} & \Roman{showcounter} &  \stepcounter{showcounter}\\
+\end{table}
+
+
+
+\end{document}

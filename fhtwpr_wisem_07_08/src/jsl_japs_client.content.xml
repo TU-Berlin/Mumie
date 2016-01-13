@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+	//
+	//	Login-Dialog 
+	//
+	InlinePopup = 
+	{
+		idCount : 0,
+		baseURL : false, // Verzeichnis, in welchem das Script steht (wird dynamisch ermittelt)
+		oldWinOnLoad : null,
+		oldDocOnMouseMove : null,
+		popupWindows : new Array(), // enthält die IDs der DIV-Elemente (die mit window.name des jeweiligen IFrames korrespondieren)
+		winInnerWidth : 500,
+		winInnerHeight : 250,
+
+		// Funktion zum Ermitteln der maximalen Fensterfläche
+		getBrowserDimensions : function ()
+		{
+			if (window.innerWidth)
+			{
+				InlinePopup.winInnerWidth = window.innerWidth;
+				InlinePopup.winInnerHeight = window.innerHeight;
+			}
+			else
+			{
+				InlinePopup.winInnerWidth = InlinePopup.IE.offsetWidth - 25;
+				InlinePopup.winInnerHeight = InlinePopup.IE.offsetHeight - 8;
+			}
+		},
+
+		// öffnet neues Fenster innerhalb eines IFrames
+		open : function (URL, winName, params)
+		{
+			// Viewport ausmessen
+			InlinePopup.getBrowserDimensions();
+
+			//		if (!URL || URL == "" || URL.match(/about[ ]*:[ ]*_?blank\b/gi))
+			//			URL = InlinePopup.baseURL + "/blank.html";
+
+			// Default-Einstellungen für das Fenster
+			var ID = InlinePopup.idCount++;
+			var settings = 
+			{
+				width : 500, //Math.floor(InlinePopup.winInnerWidth / 2),
+				height : 250, //Math.floor(InlinePopup.winInnerHeight / 2),
+				statusbar : "no",
+				resizable : "no",
+				top : false,
+				left : false,
+				scrollbars : "yes",
+				//winName : "InlinePopup_" + ID,
+				//winName : "InlinePopup" + ID,
+			};
+
+			// angegebene Parameter auswerten
+			var parameters = params.split(",");
+			for (var param in settings)
+			{
+				for (var i = 0; i &lt; parameters.length; i++) 
+				{
+					var test = parameters[i].split("=");
+					if (test[0] == param)
+						settings[param] = test[1];
+				}
+			}
+
+			// zentrieren, falls keine andere Angaben
+			if (!settings.top)
+				if (window.innerHeight)
+					settings.top = Math.ceil((InlinePopup.winInnerHeight - settings.height) / 2) + window.pageYOffset;
+				else
+					settings.top = Math.ceil((InlinePopup.winInnerHeight - settings.height) / 2) + InlinePopup.IE.scrollTop;
+
+			if (!settings.left)
+				if (window.innerHeight)
+					settings.left = Math.ceil((InlinePopup.winInnerWidth - settings.width) / 2) + window.pageXOffset;
+				else
+					settings.left = Math.ceil((InlinePopup.winInnerWidth - settings.width) / 2) + InlinePopup.IE.scrollLeft;
+
+			var div = document.createElementNS( "http://www.w3.org/1999/xhtml", "div" );
+			div.id = winName;
+			div.className = "InlinePopup";
+			div.style.zIndex = 501;
+
+			var contentHeight = settings.height - 17 - ((settings.statusbar == "yes") ? 17 : 0);
+			var HTML = '&lt;div class="InlinePopupWindow"';
+			HTML += ' style="';
+			HTML += 'width:' + settings.width + 'px;';
+			HTML += 'height:' + settings.height + 'px;';
+			HTML += 'top:' + settings.top + 'px;';
+			HTML += 'left:' + settings.left + 'px;';
+			HTML += '"&gt;';
+			HTML += '&lt;h1 xmlns="http://www.w3.org/1999/xhtml"&gt;MUMIE Anmeldung&lt;/h1&gt;';
+			HTML += '&lt;p xmlns="http://www.w3.org/1999/xhtml"&gt;';
+			HTML += 'Sie haben eine gesch&#252;tzte Seite angefordert, sind aber z.Z. nicht angemeldet. ';
+			HTML += 'Um die Seite zu sehen, melden Sie sich bitte zuerst mit Ihrem Konto-Namen und ';
+			HTML += 'Passwort an:';
+			HTML += '&lt;/p&gt;';       
+		  
+			HTML += '&lt;form xmlns="http://www.w3.org/1999/xhtml" method="post" action="login"&gt;';
+			HTML += '&lt;div class="main-bounded-width"&gt;';
+			HTML += '&lt;table class="layout"&gt;';
+			HTML += '&lt;tr&gt;';
+			HTML += '&lt;td&gt;';
+			HTML += '&lt;div class="label"&gt;Konto:&lt;/div&gt;';
+			HTML += '&lt;/td&gt;';
+			HTML += '&lt;td&gt;';
+			HTML += '&lt;div class="input"&gt;';
+			HTML += '&lt;input type="text" name="name" id="mumie_username" size="20"/&gt;';
+			HTML += '&lt;/div&gt;';
+			HTML += '&lt;/td&gt;';
+			HTML += '&lt;/tr&gt;';
+			HTML += '&lt;tr&gt;';
+			HTML += '&lt;td&gt;';
+			HTML += '&lt;div class="label"&gt;Passwort:&lt;/div&gt;';
+			HTML += '&lt;/td&gt;';
+			HTML += '&lt;td&gt;';
+			HTML += '&lt;div class="input"&gt;';
+			HTML += '&lt;input type="password" name="password" id="mumie_password" size="20"/&gt;';
+			HTML += '&lt;/div&gt;';
+			HTML += '&lt;/td&gt;';
+			HTML += '&lt;/tr&gt;';
+			HTML += '&lt;tr&gt;';
+			HTML += '&lt;td colspan="2"&gt;';
+			HTML += '&lt;p&gt;';
+			HTML += '&lt;div class="buttons"&gt;';
+			HTML += '&lt;button type="button" onclick="client.processLoginData();"&gt;Anmelden&lt;/button&gt;';
+			HTML += '&lt;button type="button" onclick="InlinePopup.close(\'' + winName + '\');"&gt;Abbrechen&lt;/button&gt;';
+			HTML += '&lt;/div&gt;';
+			HTML += '&lt;/p&gt;';
+			HTML += '&lt;/td&gt;';
+			HTML += '&lt;/tr&gt;';
+			HTML += '&lt;/table&gt;';
+			HTML += '&lt;input type="hidden" name="resource" value="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/auth/login-successful"/&gt;';
+			HTML += '&lt;/div&gt;';
+			HTML += '&lt;/form&gt;';
+			HTML += '&lt;/div&gt;';
+
+			div.innerHTML = HTML;			
+			/*var pageWidth = 0;
+			var pageHeight = 0;
+			if( document.getElementsByTagName("body")[0].scrollWidth || document.getElementsByTagName("body")[0].scrollHeight )
+			{
+				pageWidth = document.getElementsByTagName("body")[0].offsetWidth;
+				pageHeight = document.getElementsByTagName("body")[0].offsetHeight;
+			}*/
+			
+			// Eventblocker erzeugen (Div mit spacer.gif, das den kompletten Anzeigebereich ausfüllt)
+			var eventBlocker = document.createElementNS( "http://www.w3.org/1999/xhtml", "div" );
+			eventBlocker.id = "InlinePopupEventBlocker";
+			//eventBlocker.style.width =  pageWidth + "px"; //(InlinePopup.winInnerWidth - 20) + "px";
+			//eventBlocker.style.height = pageHeight + "px";
+			eventBlocker.style.position = "absolute";
+			eventBlocker.style.top = "0px";
+			eventBlocker.style.left = "0px";
+			eventBlocker.style.position = "absolute";
+			eventBlocker.style.overflow = "hidden";
+			eventBlocker.style.zIndex = 501;
+
+			var innerHTML = '&lt;img src="http://gutemine.math.tu-berlin.de:8080/bg.png" alt="" ';
+			innerHTML += 'style="display: absolute; top: 0px; left: 0px; margin: 0px; padding: 0px; border: none; overflow: hidden; ';
+			//innerHTML += 'width: ' + InlinePopup.winInnerWidth + 'px; height: ' + InlinePopup.winInnerHeight + 'px;';
+			innerHTML += 'width: ' + InlinePopup.winInnerWidth + 'px; height: 100%;';
+			innerHTML += '" /&gt;';
+
+			eventBlocker.innerHTML = innerHTML;
+
+			// Event-Blocker einfügen
+			document.getElementsByTagName("body")[0].appendChild(eventBlocker);
+
+			// Popup-Fenster einfügen
+			document.getElementsByTagName("body")[0].appendChild(div);
+
+			return window.frames[winName];
+		},
+
+		// schließt ein "Fenster", indem es das dynamisch erzeugte &lt;div&gt; samt IFrame aus dem Dokument entfernt
+		close : function (winName) 
+		{
+			// Popup-Fenster (also sein umschließendes DIV) aus dem Dokument entfernen
+			var elm = document.getElementById( winName );
+			elm.parentNode.removeChild(elm);
+
+			// Event-Blocker für das Popup-Fenster entfernen
+			var eventBlocker = document.getElementById( "InlinePopupEventBlocker" );
+			eventBlocker.parentNode.removeChild(eventBlocker);
+
+			return false;
+		},
+	};
+
+
+	function JapsClient ()
+	{
+		//
+		// Global variables
+		//
+
+		var USER_AGENT_VALUE = "JapsClient/JS";
+		var LOGIN_SUCCESSFUL = 0;
+		var LOGIN_FAILED = 1;
+		var LOGIN_CANCELED = 2;
+		var LOGIN_PROCESS = 3;
+		var ACCOUNT_PARAM = "name";
+		var PASSWORD_PARAM = "password";
+		var RESOURCE_PARAM = "resource";
+		var RESOURCE_VALUE = "/cocoon/protected/auth/login-successful";
+		var UNLIMITED = -1;
+		var LOGIN_REQUIRED_HEADER = "X-Mumie-Login-Required";
+		var LOGIN_PATH = "/cocoon/public/auth/login";
+		var LOGOUT_PATH = "/cocoon/public/auth/logout";
+		var urlPrefix = "<txt:url-prefix/>";
+		var maxLoginTries = -1;
+		var xmlHttp;
+		var urlPath;
+		var requestedPath;
+		var loginStatus = -1;
+		requestFunc = null;
+
+		this.get = function (path, params, handler, loginIfNecessary)
+		{
+			if( path )
+			{
+				var param = "";
+				if( params != null )
+				{
+					param = ACCOUNT_PARAM + "=" + params[ACCOUNT_PARAM] + "&amp;" + PASSWORD_PARAM + "=" + params[PASSWORD_PARAM] + "&amp;" + RESOURCE_PARAM + "=" + params[RESOURCE_PARAM];
+					urlPath = urlPrefix + path + "?" + param;
+					//alert( "param: " + param );
+				} 
+				else 
+				{
+					urlPath = urlPrefix + path;
+				}
+				if( loginStatus != LOGIN_PROCESS )
+					requestedPath = path;
+
+				requestFunc = handler;
+				xmlHttp = new XMLHttpRequest();
+				xmlHttp.open( "GET", urlPath, true );
+				xmlHttp.setRequestHeader( "User-Agent", USER_AGENT_VALUE );
+				xmlHttp.onreadystatechange = this.callback;
+				xmlHttp.send(null);
+			}
+			else
+			{
+				// Fehlermeldung ausgeben
+			}
+		}
+
+		this.post = function (path, params, handler, loginIfNecessary)
+		{
+			if( path )
+			{
+				var param = "";
+				if( params != null ) 
+				{
+					param = ACCOUNT_PARAM + "=" + params[ACCOUNT_PARAM] + "&amp;" + PASSWORD_PARAM + "=" + params[PASSWORD_PARAM] + "&amp;" + RESOURCE_PARAM + "=" + params[RESOURCE_PARAM];
+				}
+				urlPath = urlPrefix + path;
+				if( loginStatus != LOGIN_PROCESS )
+					requestedPath = path;
+
+				xmlHttp = new XMLHttpRequest();
+				xmlHttp.open( "POST", urlPath, true );
+				xmlHttp.setRequestHeader( "User-Agent", USER_AGENT_VALUE );
+				xmlHttp.setRequestHeader( "Content-Type", "application/x-www-form-urlencoded") ;
+				xmlHttp.setRequestHeader( "Content-length", param.length );
+				xmlHttp.onreadystatechange = this.callback;
+				xmlHttp.send( param );	
+				//alert( "Post param: " + param );		
+			}
+			else
+			{
+				// Fehlermeldung ausgeben
+			}
+		}
+
+		// 
+		// Utilities
+		// 
+
+		this.test = function()
+		{
+			alert( "funktion test" );
+		}
+
+		this.processLoginData = function()
+		{
+			var username = document.getElementById( "mumie_username" ).value;
+			var password = document.getElementById( "mumie_password" ).value;
+			//alert( "Username " + username );
+			//alert( "Password " + password );
+			loginStatus = LOGIN_PROCESS; // vll in login methode setzen
+			this.login( username, password );
+			//var ret = login( username, password );
+			/*if( ret == LOGIN_SUCCESSFUL )
+			{
+				alert( "LOGIN SUCCESFUL" );
+						//window.open( urlPath );
+			}
+			else if( ret == LOGIN_FAILED )
+			{
+				alert( "LOGIN FAILED!" );
+			}*/
+		}
+
+		var checkLoginRequired = function (connection)
+		{
+			value = connection.getResponseHeader(LOGIN_REQUIRED_HEADER);
+			if ( !value )
+				return false;
+			else if ( value == "yes" || value == "true" )
+				return true;
+			else if ( value == "no" || value == "false" )
+				return false;
+			else
+				return false;
+		};
+
+		var performLoginDialog = function (afterFailure)
+		{
+			alert( "performLoginDialog" );
+		}
+
+		this.login = function (account, password)
+		{
+			if ( account &amp;&amp; password )
+			{
+				// Set request parameters:
+				var params = new Array ();
+				params[ACCOUNT_PARAM] = account;
+				params[PASSWORD_PARAM] = password;
+				params[RESOURCE_PARAM] = urlPrefix + RESOURCE_VALUE;
+
+				//  post request:
+				//var connection = post(LOGIN_PATH, params, null, false);
+				//post(LOGIN_PATH, params, null, false);
+				this.post(LOGIN_PATH, params, null, false);
+				// Login status:
+				//var status = (checkLoginRequired(connection) ? LOGIN_FAILED : LOGIN_SUCCESSFUL);
+
+				return true;
+			}
+			else
+			{
+				var count = 1;
+				var status = -1;
+				while ( status != LOGIN_SUCCESSFUL &amp;&amp;
+						status != LOGIN_CANCELED &amp;&amp;
+						( count &lt;= this.maxLoginTries || this.maxLoginTries == UNLIMITED ) )
+				{
+					var result = performLoginDialog( status == LOGIN_FAILED );
+					status = (result == null ? LOGIN_CANCELED : login(result[ACCOUNT_PARAM], result[PASSWORD_PARAM]));
+					count++;
+				}
+				return status;
+			}
+		}
+
+		this.callback = function () 
+		{
+			//alert( "callback State:" + xmlHttp.readyState );
+			if( xmlHttp.readyState == 4 )
+			{
+				if( xmlHttp.status == 200 ) 
+				{
+					//alert( xmlHttp.getAllResponseHeaders() + "\n\n" + xmlHttp.responseText );
+					if( checkLoginRequired( xmlHttp ) ) 
+					{
+						// Dialog anzeigen
+						InlinePopup.open( this.href, "Mumie_Inline_Popup", '');
+					}
+					else
+					{
+						if( loginStatus == LOGIN_PROCESS ) {
+							loginStatus = -1;
+							InlinePopup.close("Mumie_Inline_Popup");
+							client.post( requestedPath, null, 0, false );
+						} 
+						else
+						{
+							//alert( xmlHttp.getAllResponseHeaders() );
+							requestFunc( xmlHttp );
+							//window.open( urlPath );
+						}
+					}
+				}
+			}
+		}
+	}
+</txt:document>

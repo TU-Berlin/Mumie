@@ -1,0 +1,477 @@
+\documentclass[lang=de]{generic}
+
+\begin{document}
+
+\title{Standard-Test 1}
+\subtitle{Anleitung für Tester}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: anleitung.tex,v 1.5 2008/06/16 10:15:32 rassy Exp $}
+
+\tableofcontents
+
+\section{Allgemeines}
+
+Mit diesem Test werden Funktionalitäten von \emph{Elementen},
+\emph{Subelementen}, \emph{Aufgaben} und \emph{Aufgabenblättern} geprüft. Der
+Test sollte nach jeder nicht-trivialen Änderung an Codestellen durchgeführt
+werden, die diese Funktionalitäten betreffen.
+
+Für den Test wird ein bestimmter Kurs ausgewählt, im folgenden \emph{Test-Kurs}
+genannt. Der Test erfolgt stichprobenhaft an
+
+\begin{itemize}
+\item mindestens einem Element,
+\item mindestens einem Subelement,
+\item mindestens einem Aufgabenblatt,
+\item mindestens einer Aufgabe der Kategorie \emph{applet},
+\item mindestens einer Aufgabe der Kategorie \emph{mchoice},
+\item mindestens einer Aufgabe der Kategorie \emph{traditional}.
+\end{itemize}
+
+Welche Dokumente ausgewählt werden, ist dem Tester überlassen.
+
+Es werden vier Benutzerkonten gebraucht:
+
+\begin{itemize}
+\item Benutzer 1: Student und Mitglied des Test-Kurses
+\item Benutzer 2: Dozent des Test-Kurses
+\item Benutzer 3: Student, aber nicht Mitglied des Test-Kurses
+\item Benutzer 4: Dozent, aber nicht des Test-Kurses
+\end{itemize}
+
+Die meisten Funktionalitäten hängen davon ab, ob man sich zeitlich vor,
+innerhalb oder nach dem Bearbeitungszeitraum des Aufgabenblatts befindet. Der
+Test gliedert sich daher in drei Phasen:
+
+\begin{itemize}
+
+\item Phase I:
+
+  Bearbeitungszeitraum hat noch nicht begonnen. Hier soll nur getestet werden,
+  ob das System richtig reagiert, wenn ein Student auf ein Aufgabenblatt oder
+  eine Aufgabe zuzugreifen versucht.
+
+\item Phase II:
+
+  Bearbeitungszeitraum läuft.
+
+\item Phase III:
+
+  Bearbeitungszeitraum abgelaufen. Zu testen: Korrekturen betrachten; als
+  Dozent Punkte für schriftliche Aufgaben vergeben; als Dozent Lösungen des
+  Studenten betrachten (Tutor-View)
+
+\end{itemize}
+
+\section{Phase I}
+
+\subsection{Versuch als Student ein Aufgabenblatt aufzurufen}\label{ph_i_stud_aufgbl}
+
+Als Student sind Aufgabenblätter und Aufgaben vor Beginn des
+Bearbeitungszeitraums nicht durch Links zu erreichen. Daher folgendermassen
+vorgehen:
+
+\begin{itemize}
+\item Als Dozent (Benutzer 2 oder 4) einloggen
+\item Ein Aufgabenblatt aufrufen
+\item Rechtsklick im rechten Frame, dann \emph{This Frame} > \emph{View Frame Info}
+\item Die URL steht unter \emph{Address}. Diese URL notieren (z.B. mit Maus
+  selektieren und in Editor übertragen).
+\item Ausloggen und als Student (Benutzer 1 oder 3) einloggen
+\item Notierte URL aufrufen
+\end{itemize}
+
+Es sollte eine Seite mit folgendem Text angezeigt werden:
+
+\begin{block}
+  \emph{Vor Bearbeitungszeitraum}
+
+  \emph{Der Bearbeitungszeitraum dieses Aufgabenblatts hat noch nicht begonnen.
+    Das Aufgabenblatt ist daher noch nicht freigegeben.}
+\end{block}
+
+\subsection{Versuch als Student eine Aufgabe aufzurufen}
+
+In gleicher Weise eine Aufgabe aufrufen. Es sollte (als Student) eine Seite mit
+folgendem Text angezeigt werden:
+
+\begin{block}
+  \emph{Vor Bearbeitungszeitraum}
+
+  \emph{Der Bearbeitungszeitraum des Aufgabenblatts, zu dem diese Aufgabe
+    gehört, hat noch nicht begonnen. Die Aufgabe ist daher noch nicht
+    freigegeben.}
+\end{block}
+
+\section{Phase II}
+
+\subsection{Elemente und Subelemente}\label{elem_u_subelem}
+
+Das zum Test ausgewählte Element und Subelement aufrufen. Als welcher Benutzer,
+ist in diesem Teil egal. Getestet werden soll das Layout der Seite, bei Applets
+auch deren Funktion. Insbesondere:
+
+\begin{itemize}
+\item Ist die Darstellung korrekt und gut lesbar?
+\item Werden alle Zeichen richtig dargstellt?
+\item Ist die Formatierung passend? (Links-, Rechtsbündigkeit, Blocksatz)
+\item Sind Abstände und Ränder passend?
+\item Ist die Schriftgrösse passend?
+\item Ist die Platzaufteilung gut?
+\item Ist der Applet-Modus korrekt (s. Bemerkung 1)
+\item Ist die Applet-Grösse passend?
+\item Funktioniert das Applet? (s. Bemerkung 2)
+\item Usw.
+\end{itemize}
+
+
+\emph{Bemerkung 1:}
+Manche Applets sollen nur mit einem Button auf der Seite
+erscheinen. Klickt man ihn an, öffnet sich das Applet in einem eigenen Fenster.
+Dass die XHTML-Seite einen Button erwartet, erkennt man daran, dass dem Applet
+nur ein Bereich von der Grösse eines Buttens eingeräumt wird. In diesem Fall
+ist zu testen, ob das Applet dort auch wirklich einen Button anzeigt und dieser
+beim Anklicken ein Applet-Fenster öffnet.
+
+\emph{Bemerkung 2:}
+Es soll nur das \emph{technische} Funktionieren des Applets geprüft werden. Ob
+das Applet \emph{inhaltlich} richtig arbeitet, ist nicht Gegenstand dieses
+Tests. Zu testen ist insbesondere:
+\begin{itemize}
+  \item Bekommt das Applet den Fokus?
+  \item Lassen sich Eingaben machen? (Textfelder, Schieber, Buttons)
+  \item Reagiert das Applet auf Eingaben?
+\end{itemize}
+
+\subsection{Aufgaben (als Kursteilnehmer)}
+
+Alle zum Test ausgewählten Aufgaben durchgehen, und zwar jeweils als Student
+des Kurses (Benutzer 1) und als Dozent des Kurses (Benutzer 2).
+
+\subsubsection{Allgemein}
+
+Bei allen Aufgaben-Kategorien (\emph{applet}, \emph{mchoice} und
+\emph{traditional}) und beiden Benutzern (1 und 2) soll das Layout geprüft
+werden, insbesondere:
+
+\begin{itemize}
+\item Ist die Darstellung korrekt und gut lesbar?
+\item Werden alle Zeichen richtig dargstellt?
+\item Ist die Formatierung passend? (Links-, Rechtsbündigkeit,
+  Blocksatz) 
+\item Sind Abstände und Ränder passend?
+\item Ist die Schriftgrösse passend?
+\item Ist die Platzaufteilung gut?
+\item Usw.
+\end{itemize}
+
+\subsubsection{Kategorie \emph{applet}, als Dozent}\label{appl_doz}
+
+Bei Aufgaben der Kategorie \emph{applet} soll als Dozent (Benutzer
+2) geprüft werden:
+
+\begin{itemize}
+\item Wird das Applet geladen? (\emph{Applet-Status} am Ende der Seite)
+\item Öffnet sich das Applet-Fenster nach einem Klick auf den
+  \emph{Bearbeiten}-Button? 
+\item Funktioniert das Applet? (s. \ref{elem_u_subelem}, Bemerkung 2)
+\item Lassen sich die Teilaufgaben auswählen? (s. Bemerkung 1)
+\item Lassen sich Antworten speichern? (s. Bemerkung 2)
+\item Erscheinen nach Aus- und Wiedereinloggen die gespeicherten
+  Antworten im Applet? (s. Bemerkung 3)
+\item Lassen sich die Antworten korrigieren und die Lösung anzeigen?
+  (\emph{Korrektur}-Button; s. Bemerkung 4)
+\item Kann man sich neue personalisierte Daten geben lassen?
+  (\emph{Neue-Daten}-Button; s. Bemerkung 5)
+\end{itemize}
+
+\emph{Bemerkung 1:}
+Applet in den Hausaufgaben-Modus schalten. Tipp: Applet-Fenster so einstellen,
+dass es immer im Vordergrung ist. Dann auf der HTML-Seite Teilaufgaben mit der
+Maus anklicken und prüfen, ob sie vom Applet übernommen werden.
+
+\emph{Bemerkung 2:}
+\emph{Speichern}-Button klicken. Es sollte die Meldung \emph{Speichern
+  erfolgreich} erscheinen.
+
+\emph{Bemerkung 3:}
+Antworten merken der notieren, ausloggen, wieder einloggen, zur Aufgabe
+zurücknavigieren, Applet öffnen, angezeigte Antworten mit denen vor dem
+Ausloggen vergleichen.
+
+\emph{Bemerkung 4:}
+Als Dozent (allgemein Staff-Mitglied) sollte beim Klick auf den
+\emph{Korrektur}-Button die Korrektur ausgelöst und die Lösung angezeigt
+werden.
+
+\emph{Bemerkung 5:}
+Momentane Zahlenwerte der Aufgabe merken oder
+notieren. \emph{Neue-Daten}-Button klicken. Es sollten jetzt andere Zahlen
+erscheinen. 
+
+
+\subsubsection{Kategorie \emph{applet}, als Student}\label{appl_stud}
+
+Bei Aufgaben der Kategorie \emph{applet} soll als Student (Benutzer
+1) geprüft werden:
+
+\begin{itemize}
+\item Wird das Applet geladen? (\emph{Applet-Status} am Ende der Seite)
+\item Öffnet sich das Applet-Fenster nach einem Klick auf den
+  \emph{Bearbeiten}-Button? 
+\item Lassen sich die Teilaufgaben auswählen? (s. \ref{appl_doz}, Bemerkung 1)
+\item Lassen sich Antworten speichern? Wird eine Quittung zurückgeschickt
+  (s. Bemerkung 1)
+\item Erscheinen nach Aus- und Wiedereinloggen die gespeicherten
+  Antworten im Applet? 
+\end{itemize}
+
+\emph{Bemerkung 1:}
+\emph{Speichern}-Button klicken. Es sollte die Meldung \emph{Speichern
+  erfolgreich} erscheinen, zusammen mit der Information, dass eine Quittung
+zurückgeschickt wurde und auf dem lokalen System gespeichert werden
+kann. Quittung speichern.
+
+
+\subsubsection{Kategorie \emph{mchoice}, als Dozent}
+
+Bei Aufgaben der Kategorie \emph{mchoice} soll als Dozent (Benutzer
+2) geprüft werden:
+
+\begin{itemize}
+\item Wird das Applet geladen? (\emph{Applet-Status} am Ende der Seite)
+\item Lassen sich die Wahlmöglichkeiten ankreuzen?
+\item Lassen sich Antworten speichern? (s. \ref{appl_doz}, Bemerkung 2)
+\item Erscheinen nach Aus- und Wiedereinloggen die gespeicherten
+  Antworten auf der Seite? (s. \ref{appl_doz}, Bemerkung 3)
+\item Lassen sich die Erklärungen einblenden? (Button \emph{Erklärungen
+  einblenden}) 
+\item Lassen sich die Antworten korrigieren? (\emph{Korrektur}-Button;
+  s. Bemerkung 1)
+\item Kann man sich neue personalisierte Daten geben lassen?
+  (\emph{Neue-Daten}-Button; s. \ref{appl_doz}, Bemerkung 5))
+\end{itemize}
+
+\emph{Bemerkung 1:}
+Als Dozent (allgemein Staff-Mitglied) sollte beim Klick auf den
+\emph{Korrektur}-Button die Korrektur ausgelöst und danach die Seite neu
+geladen werden, wobei jetzt die Lösungen und Korrekturmarkierungen mit
+angezeigt werden.
+
+
+\subsubsection{Kategorie \emph{mchoice}, als Student}
+
+Bei Aufgaben der Kategorie \emph{mchoice} soll als Student (Benutzer
+1) geprüft werden:
+
+\begin{itemize}
+\item Wird das Applet geladen? (\emph{Applet-Status}  am Ende der Seite)
+\item Lassen sich die Wahlmöglichkeiten ankreuzen?
+\item Lassen sich Antworten speichern? (s. \ref{appl_stud}, Bemerkung 1)
+\item Erscheinen nach Aus- und Wiedereinloggen die gespeicherten
+  Antworten auf der Seite?
+\end{itemize}
+
+\subsection{Nicht-Kursteilnehmer}
+
+Als Nicht-Kursteilnehmer (Benutzer 3 und 4) soll versucht werden, den Kurs, ein
+Aufgabenblatt und eine Aufgaben aufzurufen.
+
+\subsubsection{Kurs}
+
+Nacheinander als Benutzer 3 (Student, kein Kursmitglied) und 4 (Dozent, aber
+nicht des Test-Kurses) einloggen. Versuchen, den Kurs des Aufgabenblatts
+aufzurufen. Es sollte eine Seite mit folgendem Text angezeigt werden:
+
+\begin{block}
+  \emph{Kein Kursmitglied}
+
+  \emph{Sie sind nicht Teilnehmer dieses Kurses.
+    Der Kurs kann daher nicht angezeigt werden.}
+\end{block}
+
+\subsubsection{Aufgabenblätter}
+
+Entsprechend soll der Zugriff auf Aufgabenblätter getestet werden. Dies erfolgt
+exemplarisch an einem Aufgabenblatt.  Aufgabenblätter sind für
+Nicht-Kursmitglieder nicht durch Links zu erreichen.  Daher wie folgt vorgehen:
+
+\begin{itemize}
+\item Als Kursmitglied (Benutzer 1 oder 2) einloggen
+\item Aufgabenblatt aufrufen
+\item Rechtsklick im rechten Frame, dann
+  \emph{This Frame} > \emph{View Frame Info} 
+\item Die URL steht unter \emph{Address}. Diese URL notieren (z.B. mit Maus
+  selektieren und in Editor übertragen).
+\item Ausloggen und als Benutzer 3 bzw. 4 einloggen
+\item Notierte URL aufrufen
+\end{itemize}
+
+Es sollte eine Seite mit folgendem Text angezeigt werden:
+
+\begin{block}
+  \emph{Kein Kursmitglied}
+
+  \emph{Sie sind nicht Teilnehmer des Kurses, zu dem dieses Aufgabenblatt
+    gehört. Das Aufgabenblatt kann daher nicht angezeigt werden.}
+\end{block}
+
+\subsubsection{Aufgaben}
+
+In gleicher Weise wie der Zugriff auf Aufgabenblätter (s.o.) soll der Zugriff
+auf Aufgaben getestet werden. Es sollte eine Seite mit folgendem Text angezeigt
+werden:
+
+\begin{block}
+  \emph{Kein Kursmitglied}
+
+  \emph{Sie sind nicht Teilnehmer des Kurses, zu dem diese Aufgabe
+    gehört. Die Aufgabe kann daher nicht angezeigt werden}
+\end{block}
+
+\section{Phase III}
+
+\subsection{Als Student: Korrektur und Punkteanzeige}
+
+Als Student des Kurses (Benutzer 1) folgende Tests durchführen:
+
+\begin{itemize}
+\item Kurs öffnen
+\item Prüfen, ob die Punkteanzeige funktioniert
+\item Ein Aufgabenblatt öffnen
+\item Prüfen, ob die Punkteanzeige funktioniert
+\item Eine Applet-Aufgabe öffnen
+\item Prüfen, ob die Punkteanzeige funktioniert
+\item Korrektur betrachten
+\item Eine Multiple-Choice-Aufgabe öffnen
+\item Prüfen, ob die Anzeige der Punkte und der Korrektur funktioniert
+\item Prüfen, ob sich Erläuterungen ein- und ausblenden lassen
+\end{itemize}
+
+\subsection{Als Dozent: Korrektur, Punkteanzeige}
+
+Als Dozent des Kurses (Benutzer 1) die gleichen Tests durchführen (vgl. oben):
+
+\begin{itemize}
+\item Kurs öffnen
+\item Prüfen, ob die Punkteanzeige funktioniert
+\item Ein Aufgabenblatt öffnen
+\item Prüfen, ob die Punkteanzeige funktioniert
+\item Eine Applet-Aufgabe öffnen
+\item Prüfen, ob die Punkteanzeige funktioniert
+\item Korrektur betrachten
+\item Eine Multiple-Choice-Aufgabe öffnen
+\item Prüfen, ob die Anzeige der Punkte und der Korrektur funktioniert
+\item Prüfen, ob sich Erläuterungen ein- und ausblenden lassen
+\end{itemize}
+
+\subsection{Als Dozent: Studentenauswahl}
+
+Als Dozent des Kurses (Benutzer 1) die folgenden Tests durchführen:
+
+\begin{itemize}
+\item Kurs öffnen
+\item Danach im Feld oben einen Studenten  auswählen, und zwar Benutzer 2
+\item Prüfen, ob die Punkte für den Studenten angezeigt werden
+\item Ein Aufgabenblatt öffnen
+\item Prüfen, ob die Punkte für den Studenten angezeigt werden
+\item Eine Applet-Aufgabe öffnen
+\item Prüfen, ob die Daten des Studenten (persönliche Aufgaben-Daten, Punkte)
+      angezeigt werden
+\item Korrektur betrachten
+\item Eine Multiple-Choice-Aufgabe öffnen
+\item Prüfen, ob die Daten des Studenten (Lösungen, Punkte) angezeigt werden
+\end{itemize}
+
+Beim Kurs, dem Aufgabenblatt und den beiden Aufgaben jeweils zwischendurch
+ausgewählten Studenten löschen und prüfen, ob dann wieder die Daten des
+Dozenten angezeigt werden.
+
+\subsection{Als Dozent: Punkte für schriftliche Aufgabe setzen}
+
+Als Dozent des Kurses (Benutzer 1) die folgenden Tests durchführen:
+
+\begin{itemize}
+\item Eine schriftliche Aufgabe (Kategorie \emph{traditional}) öffnen
+\item Punkte für den Studenten (Benutzer 2) setzen
+\item Ausloggen und als Student (Benutzer 2) wieder einloggen.
+\item Schriftliche Aufgabe öffnen
+\item Prüfen, ob die gesetzten Punkte dort angezeigt werden.
+\end{itemize}
+
+\section{Organisatorisches}
+
+Alle Fehler sollen in unser Bug-Tracking-System eingetragen werden. URL:
+
+\begin{preformatted}%
+  \link{http://www3.math.tu-berlin.de/rt}{www3.math.tu-berlin.de/rt}
+\end{preformatted}
+
+Dabei bitte folgendes beachten:
+
+\begin{itemize}
+\item Fehler, die bereits gemeldet wurden und noch nicht behoben sind, nicht
+  noch einmal melden. Falls sich durch diesem Test neue Erkenntnisse ergeben,
+  diese bei dem alten Bug eintragen (als Comment oder Reply).
+\item Korrekte Kategorie (Queue) angeben: Startet das Applet nicht oder meldet
+  es einen Fehler: \emph{mathlet-factory}; ist etwas inhaltlich falsch (Tippfehler
+  usw.): \emph{content}; sonst: \emph{japs}
+\item \emph{Owner} nicht setzen
+\item Immer angeben, in welchem Dokument der Fehler aufgetreten ist. Tritt
+  derselbe Fehler in mehreren Dokumenten auf, ein Beispiel-Dokument
+  angeben. Angabe in einer der beiden folgenden Formen:
+  \begin{enumerate}
+  \item Als Pfad ab Checkin Root. Bei langen Pfaden kann der Pfad in mehrere
+    Zeilen umgebrochen werden. Beispiel:
+\begin{preformatted}%
+  content/lineare\_algebra/1\_ohne\_geometrische\_struktur/
+    1\_1\_vektorraeume\_und\_der\_k\_hoch\_n/1\_1\_1\_vektorraeume/
+    1\_1\_1\_1\_grundlagen/def\_dimension
+\end{preformatted}
+  \item Nur bei Aufgaben: Name des Kurses; Kategorie, Nummer und Name des
+    Aufgabenblatts; Nummer und Name der Aufgabe. Beispiel:
+\begin{preformatted}%
+  Kurs "Lineare Algebra",
+  HA-Aufgabenblatt 3 "Gauss",
+  Aufgabe 2 "Koeffizientenmatrix von 2 linearen Gleichungen"
+\end{preformatted}
+    Bei Aufgaben ist diese Form vorzuziehen.
+  \end{enumerate}
+\item Für jede Durchführung des Tests ein kurzes Protokoll
+    anlegen und ins CVS einchecken, im selben Verzeichnis, in dem sich diese
+    Anleitung befindet. Vorschlag für den Dateinamen:
+\begin{preformatted}%
+  protokoll\_\var{datum}.txt
+\end{preformatted}
+wobei \var{datum} das Datum des Tests im Format \var{YYYY-MM-dd} ist. Erstreckt
+sich der Test über mehrere Tage, das Startdatum nehmen. Beginnen mehrere Tests
+am selben Tag, Dateinamen in
+\begin{preformatted}%
+  protokoll\_\var{datum}_\var{n}.txt
+\end{preformatted}
+    abändern, wobei \var{n} die Tests durchnumeriert, mit 1 beginnend.
+
+    Das Protokol soll insbesondere folgende Angaben enthalten:
+
+    \begin{itemize}
+    \item Wer getestet hat
+    \item Beginn und Ende des Tests
+    \item Grund des Tests (z.B. die Änderungen im Mumie-Code).
+    \item Welche Dokumente zum Test herangezogen wurden
+    \item Welche Bugs gemeldet wurden (RT-Ticket-Ids), und bei welchen Dokumenten
+      sie aufgetreten sind
+    \end{itemize}
+
+    Ein festes Format für das Protokoll gibt es nicht. Ausser den obigen
+    Angaben kann das Protokoll weitere Beobachtungen und Bemerkungen
+    enthalten.
+
+\end{itemize}
+
+
+
+\end{document}

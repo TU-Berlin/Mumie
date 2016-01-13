@@ -1,0 +1,84 @@
+\documentclass{generic}
+
+
+\begin{document}
+\title{MMTex verbatim samples}
+\subtitle{Several samples of the verbatim enviroment}
+
+
+\tableofcontents
+
+\section{The long form at first}
+
+\subsection{Source Code}
+\verb"
+\verbatim
+Enter anything you like (see below)....
+\endverbatim"
+
+
+\subsection{Result}
+
+\verbatim
+
+Enter anything you like in this area, it will not be interpreted...
+Just the ampersand (&) and other special xml chars will be replaced 
+by their unicode reference..
+
+Line brakes are kept in the long form, the short form swallows them.
+
+Now some wild special character testing:
+!@#$%^&*()_+
+12345667890-
+:;<.>,.,./?'''
+
+\endverbatim
+
+
+
+\section{And now the short form}
+
+\subsection{Source Code}
+\verbatim
+\verb"  You may use everything to embed the text... "
+\verb@  You may use everything to embed the text... @
+\verb<  You may use everything to embed the text... <
+\verb'  You may use everything to embed the text... '
+\verb+  You may use everything to embed the text... +
+\verb=  You may use everything to embed the text... =
+\verb|  You may use everything to embed the text... |
+\verb?  You may use everything to embed the text... ?
+\verb.  You may use everything to embed the text,,, .
+
+
+% Don't use chars, you'll get an "command not found" error
+%
+% e.g      \verbV  You may use everything to embed the text... V
+
+% NOT THIS \verb[  You may use everything to embed the text... ]
+% NOT THIS \verb{  You may use everything to embed the text... }
+
+\endverbatim
+
+
+\subsection{Result}
+\verb"  You may use everything to embed the text... "
+\verb@  You may use everything to embed the text... @
+\verb<  You may use everything to embed the text... <
+\verb'  You may use everything to embed the text... '
+\verb+  You may use everything to embed the text... +
+\verb=  You may use everything to embed the text... =
+\verb|  You may use everything to embed the text... |
+\verb?  You may use everything to embed the text... ?
+\verb.  You may use everything to embed the text,,, .
+
+% Don't use chars, you'll get an "command not found" error
+%
+% e.g      \verbV  You may use everything to embed the text... V
+
+% NOT THIS \verb[  You may use everything to embed the text... ]
+% NOT THIS \verb{  You may use everything to embed the text... }
+
+
+
+\end{document}

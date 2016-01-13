@@ -1,0 +1,25 @@
+mmckin
+message: "java.lang.IllegalArgumentException: Filename does
+not start with checkin root: <correct path> "
+check file .dir it must show the full path for checkin. 
+
+26.Okt.2008 Probleme mit checkin wegen Zertifikaten:
+1. Versuch: Erstelle neues keystore mit keytool
+Erzeugen des Java-keystors:
+1. Check Zertifikat:
+keytool -printcert
+2. Importiere das Zertifikat in keystore:
+keytool -importcert -alias habnix -file habnix.math.tu-berlin.de.crt -keystore ./trusted_certs
+
+Danach Jvmd stop, start
+
+Problem, dass dieser keystore von java gar nicht gefunden wird weil die
+java-variable javax.net.ssl.trustStore nicht gesetzt ist:
+mmjvmc getprob javax.net.ssl.trustStore gibt nichts raus.
+
+2. Versuch: Kopiere keystore von /net/mumie/etc/mmcdk und 
+schreibe in  ~/Mumie_2.1/etc/mmcdk/local_mmcdk.init
+die Zuweisung der Variable javax.net.ssl.trustStore:
+mmjvmc setprop javax.net.ssl.trustStore=/home/ruedi/.mmcdk/trusted_certs
+
+Siehe auch japs_client/doc/README.https

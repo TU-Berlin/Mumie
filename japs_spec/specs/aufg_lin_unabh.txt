@@ -1,0 +1,266 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: aufg_lin_unabh.txt,v 1.1 2005/05/19 09:04:53 rassy Exp $
+
+
+         SPEZIFIKATION: ÜBUNGSAUFGABE ZUM THEMA LINEARE UNABHÄNGIGKEIT
+
+
+1. Gegebene Daten
+   ==============
+
+  1.1. Dimension d
+
+  1.2. Körper K (R oder C)
+
+  1.3. n Vektoren aus dem K^n
+
+               _      _                       _      _
+              |  a_11  |                     |  a_n1  |
+              |        |                     |        |
+       ->     |   .    |             ->      |   .    |
+       a_1 =  |   .    |  , . . . ,  a_n  =  |   .    |
+              |   .    |                     |   .    |
+              |        |                     |        |
+              |_ a_1d _|                     |_ a_nd _|
+
+
+  1.4. Vier ganze Zahlen n_1, ..., n_4 zwischen 1 und n (s. 1.5. für deren
+       Bedeutung).
+
+
+
+2. Teilaufgaben
+   ============
+
+ 2.1 "Wähle n_1 linear unabhängige Vektoren aus."
+
+ 2.2 "Wähle n_2 andere linear unabhängige Vektoren aus."
+
+ 2.3 "Wähle n_3 linear abhängige Vektoren aus."
+
+ 2.4 "Wähle n_4 andere linear abhängige Vektoren aus."
+
+
+
+3. Data-Sheet
+   ==========
+
+  3.1. Das Data-Sheet, das der Server zum Applet schickt, enthählt die Daten
+       aus 1., und zwar den unter folgenden Pfaden:
+
+    3.1.1. common/problem/dimension
+               Die Dimension, als PCDATA (kein MathML).
+
+    3.1.2. common/problem/field
+               Der Körper, als PCDATA, entweder "real" oder "complex".
+
+    3.1.3. common/problem/vectors/NAME
+               Die Vektoren. NAME steht für die Namen der n data-Elemente, die
+               die Vektoren aufnehmen. Jedes solche Element enthählt einen
+               Vektor als MathML.
+
+               Die Namen NAME sind im Prinzip beliebig. Konventionsvorschlag: 
+               "vector_1", "vector_2", ... , "vector_NUMBER" mit NUMBER = n.
+
+    3.1.4. common/problem/subtask_NUMBER/number mit NUMBER = 1|2|3|4
+               Die Zahlen aus den vier Teilaufgaben, als PCDATA.
+
+  3.2. Das Data-Sheet, das das Applet zum Server zurückschickt, enthält ausser
+       der bisher erreichten Punktzahl (s. applet_data_sheet.txt, Abschnitt 3)
+       die folgenden Daten unter den angegebenen Pfaden:
+
+    3.2.1. user/answer/subtask_NUMBER/NAME mit NUMBER = 1|2|3|4
+               Ausgewählte Vektoren bei Teilaufgabe NUMBER. NAME steht für die
+               Namen der data-Elemente, die die bei dieser Teilaufgabe
+               ausgewählten Vektoren angeben. Die Data-Elemente enthalten die
+               Vektoren nicht direkt, sondern lediglich deren Pfad als PCDATA.
+
+               Die Namen NAME sind im Prinzip beliebig. Konventionsvorschlag: 
+               "selected_1", "selected_2", ... .
+
+    3.2.2 user/meta/answer/subtask_NUMBER/correct mit NUMBER = 1|2|3|4
+               Gibt für jede Teilaufgabe NUMBER an, ob diese richtig oder
+               falsch gelöst wurde. PCDATA, entweder "yes" oder "no".
+
+    3.2.3 user/meta/answer/subtask_NUMBER/comment mit NUMBER = 1|2|3|4
+               Optional. Hiermit kann für jede Teilaufgabe ein vom Applet
+               automatisch generierter Kommentar zur Lösung des Studierenden
+               abgespeichert werden.
+
+
+
+4. Data-Sheet: Beispiele
+   =====================
+
+  4.1. Server -> Applet
+         
+  <data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+    <unit name="common">
+      <unit name="problem">
+        <data name="dimension">3</data>
+        <data name="field">real</data>
+        <unit name="vectors">
+          <data name="vector_1">
+            <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+              <!-- MathML-Code -->
+            </mrow>
+          </data>
+          <data name="vector_2">
+            <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+              <!-- MathML-Code -->
+            </mrow>
+          </data>
+          <!--  ... (Weitere Vektoren) -->
+        </unit>
+        <unit name="subtask_1">
+          <data name="number">3</data>
+        </unit>
+        <unit name="subtask_2">
+          <data name="number">2</data>
+        </unit>
+        <unit name="subtask_3">
+          <data name="number">4</data>
+        </unit>
+        <unit name="subtask_4">
+          <data name="number">3</data>
+        </unit>
+      </unit>
+    </unit>
+  </data_sheet>
+
+  4.2. Applet -> Server
+
+  <data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+    <unit name="user">
+      <unit name="meta">
+        <data name="score">0.75</data>
+        <unit name="answer">
+          <unit name="subtask_1">
+            <data name="correct">yes</data>
+          </unit>
+          <unit name="subtask_2">
+            <data name="correct">no</data>
+          </unit>
+          <unit name="subtask_3">
+            <data name="correct">yes</data>
+          </unit>
+          <unit name="subtask_4">
+            <data name="correct">yes</data>
+          </unit>
+        </unit>
+      </unit>
+      <unit name="answer">
+        <unit name="subtask_1">
+          <data name="selected_1">common/problem/vectors/vector_4</data>
+          <data name="selected_2">common/problem/vectors/vector_10</data>
+          <data name="selected_3">common/problem/vectors/vector_11</data>
+        </unit>
+        <unit name="subtask_2">
+          <data name="selected_1">common/problem/vectors/vector_5</data>
+          <data name="selected_2">common/problem/vectors/vector_6</data>
+        </unit>
+        <unit name="subtask_3">
+          <data name="selected_1">common/problem/vectors/vector_4</data>
+          <data name="selected_2">common/problem/vectors/vector_5</data>
+          <data name="selected_3">common/problem/vectors/vector_13</data>
+          <data name="selected_3">common/problem/vectors/vector_1</data>
+        </unit>
+        <unit name="subtask_4">
+          <data name="selected_1">common/problem/vectors/vector_6</data>
+          <data name="selected_2">common/problem/vectors/vector_7</data>
+          <data name="selected_3">common/problem/vectors/vector_8</data>
+        </unit>
+      </unit>
+    </unit>
+  </data_sheet>
+
+
+
+6. Applet
+   ======
+
+  6.1. Das GUI des Applets sollte in etwa so aussehen wie in auf_lin_unabh.png
+       skizziert.
+
+  6.2. Es ist immer genau eine Teilaufgabe selektiert. Klickt der Student auf
+       der XHTML-Seite einen Vektor an, so wird dieser vermittels der
+       "selectData'-Methode (s. skript_interface_mathletfactory 1.1) an das
+       Applet weitergemeldet, das ihn zu den Vektoren der selektierten
+       Teilaufgabe hinzufügt.
+
+       Damit dies funktioniert, muss der TeX-Autor die Vektoren anklickbar
+       machen und den Klick an die "selectData'-Methode binden. Dies geschieht
+       am einfachsten mit dem "\data*"-Befehl (s.u.)
+
+  6.3. Vektoren im Applet können markiert werden (ob jeweils nur einer oder
+       auch mehrere, und ob nur die der selektierten Teilaufgabe oder auch die
+       anderen, muss noch geklärt werden). Wird dann der Button "Löschen"
+       geklickt, werden diese Vektoren entfernt.
+
+  6.4. Mit Hilfe der Radio-Buttons "Teilafgabe a) b) c) d)" kann eine
+       Teilaufgabe selektiert werden.
+
+       Dies ist optional auch von der XHTML-Seite aus möglich, sofern der Autor
+       ein Ereignis an die "selectSubtask"-Methode des Applets bindet (s.
+       skript_interface_mathletfactory 1.2).
+
+       Zusätzlich könnte man die Teilaufgen im Applet selbst anklickbar
+       machen.
+
+
+
+7. TeX-Code: Beispiel
+   ==================
+
+\documentclass[practice]{japs.element.problem}
+
+\begin{metainfo}
+  % ...
+\end{metainfo}
+
+\begin{content}
+
+\begin{hidden}
+  \data{3}{common/problem/dimension}
+  \data{real}{common/problem/field}
+\end{hidden}
+
+\begin{input}
+
+Gegeben seien folgende Veltoren aus dem $\R^3$:
+
+\begin{displaymath}
+  \data*{\vector{1 \\ 0 \\ 3}}{common/problem/vectors/vector_1} \, , \qquad
+  \data*{\vector{3 \\ 1 \\ 1}}{common/problem/vectors/vector_2} \, , \qquad
+  % ... (Weitere Vektoren)
+\end{displaymath}
+
+\end{input}
+
+\begin{task}
+\begin{subtasks}
+  \subtask
+    W"ahle \data{3}{common/problem/subtask_1/number} linear unabh"angige
+    Vektoren aus.
+  \subtask
+    W"ahle \data{2}{common/problem/subtask_2/number} andere linear
+    unabh"angige Vektoren aus.
+  \subtask
+    W"ahle \data{4}{common/problem/subtask_3/number} linear abh"angige
+    Vektoren aus.
+  \subtask
+    W"ahle \data{3}{common/problem/subtask_4/number} andere linear
+    abh"angige Vektoren aus.
+\end{subtasks}
+\end{task}
+
+\begin{execute}
+  \applet{engine}
+\end{execute}
+
+\end{content}
+
+
+
+
+-- ENDE DER DATEI --

@@ -1,0 +1,31 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Anhängbarkeit}
+\subtitle{von Dokumenten an andere}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+\end{authors}
+
+\version{$Id: attachable.tex,v 1.2 2006/08/11 16:18:22 rassy Exp $}
+
+Die "Anhängbarkeit" von Subelementen an Elemente wird im neuen System durch
+eine normale Referenz dargestellt. Dafür wird ein neuer Referenztyp
+\code{attachable} eingführt.
+
+Dieser Referenztyp verallgemeinert die bisherige Relation \code{contained_in}.
+Die Sonderrolle der Subelement - Element - Beziehung entfällt also.
+
+Referenzen des Typs \code{attachable} sind prinzipiell auch zwischen anderen
+Dokumenttypen erlaubt, insbesondere aber nicht, wenn "uberhaupt keine
+Referenzen zwischen den jeweiligen Typen erlaubt sind wie in \file{config/config.xml}
+durch das Attribut \attrib{no-refs-to} des referenzierenden Dokumenttyps definiert.
+
+-- ENDE DER DATEI --
+
+\end{document}

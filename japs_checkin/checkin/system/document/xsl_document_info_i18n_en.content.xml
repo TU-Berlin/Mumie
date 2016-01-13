@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_document_info_i18n_en.content.xml,v 1.8 2010/01/02 23:46:28 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:param name="i18n-back">Back</xsl:param>
+<xsl:param name="i18n-basic-properties">Basic properties</xsl:param>
+<xsl:param name="i18n-binary-content">This document has binary content which cannot be displayed directly.</xsl:param>
+<xsl:param name="i18n-category">Category</xsl:param>
+<xsl:param name="i18n-class">Class</xsl:param>
+<xsl:param name="i18n-components">Components</xsl:param>
+<xsl:param name="i18n-component-of">Component of</xsl:param>
+<xsl:param name="i18n-content">Content</xsl:param>
+<xsl:param name="i18n-copyright">Copyright</xsl:param>
+<xsl:param name="i18n-corrector">Corrector</xsl:param>
+<xsl:param name="i18n-created">Created</xsl:param>
+<xsl:param name="i18n-deleted">Deleted</xsl:param>
+<xsl:param name="i18n-description">Description</xsl:param>
+<xsl:param name="i18n-document">Document</xsl:param>
+<xsl:param name="i18n-download-content">Download content</xsl:param>
+<xsl:param name="i18n-duration">Duration</xsl:param>
+<xsl:param name="i18n-hide">Hide</xsl:param>
+<xsl:param name="i18n-height">Height</xsl:param>
+<xsl:param name="i18n-id">Id</xsl:param>
+<xsl:param name="i18n-last-modified">Last modified</xsl:param>
+<xsl:param name="i18n-links">Links</xsl:param>
+<xsl:param name="i18n-link-of">Linked in</xsl:param>
+<xsl:param name="i18n-metainfos">Metainfos</xsl:param>
+<xsl:param name="i18n-name">Name</xsl:param>
+<xsl:param name="i18n-no">No</xsl:param>
+<xsl:param name="i18n-none">&#8211;</xsl:param>
+<xsl:param name="i18n-no-documents">&#8211;</xsl:param>
+<xsl:param name="i18n-pure-name">Filename</xsl:param>
+<xsl:param name="i18n-qualified-name">Qualified Name</xsl:param>
+<xsl:param name="i18n-read-permissions">Read permission</xsl:param>
+<xsl:param name="i18n-section">Section</xsl:param>
+<xsl:param name="i18n-section-expl">To list of contents of this section</xsl:param>
+<xsl:param name="i18n-timeframe">Timeframe</xsl:param>
+<xsl:param name="i18n-type">Type</xsl:param>
+<xsl:param name="i18n-vc-thread">VC-Thread</xsl:param>
+<xsl:param name="i18n-version">Version</xsl:param>
+<xsl:param name="i18n-width">Width</xsl:param>
+<xsl:param name="i18n-path">Path</xsl:param>
+<xsl:param name="i18n-yes">Ja</xsl:param>
+
+<xsl:param name="i18n-page">Page</xsl:param>
+<xsl:param name="i18n-summary">Summary</xsl:param>
+<xsl:param name="i18n-element">Element</xsl:param>
+<xsl:param name="i18n-subelement">Subelement</xsl:param>
+<xsl:param name="i18n-java-class">Java-Class</xsl:param>
+<xsl:param name="i18n-problem">Problem</xsl:param>
+<xsl:param name="i18n-image">Image</xsl:param>
+<xsl:param name="i18n-applet">Applet</xsl:param>
+<xsl:param name="i18n-sound">Sound</xsl:param>
+<xsl:param name="i18n-movie">Movie</xsl:param>
+<xsl:param name="i18n-jar">Jar</xsl:param>
+<xsl:param name="i18n-js-lib">JavaScript-Library</xsl:param>
+<xsl:param name="i18n-xsl-stylesheet">XSL-Stylesheet</xsl:param>
+<xsl:param name="i18n-css-stylesheet">CSS-Stylesheet</xsl:param>
+<xsl:param name="i18n-course">Course</xsl:param>
+<xsl:param name="i18n-course-section">Course section</xsl:param>
+<xsl:param name="i18n-worksheet">Worksheet</xsl:param>
+<xsl:param name="i18n-flash">Flash</xsl:param>
+<xsl:param name="i18n-close-window">Close window</xsl:param>
+</xsl:stylesheet>
+
+
+
+

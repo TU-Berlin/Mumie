@@ -1,0 +1,1573 @@
+\documentclass{generic}
+%this.filename = howto
+%usage: 
+% mmtex howto.tex
+% mmxalan howto.xml
+% firefox howto.xhtml
+%author: vrichter
+%cvs: howto.tex,v 1.2 2007/05/23 17:33:39 lehmannf Exp $
+
+\begin{document}
+\title{CourseCreator Version 2-1-1 Handbuch}
+\tableofcontents
+
+%
+%TODO: 
+% TODO aufräumen!!
+%
+%
+%
+% einheitliche menü fuhrung .. ''bearbeiten''--> lala..
+%
+% Recdhtschreibung prüfen
+
+
+% übernommen aus course_Creator_new im verzeichnis japs_spec/specs
+\section{Einführung}
+\subsection{Präambel}
+Der \emph{CourseCreator} ist ein Autorenwerkzeug für die multimediale
+Lernplattform \emph{Mumie}. 
+
+Der Benutzer(Autor) ist mit dem CourseCreator in der Lage, die innerhalb der
+Mumie vorhandenen mathematischen Inhalte miteinander zu verknüpfen, um sie in
+einer für den Lernenden logischen, nichtlinearen Reihenfolge, als
+Wissensnetzwerk, darzustellen. 
+
+Gerade bei mathematischen Inhalten ist es zumeist sehr hilfreich
+auf eine solche nichtlineare, parallele Darstellung von Inhalten zurückzugreifen,
+um Gemeinsamkeiten, Unterschiede sowie Abhängigkeiten von Elementen
+aufzuzeigen. Zu diesem Zweck benutzt der CourseCreator gerichtete Graphen deren
+Knoten den jeweiligen Inhaltselementen und deren Kanten logischen Verknüpfungen
+zwischen diesen Elementen entsprechen. Diese Darstellungsform geht über die
+pure Abbildung der Reihenfolge von Elementen hinaus.
+% und hat den Vorteil auch für Nichtinformatiker bearbeitbar zu bleiben.
+
+Vor diesem Hintergrund wurde der CourseCreator als ein grafisches Interface für
+die Erstellung und Verwaltung von Kursen entwickelt. Er setzt indirekt auf dem
+Applikation-Server der Mumie - dem \emph{Japs} - auf.
+
+\subsection{Das Grundkonzept}
+Der CourseCreator ist eine Java-Applikation mit grafischer Benutzeroberfläche
+die im Wesentlichen dazu dient, Kurse und Kursinhalte zu organisieren.
+
+Ein Kursdokument besteht aus XML-Text. Diesen könnte man ebenso gut mit einem
+geeigneten Texteditor wie emacs oder ähnlichen Programmen bearbeiten. Aus
+ersichtlichen Gründen ist diese jedoch nicht sinnvoll.
+
+Dieser Text kodiert in einem speziellen, MUMIE-spezifischen XML-Dialekt
+(KursXML) einen Kursgraphen. Wie weiter oben schon angedeutet, übersetzt der
+CourseCreator den Text in eine interaktive graphische Darstellung des
+Kurses.
+
+Die Grundfunktionen, die jeder Benutzer verstehen muss, sind also die eines
+Texteditors:
+\begin{itemize}
+\item ein neues Dokument erstellen
+\item ein bestehendes Dokument öffnen
+\item ein Dokument schreiben (verändern)
+\item ein Dokument sichern (speichern)
+\item ein geöffnetes Dokument schließen (mit optionalem Speichern)
+\item das Programm beenden
+\end{itemize}
+Die vom CourseCreator erstellten Dokumente können bisher noch nicht automatisch
+in der Datenbank, dem Japs, gespeichert werden. Daher arbeitet der Autor eines Kurses
+erst einmal lokal und kann dann später die erzeugten Kurse einchecken.
+
+Auch gelöscht werden können Dokumente nicht vom CourseCreator sondern nur von
+der Systemebene, d.h. das Dokument muss in der Datenbank und lokal vom
+Benutzer gelöscht werden.
+
+Das Löschen von Kursen aus der Datenbank ist noch nicht möglich, soll aber
+alsbald vom Japs unterstützt werden.
+
+\subsection{Wie ist diese Dokumentation zu lesen}
+Ganz sicher ist es nicht sinnvoll, diese Dokumentation von Anfang bis Ende
+durchzulesen und dann den ersten Kurs zu bauen. Man sollte am besten zuerst den
+CourseCreator installieren und starten (siehe
+\href{\#installationUndStarten}{Installation und Starten des CourseCreators}) und
+sich dann das Kapitel \href{\#gui}{die Gui} ansehen. Hierin sind die einzelnen
+Fenster des CourseCreators erläutert.
+
+Hat man sich mit der Gui vertraut gemacht, sollte man gleich damit beginnen,
+einen Kurs zu bauen. Eine Anleitung dafür gibt es im Kapitel
+\href{\#erstellenEinesNetzes}{Erstellen eines Netzes}. Dabei werden allerdings
+Begriffe auftauchen, die im Kapitel
+\href{\#begrifflichkeiten}{Begrifflichkeiten} erklärt sind. Falls es Probleme
+mit der Bedienung des CourseCreators gibt, ist das Kapitel
+\href{\#handhabung}{Handhabung} empfehlenswert.
+
+Ist dann ein erster Graph erstellt, so lohnt sich ein Blick in das Kapitel
+\href{\#ladenUndSpeichern}{Laden und Speichern}, sowie das Kapitel
+\href{\#einchecken}{Einchecken}.
+
+Abschließend gibt es noch das \href{\#troubleshooting}{Troubleshooting} Kapitel.
+
+\label{installationUndStarten}\subsection{Installation und Starten des
+  CourseCreators}
+Der CourseCreators befindet sich im CVSRoot-Verzeichnis unter dem Namen
+course_creator_new. Dieses Paket muss also zuerst ausgecheckt werden. Dann ist
+im course_creator_new-Verzeichnis
+
+build.sh all\\
+build.sh install\\
+build.sh install-third-party-java
+
+auszuführen. Anschließend kann der CourseCreator mit der Eingabe von ''mmcc'' in der
+Komandozeile gestartet werden.
+
+Nach dem Starten des CourseCreators erscheint ein Login-Fenster, welches
+ermöglicht, sich auf einem Server einzuloggen. Informationen dazu finden sich
+im Kapitel \href{\#serverLogin}{ServerLogin}.
+
+Ist das Einloggen abgeschlossen, so wird das Hauptfenster angezeigt. Für weitere
+Informationen zu der Oberfläche gibt es das Kapitel \href{\#gui}{die Gui}, zur
+allgemeinen Handhabung das Kapitel \href{\#handhabung}{Handhabung} und zum Bauen
+eines Graphen das Kapitel \href{\#erstellenEinesNetzes}{Erstellen eines Netzes}.
+
+\label{gui}\section{Die GUI}
+Wie eingangs beschrieben dient die Gui dazu, einen Graphen, der im XML-Format
+nicht benutzerfreundlich lesbar und veränderbar wäre, in einer anschaulichen Art
+darzustellen um ihn einfach und intuitiv zu bearbeiten. Die Oberfläche soll es
+dem Autor so einfach wie möglich machen, die Funktionen des CourseCreators zu
+nutzen.
+\subsection {Das Hauptfenster}
+\image{howtopics/gui_all.png}
+
+Im obrigen Bild ist das Hauptfenster des CourseCreators mit einem geladenen
+Kurs zu sehen. In der Titelleiste ist der Server angegeben, auf dem gerade
+eingeloggt ist. In diesem Fall also ein Server namens ''japs.mumie''. Wurde
+sich auf keinen Server eingeloggt, so steht stattdessen dort ''offline -
+Mode''.
+
+Das Hauptfenster unterteilt sich in das Graphframe, den Toolbar, die
+Menüleiste, die Komponentenleiste und das Metainformationsfenster, die im
+folgenden beschrieben sind.
+\image{howtopics/gui_all_erkl1.png}
+\image{howtopics/gui_all_erkl2.png}
+\subsubsection{Graphframe}
+\image{howtopics/gui_graphframe.png}
+
+Das Graphframe enthält den Graphen der bearbeitet werden soll. Wie so ein Graph
+erzeugt werden kann, ist im Kapitel \href{\#erstellenEinesNetzes}{Erstellen
+  eines Netzes} beschrieben.
+
+Zu dem Graphframe gehört auch die Titelleiste des Graphframes, die den Namen des
+aktuellen Graphen enthält (hier: Determinante). Der Name ist im weiter unten
+beschriebenen Metainformationsfenster änderbar.
+
+Des weiteren gehört zum Graphframe eine Statusleiste, in dem Informationen zu
+der gerade markierten Komponente stehen.
+
+Im zu Beginn des Kapitels gezeigten Bild ist gerade eine Definition
+markiert. In der Statusleiste steht daher das \href{\#label}{Label} dieser
+Definition ''Def. 2'' und der Pfad des zugewiesenen Dokumentes, hier abgekürzt
+mit ''../g_def_streichungsmatrix.meta.xml''. Siehe dazu Kapitel
+\href{\#dokumenteZuweisen}{Dokumente zuweisen}. Der ganze Pfad des zugewiesenen
+Dokumentes erscheint als Tooltip über der Statuszeile.
+
+Wäre eine Kante markiert, so stünde dort die Art der Kante, also ''Kante rot'',
+''Kante schwarz'' oder ''rote Kante im Netzwerk''. Bei einer Branchkomponente
+steht in der Statusleiste ob es sich um einen ''or'' oder einen ''and'' Knoten
+handelt.
+
+\subsubsection{Toolbar}
+\image{howtopics/tool.png}
+Der Toolbar enthält auf der linken Seite Buttons für Funktionen mit denen ein
+Graph zu bearbeiten ist, auf der rechten Seite befinden sich Button für die
+allgemeine Programmbenutzung:
+\begin{table}
+  \head
+    Icon & Beschreibung & weiterführende Erklärung
+  \body
+   \image{howtopics/tool_only_connect.png} & Komponenten verbinden &
+     \href{\#verbinden}{Verbinden von Komponenten}\\
+   \image{howtopics/tool_only_red.png} & Kante auf Roten Faden &
+     \href{\#roterFaden}{der Rote Faden}\\
+   \image{howtopics/tool_only_exists.png} & Kante ins/aus Netzwerk nehmen &
+     \href{\#kantenSwitch}{Kanten im Netzwerk und auf dem Roten Faden}\\
+   \image{howtopics/tool_only_delete.png} & Markierte Komponenten löschen &
+     \href{\#loeschenVonKomponenten}{Löschen von Komponenten}\\
+   \image{howtopics/tool_only_zoomIn.png} & Hineinzoomen & \href{\#zoomen}{Zoomen}\\
+   \image{howtopics/tool_only_zoomOut.png} & Herauszoomen & \href{\#zoomen}{Zoomen}\\
+   \image{howtopics/tool_only_dir.png} & Kantenrichtung umkehren &
+     \href{\#kantenRichtungAendern}{Ändern der Richtung einer Kante}\\
+   \image{howtopics/tool_only_change.png} & Vertauschen zweier Komponenten &
+     \href{\#vertauschen}{Vertauschen von Komponenten}\\
+   \image{howtopics/tool_only_new.png} & neuen Graph erstellen &
+   \href{\#neuerGraph}{neuer Graph}\\
+   \image{howtopics/tool_only_open.png} & Graph öffnen & \href{\#laden}{Laden} \\
+   \image{howtopics/tool_only_save.png} & Graph speichern & \href{\#speichern}{Speichern}\\
+   \image{howtopics/tool_only_undo.png} & letzten Schritt rückgängig machen &
+   \href{\#undo}{Undo}\\
+   \image{howtopics/tool_only_close.png} & Graph schließen &
+   \href{\#closeGraph}{Graph schließen}
+\end{table}
+Je nach gerade markierter Komponente sind die Button an- oder ausgeschaltet. 
+
+\subsubsection{Menüleiste}
+\image{howtopics/menu.png}
+Die Menüleiste beinhaltet Funktionen, die den ganzen Graphen betreffen.
+
+\image{howtopics/menu_datei.png}
+
+In diesem Menüpunkt finden sich Funktionen des CourseCreator zur Dateiverwaltung,
+das Laden und Speichern, Neu Erstellen sowie Schließen von Graphen und das Beenden
+des Programmes.
+\begin{itemize}
+\item \emph{Neu}: Erzeugt einen neuen leeren Graph. siehe
+  \href{\#neuerGraph}{Neuer Graph}
+\item \emph{Laden}: Öffnet ein Dateiauswahlfenster, mit dem man eine Datei
+  aus dem lokalen Dateisystem laden kann.
+\item \emph{Speichern}: Speichert den aktuellen Graphen im lokalen
+  Dateisystem. Falls der Graph bisher nicht gespeichert wurde, wird ein
+  Dateiauswahlfenster geöffnet.
+\item \emph{Speichern (als neues Dokument)}: Speichert den aktuellen Graphen im
+  lokalen Dateisystem unter einem neuen Namen, der mittels eines
+  Dateiauswahlfenster gewählt werden kann.
+\item \emph{Graph schließen}: Schließt den aktuell angezeigten Graphen und
+  fragt gegebenenfalls, ob dieser Graph vorher gespeichert werden soll.
+\item \emph{Beenden}: Beendet den CourseCreator.
+\end{itemize}
+
+\image{howtopics/menu_bearbeiten.png}
+
+Das Bearbeiten Menü enthält Funktionalitäten um den Roten Faden und das
+Netzwerk zu testen. So kann der komplette Rote Faden des Graphen gelöscht
+werden, oder die Korrektheit des Roten Faden geprüft werden.
+
+Das Untermenü zum Prüfen des Graphen enthält Funktionalitäten, um die
+Korrektheit des Netzwerks zu prüfen. So werden Quellen und Senken des
+Netzwerkes angezeigt und es kann auf (gerichtete) Kreise überprüft werden. Dies
+dient ein wenig dazu, die logische Korrektheit eines Netzwerkes zu prüfen.
+
+\image{howtopics/menu_ansicht.png}
+
+\label{ansicht}
+
+Unter dem Ansichtmenüpunkt kann das
+\href{\#elementzuweisungsfenster}{Elementzuweisungsfenster} geöffnet werden, um
+den Inhalt des Japs zu sehen. 
+\label{gitter}
+Es können die Richtungspfeile an den Kanten sichtbar geschaltet werden; die
+Schrittweite für zu verschiebende Komponenten, der Gitterpunktabstand und die
+Sichtbarkeit des Gitters selbst gesetzt werden. 
+Bei der Einstellung des Gitterrasters ist zu beachten, dass dies nicht zu dicht
+sein sollte, da sonst die Verarbeitungsgeschwindigkeit des Programms deutlich
+abnimmt. Jedoch wurde das Gitter nicht nach unten eingeschränkt, um beliebig
+die Komponenten verschieben zu können. \emph{Bei einen geringen Raster sollte
+  jedoch auf das Anzeigen des Gitters verzichtet werden.}
+
+\image{howtopics/menu_einstellungen.png}
+
+Unter diesem Menüpunkt finden sich allgemeine Einstellungen, wie der verwendete
+Server, der während der CourseCreator-Laufzeit geändert werden kann. Siehe
+hierzu auch \href{\#serverLogin}{ServerLogin}.
+
+Des weiteren können über dieses Menü Fenster geöffnet werden, in denen
+\href{\#konfiguration}{Debugeinstellungen} (nur für Entwickler) und die
+\href{\#tastenkonfiguration}{Shortcuts} verändert werden können.
+
+Außerdem kann gibt es das Untermenü ''Zertifikat ändern''. Da wird der Pfad für
+das Zertifikat für HTTPS-Server festgelegt. Siehe auch hierzu Kapitel
+\href{\#zertifikat}{Zertifikat}
+
+
+\image{howtopics/menu_fenster.png}
+
+In diesem Menüpunkt befinden sich die geöffneten Graphen in der Reihenfolge, in
+der sie zuletzt geöffnet wurden. Angegeben ist dabei der Graphtyp, der Name des
+Graphen, wie er im Metainformationsfenster steht und der Dateiname unter dem
+der Graph zuletzt gespeichert wurde. Ist der Graph noch nicht gespeichert
+worden, so steht ''kein Dateiname'' stattdessen dort. Ist hinter dem Dateinamen
+ein * angegeben, so bedeutet dies, dass der Graph ungespeicherte Informationen
+enthält.
+
+\image{howtopics/menu_help.png}
+
+der Unterpunkt Hilfe öffnet ein Firefox-Fenster mit dieser Hilfe, der
+Unterpunkt About zeigt ein Dialog mit der aktuellen Version und den Veraerungen
+zur vorherigen Version. Das Anzeigen der Hilfe kann etwas länger dauern, wenn
+die Hilfe bisher nicht übersetzt wurde.
+
+\subsubsection{Komponentenleiste}
+Mittels der Komponentenleiste wird die zu erstellende Graphtyp gewählt.
+Anschließend können Kursabschnitte, Trainingsblätter, Elemente, Subelemente,
+Aufgaben und Branchkomponenten als Knoten in den Graphen eingefügt werden.
+
+Dabei können die Komponenten nur in Abhängigkeit vom gewahlten Graphtyp
+eingefügt werden. Genaueres dazu ist in dem Abschnitt \href{\#neuerGraph}{neuer
+  Graph} zu finden.
+
+
+\subsubsection{Das Metainformationsfenster}
+Informationen eines Graphen sind die Metainformationen, die in das
+Metainformationsfenster geschrieben werden. Jeder Graph besitze einen Namen,
+eine Beschreibung und einen Status. Ein Kurs hat dazu noch einen zugehörige
+Lehrveranstaltung und ein Aufgabenblatt hat ein Feld für ein Ausgabe-, bzw
+Abgabedatum. 
+Desweiteren sind das Label und die Punkte einer markierten Komponente hier zu
+bearbeiten.
+Die Bearbeitung dieses Fensters ist im Kapitel
+\href{\#informationenZumGraphen}{Informationen zum Graphen} beschrieben.
+
+\label{elementzuweisungsfenster}\subsection{Das Elementzuweisungsfenster}
+Das Elementzuweisungsfenster ist ein eigenständiges Fenster und dient dazu
+einer ausgewählten Dokumentkomponente oder Subdokumentkomponente einen Inhalt
+aus dem Japs zuzuweisen. Hier werden die mathematischen Elemente aus dem Japs
+dargestellt.
+
+Wie man mit diesem Fenster Dokumente zuweist, ist im Kapitel
+\href{\#dokumenteZuweisen}{Dokumente zuweisen} beschrieben.
+
+\label{begrifflichkeiten}\section{Begrifflichkeiten}
+Ein Graph besteht aus Komponenten (Knoten) und Kanten zwischen bestimmten
+Komponenten.
+
+\begin{enumerate}
+\item Es gibt drei Arten von Graphen:
+
+\begin{description}
+\item[Kurse (Courses)]Kurse sind einer Lehrveranstaltung zugeordnet und
+  bestehen als  Mainkomponenten aus einzelnen Kursabschnitten (Coursesections)
+  und die Subkomponenten sind Worksheets.
+\item[Kursabschnitte (Coursesections)]durch Kursabschnitte wird der
+  Inhalt eines Vorlesungszykluses z.B. in einzelne Vorlesungen/Themen
+  unterteilt. Ein Kursabschnitt besteht aus verschiedenen Mainkomponenten,
+  z.B. Definitionen, Theoremen, Motivationen u.ä. Zu den einzelnen
+  Mainkomponenten gehören dann Subkomponenten zum Beispiel Bemerkungen,
+  Beweise, Visualisierungen.
+\item[Trainingsblätter (Worksheets)]Worksheets sind die Übungsaufgaben zu den einzelnen
+  Kursabschnitten und bestehen aus Applets oder MultipleChoice Aufgaben. Die
+  Mainkomponenten eines Worksheets haben keine Subkomponenten.
+\end{description}
+ 
+\item Es gibt drei verschiedene Arten von Komponenten \href{\#bem}{*}:
+\begin{description}
+\item [Mainkomponente]dies sind Komponenten vom Typ Kursabschnitt
+  \image{howtopics/graph_mainkomponentKursabschnitt.png}, vom Typ Element zum
+  Beispiel folgende \image{howtopics/graph_mainkomponentElement.png}
+  oder vom Typ Aufgabe \image{howtopics/graph_mainkomponentAufgabe.png}. Je
+  nach Graphtyp kann nur jeweils genau einer dieser Komponententypen auftauchen.
+\item [Subkomponente]diese Komponenten sind immer von einer Mainkomponente
+  abhängig, d.h., sie können nicht ohne eine Mainkomponente im Graphen
+  auftauchen.
+  Subkomponenten sind entweder vom Typ Worksheet
+  \image{howtopics/graph_subkomponentTrainingsblatt.png} und gehören somit in
+  einen Graphen vom Typ Kurs, oder sie gehören in einen Kursabschnitt
+  \image{howtopics/graph_subkomponentSubelement.png} und sind dann vom Typ
+  Bemerkung, Beweis, Visualisierung oder ähnlich.
+\item [Branchkomponente]\image{howtopics/graph_branchkomponent.png} diese sind
+  vom Typ "und" oder "oder" und sollen logische Beziehungen zwischen einzelnen
+  Mainkomponenten darstellen. Dabei wird die Logik des Graphen nicht geprüft,
+  sondern es wird dem Benutzer überlassen, beliebige sinnvolle Graphen zu
+  erstellen.
+\end{description}
+\label{bem}* Bemerkung: den oben abgebildeten Komponenten ist schon ein Inhalt
+aus der Datenbank zugewiesen, daher sind sie bunt. Komponenten, denen noch kein
+Inhalt zugewiesen wurde, sind grau.
+
+\item Des weiteren wird nach der Verwendung der Komponente in Netzwerk
+unterschieden:
+\begin{description}
+\item [Graphkomponenten]sind entweder vom Typ Mainkomponente oder vom Typ
+  Branchkomponente. NUR zwischen den Graphkomponenten können Kanten gezogen
+  werden.
+\item  [Dokumentkomponenten]sind vom Typ Mainkomponente oder
+Subkomponente. Einer Dokumentkomponente können Dokumente aus der Datenbank
+zugewiesen werden.
+\end{description}
+\end{enumerate}
+\image{howtopics/cells.png}
+
+\label{handhabung}\section{Handhabung}
+\label{markieren}\subsection{Markieren vom Komponenten und Kanten}
+Komponenten und Kanten können markiert werden und sind dann
+"ausgewählt". Das Auswählen einer Komponente oder Kante erfolgt durch
+Linksklicken oder Rechtsklicken mit der Maus auf diese Komponente bzw. Kante.
+
+Um mehrere Komponenten und Kanten auszuwählen, kann mit der gedrückten linken
+Maustaste ein "Rechteck" um einen Bereich gezogen werden. Es werden dann alle
+Komponenten und Kanten ausgewählt, die sich in diesem Bereich befinden. Alternativ
+dazu kann auch die Shift-Taste gedrückt sein, während alle gewünschten
+Komponente und Kante einzeln angeklickt werden, oder ein "Rechteck" um sie gezogen
+wird.
+
+Um eine Komponente oder Kante aus der Auswahl herauszunehmen, muss die
+Ctrl-Taste gedrückt werden und währenddessen die gewünschte Komponente oder
+Kante angeklickt werden.
+
+\label{kontextmenu}%\subsection{Kontextmenü}
+Beim Klicken mit der rechten Maustaste im Graphframe erscheint das Kontextmenü,
+welches abhängig von dem Typ der markierten Komponenten ist.
+
+Beim Aufruf des Kontextmenüs wird unterschieden, ob sich dabei eine
+Komponente bzw. Kante "unter" dem Mauszeiger befindet, oder ob der Bereich
+darunter leer ist. Da die rechte Maustaste ebenso zum Markieren verwendet wird,
+bezieht sich im ersten Fall das Kontextmenü nur auf die markiere eine
+Komponente bzw. Kante, im letzten Fall auf alle markierten Komponenten
+bzw. Kanten.
+
+Soll das Kontextmenü für mehrere Komponenten und Kanten aufgerufen werden, so muss
+an eine freie Stelle geklickt werden.
+
+Im Folgenden sind die Einträge der Kontextmenüs tabellarisch in Abhängigkeit
+zum Typ der markierten Komponenten aufgeführt.
+
+\emph{Mainkomponenten}
+\begin{table}
+  \head
+  Text &  Weiterführende Informationen
+  \body
+"Löschen" &  \href{\#loeschenVonKomponenten}{Löschen von Komponenten}\\
+"Schwarze Kante ziehen" & \href{\#verbinden}{Verbinden}\\
+"rote Kante ziehen"  & \href{\#roterFaden}{Roter Faden}\\
+"Label setzen" & \href{\#label}{Label}\\
+"Punkte vergeben" & \href{\#punkte}{Punkte vergeben} \href{\#bem2}{**}
+\end{table}
+\label{bem2}der Unterpunkt "Punkte vergeben" erscheint nur, falls der
+bearbeitete Graph ein Worksheet ist.
+
+\emph{Branchkomponenten}
+\begin{table}
+  \head
+  Text &  Weiterführende Informationen
+  \body
+"Löschen" &  \href{\#loeschenVonKomponenten}{Löschen von Komponenten}\\
+"Schwarze Kante ziehen" & \href{\#verbinden}{Verbinden}
+\end{table}
+
+\emph{Subkomponente}
+\begin{table}
+  \head
+  Text &  Weiterführende Informationen
+  \body
+"Löschen" &  \href{\#loeschenVonKomponenten}{Löschen von Komponenten}\\
+"Move In" & \href{\#einfuegenVonSubkomponenten}{Subkomponenten}\\
+"Move Out" & \href{\#einfuegenVonSubkomponenten}{Subkomponenten}\\
+"Label setzen" & \href{\#label}{Label}
+\end{table}
+
+\emph{Kanten}
+\begin{table}
+  \head
+  Text &  Weiterführende Informationen
+  \body
+"Löschen" &  \href{\#loeschenVonKomponenten}{Löschen von Komponenten}\\
+ "rote Kante setzen" bzw. "rote Kante entfernen" &\href{\#kantenSwitch}{Kanten im
+  Netzwerk und auf dem Roten Faden}\\
+"Kante in Netzwerk nehmen" oder "aus Netzwerk entfernen" &
+\href{\#kantenSwitch}{Kanten im Netzwerk und auf dem Roten Faden}\\
+''Richtung ändern" & \href{\#kantenRichtungAendern}{Ändern der
+    Richtung einer Kante}
+\end{table}
+
+Die vorherigen Tabellen beschrieben das Kontextmenü, wenn nur eine Komponente
+markiert ist. Sind beliebige Komponenten und/oder Kanten ausgewählt, so enthält
+das Kontextmenü nur den Punkt "Löschen" siehe
+\href{\#loeschenVonKomponenten}{Löschen von Komponenten}.
+
+Sind Komponente ausgewählt, die einen Roten Faden erzeugen können, so erscheint
+dazu auch der Menüpunkt "Roten Faden erzeugen". Bitte hierzu UNBEDINGT das
+Kapitel \href{\#generischerRoterFaden}{generischer Roter Faden} beachten!
+
+Wenn genau zwei Komponenten vom Typ Graphkomponente ausgewählt sind, dann
+enthält das Kontextmenü neben dem Punkt "Löschen" siehe
+\href{\#loeschenVonKomponenten}{Löschen von Komponenten} noch den Punkt
+"Verbinden" siehe \href{\#verbinden}{Verbinden}.
+
+\label{tastenkonfiguration}\subsection{Konfiguration der Tasten}
+
+\input{tut_benutzungTastenkonfiguration.tex}
+
+\input{howto_benutzungTastenkonfiguration.tex}
+
+\input{test_benutzungTastenkonfiguration.tex}
+
+\label{zoomen}\subsection{Zoomen}
+Man kann aus einem Graphen heraus- bzw. hineinzoomen. Das Zoomen geschieht
+\begin{itemize}
+\item mit den Tasten, die in der Tastenkonfiguration eingetragen wurden.
+\item mit den Buttons zoomIn \image{howtopics/tool_zoomIn.png} bzw zoomOut
+ \image{howtopics/tool_zoomOut.png} aus der Toolbar.
+\end{itemize}
+Es gibt 10 Zoomstufen und das Zoomen geht nur dann, wenn nicht die jeweilige
+Maximalstufe erreicht ist.\\
+Befindet sich der Graph nicht in der Normalansicht (also ungezoomt), so ist
+trotzdem das Einfügen von Komponenten, Ziehen von Kanten und so weiter möglich.
+
+\label{undo}\subsection{undo}
+\input{tut_undo.tex}
+
+\input{howto_undo.tex}
+
+\input{test_undo.tex}
+
+\label{source}\subsection{Anzeigen des Quellcodes}
+Es ist möglich sich jeweils den xml-Code des gerade erstellten Kurses anzeigen
+zu lassen. Dafür muss der "Show"-Button neben dem Dateinamen gedrückt
+werden. Ist der Graph bereits gespeichert, so kann auch der gespeicherte Kurs
+angezeigt werden. Ist der Kurs nach dem Speichern nochmal verändert worden, so
+wird gefargt, welche Version (die gespeicherte, oder die veränderte) angezeigt
+werden soll.
+
+Es sit auch möglich sich den Quellcode gleich nach dem Speichern
+anzusehen. Dazu gibt es einen Button, der auf der Speichernmeldung erscheint.
+ \image{howtopics/dialog_saveSuccess.png}
+
+\emph{Der Quellcode wird mit dem System Editor Ausgegeben. Dies sollte kein
+  Shelleditor sein.}
+
+\label{closeGraph}\subsection{Graphen schließen}
+Ein einzelner Graph kann geschlossen werden, indem der Button
+\image{howtopics/tool_close.png} angeklickt wird. ist der Graph noch nicht
+gespeichert, so erfolgt eine Abfrage.
+
+\label{erstellenEinesNetzes}\section{Erstellen eines Netzes (Tutorial)}
+Im folgenden soll ein Graph bestehend aus Knoten (Mainkomponenten oder
+Branchkomponenten) und Kanten, die die Mainkomponenten und Branchkomponenten
+verbinden, erzeugt werden. Die Kanten verdeutlichen die logischen Abhängigkeiten
+der Knoten voneinander. Zu diesem Graphen gehören auch die Subkomponenten, von
+denen eine Mainkomponente beliebig viele haben kann. Außerdem gehört zu einem
+Graphen der Roten Faden, der eine lineare Struktur in den Graphen bringt. 
+
+Wir werden mit dem Erstellen eines leeren Graphen beginnen, dann
+Mainkomponenten einfügen, diese verschieben und dann Subkomponenten
+hinzufügen. Anschließend werden wir Kanten erzeugen und diese manipulieren,
+sowie Komponenten und Kanten löschen und uns schließlich mit dem Roten Faden
+beschäftigen. Abschließend werden dann Dokumente zugewiesen, die
+Metainformationen des Graphen beschrieben und Labels und Punkte gesetzt.
+
+Jeder der folgenden Absätze beschreibt zuerst wie der Graph verändert werden
+soll, hat anschließend ein zusammenfassendes ''Howto'', welches nochmal
+beschreibt, wie die Veränderung durchzuführen ist und schließt mit einem
+Tutorialabschnitt ab, mit dem das vorher Beschriebene ausprobiert werden kann
+und in einem ''Test''-Abschnitt ist aufgeführt, auf welche möglichen Fehler zu
+achten ist.
+
+\label{neuerGraph}\subsection{Erstellen eines neuen Graphen}
+Wie im Kapitel \href{\#installationUndStarten}{Installation und Starten des
+  CourseCreators} beschrieben, ist der CourseCreator zuerst zu installieren und
+zu starten (mmcc in der Komandozeile).
+
+Die Wahl eines Servers ist noch nicht nötig, aber auch nicht hinderlich.
+
+Es ist auch möglich, dem CourseCreator gleich ein zu startendes Dokument
+anzugeben. Dies geschied durch die Eingabe von ''mmcc file'', wobei file
+die Meta-Datei des Dokumentes ist, also zum Beispiel ''foo.meta.xml'', oder nur der
+Dateiname ohne Extension, in diesem Fall also ''foo''.
+
+Starten Sie bitte zuerst ohne eine Datei anzugeben.
+
+\image{howtopics/sheme_new.png}
+Es erscheint das CourseCreatorfenster mit einem leeren Graphframe. Auf der
+linken Seite sind die Buttons "neuer NavGraph" und "neuer FlatGraph" zu
+sehen\href{\#bem3}{***} . Wird der Button "neuer NavGraph" geklickt, ändert
+sich die Komponentenleiste zu den Buttons "neuer Kurs", neuer Kursabschnitt"
+und neues Worksheet". Diese führen zu den entsprechenden Grapharten.
+
+Ebenso ist es möglich, im Menü Datei--> neuer NavGraph zu drücken. Es kann auch
+der Button \image{howtopics/tool_new.png} aus der Toolbar gewählt werden. Dann
+erscheint ein Fenster, welches nach der Art des zu erstellenden Graphen
+fragt\href{\#bem3}{***}. Wählen Sie hier bitte "NavGraph" und es erscheinen die
+drei Buttons "Neuer Kurs", "Neuer Kursabschnitt", "neues Worksheet".
+
+Das Klicken der Buttons "Neuer Kurs", "Neuer Kursabschnitt" und "neues
+Worksheet" führt zu den entsprechenden Graphen.
+
+\label{bem3}*** zukünftig soll es möglich sein, neben dem Wissensnetzwerk
+(NavGraph) weitere Strukturen darzustellen; dies ist ein kleiner Vorgeschmack
+darauf.
+
+\input{howto_neuerGraph.tex}
+
+\input{test_neuerGraph.tex}
+
+\label{einfuegenVonKomponenten}\subsection{Einfügen von Komponenten}
+Im folgenden werden Komponenten eingefügt.
+
+Auf der linken Seite des Fensters befinden sich nach Wahl der Kursart Buttons,
+die die Komponenten repräsentieren. Durch Klicken mit der linken Maustaste auf
+das Symbol einer Komponente wird die gewünschte Komponente eingefügt.
+
+Als erste Komponente können nur Mainkomponenten und Branchkomponenten eingefügt
+werden. Subkomponenten können noch nicht eingefügt werden, da diese ja immer eine
+zugehörige Mainkomponente benötigen, welche noch nicht existiert.
+
+Je nach Graphtyp können nur bestimmte Komponenten eingefügt werden, die zu
+diesem Graphtyp passen (auch nur diese werden in der Komponentenleiste
+angezeigt). Branchkomponenten können in jeden Graphen eingefügt werden.
+
+Neu eingefügte Komponenten werden in die obere linke Ecke gesetzt und sind
+grau, da ihnen noch keine Dokumente zugewiesen wurden.
+
+\input{howto_einfuegenVonKomponenten.tex}
+
+\input{tut_einfuegenVonKomponenten.tex}
+
+\input{test_einfuegenVonKomponenten.tex}
+
+\label{verschiebenVonKomponenten}\subsection{Verschieben von Komponenten}
+Die eben eingefügten Komponenten liegen nun alle oben links übereinander.
+(Man muss natürlich nicht vor dem Verschieben von Komponenten alle geplanten
+Komponenten vorgeben, weitere Komponenten können zu jedem beliebigen Zeitpunkt
+hinzugefügt werden).
+
+Wie im Kapitel \href{\#markieren}{Markieren von Komponenten und Kanten}
+beschrieben, können einzelne Komponenten markiert oder zu der Auswahl
+hinzugefügt werden, bzw. aus ihr entfernt werden, wenn während des Markierens
+die Ctrl-Taste gedrückt wird.
+
+Das Verschieben einzelner oder mehrerer markierter Komponenten ist mit der Maus
+und der Tastatur möglich. Der Graph ist nicht beschränkt, so sind Komponenten
+beliebig verschiebbar, auch in ''negative'' Richtung, also oben links, da der
+Nullpunkt des Graphen oben links ist. Der CourseCreator verschiebt die
+restlichen Komponenten dann automatisch, so dass keine Komponente eine negative
+Koordinate hat. Dies ist notwendig, da im Browser später keine Komponenten mit
+negativen Koordinaten anzeigbar wären.
+
+Eine Komponente kann verschoben werden, indem sie ausgewählt wird und mittels
+der Tasten, die dafür in der Tastenkonfiguration eingetragen wurden, nach oben,
+unten, links und rechts um jeweils eine bestimmte Anzahl Pixel verschoben
+wird. Diese Rasterung ist durch den Punkt "MoveStep" im Menü Ansicht
+einstellbar.
+
+Mit der Maus wird eine Komponente verschoben indem sie mit der linken Maustaste
+per drag'n'drop an eine beliebige Stelle gezogen wird.
+
+\input{howto_verschiebenVonKomponenten.tex}
+
+\input{tut_verschiebenVonKomponenten.tex}
+
+\input{test_verschiebenVonKomponenten.tex}
+
+\label{einfuegenVonSubkomponenten}\subsection{Einfügen von Subkomponenten}
+Mainkomponenten können beliebig viele Subkomponenten besitzen. Subkomponenten
+sind an ihre Mainkomponente gebunden, d.h. sie sind in ihrer Position von der
+Mainkomponente abhängig und existieren nicht ohne diese Mainkomponente.
+
+Subkomponenten werden eingefügt indem eine Mainkomponente ausgewählt wird und
+dann die Subkomponente der gewünschten Kategorie aus der Komponentenleiste links
+angeklickt wird. Abhängig von der Kategorie wird die eingefügte Subkomponente an
+eine der vier Ecken der Mainkomponente außen angehangen.
+
+\label{moveIn}\label{moveOut}Mittels der Menüpunkte "Move in" bzw. "Move out"
+im Kontextmenü bzw. der Tasten, die dafür in der Tastenkonfiguration
+eingetragen wurden, ist es möglich, die Komponente weiter nach innen, bzw. nach
+außen zu tauschen.
+
+\input{howto_einfuegenVonSubkomponenten.tex}
+
+\input{tut_einfuegenVonSubkomponenten.tex}
+
+\input{test_einfuegenVonSubkomponenten.tex}
+
+\label{verbinden}\subsection{Verbinden von Komponenten}
+Kanten zwischen zwei Komponenten sind immer orthogonal und beginnen und enden
+immer mit einem (gegebenenfalls sehr kurzen) senkrechten Stück.
+
+Mainkomponenten und Branchkomponenten werden durch Kanten verbunden. Pfeile an
+den Kanten machen die logischen Abhängigkeiten der Komponenten voneinander
+deutlich. Die Kantenrichtungen können geändert werden. 
+
+Es können Kanten "automatisch" oder "von Hand" erzeut werden. Der Unterschied
+dieser beiden Methoden liegt darin, dass bei der ''von Hand'' Methode die
+Eckpunkte vom Benutzer festgelegt werden und der Benutzer beliebig lange und
+komplizierte Kanten erstellen kann. Bei der automatischen Methode wird der
+kürzeste Weg zwischen den beiden Knoten gewählt und die waagerechte Kante in
+die horizontale Mitte gelegt.
+
+\subsubsection{Automatisches Verbinden von Komponenten}
+Bei der automatischen Methode werden nur zwei Eckpunkte erzeugt, die sich in
+der horizontalen Mitte der beiden Komponente befindet.
+
+Beim automatischen Verbinden zweier Kanten gibt es zum einen die Möglichkeit,
+die Kantenrichtung festzulegen, indem man zwei Knoten nacheinander
+markiert. Dann wird der zuerst markierte Knoten der Startknoten; der als
+zweites markierte Knoten wird der Endknoten. Das nacheinander Markieren von
+Knoten kann zum Einen durch Anklicken des ersten Knotens, Halten der
+Shift-Taste und dann Anklicken des zweiten Knotens geschehen, oder zum Anderen
+wenn der erste Knoten schon markiert ist, durch das Ziehen eines Rechtecks um
+die beiden zu verbindenden Knoten.
+
+Außerdem gibt es die Möglichkeit, Start- und Endknoten der gerichteten Kante
+durch die Position der beiden Knoten festlegen zu lassen. Dann wird der Knoten
+Startknoten, der weiter oben ist, bzw. sind beide Knoten gleich weit oben, der,
+der weiter links ist.
+
+Um diese Methode anzuwenden, müssen beide Knoten gleichzeitig markiert
+werden. Dies geschieht, indem um beide Knoten mit der Maus ein Rechteck gezogen
+wird. 
+
+\emph{Vorsicht: ist vor dem Ziehen schon einer der beiden Knoten markiert, wird
+der markierte Knoten Startknoten, da er dann als zuerst markiert gilt und im
+ersten Fall betrachtet wird.}
+
+\input{howto_automatischesVerbindenVonKomponenten.tex}
+
+\input{tut_automatischesVerbindenVonKomponenten.tex}
+
+\input{test_automatischesVerbindenVonKomponenten.tex}
+
+\label{verbindenVonKomponentenVonHand}\subsubsection{Verbinden von Komponenten
+  von Hand} 
+Beliebige Kanten können mit der Maus gezogen werden. Beliebig heißt dabei,
+dass die Kante immer noch orthogonal sein muss. Da sich horizontale und vertikale
+Kantenstücken abwechseln, werden also abwechselnd nur die vertikale und die
+horizontale Position der Kante festgelegt. Genauer heißt dies folgendes:
+die Kante beginnt immer mit einem vertikalen Stück. Das heißt, dass der erste
+Eckpunkt in seiner horizontalen Position schon festgelegt ist, er muss nämlich
+genau unter dem Mittelpunkt der Startknotens liegen. es kann also nur noch die
+Höhe des Eckpunktes festgelegt werden. Für den zweiten Kantenpunkt gilt nun,
+dass er der Endpunkt eines waagerechten Kantenstückes ist. Somit ist seine Höhe
+also festgelegt, nur die horizontale Entfernung zum vorherigen Punkt muss noch
+festgelegt werden. und so weiter. 
+
+Um so eine Kante zu erzeugen, wird das Kontextmenü einer Mainkomponent oder
+einer Branchkomponent aufgerufen und der Punkt "schwarze Kante ziehen"
+ausgewählt. Diese Komponente ist dann die Startkomponente. Mit der linken
+Maustaste kann jetzt die Kante beliebig gezogen werden. Die blauen Kantenstücke
+sind dabei schon ''fest'', das letzte Stück der Kante wird grau dargestellt und
+wird gerade bearbeitet.
+
+Mit der rechten Maustaste wird das letzte Kantenstück (außer das erste)
+entfernt. Ganz gelöscht wird die Kante durch Klicken auf die Startkomponente.
+
+Die Kante wird durch Anklicken einer anderen Komponente beendet. Dabei gibt es
+die Möglichkeit, dass das letzte Kantenstück waagerecht oder senkrecht ist.
+
+War das letzte Kantenstück senkrecht, so ''fehlt'' das letzte waagerechte und
+senkrechte Kantenstück. Diese werden von CourseCreator generiert.
+
+\image{howtopics/cc_edges_gen_senk1.png}\image{howtopics/cc_edges_gen_senk2.png}
+
+War das letzte Stück des Kantenzuges waagerecht, so wird der zuletzt eingefügt
+Punkt an den Mittelpunkt der Komponente angepasst.
+
+\image{howtopics/cc_edges_gen_waag1.png}\image{howtopics/cc_edges_gen_waag2.png}
+
+Wird von der Startkomponente gleich auf die Endkomponente geklickt, so wird die
+ganze Kante generiert, das heißt, es wird eine Kante mit zwei Eckpunkten
+erzeugt, dessen waagerechtes Teilstück genau in der Mitte der Mittelpunkte der
+Komponenten liegt.
+
+\input{howto_manuellesVerbindenVonKomponenten.tex}
+
+\input{tut_manuellesVerbindenVonKomponenten.tex}
+
+\input{test_manuellesVerbindenVonKomponenten.tex}
+
+\label{kantenRichtungAendern}\subsubsection{Ändern der Richtung einer Kante}
+Hat eine Kante nicht die gewünschte Richtung, so kann sie geändert werden.
+
+\input{howto_kantenRichtungAendern.tex}
+
+\input{tut_kantenRichtungAendern.tex}
+
+\input{test_kantenRichtungAendern.tex}
+
+\subsection{Komponenten vertauschen}
+\label{vertauschen}
+Es ist möglich, zwei Graphkomponenten miteinander zu vertauschen.
+
+\emph{Vorsicht: es ist möglich, Mainkomponenten und Branchkomponenten zu
+  tauschen, auch wenn sich die Mainkomponente auf dem Roten Faden
+  befindet. Also gegebenenfalls den Roten Faden prüfen!}
+
+\input{howto_komponentenVertauschen.tex}
+
+\input{test_komponentenVertauschen.tex}
+
+\subsection{Verändern von Kanten}
+Beim Markieren einer Kante erscheinen die Stützstellen mit der eine Kante
+verändert werden kann.
+
+Kanten können nur durch Veränderung der Position der Stützstellen, nicht aber
+in der Anzahl der Stützstellen verändert werden. Die Kanten werden durch
+Verschieben von einzelnen Stützstellen verändert. Es gibt zwei Arten von
+Stützstellen, Eckstützstellen und Kantenstützstellen, die unterschiedlichen
+Funktionen haben.
+
+Die Eckstützstellen entstehen durch das Erzeugen einer Kante. Falls die Kante
+von Hand per ''Klicken'' erzeugt wurde, sind die Eckstützstellen die, die aus
+Eckknoten eingefügt wurden. Die Kantenstützstellen werden automatisch
+erzeugt und befinden sich genau in der Mitte der Eckstützstellen. Ihre einzige
+Funktion ist die Manipulation der Kante. Das erste und letzte Kantenstück haben
+keine Kantenstützstelle, da hier eine Manipulation nicht möglich ist. Die
+Kantenstützstellen werden nicht mit in das XML-Dokument geschrieben.
+
+\begin{itemize}
+\item Eckstützstellen
+
+Wird eine Stützstelle an einer Ecke verschoben, so wird diese Position als neue
+Eckposition verwendet. Die Vorgänger- und Nachfolgereckstützstellen werden so
+angepasst, dass die gesamte Kante wieder orthogonal ist und die
+Kantenstützstellen werden neu berechnet, so dass sie wieder in der Mitte
+liegen.
+\image{howtopics/cc_edgeMoved1.png}
+
+\item Kantenstützstellen
+
+Kantenstützstellen sitzen in der Mitte eines Kantenstückes und dienen dazu,
+einzelne gerade Kantenstücke orthogonal zu verschieben. Dafür werden die
+x-Werte (für senkrechte) bzw. y-Werte (für waagerechte Kanten) der
+Vorgänger/Nachfolgerstützstellen auf den x- bzw. y-Wert der verschobenen
+Kantenstützstelle gesetzt und die Kantenstützstelle wird neu berechnet, so dass
+sie genau in der Mitte des Kantenstückes ist.
+
+\image{howtopics/cc_edgeMoved2.png}       
+\end{itemize}
+
+\input{tut_kantenAendern.tex}
+
+\input{test_kantenAendern.tex}
+
+Es können auch ganze Kanten verschoben werden, indem sie markiert werden,
+zwischen zwei Stützstellen angefasst und dann wie Komponenten verschoben werden
+siehe \href{\#verschiebenVonKomponenten}{Verschieben von Komponenten}. Dabei
+ist zu beachten, dass die Kante beim Verschieben in der Horizontalen immer noch
+orthogonal sein muss, dh. das erste und letzte horizontale Segment wird
+angepasst, indem der Mittelpunkt angepasst werden muss und das erste und letzte
+vertikale Stück wird in seiner Länge angepasst.
+
+\input{howto_kantenVerschieben.tex}
+
+\input{tut_kantenVerschieben.tex}
+
+\input{test_kantenVerschieben.tex}
+
+Sind jetzt Kanten vorhanden, so ist das Verschieben von Komponenten nochmal
+auszuprobieren. Die Kanten zu einer verschobenen Komponente verändern sich
+derart, dass das (von der zu verschiebenden Komponente aus gesehene) erste
+vertikale und das erste horizontale Segment angepasst werden. Dabei wird bei
+dem ersten horizontalen Segment gegebenenfalls der Mittelpunkt neu berechnet.
+
+In den folgenden Bildern wird die Komponente ''L'' etwas nach links unten
+verschoben. Die ersten beiden Kanten passen sich an indem sie verkürzt werden.
+
+\image{howtopics/cc_edgeMoved3_a.png} 
+\image{howtopics/cc_edgeMoved3_b.png}
+\image{howtopics/cc_edgeMoved3_c.png}
+
+\input{tut_kantenMitKomponentenVerschieben.tex}
+
+\input{test_kantenMitKomponentenVerschieben.tex}
+
+Nun ist es möglich, beliebige Teile des Graphen zu verschieben. Dabei werden nur
+die Teile verschoben, die auch markiert sind, die anderen behalten ihre
+Position. Beachte, dass beim Verschieben in den negativen Bereich der restliche
+Graph verschoben wird. Wenn nur die Kante zu einer Komponente oder nur diese
+Komponente verschoben wird, müssen die Kanten angepasst werden.
+ 
+\input{tut_teilgraphenVerschieben.tex}
+
+\input{test_teilgraphenVerschieben.tex}
+
+\label{ausrichten}\subsection{Ausrichten am Gitter}
+Wird gelegentlich der Gitterpunktabstand geändert, so passen eventuell
+Komponenten und Kanten nicht zusammen, da die Komponenten sich immer an das
+aktuelle Gitter halten. Wird die Gitterrasterung geändert, so sind Komponenten
+nicht nach einander ausrichtbar. Siehe auch \href{\#gitter}{Gitter}.
+
+Daher gibt es die Möglichkeit, markierte Komponenten am Gitter auszurichten.
+
+\input{howto_ausrichten.tex}
+
+\input{test_ausrichten.tex}
+
+\label{loeschenVonKomponenten}\subsection{Löschen von Komponenten}
+Gelöscht werden können nur Komponenten, die markiert sind. 
+
+\input{howto_loeschenVonKomponenten.tex}
+
+\input{tut_loeschenVonKomponenten.tex}
+
+\input{test_loeschenVonKomponenten.tex}
+
+
+\subsection{Überprüfen des Graphen}
+Der CourseCreator enthält rudimentäre Funktionen zum Überprüfen des Graphen auf
+Korrektheit. So ist es möglich, sich alle Quellen und alle Senken des Graphen
+anzeigen zu lassen, sowie gerichtete Kreise zu finden. 
+
+Stellen die Kanten logische Abhängigkeiten dar, so bedeutet ein gerichteter
+Kreis für die logische Folge eines Netzwerkes, dass eine Komponente diese
+Kreises von sich selbst abhängt. Allerdings kann es im Umgang mit dem
+CourseCreator passieren, dass eine Kante versehentlich falsch herum gerichtet
+ist, daher erweist sich die Funktionen als praktisch. Allerdings haben diese
+Funktionen nur überprüfenden Charakter. Es ist trotzdem möglich, einen nicht
+korrekten Graphen zu erstellen, zu speichern und zu laden.
+
+\input{howto_ueberpruefenDesGraphen.tex}
+
+\input{tut_ueberpruefenDesGraphen.tex}
+
+\input{test_ueberpruefenDesGraphen.tex}
+
+\label{roterFaden}\subsection{Der Rote Faden}
+Der Rote Faden dient dazu, eine Lineare Struktur in dem Wissensnetzwerk zu
+erzeugen um zum Beispiel eine didaktisch sinnvolle Reihenfolge der Komponenten
+zu erstellen. Im Browser ist es dann möglich mit Hilfe des Roten Faden vor und
+zurück zu navigieren, wobei das zugehörige Dokument im Hauptfenster angezeigt
+wird. Daher ist es nur möglich, roten Kanten zwischen Dokumentkomponenten zu
+erzeugen. \emph{Branchkomponenten können nicht auf den Roten Faden.}
+
+Der Rote Faden besteht aus einer Menge von gerichteten Kanten, die kreisfrei
+(im ungerichteten Sinne) und zusammenhängend sind.
+
+Das Einchecken eines nicht korrekten Roten Faden ist zwar möglich, allerdings
+benötigt der Browser den korrekten Roten Faden zum Navigieren. Es ist jedoch
+trotzdem möglich, einen beliebigen Roten Faden zu erstellen, \emph{lokal} zu
+speichern und zu laden.
+
+\label{kantenSwitch}\subsubsection{Kanten im Netzwerk und auf dem Roten Faden}
+Der Rote Faden wird vom CourseCreator ähnlich wie Kanten behandelt. Daher ist
+es möglich, Kanten des Netzwerkes auf den Roten Faden zu nehmen und vom Roten
+Faden wieder zu entfernen, sowie Kanten des Roten Faden ins Netzwerk zu
+nehmen, bzw. aus dem Netzwerk wieder zu entfernen, soweit diese Kanten nur
+zwischen Mainkomponenten verlaufen.
+
+Der CourseCreator kennt also rote, schwarze und rot-schwarze Kanten. Daher ist
+es einfach, zwischen diesen Kanten zu wechseln, falls die Kanten zwischen
+Dokumentkomponenten verlaufen.
+
+Das heißt, eine rote Kante kann erzeugt werden, indem eine bereits vorhanden
+schwarze Kante rot gefärbt wird. 
+
+\input{howto_kantenFaerben.tex}
+
+\input{tut_kantenFaerben.tex}
+
+\input{test_kantenFaerben.tex}
+
+\label{generischerRoterFaden}\subsubsection{Generischer Roter Faden}
+Wie eben gesehen, ist es nicht möglich, einen Roten Faden zu einer
+Branchkomponente zu erzeugen. Oft hat man aber das Problem, dass man den Roten
+Faden ''über eine Branchkomponente'' ziehen möchte.
+
+Dazu kann man zum einen eine rote Kante von Hand ziehen, analog zum erzeugen
+schwarzer Kanten, siehe Kapitel \href{\#verbinden}{Verbinden von
+  Komponenten}. Es ist aber auch möglich, eine rote Kante aus mehreren
+schwarzen Kanten, die einen gerichteter Weg ''Dokumentkomponente - beliebig
+viele Branchkomponenten - Dokumentkomponente'' beinhalten, generieren zu
+lassen.
+
+\input{howto_generischerRoterFaden.tex}
+
+Diese Methode ist nur möglich, wenn Kanten ausgewählt wurden, so dass dieser
+Kantenzug mit einer Mainkomponente  beginnt, beliebig viele (auch null)
+Branchkomponenten beinhaltet und wieder mit einen Mainkomponente endet. Um die
+Handhabung zu vereinfachen, ist es möglich, beliebige Teile des Graphen zu
+markieren und, falls dieser Teilgraph einen solchen Kantenzug beinhaltet, ist
+es möglich, eine roten Kante daraus zu generieren.
+
+\emph{Achtung: Es werden dabei möglicherweise rote Kanten erzeugt, die nicht
+gewünscht wurden, daher sollte danach der Rote Faden noch einmal geprüft werden.}
+
+Beispiel:
+Im folgenden Graphen soll eine rote Kante von der Motivation zur Definition
+über die Branchkomponente hinweg gezogen werden.
+
+\image{howtopics/cc_red_gen1.png} dazu werden die beiden schwarzen Kanten
+markiert \image{howtopics/cc_red_gen2.png} und wie oben beschrieben wird die
+rote Kante erzeugt. \image{howtopics/cc_red_gen3.png} Schiebt man die
+Branchkomponente und die schwarzen Kanten etwas nach oben rechts, sieht man,
+dass die rote Kante die Dokumentkomponenten verbindet.
+
+\image{howtopics/cc_red_gen4.png}
+
+\input{tut_generischerRoterFaden.tex}
+
+\input{test_generischerRoterFaden.tex}
+
+
+\subsubsection{Überprüfen des Roten Faden}
+Der Rote Faden wird als korrekt erkannt, wenn er ein gerichteter
+zusammenhängender Pfad ist. 
+
+\input{howto_pruefeRoterFaden.tex}
+
+\input{test_pruefeRoterFaden.tex}
+
+\label{dokumenteZuweisen}\subsection{Dokumente zuweisen}
+Komponenten vom Typ Dokumentkomponente können Dokumente aus der Datenbank
+zugewiesen werden. Dazu wird im Menüpunkt ''Ansicht'' mit dem Unterpunkt
+''Elementzuweisungsfenster'' das Elementzuweisungsfenster geöffnet. 
+
+Das Fenster ist zweigeteilt und zeigt im oberen Teil
+Metainformationen zu einem markierten Eintrag der im unteren Teil des Fensters
+anzeigten Baumstruktur.
+
+\image{howtopics/gui_elementzuweisungsfenster.png}
+
+Der Metainformationenteil enthält den Namen und die Beschreibung, den
+Dateinamen sowie den pure_name. Zudem gehören Typ, Kategorie, ID und Section,
+sowie Created und Modified zu dem Metainformationen eines Dokumentes. Die
+Metainformationen werden hier nur angezeigt und können höchstens in der
+Datenbank geändert werden.
+
+Unter dem Bereich der Metainformationen wird der Baum mit den Dokumenten aus
+der Datenbank angezeigt.
+
+Im unteren Teil des Fensters befindet sich eine Buttonleiste. Hier ist ein
+Set-Button, mit dem ein Dokument aus der Datenbank einer markierten
+Dokumentkomponente aus den Graphframe zugewiesen werden kann. Wird der
+Preview-Button gedrückt, öffnet sich ein Browserfenster und zeigt das markierte
+Dokument an. Mit dem Metainfo-Button wird ebenfalls ein Browserfenster
+geöffnet, in dem Die Metainformationen des Dokumentes stehen (die selben, wie
+die in oberen Fensterteil.)
+
+Die Funktionen "Set", "Preview", und "MetaInfo" sind auch durch das Kontextmenü
+eines markierten Dokumentes erreichbar.
+
+Mit den Checkboxes "show Non-generic" und "Show Generic" können die Generischen
+bzw nicht-generischen Dokumente abgezeigt bzw weggelassen werden. Verzeichnisse
+werden immer angezeigt. Sinnvoll ist das weglassen der nichtgenerischen
+Dokumente, da diese den Baum im Allgemeinen unübersichtlich machen und nicht
+zugewiesen werden können.
+
+Ist nun im Graphen eine Komponente markiert, so kann dieser Komponente ein
+Dokument der Datenbank zugeordnet werden. Dabei können nur ''erlaubte''
+Dokumente zugewiesen werden, das heißt, einer Subkomponente können nur
+Dokumente einer Kategorie für den Typ Subkomponente zugewiesen
+werden. Außerdem können nur generische Dokumente zugewiesen werden. Diese
+generischen Dokumente erkennt man zum Einen am Namen, zum Anderen sind
+generische Dokumente farbig, nicht-generische Dokumente grau.
+
+Bemerkung: Ein Dokument kann auch lokal gespeichert werden, wenn keine
+Dokumente zugewiesen wurden. Soll dieser Graph aber in die Datenbank
+eingecheckt werden, ist das Zuweisen eines Dokumentes unbedingt erforderlich!
+
+Bemerkung: Um einen Kurs zu bauen, müssen den einzelnen Kursabschnittskomponenten
+Kursabschnitte zugewiesen werden. Es können aber nur Dokumente aus der
+Datenbank zugewiesen werden, das heißt, die Kursabschnitte die zugewiesen
+werden sollen müssen zuerst erstellt werden, dann lokal gespeichert und dann
+eingecheckt (siehe Kapitel \href{\#einchecken}{Einchecken}) werden.
+
+\input{howto_dokumenteZuweisen.tex}
+
+\input{tut_dokumenteZuweisen.tex}
+
+\input{test_dokumenteZuweisen.tex}
+\subsubsection{Dokumente suchen}
+
+Der Suchenbutton des Elementzuweisungsfensters öffnet ein Fenster, welches es
+ermöglicht, nach bestimmten Dokumenten im Japs zu suchen.\\
+\image{howtopics/gui_search.png}
+
+der Suche-Button des Suchfensters startet die Suche. es wird jeweils die
+gesamte Datenbank durchsucht, gegebenenfalls kann die Suche also etwas
+dauern. klickt man die einzelnen Zeilen der Ausgabe an, so erhält man per
+Tooltip die MetaInformationen des Dokumentes\\
+\image{howtopics/gui_search_tooltip.png} 
+
+\label{informationenZumGraphen}\subsection{Informationen zum Graphen}
+
+\image{howtopics/gui_metainfofield.png}
+Das Metainformationsfeld dient zum Bearbeiten der Metainformationen eines
+Graphen. Hier kann der Name und die Beschreibung des Graphen festgelegt werden.
+
+Der Name wird später im CourseCreator wieder auftauchen, wenn das Dokument
+eingecheckt wurde und im Elementzuweisungsfenster angezeigt wird.
+
+Im zweiten Kasten steht der Pfad zur Summary und der Name der Datei, unter dem
+das Dokument gespeichert ist. Der Pfad zur Summary wird, falls er zu lang ist,
+gekürzt. Ein gekürzter Pfad ist an dem Prefix \code{../} zu erkennen. Der ganze
+Pfad, sowie das Verzeichnis in dem die Datei gespeichtert ist, erscheinen als
+Tooltip über dem Pfad.
+
+Außerdem wird im Metainformationsfenster der Status des Dokuments angegeben.
+
+\image{howtopics/gui_metainfofieldKurs.png}
+
+\label{classChooser}
+Für einen Kursabschnitt wird hier die zugehörige Lehrveranstaltung
+angezeigt als Tooltexttip erscheint über dem Namen der Lehrveranstaltung der
+Pfad in der Datenbank. Mit dem ChangeButton kann eine andere Lehrveranstaltung
+zugewiesen werden.
+
+\image{howtopics/dialog_classChooser.png}
+
+Dann öffnet sich ein Fenster, in dem alle Lehrveranstaltungen auf dem Server
+auf dem man gerade eingeloggt ist, aufgelistet sind. Mit dem Zuweisen-Button
+wird die ausgewählte Lehrveranstaltung zugewiesen und das Fenster schließt
+sich. Der Cancel-Button schließt nur das Fenster und ändert die
+Lehrveranstaltung nicht.
+
+Die Lehrveranstaltungen werden direkt vom Server gelesen. Daraus folgt, dass 
+die Lehrveranstaltung nicht im OfflineModus verändert werden kann. In diesem
+Fall bleibt der Change-Button des Metainformationsfensters ausgegraut.
+
+Ist man auf einen anderen Server eingeloggt, so ist es möglich, dass die
+gewünschte Lehrveranstaltung auf diesem Server nicht vorhanden ist. In diesem
+Fall erscheint eine Meldung:
+
+\image{howtopics/dialog_classChooserError.png}
+
+Worksheets haben noch weitere Eigenschaften:
+
+\image{howtopics/gui_metainfofieldWorksheet.png}
+
+Für ein Trainingsblatt werden die Kategorie und der Bearbeitungszeitraum im
+Metainformationsfenster festgelegt.
+
+Wird kein Name oder keine Beschreibung explizit angegeben, so wird
+die Bezeichnung "- no name -" bzw. - no description -" gespeichert. Es ist nicht
+möglich einen leeren String als Namen oder als Beschreibung anzugeben.
+
+Der Defaultwert für den Status ist "vorläufig" und wird spätestens beim
+Einfügen der ersten Mainkomponente automatisch gesetzt. Der Status kann
+natürlich vorher oder später beliebig verändert werden.
+
+Die Datumsfelder für die Aufgabenblätter können mittels Zifferneingabe oder mit
+den Pfeiltasten rechts verändert werden. Dabei wird genau das Zahlenfeld
+verändert, in dem sich gerade der Cursor befindet. Sinnvoll ist es, wenn das
+Ausgabedatum vor dem Abgabedatum liegt. Ist dies nicht der Fall, so erscheint
+eine Meldung, diese hat aber nur informativen Charakter. Das Weiterbearbeiten
+und Speichern des Graphen ist trotzdem möglich.
+
+\label{label}
+\subsection{Label}
+Jeder Dokumentkomponente kann ein Label zugewiesen werden. Dazu klickt man im
+Kontextmenü der gewünschten Komponente auf den Punkt ''Label setzen''. Es
+öffnet sich ein Dialogfenster 
+
+\image{howtopics/dialog_labels.png}
+
+in das ein neues Label geschrieben wird.
+
+\image{howtopics/gui_metainfofield_komplabelok.png}
+\image{howtopics/gui_metainfofield_komplabelmissing.png}
+
+Das Label wird auch im Metainformationsfenster angezeigt, wo es ebenso
+verändert werden kann. Ist kein Label gesetzt so ist das entsprechende Feld im
+Metainformationsfenster rosa hinterlegt.
+
+Es ist jeder beliebige String für das Label erlaubt, nicht jedoch ein leerer
+String. Das Label der markierten Komponente wird außerdem in der Statusleiste
+angezeigt.
+
+Ist für eine Komponente kein Label angegeben, so hat die Komponente einen
+grauen Rand.
+
+\label{punkte}\subsection{Punkte vergeben}
+Problemkomponenten besitzen eine Punktanzahl. Die kann gesetzt werden, indem im
+Kontextmenü der gewünschten Komponente auf den Punkt ''Punkte vergeben'' 
+
+\image{howtopics/dialog_points.png}
+
+geklickt wird. Es öffnet sich ein Dialogfenster in dem die Punkte für diese
+Aufgabe eingetragen werden können. 
+
+Zulässig sind nur ganzzahlige positive Zahlen. 
+
+Es ist auch möglich keine Punkte zuzuweisen. Dies ist die
+Defaulteinstellung. Hat man einmal Punkte zugewiesen, kann man diese wieder
+entfernen, indem man das Punktefenster leer lässt.
+
+\image{howtopics/gui_metainfofield_komp_punkteok.png}
+\image{howtopics/gui_metainfofield_komp_punkteohne.png}
+\image{howtopics/gui_metainfofield_komp_punktemissing.png}
+
+Die Punktzahl wird auch im Metainformationsfenster angezeigt, wo sie ebenso
+verändert werden kann. Außerdem ist hier eine Checkbox, mit der angegeben
+werden kann, ob Punkte gesetzt werden sollen. Sind keine Punkte (0) gesetzt
+aber die Checkbox geklickt, so ist das Punkte-Feld im Metainformationsfenster
+rosa hinterlegt.
+
+Sind für eine Komponente keine Punkte angegeben, so hat die Komponente einen
+grauen Rand.
+
+\subsection{Statusleiste}
+Wurde das komplette Kapitel \href{\#erstellenEinesNetzes}{Erstellen eines
+  Netzes} durchgearbeitet, sind jetzt alle Möglichkeiten den Graph zu erstellen
+und zu verändern bekannt. Im folgenden wird nun noch die Statusleiste getestet.
+
+In der Statusleiste sind Informationen zu der gerade markierten Komponente
+ausgegeben. Eine Ausgabe erfolgt nur, wenn genau eine Komponente oder Kante
+markiert ist.
+
+Ist eine Kante markiert, so wird die Farbe der Kante ausgegeben. Mögliche
+Angaben sind also ''Kante schwarz'', ''Kante rot im Netzwerk'' oder ''Kante
+rot''.
+
+Bei einer Branchkomponente wird die Kategorie des Knotens angezeigt, also
+''or'' oder ''and''.
+
+Eine markierte Dokumentkomponente hat als Ausgabe das gesetzte Label und den
+Pfad zum zugewiesenen Dokument. Ist der Pfad zu lang, wird er so abgeschnitten,
+dass die direkten Elternverzeichnisse und der Dateinamen zu sehen ist. Ist das
+Label nicht gesetzt (Vergleich: \href{\#label}{Label}), so wird nur der Pfad
+angezeigt. Ist noch kein Dokument zugewiesen, so steht in der Statusleiste
+''kein Dokument zugewiesen''.
+
+
+\input{tut_ausgabeStatusleiste.tex}
+
+\input{test_ausgabeStatusleiste.tex}
+
+Die Statusleiste wird auch genutzt, um das Einloggen auf einem Server zu
+bestätigen. Dieses wurde bereits im Kapitel \href{\#serverLogin}{Server-Login}
+beschrieben. Die möglichen Ausgaben in diesem Fall sind dann ''changed
+Japs-Server'' sowie ''offline-Mode''.
+
+\section{Japs}
+\label{ladenUndSpeichern}\subsection{Laden und Speichern}
+Der CourseCreator kann bisher die erzeugten Dokumente noch nicht in die
+Datenbank einchecken, daher arbeitet der CourseCreator nur auf dem lokalen
+Dateisystem.
+
+\label{speichern}\subsubsection{Speichern}
+Die Graphen die im Hauptfenster angezeigt werden, werden durch das Speichern in
+das spezifizierte XML-Format geschrieben. Das Speichern eines Graphen erzeugt
+im lokalen Dateisystem zwei XML-Dateien. Das Format dieser Dateien ist im
+Japs-Spec beschrieben.
+
+Der Graph ''weiß'' den Namen, unter dem er zuletzt gespeichert
+wurde. Dementsprechend gibt es die Funktion ''Speichern'' und ''Speichern
+unter'' unter den Menüpunkt ''Datei''. Die Funktion ''Speichern'' kann auch mit
+der Taste, die dafür in der Tastenkonfiguration eingetragen wurde, ausgeführt
+werden. Ebenso kann man den Button \image{howtopics/tool_save.png} aus der
+Toolbar drücken.
+
+Das ''Speichern als neuen Graph'' öffnet unabhängig davon, ob der Graph bereits
+gespeichert wurde ein Dateiauswahlmenü um den Graph zu speichern.
+
+Zum Speichern eines Graphen müssen verschiedene Dinge geprüft werden, z.B., ob
+in eine Datei geschrieben werden soll, die schon existiert, oder sogar schon
+geöffnet ist. Eine Übersicht, welche Dialoge, Aktionen und Tests durchgeführt
+werden und wohin sie führen, ist in der folgenden Graphik gezeigt.
+
+\image{howtopics/sheme_save.png}
+
+Nach dem Speichern erscheint eine Mitteilung ob das Speichern fehlgeschlagen
+ist, oder ob es erflogreich war:
+
+\image{howtopics/dialog_savesuccess.png}
+
+Das Speichern war also erfolgreich! Aber der Graph würde im Browser so nicht
+funktionieren, da der Rote Faden nicht korrekt ist (siehe
+\href{\#roterFaden}{Roter Faden}) und einigen Komponenten kein Dokument
+zugewiesen wurde (siehe \href{\#dokumenteZuweisen}{Zuweisen von
+  Dokumenten}). Mit dem Button "Dateien anzeigen" werden die XML-Dateien
+angezeigt. (siehe \href{\#source}{Quellcode anzeigen}).
+
+\label{laden}\subsubsection{Laden}
+Ein Graph wird aus dem lokalen Dateisystem geladen. Dazu verwendet man den
+Untermenüpunkt "Laden" aus dem Menü "Datei" oder man drückt die Taste, die
+dafür in der Tastenkonfiguration eingetragen wurde. Ebenso kann man den Button
+\image{howtopics/tool_load.png} aus der Toolbar drücken.
+
+Der CourseCreator wird nun die XML-Datei in die bekannte graphische Darstellung
+wandeln und der Graph erscheint so, wie er gespeichert wurde.
+
+Zum Laden muss geprüft werden, ob der Graph bereits geöffnet ist. In diesem
+Fall erscheint darüber eine Nachricht.
+
+\input{opts_reladen.tex}
+
+\label{serverLogin}\subsection{ServerLogin}
+\image{howtopics/dialog_login.png}
+Der ServerLogin ist ein Fenster, welches es ermöglicht, sich auf
+unterschiedlichen Datenbanken einzuloggen. Das Fenster zeigt eine Combobox, in
+der alle Server, die in der lokalen oder globalen Konfigurationsdatei stehen
+(siehe \href{\#konfiguration}{Konfiguration}), aufgelistet sind.
+
+Es ist aber auch möglich, einen neuen Server in die Combobox zu schreiben. Ist
+es dann möglich sich auf diesem Server einzuloggen, so wird dieser Server auch
+in die Konfigurationsdateien geschrieben. Die Server sind in der Combobox so
+sortiert, dass der zuletzt aufgerufene ganz oben erscheint.
+
+Des weiteren besitzt das Fenster folgende Buttons:
+\begin{itemize}
+\item \image{howtopics/dialog_loginOK.png} dieser Button bewirkt, das versucht
+    wird sich auf dem in der Combobox angegebenen Server einzuloggen.
+\item \image{howtopics/dialog_loginNoServer.png} dieser Button bewirkt, dass man
+    im Folgenden auf keinem Server eingeloggt ist.
+\item \image{howtopics/dialog_loginCancel.png} dieser Button beendet den
+  CourseCreator.
+\item \image{howtopics/dialog_logindelete.png} dieser Button löscht den Eintrag
+  in der ComboBox und somit auch aus der Konfigurationsdatei.
+\end{itemize}
+
+Um sich auf einem Server einzuloggen, wird in der Combobox ein Server
+ausgewählt, oder ein neuer Server eingetragen. Klickt man dann den
+''OK''-Button, so erscheint ein Mumie Login Fenster, welches vom lokalen
+Japsclient erzeugt wird und man kann sich am gewünschten Server mit Account und
+Passwort authentifizieren.
+
+Es erscheint eine Meldung über den Login-Status und in der Statusleiste wird
+dann durch ''changed Japs-Server'' angegeben, dass das Login erfolgreich
+war. Der Name des Servers steht in der Titelleiste.
+
+Um keinen Server zu wählen (oder sich zum Beispiel aus dem aktuellen
+auszuloggen), wird der Button ''no Server'' geklickt. Das erfolgreiche
+Ausloggen wird durch ''offline-Mode'' in der Statusleiste und in der
+Titelleiste bestätigt.
+
+Außerdem erscheint ein Dialog, der mitteilt, dass sich erfolgreich eingeloggt
+wurde:\\
+\image{howtopics/dialog_loginSuccess.png}
+
+\label{einchecken}\subsection{Einchecken}
+Das Einchecken eines Graphen erfolgt mit dem Tool mmckin. 
+
+Die Dokumente werden unter dem Verzeichnis \$CVS_CHECKIN_ROOT in das gewünschte
+Verzeichnis gespeichert. Dann wird in diesem Verzeichnis mittels mmckin die
+Metadatei eingecheckt (Die Content-Datei wird automatisch zugefügt).
+
+Für das Einchecken eines Graphen ist zu beachten, dass alle Dokumentkomponenten
+ein Dokument zugewiesen bekommen haben (siehe
+\href{\#dokumenteZuweisen}{Zuweisen von Dokumenten}). Der Rote Faden sollte
+korrekt sein, da dieser zum Navigieren im Browser benötigt wird (siehe
+\href{\#roterFaden}{Roter Faden}).
+
+\label{zertifikat}\subsection{Zertifikat}
+Für HTTPS-Server ist eine Zertifikatsdatei notwendig. Ist die Datei nicht
+zugewiesen so erscheint ein Dialog, der darauf hinweist und es ermöglicht, die
+Datei im Dateisystem auszuwählen. Steht ein gewünschter Server nicht in dieser
+Datei so erscheint darüber ebenfalls ein Dialog und es ist dann möglich, sich
+mit dem Alias-Button alle bekannten Server anzeigen zu lassen.
+
+\image{howtopics/dialog_aliase.png}
+
+Existiert noch keine Zertifikatsdatei, so kann diese mit dem keytool-Programm
+erzeugt werden. eine genaue Beschreibung dazu gibt die Datei
+mmckin/doc/README.https.
+
+
+\label{konfiguration}\section{Konfiguration}
+Einstellungen, die der Handhabung des CourseCreators dienen werden in
+Konfigurationsdateien geschrieben. Dabei gibt es eine globale
+Konfigurationsdatei \code{config.xml} im Verzeichnis \code
+{\$MM_BUILD_PREFIX/etc/coursecreator/} und eine lokale Konfigurationsdatei
+\code {.coursecreator.xml} im \code{\$HOME} Verzeichnis. Beide Dateien haben die
+gleiche Struktur, jedoch kann nur die lokale Datei (bisher) vom CourseCreator
+überschrieben werden.
+
+Die lokale Konfiguration ist dabei weitergehend, das heißt, es wird zuerst die
+globale Datei gelesen und dann werden gegebenenfalls Einstellungen durch die
+lokale Datei überschrieben.
+
+Es folgt eine schematische Darstellung einer lokalen Konfigurationsdatei die
+mit einem * versehenen Einträge sind auch; die mit ** sind nur in der globalen
+Konfigurationsdatei zu finden:
+
+<?xml version="1.0" encoding="US-ASCII"?>\\
+<ccconfig>\\
+<movestep value="20"/>\\
+<gridsize value="10"/>\\
+<showgrid value="false"/>\\
+
+<showgeneric value="true"/>\\
+<shownongeneric value="true"/>\\
+<showmetainfopane value="true"/>\\
+
+<ccserverlist> *\\
+<server url="https://japs.mumie.net/cocoon"/>\\
+<server url="http://localhost:8080/cocoon"/>\\
+</ccserverlist>\\
+
+<storedir value="/homes/mathphys/vrichter"/>\\
+<loaddir value="/homes/mathphys/vrichter"/>\\
+<certdir value="/homes/mathphys/vrichter/trusted_certs"/>**\\
+
+<sizelist>*\\
+<size height="800" name="sizetreenav" width="800"/>\\
+<size height="700" name="sizecoursecreator" width="950"/>\\
+</sizelist>\\
+
+<positionlist>*\\
+<position name="positiontreenav" x="400" y="15"/>
+<position name="positioncoursecreator" x="200" y="300"/>
+<position name="positionlogin" x="700" y="0"/>
+<position name="positionkey" x="30" y="30"/>
+<position name="positionpresentation" x="30" y="30"/>
+<position name="positionelementtreesearch" x="30" y="30"/>
+</positionlist>\\
+
+<exceptions value="true"/>\\
+<debuglist>**\\
+<debug name="debug" value="false"/>\\
+<debug name="cccontroller" value="false"/>\\
+<debug name="ccconfig" value="false"/>\\
+<debug name="ccmodel" value="false"/>\\
+<debug name="coursecreator" value="false"/>\\
+<debug name="navgraph" value="false"/>\\
+<debug name="navgraphcontroller" value="false"/>\\
+<debug name="navgraphmarqueehandler" value="false"/>\\
+<debug name="maincomponent" value="false"/>\\
+<debug name="subcomponent" value="false"/>\\
+<debug name="branch" value="false"/>\\
+<debug name="ccedge" value="false"/>\\
+<debug name="metainfos" value="false"/>\\
+<debug name="metainfofield" value="false"/>\\
+<debug name="metainfofieldcontroller" value="false"/>\\
+<debug name="contenttreemodel" value="true"/>\\
+<debug name="contenttreenavigation" value="true"/>\\
+<debug name="contenttreenode" value="true"/>\\
+<debug name="documentadapter" value="true"/>\\
+<debug name="graphloader" value="false"/>\\
+</debuglist>\\
+
+<searchlist>\\
+<search name="searchcat" value="ignore"/>\\
+<search name="searchcreated" value="ignore"/>\\
+<search name="searchdescription" value="ignore"/>\\
+<search name="searchfile" value="ignore"/>\\
+<search name="searchid" value="ignore"/>\\
+<search name="searchmodified" value="ignore"/>\\
+<search name="searchpure" value="ignore"/>\\
+<search name="searchsection" value="ignore"/>\\
+<search name="searchtitle" value="ignore"/>\\
+<search name="searchtyp" value="ignore"/>\\
+</searchlist>\\
+
+<keylist>\\
+<key name="checkred" value="ALT + c"/>\\
+<key name="connect" value="ALT + v"/>\\
+<key name="delete" value="DELETE"/>\\
+<key name="down" value="ALT + 2"/>\\
+<key name="edgedir" value="ALT + o"/>\\
+<key name="exists" value="ALT + e"/>\\
+<key name="grid" value="ALT + g"/>\\
+<key name="left" value="ALT + 4"/>\\
+<key name="movein" value="ALT + i"/>\\
+<key name="moveout" value="ALT + a"/>\\
+<key name="new" value="CTRL + n"/>\\
+<key name="open" value="CTRL + l"/>\\
+<key name="red" value="ALT + r"/>\\
+<key name="right" value="ALT + 6"/>\\
+<key name="save" value="CTRL + s"/>\\
+<key name="swap" value="ALT + t"/>\\
+<key name="up" value="ALT + 8"/>\\
+<key name="zoomin" value="ALT + x"/>\\
+<key name="zoomout" value="ALT + y"/>\\
+</keylist>\\
+</ccconfig>\\
+Erklärung:
+\begin{table}
+  \head
+    Tag & Bemerkung & default
+  \body
+movestep & Pixel, die sich eine Komponente mit der Tastatur bewegt & 20\\
+gridsize & Gitterpunktabstand in Pixel & 10 \\
+showgrid & Anzeige des Gitters & false \\
+showgeneric & Zeigt generische Elemente im Elementzuweisungsfenster, siehe
+\href{\#elementzuweisungsfenster}{Elementzuweisungsfenster}& "true"\\
+shownongeneric & Zeigt nicht-generische Elemente im Elementzuweisungsfenster,
+siehe \href{\#elementzuweisungsfenster}{Elementzuweisungsfenster}& "true"\\
+showmetainfopane & Zeigt das MetainfoPane im Elementzuweisungsfenster, siehe
+\href{\#elementzuweisungsfenster}{Elementzuweisungsfenster}& "true"\\
+exceptions&zeigt Exceptions als Dialogfenster an&"false"\\
+ccserverlist&enthält die Server&entfällt\\
+storedir& Das Verzeichnis in das per Default gespeichert wird, falls eine Datei
+noch nicht gespeichert wurde& HOME oder nicht vorhanden\\
+loaddir & Das Verzeichnis aus dem geladen wird& HOME oder nicht vorhanden\\
+certdir&Das Verzeichnis in dem sich das Zertifikat befindet & HOME oder nicht vorhanden\\
+sizelist&Ausflistung der Fensternamen und ihrer Größe (mit Breite und Höhe)& entfällt\\
+positionlist&Ausflistung der Fensternamen und ihrer Position links oben& entfällt\\
+debuglist&Angabe, Debugausgaben welcher Klassen ausgegeben werden
+sollen&false\\
+searchlist & Einstellungen für das Suchenfenster & bis auf Titel alle ignore\\
+keylist & Die shortcuts & siehe \href{\#tastenkonfiguration}{Tabelle unten}
+\end{table}
+
+Einige Server der Serverliste sind hardcodiert, weitere Server werden
+in die lokale Konfiguration geschrieben. Dazu werden die Eingaben aus den
+Loginfenster übernommen. Siehe dazu \href{\#serverLogin}{ServerLogin}.
+
+\label{shortcuts}\section{Shortcuts}
+
+Die Tasten sind konfigurierbar, hier sind der Einfachheit halber die
+Defaultwerte angegeben.
+
+\begin{table}
+  \head
+    Taste & Beschreibung & Wann gehts?
+  \body
+    Alt + a & Subkomponente wird nach außen getauscht & es ist genau eine
+    Subkomponente markiert, die nicht die äußerste Komponente ist\\
+    Alt + c & Der Roten Faden wird geprüft & immer\\
+Alt + e & Kante ins Netzwerk nehmen / aus Netzwerk entfernen & es ist genau eine
+    Kante markiert\\
+    Alt + i & Subkomponente wird nach innen getauscht & es ist genau eine
+    Subkomponente markiert, die nicht die innerste Komponente ist\\
+    CTRL + l & Öffnet den Ladendialog & immer\\
+    CTRL + n & Erstellt einen neuen (leeren) Graphen & immer \\
+    CTRL + o & Tauscht die Orientierung einer Kante. & es ist genau eine Kante
+    markiert\\
+    Alt + r & rote Kante setzen / rote Kante entfernen & es ist genau eine Kante
+    markiert\\
+    CTRL + s & Speichert den aktuellen Graphen & Auf das Drücken der Taste erfolgt
+    immer eine Action. Falls das Speichern nicht gehen sollte, erscheint
+    zumindest ein Dialog, der auf einen Fehler hinweist.\\
+    Alt + t & Tauschen zweier  markierter Graphkomponenten & es sind genau zwei
+    Komponenten vom Typ Graphkomponent markiert\\
+    Alt + v & Es werden die zwei markierten Graphkomponenten verbunden. & es sind
+    genau zwei Komponenten vom Typ Graphkomponent markiert\\
+    Delete & Löschen des gerade Markierte & es ist mindestens eine Komponente
+    markiert\\
+    Alt + 2 & Bewegt die gerade markierte Auswahl nach unten. &  es ist mindestens
+    eine Komponente markiert\\
+    Alt + 4 & Bewegt die gerade markierte Auswahl nach links. &  es ist mindestens
+    eine Komponente markiert\\
+    Alt + 6 & Bewegt die gerade markierte Auswahl nach rechts. & es ist mindestens
+    eine Komponente markiert\\
+    Alt + 8 & Bewegt die gerade markierte Auswahl nach oben. &  es ist mindestens
+    eine Komponente markiert\\
+    Alt + x & Zoomt in den Graphen hinein & geht nur, wenn noch nicht die maximale
+    Zoomstufe erreicht ist\\
+    Alt + z & Zoomt aus dem Graphen heraus & geht nur, wenn noch nicht die minimale
+    Zoomstufe (also Normalansicht) erreicht ist 
+\end{table}
+
+\label{troubleshooting}\section{FAQ: wenn mal was nicht geht..}
+\subsection{Bei Eingabe in das Metainformationsfenster verändert sich der Kurs}
+Betrachten Sie bitte Ihre Shortcut-Konfiguration.
+
+\subsection{Die Shortcuts funktionieren nicht}
+\begin{itemize}
+\item Nicht alle Shortcuts funktionieren für alle Komponenten. Ob der gewünschte
+Shortcut funktionieren sollte, ist im Kapitel \href{\#shortcuts}{Shortcuts}
+nachzulesen. 
+\item Die Shortcuts funktionieren nur entsprechend ihrer Modifiertasten,
+  vielleicht ist ja die fESTSTELLTASTE gedrückt?
+\item Für die Ziffern sind wirklich die Ziffern gemeint, vielleicht ist ja die
+  NumLock-Taste gedrückt.
+\end{itemize}
+\subsection{Ein Dokument aus der Datenbank kann nicht zugewiesen werden}
+\begin{itemize}
+\item Ist das Dokument für die ausgewählte Komponente zulässig?
+\item Ist das Dokument vom Typ generic? (Das ist zum Einen in den
+  Metainformationen ablesbar, zum Anderen sind die generischen Dokumente
+  farbig, die nicht generischen Dokumente sind grau.)
+\item Siehe Kapitel \href{\#dokumenteZuweisen}{Zuweisen von Dokumenten}
+\end{itemize}
+\subsection{Ein Kurs lässt sich nicht einchecken}
+Ein Kurs lässt sich nur einchecken, wenn alle Dokumentkomponenten ein Dokument
+aus der Datenbank zugewiesen bekommen haben.
+
+\subsection{Es kann keine/nicht die richtige Lehrveranstaltung zugewiesen
+  werden}
+Ist der Button ausgegraut, so befindet man sich im OfflineModus. Da die Daten
+direkt von der Datenbank gelesen werden, sind im OfflineModus keine
+Lehrveranstaltungen vorhanden und der Button für das Fenster ist
+abgeschaltet.\\
+Erscheint nicht die gewünschte Lehrveranstaltung in der Liste, so hat sich
+vermutlich der Name in der Datenbank geändert, oder man ist auf einer anderen
+Datenbank eingeloggt. Mehr dazu siehe hier:
+\href{\#classChooser}{Lehrveranstaltungen zuweisen} .
+\subsection{Das Kontextmenü erscheint nicht wie erwartet}
+Das Kontextmenü unterscheidet, ob es für alle markierten Komponenten erscheint,
+oder nur für eine Komponente, nämlich der, über der sich der Mauszeiger gerade
+befindet. Soll also ein Kontextmenü für alle markierten Komponenten aufgerufen
+werden, so muss an eine Stelle, wo sich keine Komponente befindet geklickt
+werden. Soll das Kontextmenü für nur eine Komponente ausgerufen werde, so muss
+sich der Mauszeiger über dieser Komponente befinden. Siehe dazu das Kapitel zum
+\href{\#kontextmenu}{Kontextmenü}.
+\subsection{Die Hilfe funktioniert nicht}
+Beim Klicken auf den Menüpunkt "Hilfe" wird wenig später auch ein
+Firefox-Fenster angezeigt, jedoch mit der Meldung: File Not Found. Testen Sie
+bitte , ob sich die Dokumentationsdatei übersetzen lässt, also mmtex howto.tex
+im Documentationsverzeichnis.
+\end{document}

@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+
+function DataSheet (_document)
+{
+  // --------------------------------------------------------------------------------
+  // h1: Global constants
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The datasheet namespace
+   */
+
+  const NAMESPACE = "http://www.mumie.net/xml-namespace/data-sheet";
+
+  /**
+   * Local name of the data sheet root element.
+   */
+
+  const ROOT_ELEMENT = "data_sheet";
+
+  /**
+   * Local name of the unit elements.
+   */
+
+  const UNIT_ELEMENT = "unit";
+
+  /**
+   * Local name of the data elements.
+   */
+
+  const DATA_ELEMENT = "data";
+
+  /**
+   * Name of the name attribute.
+   */
+
+  const NAME_ATTRIBUTE = "name";
+
+  /**
+   * Flag in indicating that old data should be renmoved.
+   */
+
+  const REPLACE = 0;
+
+  /**
+   * Flag in put method calls indicating that old data should be preserved in
+   * favour of new data.
+   */
+
+  const PROTECT = 1;
+
+  /**
+   * Flag in put method calls indicating that old data should be appended to
+   * already existing data.
+   */
+
+  const APPEND = 2;
+  
+  
+  const _datasheet = this;
+
+  // --------------------------------------------------------------------------------
+  // h1: Global variables
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The root element of this data sheet.
+   */
+
+  var _rootElement = null;
+
+  /**
+   * Auxiliary to serialize the datasheet (Mozilla specific).
+   * Will be created if needed for the first time.
+   */
+
+  var _xmlSerializer = null;
+
+  // --------------------------------------------------------------------------------
+  // h1: Setup
+  // --------------------------------------------------------------------------------
+
+  if ( !_document )
+    _document = document.implementation.createDocument(NAMESPACE, ROOT_ELEMENT, null);
+  _rootElement = _document.documentElement;
+
+  // --------------------------------------------------------------------------------
+  // h1: Auxiliaries
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Throws an exception with the specified message. The string "DataSheet: " is
+   * prepended to the message.
+   */
+
+  var error = function (msg)
+    {
+      throw "DataSheet: " + msg;
+    }
+
+  /**
+   *  Returns the first element which
+   *
+   *    is a child of the specified element,
+   *    has the specified name, and
+   *    has a "name" attribute with the specified value.
+   *
+   * If the "create" flag is true, the element will be created if it does not exist.
+   * Otherwise, the method returns null if the element does not exist.
+   */
+
+  var _getChildElementOf = function (element, childName, nameValue, create)
+    {
+      var children = element.childNodes;
+      var childElement = null;
+      for (var i = 0;  i &lt; children.length &amp;&amp; childElement == null; i++)
+        {
+          var currentChild = children.item(i);
+          if ( currentChild.nodeType == Node.ELEMENT_NODE &amp;&amp;
+               currentChild.localName == childName &amp;&amp;
+               currentChild.getAttribute(NAME_ATTRIBUTE) == nameValue )
+            childElement = currentChild;
+        }
+      if ( childElement == null &amp;&amp; create )
+        {
+          childElement = element.ownerDocument.createElementNS(NAMESPACE, childName);
+          childElement.setAttribute(NAME_ATTRIBUTE, nameValue);
+          element.appendChild(childElement);
+        }
+      return childElement;
+    };
+
+  /**
+   * Returns the element with the specified name and path. If the "create" flag is
+   * true, the element will be created if it does not exist. Otherwise, the method
+   * returns null if the element does not exist.
+   */
+
+  var _getDataSheetElement = function (elementName, path, create)
+    {
+      var pathItems = path.split("/");
+      var parent = _rootElement;
+      var last = pathItems.length-1;
+      for (var i = 0; i &lt; last &amp;&amp; parent != null; i++)
+        parent = _getChildElementOf(parent, UNIT_ELEMENT, pathItems[i], create);
+       var element =
+         (parent != null
+          ? _getChildElementOf(parent, elementName, pathItems[last], create)
+          : null);
+       return element;
+    };
+
+  /**
+   * Returns the unit element with the specified path. If the "create" flag is
+   * true, the element will be created if it does not exist. Otherwise, the method
+   * returns null if the element does not exist.
+   */
+
+  var _getUnitElement = function (path, create)
+    {
+      if ( create === undefined ) create = false;
+      return _getDataSheetElement(UNIT_ELEMENT, path, create);
+    };
+
+  /**
+   * Returns the data element with the specified path. If the "create" flag is
+   * true, the element will be created if it does not exist. Otherwise, the method
+   * returns null if the element does not exist.
+   */
+
+  var _getDataElement = function (path, create)
+    {
+      if ( create === undefined ) create = false;
+      return _getDataSheetElement(DATA_ELEMENT, path, create);
+    };
+
+  /**
+   * Converts a NodeList to an array of nodes.
+   */
+
+  var _nodeListToArray = function (nodeList)
+    {
+      var nodeArray = new Array(nodeList.length);
+      for (var i = 0; i &lt; nodeList.length; i++)
+        nodeArray[i] = nodeList.item(i);
+      return nodeArray;
+    };
+
+  /**
+   * Auxiliary method to convert a string to a boolean. Returns true if the specified
+   * string is "true" or "yes", false if the specified string is "false" "no", and 
+   * throws an error if the specified string has any other value. Case does not matter.
+   */
+
+  var _stringToBoolean = function (string)
+    {
+      string = string.toLowerCase();
+      if ( string == "true" || string == "yes" )
+        return true;
+      else if ( string == "false" || string == "no" )
+        return false;
+      else
+        error("Can not convert to boolean: " + string);
+    };
+
+
+  /**
+   * Converts the specified string, which may contain wildcards, to a regular expression.
+   */
+
+  var _wildcardsToRegex = function(string)
+    {
+      var regex = "";
+      for (var i = 0; i &lt; string.length; i++)
+        {
+          var c = string.charAt(i);
+          if ( ( '0' &lt;= c &amp;&amp; c &lt;= '9' ) ||    //
+               ( 'a' &lt;= c &amp;&amp; c &lt;= 'z' ) ||    // Allowed name characters except '.'
+             ( 'A' &lt;= c &amp;&amp; c &lt;= 'Z' ) ||    // 
+               c == '-' || c == '_' )         //
+            regex += c;
+          else if ( c == '.' )                // '.' - special meaning in regex
+            regex += "\\.";
+          else if ( c == '/' )                // Name delimiter
+            regex += '/';
+          else if ( c == '*' )                // Wildcard '*'
+            regex += "[^/]*";
+          else if ( c == '?' )                // Wildcard '?'
+            regex += "[^/]";
+          else
+            error("Invalid name pattern: " + string + " (position " + i + ")");
+        }
+      return regex;
+    };
+
+
+  // --------------------------------------------------------------------------------
+  // Retrieving data
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the data stored in the data element with the specified path as a
+   * NodeList.
+   */
+
+  this.getAsNodeList = function (path)
+    {
+      var dataElement = _getDataElement(path);
+      return (dataElement != null ? dataElement.childNodes : null);
+    };
+
+  /**
+   * Returns the data stored in the data element with the specified path as an
+   * Element. 
+   */
+
+  this.getAsElement = function (path)
+    {
+      var element = null;
+      var dataElement = _getDataElement(path);
+      if ( dataElement != null )
+        {
+          var children = dataElement.childNodes;
+          for (var i = 0;  i &lt; children.length &amp;&amp; element == null; i++)
+            {
+              var child = children.item(i);
+              if ( child.nodeType == Node.ELEMENT_NODE )
+                element = child;
+            }
+        }
+      return element;
+    };
+
+  /**
+   * Returns the data stored in the data element with the specified path as a String.
+   * If the data element does not exist, returns the specified default value. The default
+   * for the default value is null. 
+   */
+
+  this.getAsString = function (path, defaultValue)
+    {
+      if ( defaultValue === undefined ) defaultValue = null;
+      var dataElement = _getDataElement(path);
+      if ( dataElement != null )
+        {
+          var value = "";
+          var children = dataElement.childNodes;
+          for (var i = 0;  i &lt; children.length; i++)
+            value += children.item(i).nodeValue;
+          return value;
+        }
+      else
+        return defaultValue;
+    };
+
+  /**
+   * Returns the data stored in the data element with the specified path as a Boolean.
+   * If the data element does not exist, returns the specified default value. The default
+   * for the default value is null. 
+   */
+
+  this.getAsBoolean = function (path, defaultValue)
+    {
+      if ( defaultValue === undefined ) defaultValue = null;
+      var valueAsString = getAsString(path);
+      return (valueAsString != null ? _stringToBoolean(valueAsString) : defaultValue);
+    };
+
+  /**
+   * Returns the data stored in the data element with the specified path as an integer.
+   * If the data element does not exist, returns the specified default value. The default
+   * for the default value is null. 
+   */
+
+  this.getAsInt = function (path, defaultValue)
+    {
+      if ( defaultValue === undefined ) defaultValue = null;
+      var valueAsString = getAsString(path);
+      return (valueAsString != null ? parseInt(valueAsString) : defaultValue);
+    };
+
+  /**
+   * Returns the data stored in the data element with the specified path as a floating
+   * point number. If the data element does not exist, returns the specified default
+   * value. The default for the default value is null. 
+   */
+
+  this.getAsFloat = function (path, defaultValue)
+    {
+      if ( defaultValue === undefined ) defaultValue = null;
+      var valueAsString = getAsString(path);
+      return (valueAsString != null ? parseFloat(valueAsString) : defaultValue);
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Storing data
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Core of the put method below. See there for the meaning of the two last
+   * arguments.
+   */
+
+  var _put = function (path, node, mode, allowAppend)
+    {
+      if ( allowAppend === undefined ) allowAppend = true;
+      if ( mode === undefined ) mode = REPLACE;
+      var dataElement = _getDataElement(path, true);
+      var children = _nodeListToArray(dataElement.childNodes);
+      switch ( mode )
+        {
+        case REPLACE:
+          for (var i = 0; i &lt; children.length; i++)
+            dataElement.removeChild(children[i]);
+          dataElement.appendChild(node);
+          break;
+        case PROTECT:
+          if ( children.length == 0 )
+            dataElement.appendChild(node);
+          break;
+        case APPEND:
+          if ( !allowAppend )
+            error("Mode APPEND not allowed");
+          dataElement.appendChild(node);
+          break;
+        default:
+          error("Unknown mode: " + mode);
+        }
+    };
+
+  /**
+   * Stores the spcified value in the data element with the spcified path. The
+   * element is created if it does not exist yet. The behavior if the element already
+   * contains children controled by the third argument, mode, which can take three
+   * values with the following meanings:
+   * 
+   * REPLACE  the old children are removed before,
+   * PROTECT  nothing is done (so the old children are preserved),
+   * APPEND   the new children are appended to the old ones.
+   * 
+   * The last possibility can be switched off be setting the last argument, allowAppend,
+   * to true. In that case, setting mode = APPEND will cause an error
+   */
+
+  this.put = function (path, value, mode, allowAppend)
+    {
+      var node = null;
+      var type = typeof(value);      
+      if ( type == "string" || ( type == "object" &amp;&amp; value instanceof String ) )
+        node = _document.createTextNode(value);
+      else if ( type == "number" || ( type == "object" &amp;&amp; value instanceof Number ) )
+        node = _document.createTextNode(value.toString());
+      else if ( type == "boolean" || ( type == "object" &amp;&amp; value instanceof Boolean ) )
+        node = _document.createTextNode(value.toString());
+      else if ( type == "object" &amp;&amp; value instanceof Node )
+        node = value;
+      else
+        error("Cannot add to datasheet: " + value);
+      _put(path, node, mode, allowAppend);
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Removing data
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Removes the data sheet element with the specified name and path, and returns the
+   * removed element. If the element does not exist, returns null.
+   */
+
+  var _removeDataSheetElement = function (elementName, path)
+    {
+      var element = _getDataSheetElement(elementName, path, false);
+      if ( element != null )
+        element.parentNode.removeChild(element);
+      return element;
+    };
+
+  /**
+   * Removes the unit with the specified path. If the path points to a data element,
+   * throws an exception. If the path points to nothing (neither data nor unit), does
+   * nothing.
+   */
+
+  this.removeUnit = function (path)
+    {
+      var removedElement = _removeDataSheetElement(UNIT_ELEMENT, path);
+      if ( removedElement == null &amp;&amp; _getDataElement(path) != null )
+        error("Cannot remove; is not a unit: " + path);
+    };
+
+  /**
+   * Removes the data with the specified path. If the path points to a unit, throws an
+   * exception. If the path points to nothing (neither data nor unit), does nothing.
+   */
+
+  this.remove = function (path)
+    {
+      var removedElement = this.removeDataSheetElement(DATA_ELEMENT, path);
+      if ( removedElement == null &amp;&amp; _getUnitElement(path) != null )
+        error("Cannot remove; is a unit: " + path);
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Getting paths
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the path of the specified element.
+   *
+   * NOTE: This method does not check if the element is indeed a unit or data element of this
+   * data sheet. If necessary, you shoud check this yourself by calling
+   * {@link #isUnitOrDataElement isUnitOrDataElement}.
+   */
+
+  this.getPathOf = function (element)
+    {
+      var nameValues = new Array();
+      while ( element != _rootElement )
+        {
+          var nameValue = element.getAttribute(NAME_ATTRIBUTE);
+          if ( nameValue == null )
+            error("Element has no name attribute: " + element);
+          nameValues.unshift(nameValue);
+          element = element.parentNode;
+        }
+      var path = "";
+      var separate = false;
+      for (var i = 0; i &lt; nameValues.length; i++)
+        {
+          if ( separate ) path += '/';
+          path += nameValues[i];
+          separate = true;
+        }
+      return path;
+    };
+
+  /**
+   * Auxiliary method to implement {@link #getAllDataPaths getAllDataPaths} and
+   * {@link #getAllUnitPaths getAllUnitPaths}. Returns the paths of all elements with the
+   * specified name. 
+   */
+
+  var _getAllPaths = function (elementName)
+  {
+    var dataElements = _document.getElementsByTagNameNS(NAMESPACE, elementName);
+    var paths = new Array(dataElements.length);
+    for (var i = 0; i &lt; paths.length; i++)
+      paths[i] = _datasheet.getPathOf(dataElements.item(i));
+    return paths;
+  }
+
+  /**
+   * Returns the paths of all data elements.
+   */
+
+  this.getAllDataPaths = function ()
+  {
+    return _getAllPaths(DATA_ELEMENT);
+  }
+
+  /**
+   * Returns the paths of all unit elements.
+   */
+
+  this.getAllUnitPaths = function ()
+  {
+    return _getAllPaths(UNIT_ELEMENT);
+  }
+
+  /**
+   * Auxiliary method to implement getMatchingDataPaths and getMatchingUnitPaths.
+   * Returns all paths that match
+   * the specified path template and correspond to an element with the specified name.
+   * The path template is a wildecard pattern. See
+   * {@link #getMatchingDataPaths getMatchingDataPaths} for the supported wildcards.
+   */
+
+  var _getMatchingPaths = function (elementName, pathTemplate)
+    {
+      var regex = new RegExp(_wildcardsToRegex(pathTemplate));
+      var allPaths = _getAllPaths(elementName);
+      var matchingPaths = new Array();
+      for (var i = 0; i &lt; allPaths.length; i++)
+        {
+          if ( regex.test(allPaths[i]) )
+            matchingPaths.push(allPaths[i]);
+        }
+      return matchingPaths;
+    };
+
+
+  /**
+   * Returns the paths of all data elements matching the specified template.
+   *
+   *   pathTemplate is a path that may contain wildcards. Currently, the
+   *   following wildcards are supported:
+   *
+   *     *  Matches any substring (including the empty string) of characters
+   *         other than '/'.
+   *
+   *     ?  Matches any character other than '/'.
+   */
+
+  this.getMatchingDataPaths = function (pathTemplate)
+    {
+      return _getMatchingPaths(DATA_ELEMENT, pathTemplate);
+    };
+
+  /**
+   * Returns the paths of all data elements matching the specified template.
+   *
+   * pathTemplate is a path that may contain wildcards. See getMatchingDataPaths
+   * for the supported wildcards.
+   */
+
+  this.getMatchingUnitPaths = function (pathTemplate)
+    {
+      return _getMatchingPaths(UNIT_ELEMENT, pathTemplate);
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Serialization
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the XML code of this datasheet as a string.
+   */
+
+  this.toXMLCode = function ()
+    {
+      if ( _xmlSerializer == null ) _xmlSerializer = new XMLSerializer();
+      return _xmlSerializer.serializeToString(_document);
+    };
+}
+
+</txt:document>

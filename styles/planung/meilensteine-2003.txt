@@ -1,0 +1,83 @@
+Meilensteine 2003 (proposal, DE, 7.5.03)
+=================
+
+
+M1: 24.04.2003
+--------------
+
+* Prototyp:
+  - Inhalte zum Wüst-Buch
+  - Dummy-Applets für Wüst-Buch
+  - Kurs zur Anzeige mit dem StructTransformer
+  - Checkin-Prozess (ohne Upload)
+  - PullDown Menü
+  - Begleitfigur in page-Seiten
+  - Kommunikationstool (Anpassung Moses-Forum)
+  - CourseCreator V0.9 (ohne Checkin)
+  - Lexikontool (snapshot)
+
+* Spezifikation Übungstool
+
+* Server-Installation
+
+* www.mumie.net für EU aktualisieren
+
+
+M2: 30.06.2003
+--------------
+  
+* JAPS:
+  - Checkin-Prozess (mit Upload)
+  - Integration StructTransformer
+  - Auslieferung der Inhalte aus DB
+  - Integration XSLTs in DB
+  - Integration PullDown Menü (? DE <-> ND Abstimmung)
+  - Integration Begleitfigur (? DE)
+  
+* CourseCreator V1.0 (mit Checkout)
+
+* Übungstool: Lastenheft
+
+* Inhalt:
+  - Inhalte zum Wüst-Buch
+  - Dummy-Applets für Wüst-Buch
+  - Kurs zur Anzeige mit dem StructTransformer
+
+* Kommunikationstool (Anpassung Moses-Forum)
+
+
+M3: 30.09.2003
+--------------
+
+* Integration mmtex in JAPS
+
+* Checkin-Prozess (mit Filter)
+  - DB-Redesign für Quellen
+  - Klassen für Checkin
+
+* CourseCreator V2.0 (mit Checkin)
+
+* Rollenadaptivität:
+  - Konzept zum SessionManagement
+  - alpha-Version SessionManagement
+
+* Übungstool:
+  - XML-Konzept
+  - Konzept zur Implementierung
+
+* Inhalte für Evaluierung im WS03/04
+
+
+M4: 31.12.2003
+--------------
+
+* mmtex mit Konvertierung TeX --> MathML
+
+* Benutzeradaptivität:
+  - Themes  
+  - beta-Version SessionManagement
+
+* Übungstool:
+  - Spielwiese
+
+...

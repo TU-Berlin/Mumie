@@ -1,0 +1,475 @@
+package net.mumie.cocoon.db;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import net.mumie.cocoon.notions.DbColumn;
+import net.mumie.cocoon.notions.DbTable;
+import net.mumie.cocoon.notions.DbValue;
+import net.mumie.cocoon.notions.DocType;
+import net.mumie.cocoon.notions.RefAttrib;
+import net.mumie.cocoon.notions.RefAttrib;
+import net.mumie.cocoon.notions.TimeFormat;
+import net.mumie.cocoon.pseudodocs.GeneralUser;
+import net.mumie.cocoon.pseudodocs.User;
+import net.mumie.cocoon.service.LookupNotifyable;
+import net.mumie.cocoon.service.ServiceInstanceStatus;
+import net.mumie.cocoon.service.ServiceStatus;
+import net.mumie.cocoon.util.LogUtil;
+import org.apache.avalon.excalibur.pool.Recyclable;
+import org.apache.avalon.framework.activity.Startable;
+import org.postgresql.PGConnection;
+import org.postgresql.PGStatement;
+import org.postgresql.largeobject.*;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.SAXException;
+
+/**
+ * PostgreSQL-specific methods for database access
+ *
+ * @author <a href="mailto:rassy@math.tu-berlin.de">Tilman Rassy</a>,
+ * <a href="mailto:lehmannf@math.tu-berlin.de">Fritz Lehmann-Grube</a>
+ * <a href="mailto:sinha@math.tu-berlin.de">Uwe Sinha</a>
+ *
+ * @version $Id: PostgreSQLDbHelper.skeleton,v 1.11 2007/01/10 16:51:02 lehmannf Exp $
+ */
+
+public class PostgreSQLDbHelper extends AbstractDbHelper
+  implements Startable, Recyclable, LookupNotifyable 
+{
+  // --------------------------------------------------------------------------------
+  // Global variables and constants
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Indicates that currently no saved autocommit state exists.
+   */
+
+  protected static final int UNSET = -1;
+
+  /**
+   * Indicates that the saved autocommit state is <code>false</code>.
+   */
+
+  protected static final int FALSE = 0;
+
+  /**
+   * Indicates that the saved autocommit state is <code>true</code>.
+   */
+
+  protected static final int TRUE = 1;
+
+  /**
+   * The status object of this class.
+   */
+
+  private static ServiceStatus serviceStatus = new ServiceStatus(PostgreSQLDbHelper.class);
+
+  /**
+   * The saved autocommit state. May be {@link #UNSET UNSET}, {@link #TRUE TRUE}, or
+   * {@link #FALSE FALSE}.
+   */
+
+  protected int savedAutoCommitState = UNSET;
+
+  /**
+   * Size of the byte arrays used as buffers when reading or writing data.
+   */
+
+  protected static final int IO_BUFFER_SIZE = 2048; 
+
+  // --------------------------------------------------------------------------------
+  // Saved autocommit state
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Saves the current autocommit state.
+   */
+
+  protected void saveAutoCommitState ()
+    throws SQLException
+  {
+    final String METHOD_NAME = "saveAutoCommitState";
+    int oldSavedAutoCommitState = this.savedAutoCommitState;
+    this.savedAutoCommitState = (this.connection.getAutoCommit() ? TRUE : FALSE);
+    this.logDebug
+      (METHOD_NAME + ": this.savedAutoCommitState: " + 
+       oldSavedAutoCommitState + " -> " + this.savedAutoCommitState);
+  }
+
+  /**
+   * Restores the last saved autocommit state.
+   *
+   * @throws IllegalStateException if no autocommit state has been saved before, or if
+   * {@link #savedAutoCommitState savedAutoCommitState} has an illegal value (the latter
+   * should never happen).
+   */
+
+  protected void resetAutoCommitState ()
+    throws SQLException
+  {
+    final String METHOD_NAME = "resetAutoCommitState";
+    this.logDebug
+      (METHOD_NAME +
+       ": this.connection.getAutoCommit() = " + this.connection.getAutoCommit() +
+       ", this.savedAutoCommitState = " + this.savedAutoCommitState);
+    switch ( this.savedAutoCommitState )
+      {
+      case TRUE:
+        this.connection.setAutoCommit(true);
+        break;
+      case FALSE:
+        this.connection.setAutoCommit(false);
+        break;
+      case UNSET:
+        throw new IllegalStateException("Saved autocommit state is unset");
+      default:
+        throw new IllegalStateException
+          ("Illegal saved autocommit state: " + this.savedAutoCommitState);
+      }
+  }
+
+  // --------------------------------------------------------------------------------
+  // Large objects
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Reads the large object with the specified OID and writes it to the specified output
+   * stream.
+   */
+
+  protected synchronized void queryLargeObject (int oid, OutputStream outputStream)
+    throws SQLException
+  {
+    try
+      {
+        final String METHOD_NAME = "queryLargeObject";
+        this.logDebug(METHOD_NAME + " 1/4: Started. oid = " + oid);
+
+        // All LargeObject API calls must be within a transaction block
+
+        // Save current autocommit mode:
+        this.saveAutoCommitState();
+
+        // Set autocommit mode to false:
+        this.connection.setAutoCommit(false);
+
+        // Get a LargeObjectManager:
+        LargeObjectManager loManager = this.getConnectionAsPGConnection().getLargeObjectAPI();
+      
+        // Open the large object for reading
+        // ?? Supposed: implicitely BEGINning a transaction ??
+        LargeObject lo = loManager.open(oid, LargeObjectManager.READ);
+        this.logDebug(METHOD_NAME + "2/4: lo = " + lo); 
+
+        // Copy the data from the large object to the OutputStream:
+        byte buffer[] = new byte[IO_BUFFER_SIZE];
+        int num = 0;
+        int totalNum = 0;
+        while ((num = lo.read(buffer, 0, IO_BUFFER_SIZE)) > 0)
+          {
+            outputStream.write(buffer, 0, num);
+            totalNum += num;
+          }
+        outputStream.flush();
+        this.logDebug
+          (METHOD_NAME + " 3/4: Finished reading." +
+           " totalNum = " + totalNum +
+           ", lo.size() = " + lo.size()); 
+        
+        // Close the large object:
+        lo.close();
+	
+        // Commit the LargeObject operation (This is due to Oliver Jowett):
+        this.connection.commit();
+
+        this.logDebug(METHOD_NAME + " 4/4: Done"); 
+      }
+    catch(Exception exception)
+      {
+        throw new SQLException(this.getIdentification() + ": " + exception);
+      }
+    finally
+      {
+        this.resetAutoCommitState();
+      }
+  }
+
+  /**
+   * Writes the data read from the specified input stream as a large object to the
+   * database and returns the OID.
+   */
+
+  protected synchronized int storeLargeObject (InputStream inputStream)
+    throws SQLException
+  {
+    try
+      {
+        final String METHOD_NAME = "storeLargeObject";
+        this.logDebug(METHOD_NAME + " 1/5: Started.");
+
+        // All LargeObject API calls must be within a transaction block
+
+        // Save current autocommit mode:
+        this.saveAutoCommitState();
+
+        // Set autocommit mode to false:
+        this.connection.setAutoCommit(false);
+
+        // Get a LargeObjectManager:
+        LargeObjectManager loManager = this.getConnectionAsPGConnection().getLargeObjectAPI();
+
+        // Create a new large object:
+        int oid = loManager.create(LargeObjectManager.READ | LargeObjectManager.WRITE);
+        this.logDebug(METHOD_NAME + "2/5: oid = " + oid); 
+
+        // Open the large object for writing:
+        LargeObject lo = loManager.open(oid, LargeObjectManager.WRITE);
+        this.logDebug(METHOD_NAME + "3/5: lo = " + lo); 
+
+        // Copy the data from the input stream to the large object:
+ 	byte buffer[] = new byte[IO_BUFFER_SIZE];
+	int num = 0;
+        int totalNum = 0;
+	while ( (num = inputStream.read(buffer, 0, IO_BUFFER_SIZE)) > 0 )
+	  {
+	    lo.write(buffer, 0, num);
+            totalNum += num;
+	  }
+        this.logDebug
+          (METHOD_NAME + " 4/5: Finished writing." +
+           " totalNum = " + totalNum +
+           ", lo.size() = " + lo.size()); 
+
+	// Close the large object
+	lo.close();
+	
+        // ?? -> Commit the LargeObject operation (This is due to Oliver Jowett):
+        // this.connection.commit();
+
+        this.logDebug(METHOD_NAME + "5/5: Done. oid = " + oid); 
+	return oid;
+      }
+    catch(Exception exception)
+      {
+        throw new SQLException(this.getIdentification() + ": " + exception);
+      }
+    finally
+      {
+        this.resetAutoCommitState();
+      }
+  }
+
+  /**
+   * An alias for {@link #queryLargeObject queryLargeObject}
+   *
+   * @deprecated Use {@link #queryLargeObject queryLargeObject} instead
+   */
+
+  public synchronized void readBlobDatum(int oid, OutputStream outputStream)
+    throws SQLException
+  {
+    this.queryLargeObject(oid, outputStream);
+  }
+
+  // --------------------------------------------------------------------------------
+  // Utilities
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the id for a given oid.
+   * @param oid the oid.
+   * @param table the table where to search for the id.
+   */
+
+  protected int getIdForOid (long oid, String table)
+    throws SQLException
+  {
+    final String METHOD_NAME = "getIdForOid(int oid)";
+    this.logDebug(METHOD_NAME + "1/3: oid = " + oid + ", table = " + table);
+    String query =
+      "SELECT " + DbColumn.ID + " FROM " + table + " WHERE oid = " + oid;
+    this.logDebug(METHOD_NAME + "2/3: query = " + query);
+    ResultSet resultSet = this.connection.createStatement().executeQuery(query);
+    if ( ! resultSet.next() )
+      throw new SQLException
+        ("Failed to find id for oid: oid = " + oid + ", table = " + table +
+         ": Result set empty");
+    int id = resultSet.getInt(1);
+    this.logDebug(METHOD_NAME + "3/3: id = " + id);
+    return id;
+  }
+
+  /**
+   * Casts this db helper's connection to {@link PGConnection PGConnection} and returns
+   * it. Checks if this db helper's connection is an instance of
+   * {@link PGConnection PGConnection} before, and throws an exception if it is not.
+   */
+
+  protected PGConnection getConnectionAsPGConnection ()
+    throws SQLException, IllegalStateException
+  {
+    final String METHOD_NAME = "getConnectionAsPGConnection";
+    this.logDebug
+      (METHOD_NAME + " 1/2: Started. this.connection = " + this.connection);
+
+    // Check if this dbHelpper's connection is indeed a PGConnection:
+    if ( ! ( this.connection instanceof PGConnection ) )
+      throw new IllegalStateException("Not a PgConnection: " + this.connection);
+
+    // Do the cast:
+    PGConnection pgConnection = (PGConnection)this.connection; 
+
+    this.logDebug
+      (METHOD_NAME + " 1/2: Done. pgConnection = " + pgConnection);
+
+    return pgConnection;
+  }
+
+  /**
+   * Pre-processes the specified column name. Replaces
+   * {@link DbColumn#SETION_PATH DbColumn.SETION_PATH} by
+   * <pre>
+   *   "path_for_section_id(" +  {@link DbColumn#CONTAINED_IN DbColumn.CONTAINED_IN} + ") AS " + {@link DbColumn#SECTION_PATH DbColumn.SECTION_PATH}</pre>
+   * and leaves other column names unchanged.
+   */
+
+  protected String filterColumn (String column)
+    throws SQLException
+  {
+    return
+      (column.equals(DbColumn.SECTION_PATH)
+       ? "path_for_section_id(" + DbColumn.CONTAINED_IN + ") AS " + DbColumn.SECTION_PATH
+       : column);
+  }
+
+  /**
+   * Does the same as {@link #filterColumn(String) filterColumn(String)}, but adds the
+   * specified prefix to the column name in addition.
+   */
+
+  protected String filterColumn (String column, String prefix)
+    throws SQLException
+  {
+    return
+      (column.equals(DbColumn.SECTION_PATH)
+       ? "path_for_section_id(" + prefix + "." + DbColumn.CONTAINED_IN + ") AS " +
+         DbColumn.SECTION_PATH
+       : prefix + "." + column);
+  }
+
+  // --------------------------------------------------------------------------------
+  // Lifecycle related methods
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Creates a new <code>PostgreSQLDbHelper</code>.
+   */
+
+  public PostgreSQLDbHelper ()
+  {
+    this.instanceStatus = new ServiceInstanceStatus(serviceStatus);
+    this.instanceStatus.notifyCreation();
+  }
+
+  /**
+   * Retrieves a connection to the database and sets {@link #connection} to it.
+   */
+
+  public void start ()
+    throws Exception
+  {
+    final String METHOD_NAME = "start()";
+    this.logDebug(METHOD_NAME + " 1/2");
+    this.connection = DriverManager.getConnection
+      (this.connectionUrl + this.connectionName, this.userName, this.userPassword);
+    this.instanceStatus.notifyStart();
+    this.logDebug
+      (METHOD_NAME + " 2/2: this.connection = " + connection);
+  }
+
+  /**
+   * Closes the database connection. I.e., calls {@link #connection}'s <code>close</code> method.
+   */
+
+  public void stop ()
+    throws Exception
+  {
+    final String METHOD_NAME = "stop()";
+    this.logDebug(METHOD_NAME + " 1/2: Started");
+    this.connection.close();
+    this.locker = null; // just in case...
+    this.instanceStatus.notifyStop();
+    this.logDebug
+      (METHOD_NAME + " 2/2: Done");
+  }
+
+  /**
+   * Recycles this <code>PostgreSQLDbHelper</code>.
+   */
+
+  public void recycle ()
+  {
+    final String METHOD_NAME = "recycle";
+    this.logDebug(METHOD_NAME + " 1/2: Started");
+    super.recycle();
+    this.instanceStatus.notifyRecycle();
+    this.logDebug(METHOD_NAME + " 2/2: Done");
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Creates a new vc_thread in the database-table "vc_threads_<doctypename>" 
+   *  with the given name, and returns its id.
+   */
+
+  public int createNewVCThread(int doctype, String name)
+    throws SQLException
+  {
+    String queryString = "INSERT INTO " + DbTable.VC_THREADS[doctype]
+      + "(" + DbColumn.NAME + ") VALUES(?)";
+    this.logDebug(" createNewVCThread 1/3: prepared query is " + queryString);
+    PreparedStatement pst = this.connection.prepareStatement(queryString);
+    pst.setString(1,name);
+    pst.executeUpdate();
+    long tmp_oid = ((org.postgresql.PGStatement) pst).getLastOID();
+    String queryString2 = "SELECT " +
+      DbColumn.ID + " FROM " + DbTable.VC_THREADS[doctype] +
+      " WHERE oid = ?";
+    this.logDebug(" createNewVCThread 2/3. retrieving new id: prepared query is " + queryString2);
+    PreparedStatement pst2 = this.connection.prepareStatement(queryString2);
+    pst2.setLong(1,tmp_oid);
+    ResultSet rs = pst2.executeQuery();
+    int tmp = DbValue.UNDEFINED_ID;
+    if ( rs.next() ) 
+      {
+	tmp = rs.getInt(1);
+	this.logDebug(" createNewVCThread 3/3: returning auto-generated id = " + tmp);
+      } // end if
+    else throw new SQLException("Database error: auto-created id could not be accessed)");
+    return tmp;
+  }
+
+}

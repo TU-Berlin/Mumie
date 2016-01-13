@@ -1,0 +1,21 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.3 2006/10/23 09:06:15 rassy Exp $
+
+
+
+                                    MMCKXML
+
+
+
+Provides an executable "mmckxml" which checks XML files for well-formedness
+and, optionally, validates them with respect to a DTD or Schema. If no error is
+found, mmckxml simply returns with exit code 0. Otherwise, the error is
+reported to stderr and the exit code is different from 0.
+
+The executable "mmckxml" is simply a Bash script for starting a Java
+application which sends the XML file through a SAX parser.
+
+You can try out mmckxml by applying it to the files in the "test" folder.
+
+
+-- END Of FILE --

@@ -1,0 +1,18 @@
+             Frequently Asked Questions
+
+
+1)
+
+   a) Warum sieht man vom Applet nur eine graue leere Fl�che?
+      Beim �berschreiben der init()-Methode muss als 1. Anweisung
+         super.init();
+      stehen.
+
+   b) Warum ignoriert meine GUI-Komponente (z.B. Button, Label) die Theme-Einstellungen f�r Farbe etc.?
+      In einem Applet muss das Instanzieren einer GUI-Komponente NACH dem
+      super.init() Aufruf geschehen, d.h. in einer Applet-Klasse darf dieses Objekt
+      nicht mit dem new Operator erstellt werden.
+
+   c) Warum sieht man unter Java 1.5 den Inhalt einer JComboBox nur, wenn man das Menü dazu aufklappt?
+      Die Instanz muss nach der init()-Methode erstellt werden oder in der init()-Methode muss setListData()
+      aufgerufen werden.

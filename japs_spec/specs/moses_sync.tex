@@ -1,0 +1,353 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Synchronisation mit MOSES}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: moses_sync.tex,v 1.11 2006/08/11 16:18:22 rassy Exp $}
+
+Diese Spezifgikation beschreibt, welche Daten der JAPS-Datenbank  mit MOSES
+synchronisiert werden müssen und wie die Synchronisation vor sich geht. 
+
+\tableofcontents
+
+\section{Allgemeines}
+
+JAPS übernimmt gewisse Daten von MOSES und spiegelt sie auf seiner eigenen
+Datenbank. MOSES ist dafür verantwortlich, JAPS Änderungen der Daten
+mitzuteilen. Dies geschieht über HTTP-Anfragen von MOSES an JAPS. JAPS selbst
+ändert die Daten nicht.
+
+\section{Synchronisierte Daten}
+
+Die Synchronisation betrifft \emph{Benutzer}, \emph{Tutorien},
+\emph{Lehrveranstaltungen} und \emph{Semester}; in der JAPS-Terminologie also
+die Pseudo-Dokument-Typen \val{user} (Benutzer), \val{tutorial} (Tutorium),
+\val{class} (Lehrveranstaltung) und \val{semester} (Semester). Es werden
+folgende Daten von MOSES aus kontrolliert (in Klammern jeweils die
+Spalten-Namen in der JAPS-Db):
+
+\begin{enumerate}
+\item Bei \emph{Benutzern}: Login-Name (\dbcol{login_name}), verschlüsseltes  Passwort
+  (\dbcol{password}), Vorname (\dbcol{first_name}), Nachname (\dbcol{surname}), 
+  Matrikel-Nummer (\dbcol{matr_number}).
+
+  Unter Usern werden sowohl Studenten als
+  auch Tutoren, Dozenten und Autoren verstanden. Die Synchronisation muss
+  zumindest Studenten, Tutoren und Dozenten erfassen.
+\item Bei \emph{Lehrveranstaltungen}: Name (\dbcol{name}), optional: Kurzbeschreibung
+  (\dbcol{description}), Semester (\dbcol{semester}), Dozenten (\dbcol{class_lecturers}).
+\item Bei \emph{Tutorien}: Name (\dbcol{name}), optional: Kurzbeschreibung
+  (\dbcol{description}).
+\item Bei \emph{Semestern}:  Name (\dbcol{name}), optional: Kurzbeschreibung.
+  (\dbcol{description})
+\end{enumerate}
+
+\begin{block}[remark]
+  Eine Lehrveranstaltung im Sinn des JAPS (\val{class}) bezieht sich immer auf
+  ein \emph{bestimmtes Semester}. Wird die Lehrveranstaltung von mehreren
+  Dozenten gemeinsam oder parallel gehalten, so gilt dies als \emph{eine}
+  Lehrveranstaltung, sofern sie organisatorisch eine Einheit bildet. Dies ist
+  z.B. bei der Mathematik-Ausbildung der Ingenieure an der TU der Fall.
+\end{block}
+
+Von der Synchronisation brauchen nur die Benutzer bzw. Tutorien bzw.
+Lehrveranstaltungen bzw. Semester erfasst zu werden, die der JAPS tatsächlich
+kennen muss.
+
+Falls MOSES keine Kurzbeschreibungen zur Verfügung stellt, können diese von der
+Synchronisation ausgeschlossen werden. In der JAPS-Db wird dann
+\code{NULL} in die Kurzbeschreibungs-Spalte eingetragen.
+
+Es ist nicht zwingend notwendig, dass die Namen der Tutorien,
+Lehrveranstaltungen und Semester, die MOSES an JAPS schickt, mit denen
+identisch sind, die MOSES in seiner eigenen Datenbank abspeichert (oder dass
+MOSES letzteres überhaupt tut). Gleiches gilt für die Kurzbeschreibungen (falls
+nicht von der Synchronisation ausgeschlossen), nicht jedoch für die
+Benutzerdaten.
+
+Für Konventionen bezüglich Namen s. Abschnitt \ref{konv_vorschl}.
+
+
+\section{Synchronisations-ID}
+
+Um die zu synchronisierenden Daten eindeutig identifizieren zu können, werden
+sogenannte \emph{Synchronisations-IDs} eingeführt. Dies ist ein String, der den
+Benutzer bzw. das Tutorium bzw. die Lehrveranstaltung eindeutig bestimmt. Die
+Synchronisations-ID soll über Tabellen-Grenzen hinweg eindeutig sein, z.B darf
+ein Benutzer nicht dieselbe Synchronisations-ID haben wie ein Tutorium.
+
+Die Synchronisations-ID darf maximal 128 Zeichen lang sein und nur aus normalen
+Buchstaben (\code{"a"}, \ldots, \code{"z"}, \code{"A"}, \ldots, \code{"Z"}),
+Ziffen (\code{"0"}, \ldots, \code{"9"}) und den Zeichen \code{"-"}, \code{"_"},
+\code{"."} bestehen.
+
+Da die Synchronisation von MOSES aus gesteuert wird, vergibt MOSES auch die
+Synchronisations-IDs.
+
+Konventionsvorschlag für die Bildung von Synchronisations-IDs:
+
+\begin{preformatted}[code]%
+  moses-\var{tabelle}-\var{id}
+\end{preformatted}
+
+wobei \var{tabelle} der Tabellenname und \var{id} die Id in der MOSES-Datenbank
+sind.
+
+
+\section{Synchronisations-Befehle}
+
+Um eine Synchronisation vorzunehmen, sendet MOSES eine HTTP-Anfrage an
+JAPS. Die URL hat die Form
+
+\begin{preformatted}[code]%
+  \var{url_prefix}/protected/sync/\var{command}
+\end{preformatted}
+
+Hierbei ist \var{url_prefix} der URL-Prefix des JAPS-Servers,
+z.B. \val{http://www.mumie.net/cocoon}, und \var{command} der sogenannte
+\emph{Synchronisations-Befehl}. Er gibt die auszuführende Operation an. Die
+Daten werden als Request-Parameter gesandt. Als Antwort schickt der JAPS ein
+Text-Dokument. War der Synchronisations-Vorgang erfolgreich, besteht das
+Dokument aus dem String "OK". Trat ein Fehler auf, besteht das Dokument aus dem
+String "ERROR: \var{message}", wobei \var{message} für eine Beschreibung des
+Fehlers steht.
+
+BEMERKUNG: Obige URL ist \emph{geschützt}, d.h. nur für autorisierte Benutzer
+zugänglich. S. hierzu Abschnitt \ref{authentifizierung}.
+
+Im folgenden werden alle Synchronisations-Befehle aufgelistet.
+
+\subsection{new-user}
+
+Legt einen neuen Benutzer an. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID des Benutzers
+\item \val{login-name} : Der Login-Name
+\item \val{password-encrypted} : Das Passwort, verschlüsselt
+\item \val{first-name} : Der Vorname
+\item \val{surname} : Der Nachname
+\item \val{matr-number} : Die Matrikel-Nummer. Entfällt, wenn der Benutzer
+  keine Matrikel-Nummer hat.
+\end{enumerate}
+
+\subsection{change-user-data}
+
+Ändert die Daten eines bestehenden Benutzers. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID des Benutzers
+\item \val{login-name} : Der Login-Name
+\item \val{password-encrypted} : Das Passwort, verschlüsselt
+\item \val{first-name} : Der Vorname
+\item \val{surname} : Der Nachname
+\item \val{matr-number} : Die Matrikel-Nummer. Entfällt, wenn der Benutzer
+  keine Matrikel-Nummer hat.
+\end{enumerate}
+Ausser \val{sync-id} brauchen nur die Parameter vorzukommen, deren Daten sich
+geändert haben.
+
+\subsection{new-class}
+
+Legt eine neue Lehrveranstaltung an. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID der Lehrveranstaltung
+\item \val{name} : Der Name
+\item \val{description} : Die Kurzbeschreibung \emph{(optional)}
+\item \val{semester} : Die Synchronisations-ID des Semesters, in dem die
+  Lehrveranstaltung stattfindet
+\item \val{lecturers} : Die Synchronisations-IDs der Dozenten, durch Komma
+  und/oder Leerzeichen getrennt
+\end{enumerate}
+
+
+\subsection{change-class-data}
+
+Ändert die Daten einer bestehenden Lehrveranstaltung. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID der Lehrveranstaltung
+\item \val{name} : Der Name
+\item \val{description} : Die Kurzbeschreibung \emph{(optional)}
+\item \val{semester} : Die Synchronisations-ID des Semesters, in dem die
+  Lehrveranstaltung stattfindet
+\item \val{lecturers} : Die Synchronisations-IDs der Dozenten, durch Komma
+  und/oder Leerzeichen getrennt
+\end{enumerate}
+Ausser \val{sync-id} brauchen nur die Parameter vorzukommen, deren Daten sich
+geändert haben.
+
+\subsection{new-tutorial}
+
+Legt ein neues Tutorium an. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID des Tutoriums
+\item \val{name} : Der Name
+\item \val{description} : Die Kurzbeschreibung \emph{(optional)}
+\item \val{tutor} : Die Synchronisations-ID des Benutzers, der der Tutor dieses
+  Tutoriums ist.
+\item \val{class} : Die Synchronisations-ID der Lehrveranstaltung, zu der dieses
+  Tutorium gehört.
+\end{enumerate}
+
+
+\subsection{change-tutorial-data}
+
+Ändert die Daten eines bestehenden Tutoriums. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID des Tutoriums
+\item \val{name} : Der Name
+\item \val{description} : Die Kurzbeschreibung \emph{(optional)}
+\item \val{tutor} : Die Synchronisations-ID des Benutzers, der der Tutor dieses
+\item \val{class} : Die Synchronisations-ID der Lehrveranstaltung, zu der dieses
+  Tutorium gehört.
+\end{enumerate}
+Ausser \val{sync-id} brauchen nur die Parameter vorzukommen, deren Daten sich
+geändert haben.
+
+
+\subsection{new-semester}
+
+Legt ein neues Semester an. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID des Semesters
+\item \val{name} : Der Name
+\item \val{description} : Die Kurzbeschreibung \emph{(optional)}
+\end{enumerate}
+
+
+\subsection{change-semester-data}
+
+Ändert die Daten eines bestehenden Semesters. Request-Parameter:
+\begin{enumerate}
+\item \val{sync-id} : Die Synchronisations-ID des Semesters
+\item \val{name} : Der Name
+\item \val{description} : Die Kurzbeschreibung \emph{(optional)}
+\end{enumerate}
+Ausser \val{sync-id} brauchen nur die Parameter vorzukommen, deren Daten sich
+geändert haben.
+
+
+\subsection{add-user-to-tutorial}
+
+Trägt einen Benutzer in ein Tutorium ein. Request-Parameter:
+\begin{enumerate}
+\item \val{tutorial} : Synchronisations-ID des Tutoriums
+\item \val{user} : Synchronisations-ID des Benutzers
+\end{enumerate}
+
+
+\subsection{remove-user-from-tutorial}
+
+Trägt einen Benutzer aus einem Tutorium aus. Request-Parameter:
+\begin{enumerate}
+\item \val{tutorial} : Synchronisations-ID des Tutoriums
+\item \val{user} : Synchronisations-ID des Benutzers
+\end{enumerate}
+
+
+\subsection{change-user-tutorial}
+
+Wechselt das Tutorium eines Benutzers. Request-Parameter:
+\begin{enumerate}
+\item \val{old-tutorial} : Synchronisations-ID des alten Tutoriums
+\item \val{new-tutorial} : Synchronisations-ID des neuen Tutoriums
+\item \val{user} : Synchronisations-ID des Benutzers
+\end{enumerate}
+
+
+\section{Autentifizierung von MOSES bei JAPS}\label{authentifizierung}
+
+MOSES tritt gegenüber JAPS als HTTP-Client auf. Da MOSES Zugang zu geschützten URLs
+benötigt, muss MOSES als Benutzer beim JAPS eingetragen sein und sich mit
+Benutzernamen und Passwort einloggen. Die spätere Authentifizierung erfolgt
+mit Hilfe von Cookies; MOSES sollte also Cookies verwalten können.
+
+\section{Konventionsvorschläge für Namen}\label{konv_vorschl}
+
+Die Namen von Tutorien sollten so gewählt werden, dass auf den ersten Blick
+erkennbar ist, um welches Tutorium es sich handelt. Gleiches gilt für
+Lehrveranstaltungen und Semester.
+
+
+\subsection{Tutorien}
+
+Konventionsvorschlag:
+
+\begin{preformatted}[code]%
+  "\var{wochentag} \var{start}-\var{ende} \var{raum}"
+\end{preformatted}
+
+wobei:%
+\begin{itemize}
+\item \var{wochentag} : Kurzbezeichnung des Wochentags, an dem das
+  Tutorium stattfindet (\code{Mo}, \code{Di}, usw.),
+\item \var{start} : Uhrzeit, zu der das Tutorium beginnt, z.B. als Stunde
+  zwischen 0 und 23, zweistellig,
+\item \var{ende} : Uhrzeit, zu der das Tutorium endet, im selben Format wie
+  oben,
+\item \var{raum} : Bezeichnung des Raums, in dem das Tutorium stattfindet.
+\end{itemize}
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  "Mo 08-10 MA 721"
+\end{preformatted}
+
+für ein Tutorium, das montags zwischen 8 und 10 Uhr im Raum MA 721
+stattfindet.
+
+
+\subsection{Lehrveranstaltungen}
+
+Konventionsvorschlag: 
+
+\begin{preformatted}[code]%
+  "\var{lv_nummer}: \var{lv_name}"
+\end{preformatted}
+wobei:%
+\begin{itemize}
+\item \var{lv_nummer} : Lehrveranstaltungsnummer laut Vorlesungsverzeichnis,
+\item \var{lv_name} :  Name laut Vorlesungsverzeichnis.
+\end{itemize}
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  "0230 L 901: Lineare Algebra für Ingenieure"
+\end{preformatted}
+
+
+\subsection{Semester}
+
+Konventionsvorschlag: 
+
+\begin{preformatted}[code]%
+  "WS \var{jahr}/\var{jahr'}"    \meta{(für Wintersemester)}
+  "SS \var{jahr}"          \meta{(für Sommersemester)}
+\end{preformatted}
+wobei:%
+\begin{itemize}
+\item \var{jahr} :  Jahr, in dem das Semester beginnt, z.B. als Anzahl der Jahre seit
+  2000, zweistelling,
+\item \var{jahr'} :  Jahr, in dem das Semester endet, im selben Format.
+\end{itemize}
+
+
+Beispiele:
+
+\begin{preformatted}[code]%
+  "WS 05"
+  "SS 05/06"
+\end{preformatted}
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

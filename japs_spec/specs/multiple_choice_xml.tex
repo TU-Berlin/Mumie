@@ -1,0 +1,435 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Multiple-Choice-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+\version{$Id: multiple_choice_xml.tex,v 1.3 2006/08/11 16:18:22 rassy Exp $}
+
+\deprecated{Veraltet: Wird ersetzt durch \href{problem_xml.xhtml}{Problem-XML}.}
+
+\tableofcontents
+
+\section{Grundsätzliche Struktur}
+
+\begin{enumerate}
+  
+\item Ein Part, ein oder mehrere Subparts
+  
+\item Part vom subtype \val{mchoiceproblems}
+
+\item \label{subparts} Jedem Subpart entspricht eine Multiple-Choice-Aufgabe.
+  
+\item Der Subpart darf Text mit den üblichen Formatierungen (Absätze, Listen,
+  Tabellen usw.) sowie mathematische Formeln und Multimedia (Bilder usw.)
+  enthalten.
+  
+\item Der Subpart muss ein oder mehrere Elemente \element{choices} enthalten.
+  Jedes definiert eine Gruppe möglicher Antworten. Empfehlung: In jedem Subpart
+  nur ein \element{choices}-Element, von Ausnahmefällen abgesehen.
+  
+\item \label{choices_type} \element{choices} hat ein \attrib{type}-Attribut mit
+  folgenden möglichen Werten:
+
+  \begin{enumerate}
+    
+  \item \val{unique} Genau eine Antwort kann angekreuzt werden.
+    
+  \item \val{multiple} Eine oder mehrere Antworten können angekreuzt werden.
+    
+  \item \val{yesno} Für jede Antwort muss "ja" oder "nein" angekreuzt werden.
+
+  \end{enumerate}
+  
+\item \element{choices} hat ein oder mehrere \element{choice}-Kindelemente.
+  Jedes entspricht einer Antwort.
+  
+\item Jedes \element{choice}-Element hat folgende Kinder:
+
+  \begin{enumerate}
+    
+  \item Genau ein \element{assertion}-Element. Enthält den Wortlaut der zur
+    Wahl stehenden Antwort. Darf Text mit den üblichen Formatierungen sowie
+    mathematische Formeln und Multimedia enthalten.
+    
+  \item Ein \element{solution}-Element. Gibt die Lösung an (d.h. ob die Antwort
+    richtig oder falsch ist). Kein Inhalt, ein Attribut: \attrib{value};
+    mögliche Werte: "true" (Antwort ist richtig) und "false" (Antwort ist
+    falsch). S. \ref{subparts}.  Braucht bei \element{choices} mit
+    type="unique" nur bei der richtigen Antwort zu stehen. Sonst zwingend.
+    
+  \item Ein optionales \element{explanation}-Element. Enthält eine ausführliche
+    Begründung der Lösung. Darf Text mit den üblichen Formatierungen sowie
+    mathematische Formeln und Multimedia enthalten.
+
+  \end{enumerate}
+  
+\item Im Anschluss an die \element{choice}-Elemente kann \element{choices} ein
+  \element{commonexpl}-Kindelement haben. Enthält eine ausführliche Begründung
+  der Lösung. Darf Text mit den üblichen Formatierungen sowie mathematische
+  Formeln und Multimedia enthalten. Empfehlung: Existiert dieses Element, so
+  sollten die \element{chioce}-Elemente keine \element{explanation}-Kinder
+  haben.
+  
+\item \label{choices_key} Jedes \element{choices}-Element hat ein Attribut
+  \attrib{key}, das dieses Element eindeutig identifiziert. Der Wert ist eine
+  ganze Zahl, welche die Nummer des \element{choices}-Elements angibt. Dazu
+  denke man sich die \element{chioces}-Elemente von 1 beginnend im XML-Code
+  fortlaufend numeriert.
+  
+\item \label{choice_key} Jedes \element{chioce}-Element hat ein Attribut
+  \attrib{key}, das dieses Element innerhalb des umschliessenden
+  \element{choices}-Elements eindeutig indentifiziert. Der Wert ist eine ganze
+  Zahl, welche die Nummer des \element{choice}-Elements angibt. Dazu denke man
+  sich die \element{choice}-Kindelemente des umschliessenden
+  \element{choices}-Elements von 1 beginnend fortlaufend numeriert.
+
+\end{enumerate}
+
+
+\section{XML-Elemente}
+
+Root-Element:
+\begin{preformatted}%
+<element>
+  <!-- Content: title answers part -->
+</element>
+\end{preformatted}
+
+\begin{preformatted}%
+<title>
+  <!-- Content: TITLE_MISC -->
+</title>
+\end{preformatted}
+
+\begin{preformatted}%
+<part
+  subtype="mchoiceproblems">
+  <!-- Content: subpart+ -->
+</part>
+\end{preformatted}
+
+\begin{preformatted}%
+<subpart>
+  <!-- Content: MISC choices -->
+</subpart>
+\end{preformatted}
+
+\begin{preformatted}%
+<choices
+  type="unique|multiple|yesno"
+  key="KEY">
+  <!-- Content: choice+ commonexpl?-->
+</choices>
+\end{preformatted}
+
+\begin{preformatted}%
+<choice
+  key="KEY">
+  <!-- Content: assertion solution explanation?-->
+</choice>
+\end{preformatted}
+
+\begin{preformatted}%
+<assertion>
+  <!-- Content: MISC -->
+</assertion>
+\end{preformatted}
+
+\begin{preformatted}%
+<solution
+  value="true|false">
+  <!-- Content: MISC -->
+</solution>
+\end{preformatted}
+
+\begin{preformatted}%
+<explanation>
+  <!-- Content: MISC -->
+</explanation>
+\end{preformatted}
+
+\begin{preformatted}%
+<commonexpl>
+  <!-- Content: MISC -->
+</commonexpl>
+\end{preformatted}
+
+Abkürzungen/Platzhalter:
+
+\begin{description}[code-doc]
+  
+\item[KEY] Ganze Zahl, verwendet zur Identifizierung von \element{choice}- und
+  \element{choices}- Elementen (s. \ref{choices_key}).
+  
+\item[MISC] Text mit den üblichen Formatierungen (Absätze, Listen, Tabellen
+  usw.), mathematische Formeln, Multimedia-Objekte (Bilder usw.).
+  
+\item[TITLE_MISC] Text mit den in Titeln üblichen Formatierungen.
+
+\end{description}
+
+
+\section{Beispiel}
+
+\begin{preformatted}[code]%
+<element xmlns="http://www.mumie.net/xml-namespace/document/content/element">
+  <title>Der Titel</title>
+  <part subtype="mchoiceproblems">
+    <subpart>
+      <par>
+        Gegeben sei folgende Matrix:
+      </par>
+      <!--
+        die Matrix
+      -->
+      <par>
+        Entscheiden Sie, ob die folgenden Aussagen richtig oder falsch sind:
+      </par>
+      <choices key="1" type="yesno">
+        <choice key="1">
+          <assertion>
+            Die Matrix ist symmetrisch
+          </assertion>
+          <solution value="true"/>
+          <explanation>
+            <!-- Naehere Erklaerung -->
+          </explanation>
+        </choice>
+        <choice key="2">
+          <assertion>
+            Die Matrix ist eine Dreiecksmatrix
+          </assertion>
+          <solution value="false"/>
+          <explanation>
+            <!-- Naehere Erklaerung -->
+          </explanation>
+        </choice>
+      </choices>
+    </subpart>
+  </part>
+</element>
+\end{preformatted}
+
+
+\section{XHTML-Formularelemente}\label{xhtml_formularelemente}
+
+Werden die Multiple-Choice-Fragen auf Client-Seite durch XHTML-Formularelemente
+dargestellt, so sollen folgende Regeln gelten:
+
+\begin{enumerate}
+  
+\item Alle Request-Parameter, die einem Formular-Element zu einer möglichen
+  Antwort entsprechen, haben den gemeinsamen Prefix \val{answer.}.
+  
+\item \label{choices_unique} '\element{choices}
+  \attrib{type}="\val{unique}"'-Elemente werden durch '\element{input}
+  \attrib{type}="\val{radio}"'-Elemente dargestellt. Für jedes
+  \element{choice}-Kindelement gibt es genau ein \element{input}-Element.
+  Dessen \attrib{name}- und \attrib{value}-Attribute sind gegeben durch
+       
+  \begin{preformatted}%
+    name="answer.unique.CHOICES-KEY"  value="CHOICE-KEY"
+  \end{preformatted}
+
+  Hierbei ist \var{CHOICES-KEY} der Wert des \attrib{key}-Attributs des umschliessenden
+  \element{choices}-Elements und \var{CHOICE-KEY} der Wert des \attrib{key}-Attributs des
+  \element{choice}-Elements. (Es haben also alle \element{input}-Elemente, die zum selben
+  \element{choices}-Element gehören, dasselbe \attrib{name}-Attribut.)
+  
+  Beispiel:
+
+  \begin{preformatted}[code]%
+    <choices key="5" type="unique">
+      <!-- Drei 'choice'-Kindelemente -->
+    <choices>
+  \end{preformatted}
+
+  entspricht
+    
+  \begin{preformatted}[code]%
+    <input type="radio" name="answer.unique.5" value="1"/>
+    <input type="radio" name="answer.unique.5" value="2"/>
+    <input type="radio" name="answer.unique.5" value="3"/>
+  \end{preformatted}
+    
+\item '\element{choices} \attrib{type}="\val{multiple}"'-Elemente werden durch
+  '\element{input} \attrib{type}="\val{checkbox}"'- Elemente dargestellt. Für
+  jedes \element{choice}-Kindelement gibt es genau ein \element{input}-Element.
+  Dessen \attrib{name}- und \attrib{value}-Attribute sind gegeben durch
+
+  \begin{preformatted}%
+    name="answer.multiple.CHOICES-KEY.CHOICE-KEY"  value="selected"
+  \end{preformatted}
+
+  Hierbei sind \var{CHOICES-KEY} und \var{CHOICE-KEY} wie in \ref{choices_unique} definiert.
+
+  Beispiel:
+
+  \begin{preformatted}[code]%
+    <choices key="5" type="multiple">
+      <!-- Drei 'choice'-Kindelemente -->
+    <choices>
+  \end{preformatted}
+
+  entspricht
+
+  \begin{preformatted}[code]%
+    <input type="checkbox" name="answer.multiple.5.1" value="selected"/>
+    <input type="checkbox" name="answer.multiple.5.2" value="selected"/>
+    <input type="checkbox" name="answer.multiple.5.3" value="selected"/>
+  \end{preformatted}
+  
+\item '\element{choices} \attrib{type}="\val{yesno}"'-Elemente werden durch
+  Paare von '\element{input} \attrib{type}="\val{radio}"'-Elementen
+  dargestellt. Für jedes \element{choice}-Kindelement gibt es genau zwei
+  \element{input}-Elemente, eins für die "Ja"-Antwort und eins für die
+  "Nein"-Antwort. Deren \attrib{name}- und \attrib{value}-Attribute sind
+  gegeben durch
+
+  \begin{preformatted}%
+    name="answer.yesno.CHOICES-KEY.CHOICE-KEY"  value="yes"    ("Ja"-Antwort)
+    name="answer.yesno.CHOICES-KEY.CHOICE-KEY"  value="no"     ("Nein"-Antwort)
+  \end{preformatted}
+    
+  Hierbei sind \var{CHOICES-KEY} und \var{CHOICE-KEY} wie in \ref{choices_unique} definiert.
+    
+  Beispiel:
+    
+  \begin{preformatted}[code]%
+    <choices key="5" type="yesno">
+      <!-- Drei 'choice'-Kindelemente -->
+    <choices>
+  \end{preformatted}
+    
+  entspricht
+    
+  \begin{preformatted}[code]%
+    <input type="radio" name="answer.yesno.5.1" value="yes"/>
+    <input type="radio" name="answer.yesno.5.1" value="no"/>
+    <input type="radio" name="answer.yesno.5.2" value="yes"/>
+    <input type="radio" name="answer.yesno.5.2" value="no"/>
+    <input type="radio" name="answer.yesno.5.3" value="yes"/>
+    <input type="radio" name="answer.yesno.5.3" value="no"/>
+  \end{preformatted}
+
+\end{enumerate}
+
+
+
+\section{Antwort-XML}
+
+[Das sog. "Antwort-XML" hält fest, welche Antworten der Studierende angekreuzt
+hat.]
+
+\begin{enumerate}
+  
+\item Namespace: \val{http://www.mumie.net/xml-namespace/multiple-choice-answers}
+  
+\item Root-Element: \element{answers}.
+  
+\item Darin: Beliebig viele (einschliesslich 0) \element{answer}-Kindelemente.
+  
+\item Jedes \element{answer}-Kindelement entspricht genau einer vom Studierenden
+  beantworteten Frage des Multiple-Choice-Tests; umgekehrt muss es zu jeder
+  beantworteten Frage ein solches Element geben. (Daraus folgt insbesondere,
+  dass es zu nicht beanteworteten Fragen kein \element{answer}-Element gibt.)
+  
+\item Jedes \element{answer}-Element hat zwei Attribute: \attrib{choices} und
+  \attrib{type}. Ersteres enthält den Key des entsprechenden
+  \element{choices}-Elements (s. \ref{choices_key}), letzteres den Typ (s.
+  \ref{choices_type}).
+  
+\item Jedes \element{answer}-Element hat ein oder mehrere
+  \element{selected}-Kindelemente. Jedes entspricht genau einer angekreutzten
+  möglichen Antwort auf die Frage; genauer gilt:
+  
+\item Im Fall \attrib{type}="\val{unique}": Es gibt genau ein
+  \element{selected}-Kindelement. Dieses hat ein \attrib{choice}-Attribut, dass
+  den Key des \element{choice}-Elements (s. \ref{choice_key}) der angekreutzten
+  Antwort enthält.
+  
+\item Im Fall \attrib{type}="\val{multiple}": Es gibt zu jeder angekreuzten
+  Antwort ein \element{selected}-Kindelement. Dieses hat ein
+  \attrib{choice}-Attribut, dass den Key des entsprechenden
+  \element{choice}-Elements (s. \ref{choice_key}) enthält.
+  
+\item Im Fall \attrib{type}="\val{yesno}": Es gibt zu jeder Antwort, bei der
+  "ja" oder "nein" angekreuzt wurde, ein \element{selected}-Kindelement. Dieses
+  hat zwei Attribute: \attrib{choice} und \attrib{value}. Ersteres enthält den
+  Key des entsprechenden \element{choice}-Elements (s. \ref{choice_key}),
+  letzteres den Wert "yes" oder "no", je nachdem, ob "ja" oder "nein"
+  angekreuzt wurde.
+  
+\item Für jede Antwort, die der Studierende angekreuzt hat, muss ein
+  \element{answer}-Element vorhanden sein;
+  
+\item Jedes \element{answer}-Element hat die Form
+
+\end{enumerate}
+
+Beispiel:
+
+\begin{preformatted}[code]%
+<answers xmlns="http://www.mumie.net/xml-namespace/multiple-choice-answers">
+  <answer choices="1" type="yesno">
+    <selected choice="1" value="no"/>
+    <selected choice="2" value="yes"/>
+    <selected choice="4" value="yes"/>
+  </answer>
+  <answer choices="2" type="unique">
+    <selected choice="2"/>
+  </answer>
+  <answer choices="3" type="multiple">
+    <selected choice="1"/>
+    <selected choice="2"/>
+    <selected choice="5"/>
+  </answer>
+</answers>
+\end{preformatted}
+
+
+\section{Daten im 'mumie:dynamic_data'-Element}
+
+Das Metainfo-Element 'mumie:dynamic_data' hat die folgenden Kindelemente:
+
+\begin{enumerate}
+  
+\item Ein optionales Element 'answers'. Dieses enthält das Antwort-XML (s.
+  \ref{xhtml_formularelemente}) der letzten Sitzung, falls vorhanden.
+  
+\item Eine Reihe von Elementen der Form:
+
+  \begin{preformatted}%
+    <mumie:param name="NAME" value="VALUE"/>
+  \end{preformatted}
+
+  Im einzelnen:
+
+  \begin{enumerate}
+  
+  \item \var{NAME} = \val{is_course_member}, \var{VALUE} = \val{yes|no}. Gibt
+    an, ob der Benutzer, von dem der Request stammt, Teilnehmer des Kurses ist.
+  
+  \item \var{NAME} = \val{timeframe_relation}, \var{VALUE} =
+    \val{before|inside|after}. Gibt an, ob der gegenwärtige Zeitpunkt vor, in,
+    oder nach dem Bearbeitungszeitraum des Übungsblatts liegt.
+  
+  \item \var{NAME} = \val{stored_answers}, \var{VALUE} = \var{yes|no}. Gibt an,
+    ob diese Seite die Response auf einen Upload der Antworten ist. Optional,
+    Default ist "no".
+
+  \end{enumerate}
+
+\end{enumerate}
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

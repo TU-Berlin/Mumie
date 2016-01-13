@@ -1,0 +1,90 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: INSTALL,v 1.3 2009/03/13 15:23:26 rassy Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                       MMJIPC INSTALLATION INSTRUCTIONS
+
+
+
+1. Requirements
+   ============
+
+  1.1. Java 1.4.2_10 or better.
+
+
+2. Installation location
+   =====================
+
+All files are installed under a directory <prefix> which defaults to
+/usr/local. If you want to change the default, you have two options:
+
+  2.1. Set the environment variable MM_BUILD_PREFIX, and give it the value
+       <my-prefix>, where <my-prefix> is the directory where you want the files
+       to be installed. This option has the advantage that MM_BUILD_PREFIX is
+       recognized by other build scripts of the MUMIE project, too.
+
+  2.2. Change to the root directory of the Japs Client distribution (the
+       directory this file is in), create a file named build.conf and add 
+       the following line to it: 
+
+         prefix=<my-prefix>
+
+       Remark: The build and installation are done by a Bash script which reads
+       the file build.conf by means of the 'source' command. Thus, you can use
+       shell substitution in build.conf. E.g.,
+
+         prefix=$HOME
+
+       would set the installation location to your home directory.
+
+If <prefix> is set both in build.conf and by the environment variable
+MM_BUILD_PREFIX, the setting in build.conf takes precedence.
+
+
+3. 64 bit note
+   ===========
+
+If you are building on a 64 bit machine, it might be necessary to call gcc
+with the -fPIC option. To do so, add the following line to your build.conf file
+(cf. 2.2):
+
+  gcc_options=-fPIC
+
+
+4. Build and Installation
+   ======================
+
+  4.1. Change to the root directory of the Mmjipc distribution (this is the
+       directory this file is in).  
+
+  4.2. Type
+
+         $ ./build.sh
+
+       This builds Mmjipc. 
+
+  4.3. Make sure you have write permission in <prefix>. Switch user to root if
+       necessary.
+
+  4.4. Type
+
+         $ ./build.sh install
+
+       This installs Mmjipc.
+
+Remark: build.sh is Mmjipc's build script. To get more information about it,
+type
+
+  $ ./build.sh -h
+
+
+5. Post-installation setup
+   =======================
+
+If you want to use Mmjipc, make sure <prefix>/lib/java/mumie-ipc.jar is in
+your classpath.
+
+
+-- END OF FILE --

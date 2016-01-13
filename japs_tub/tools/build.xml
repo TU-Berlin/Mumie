@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="japs tub" default="japs-tub" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property name="japs-tub.java.dir" value="${basedir}/java"/>
+  <property name="japs-tub.java.src.dir" value="${japs-tub.java.dir}/src"/>
+  <property name="japs-tub.java.classes.dir" value="${japs-tub.java.dir}/classes"/>
+  <property name="japs-tub.java.lib.dir" value="${japs-tub.java.dir}/lib"/>
+  <property name="japs-tub.japs.dir" value="${basedir}/../japs"/>
+  <property name="japs-tub.japs.java.lib.dir" value="${japs-tub.japs.dir}/java/lib"/>
+  <property name="japs-tub.jar.file" value="mumie-japs-tub.jar"/>
+  <property name="japs-tub.java.package.path" value="net/mumie/cocoon"/>
+  <property name="japs-tub.tomcat.dir" value=""/>
+  <property name="japs-tub.tomcat.common.lib.dir" value="${japs-tub.tomcat.dir}/common/lib"/>
+  <property name="japs-tub.webapp.dir" value="${japs-tub.tomcat.dir}/webapps/cocoon"/>
+  <property name="japs-tub.webapp.web-inf.dir" value="${japs-tub.webapp.dir}/WEB-INF"/>
+  <property name="japs-tub.webapp.classes.dir" value="${japs-tub.webapp.web-inf.dir}/classes"/>
+  <property name="japs-tub.webapp.lib.dir" value="${japs-tub.webapp.web-inf.dir}/lib"/>
+  <property name="japs-tub.install.prefix" value="/usr/local"/>
+  <property name="japs-tub.install.lib.java.dir" value="${japs-tub.install.prefix}/lib/java"/>
+  <property name="japs-tub.verbose" value="no"/>
+  <property name="japs-tub.force" value="no"/>
+  <property name="japs-tub.javac.verbose" value="no"/>
+  <property name="japs-tub.javac.deprecation" value="no"/>
+  <property name="japs-tub.javac.debug" value="yes"/>
+  <property name="japs-tub.vendor" value="Berlin University of Technology"/>
+  <property name="japs-tub.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="japs-tub.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="japs-tub.internal.force">
+    <istrue value="${japs-tub.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${japs-tub.install.lib.java.dir}">
+        <include name="mumie-sql.jar"/>
+        <include name="mumie-japs-datasheet.jar"/>
+      </fileset>
+      <fileset dir="${japs-tub.webapp.lib.dir}">
+        <include name="*.jar"/>
+        <exclude name="mumie-*.jar"/>
+      </fileset>
+      <fileset dir="${japs-tub.tomcat.common.lib.dir}">
+        <include name="servlet-api.jar"/>
+      </fileset>
+      <fileset dir="${japs-tub.japs.java.lib.dir}">
+        <include name="mumie-japs.jar"/>
+      </fileset>
+    </path>
+    <property name="japs-tub.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          depends="classpath"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="japs-tub."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$japs-tub.verbose}">
+      <fileset dir="${japs-tub.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+        <include name="${japs-tub.java.package.path}/**/*.class"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) japs-tub.internal.force is set, which is
+     equivalent to japs-tub.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="japs-tub.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     japs-tub.internal.force is set, which is equivalent to japs-tub.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${japs-tub.java.src.dir}"
+           destdir="${japs-tub.java.classes.dir}"
+           classpathref="classpath"
+           listfiles="${japs-tub.verbose}"
+           deprecation="${japs-tub.javac.deprecation}"
+           verbose="${japs-tub.javac.verbose}"
+           debug="${japs-tub.javac.debug}"
+           failonerror="yes">
+      <include name="${japs-tub.java.package.path}/**/*.java"/>
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${japs-tub.java.lib.dir}/${japs-tub.jar.file}"> 
+      <manifest>
+        <attribute name="Created" value="${japs-tub.timestamp}"/>
+        <section name="${japs-tub.java.package.path}">
+          <attribute name="Specification-Title" value="Mumie Japs"/>
+          <attribute name="Specification-Version" value="${japs-tub.version}"/>
+          <attribute name="Specification-Vendor" value="${japs-tub.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.japs-tub.build"/>
+          <attribute name="Implementation-Version" value="${japs-tub.version}"/> 
+          <attribute name="Implementation-Vendor" value="${japs-tub.vendor}"/>
+        </section>
+      </manifest>
+      <fileset dir="${japs-tub.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+        <include name="${japs-tub.java.package.path}/**/*.class"/>
+        <include name="${japs-tub.java.package.path}/transformers/rootxsl.xsl"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if japs-tub.internal.force is set, which is equivalent to japs-tub.force being 
+     true.
+  -->
+
+  <target name="japs-tub"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+</project>
+

@@ -1,0 +1,78 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2010 Technische Universitaet Berlin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+html
+  {
+    font-family: Albany AMT, Verdana, Helvetica, sans-serif;
+    font-size: 11pt;
+  }
+
+html
+  {
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 0pt 0pt 0pt 0pt;
+  }
+
+body
+  {
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 0pt 0pt 0pt 0pt;
+  }
+
+table.tree
+  {
+    border-collapse: collapse;
+    padding: 0em 0em 0em 0em;
+    margin: 1.5ex 1em 1.5ex 1em;
+  }
+
+table.tree table.tree 
+  {
+    padding: 0em 0em 0em 0em;
+    margin: 0em 0em 0em 0em;
+  }
+
+table.tree td
+  {
+    margin: 0em 0em 0em 0em;
+    padding: 0.1ex 0em 0.1ex 0em;
+    border-style: none;
+    border-width: 1px;
+  }
+
+table.tree tr.subtree
+  {
+    visibility: collapse;
+  }
+
+table.tree tr.subtree > td
+  {
+    padding-left: 2.5em;
+  }
+
+table.tree span.handle
+  {
+    font-family: Courier, monospace;
+    cursor: pointer;
+  }

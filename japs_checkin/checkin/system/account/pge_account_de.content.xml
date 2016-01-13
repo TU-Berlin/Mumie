@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   $Id: pge_account_de.content.xml,v 1.5 2008/09/14 15:54:43 rassy Exp $
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+
+  <head>
+    <title>MUMIE: Benutzerkonto</title>
+    <mmx:css-stylesheet/>
+  </head>
+
+  <body>
+
+    <mmx:top-bar checked="account"/>
+
+    <div class="main-bounded-width">
+
+    <h1>Benutzerkonto</h1>
+
+    <p>
+      Von hier aus k&#246;nnen Sie Einstellungen zu Ihrem MUMIE Benutzerkonto vornehmen.
+      Die folgenden Links f&#252;hren Sie zu den einzelnen Funktionalit&#228;ten.
+    </p>
+    
+    <table class="list">
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/account/change-password">Passwort &#228;ndern</a></p>
+        </td>
+        <td>
+          <p>Hier kann das Passwort ge&#228;ndert werden.</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/account/change-language-request">Sprache &#228;ndern</a></p>
+        </td>
+        <td>
+          <p>Hier kann die Sprache ge&#228;ndert werden.</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/account/change-theme-request">Theme &#228;ndern</a></p>
+        </td>
+        <td>
+          <p>Hier kann das Theme ge&#228;ndert werden.</p>
+        </td>
+      </tr>
+    </table>
+    <mmx:footer/>
+    </div>
+  </body>
+</html>
+

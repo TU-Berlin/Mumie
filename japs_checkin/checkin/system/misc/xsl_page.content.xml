@@ -1,0 +1,471 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_page.content.xml,v 1.15 2009/09/24 00:40:54 rassy Exp $
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention"
+                exclude-result-prefixes="xsl-ext mumie mmx">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-page-i18n" internal="yes"/>
+
+<xsl:output method="xml" 
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables.                                             -->
+<!-- ================================================================================ -->
+
+<!-- The XHTML namespace: -->
+<xsl:param name="xhtml-namespace" select="'http://www.w3.org/1999/xhtml'"/>
+
+<!-- The extension namespace: -->
+<xsl:param name="extension-namespace"
+           select="'http://www.mumie.net/xml-namespace/xhtml-extention'"/>
+
+<!-- Whether the "object" element is used for applets: -->
+<xsl:param name="use-object-element-for-applets">no</xsl:param>
+
+<!-- ================================================================================ -->
+<!-- h1: Non-extension elements and attributes                                        -->
+<!-- ================================================================================ -->
+
+<xsl:template match="*[namespace-uri()!=$extension-namespace]" priority="0">
+  <xsl:copy>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="mmx:href|mmx:src|mmx:action" mode="attrib"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="@*[namespace-uri()!=$extension-namespace]" priority="0">
+  <xsl:copy-of select="."/>
+</xsl:template>
+
+<!--
+  Special template for 'frame' and 'iframe' elements which have a 'name' but no
+  'id' attribute. Adds an 'id' attribute with the same value as the 'name'
+  attribute.
+-->
+
+<xsl:template match="frame[@name and not(@id)]|iframe[@name and not(@id)]">
+  <xsl:copy>
+    <xsl:attribute name="id">
+      <xsl:value-of select="@name"/>
+    </xsl:attribute>
+    <xsl:attribute name="name">
+      <xsl:value-of select="@name"/>
+    </xsl:attribute>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="mmx:href|mmx:src|mmx:action" mode="attrib"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+<!--
+  Special template for 'frame' and 'iframe' elements which have an 'id' but no
+  'name' attribute. Adds an 'name' attribute with the same value as the 'id'
+  attribute.
+-->
+
+<xsl:template match="frame[@id and not(@name)]|iframe[@id and not(@name)]">
+  <xsl:copy>
+    <xsl:attribute name="name">
+      <xsl:value-of select="@id"/>
+    </xsl:attribute>
+    <xsl:attribute name="id">
+      <xsl:value-of select="@id"/>
+    </xsl:attribute>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates select="mmx:href|mmx:src|mmx:action" mode="attrib"/>
+    <xsl:apply-templates/>
+  </xsl:copy>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: URLs and "action", "href", and "src" attributes                              -->
+<!-- ================================================================================ -->
+
+<!--
+  Creates an URL according to the attributes of the current element. This
+  template comprises the common part of the templates handling the mmx:url,
+  mmx:href, mmx:src, and mmx:action elements.
+-->
+
+<xsl:template name="url">
+  <xsl:choose>
+    <xsl:when test="@from-params">
+      <xsl:call-template name="xsl.url-from-params">
+        <xsl:with-param name="prefix" select="@from-params"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="@lid">
+      <xsl:call-template name="xsl.resolve-lid"/>
+    </xsl:when>
+    <xsl:when test="@rel-url">
+      <xsl:value-of select="$xsl.url-prefix"/>
+      <xsl:if test="not(starts-with(@rel-url, '/'))">/</xsl:if>
+      <xsl:value-of select="@rel-url"/>
+    </xsl:when>
+  </xsl:choose>
+  <xsl:for-each select="mmx:request-param">
+    <xsl:call-template name="xsl.set-request-param"/>
+  </xsl:for-each>
+</xsl:template>
+
+<!--
+  Handles the mmx:href, mmx:src, and mmx:action elements. Creates an attribute
+  with the same name as the extension element's local name. The value of the
+  attribute is obtained by the template 'url'.
+-->
+
+<xsl:template match="mmx:href|mmx:src|mmx:action" mode="attrib">
+  <xsl:attribute name="{local-name()}">
+    <xsl:call-template name="url"/>
+  </xsl:attribute>
+</xsl:template>
+
+<xsl:template match="mmx:href|mmx:src|mmx:action">
+  <!-- Ignored in normal mode -->
+</xsl:template>
+
+<!--
+  Handles the mmx:url element. Creates an URL by calling the template 'url'.
+-->
+
+<xsl:template name="mmx:url">
+  <xsl:call-template name="url"/>
+</xsl:template>
+
+<!--
+  Handles the mmx:href, mmx:src, mmx:action, and mmx:value attributes.
+-->
+
+<xsl:template match="@mmx:action|@mmx:href|@mmx:src|@mmx:value">
+  <xsl:variable name="expr" select="."/>
+  <xsl:variable name="directive" select="normalize-space(substring-before($expr, '='))"/>
+  <xsl:variable name="value" select="normalize-space(substring-after($expr, '='))"/>
+  <xsl:attribute name="{local-name()}">
+    <xsl:choose>
+      <xsl:when test="$directive='lid'">
+        <xsl:call-template name="xsl.resolve-lid">
+          <xsl:with-param name="lid" select="$value"/>
+        </xsl:call-template>
+      </xsl:when>
+      <xsl:when test="$directive='from-params'">
+        <xsl:call-template name="xsl.url-from-params">
+          <xsl:with-param name="prefix" select="$value"/>
+        </xsl:call-template>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:attribute>
+</xsl:template>
+
+<!--
+  Handles the href, src, and action attributes.
+-->
+
+<xsl:template match="@action|@href|@src" priority="1">
+  <xsl:variable name="url" select="normalize-space(.)"/>
+  <xsl:attribute name="{local-name()}">
+    <xsl:choose>
+      <xsl:when test="starts-with($url, '%{prefix}')">
+        <xsl:variable name="rel-url" select="substring-after($url, '%{prefix}')"/>
+        <xsl:value-of select="$xsl.url-prefix"/>
+        <xsl:if test="not(starts-with($rel-url, '/'))">/</xsl:if>
+        <xsl:value-of select="$rel-url"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$url"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:attribute>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Conditional processing                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:if-group[@name]">
+  <xsl:variable name="group-name" select="@name"/>
+  <xsl:choose>
+    <xsl:when test="$user/mumie:user_groups/mumie:user_group[string(mumie:name)=$group-name]">
+      <xsl:apply-templates select="mmx:then"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="mmx:else"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="mmx:if-group[@or]">
+  <xsl:variable name="group-names" select="@or"/>
+  <xsl:variable name="test">
+    <xsl:for-each select="$user/mumie:user_groups/mumie:user_group/mumie:name">
+      <xsl:if test="contains($group-names,concat('{',.,'}'))">X</xsl:if>
+    </xsl:for-each>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test="contains($test,'X')">
+      <xsl:apply-templates select="mmx:then"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="mmx:else"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="mmx:if-param">
+  <xsl:variable name="value">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name" select="@name"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:choose>
+    <xsl:when test="$value!='' and (not(@value) or @value=$value)">
+      <xsl:apply-templates select="mmx:then"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="mmx:else"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="mmx:if-user-sync-id">
+  <xsl:variable name="value" select="string($user/mumie:sync_id)"/>
+  <xsl:choose>
+    <xsl:when test="$value!='' and (not(@value) or @value=$value)">
+      <xsl:apply-templates select="mmx:then"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="mmx:else"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="mmx:switch-param">
+  <xsl:variable name="value">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name" select="@name"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:for-each select="mmx:case-param[@value=$value]|mmx:otherwise">
+    <xsl:if test="position()=1">
+      <xsl:apply-templates/>
+    </xsl:if>
+  </xsl:for-each>  
+</xsl:template>
+
+<xsl:template match="mmx:then|mmx:else|mmx:case-param|mmx:otherwise">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top-bar                                                                      -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:top-bar">
+  <xsl:call-template name="top-bar">
+    <xsl:with-param name="with-nav">
+      <xsl:choose>
+        <xsl:when test="@with-nav='yes'">yes</xsl:when>
+        <xsl:when test="count(../*)=1">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+    <xsl:with-param name="checked" select="@checked"/>
+  </xsl:call-template>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Adding user data                                                             -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:user-first-name">
+  <xsl:value-of select="string($user/mumie:first_name)"/>
+</xsl:template>
+
+<xsl:template match="mmx:user-id">
+  <xsl:value-of select="string($user/@id)"/>
+</xsl:template>
+
+<xsl:template match="mmx:user-login-name">
+  <xsl:value-of select="string($user/mumie:login_name)"/>
+</xsl:template>
+
+<xsl:template match="mmx:user-surname">
+  <xsl:value-of select="string($user/mumie:surname)"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Adding server name                                                           -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:server-name">
+
+  <xsl:variable name="name-without-protocol">
+    <xsl:choose>
+      <xsl:when test="starts-with($xsl.url-prefix,'http://')">
+        <xsl:value-of select="substring-after($xsl.url-prefix,'http://')"/>
+      </xsl:when>
+      <xsl:when test="starts-with($xsl.url-prefix,'https://')">
+        <xsl:value-of select="substring-after($xsl.url-prefix,'https://')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$xsl.url-prefix"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:variable name="name-without-path">
+    <xsl:choose>
+      <xsl:when test="contains($name-without-protocol,'/')">
+        <xsl:value-of select="substring-before($name-without-protocol, '/')"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$name-without-protocol"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <xsl:choose>
+    <xsl:when test="contains($name-without-path,':')">
+      <xsl:value-of select="substring-before($name-without-path,':')"/>
+    </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$name-without-path"/>
+      </xsl:otherwise>
+  </xsl:choose>
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Adding CSS Stylesheets                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:css-stylesheet">
+  <link rel="stylesheet" type="text/css">
+    <xsl:call-template name="xsl.set-ref-attribute">
+      <xsl:with-param name="default"><xsl-ext:url lid="css-base"/></xsl:with-param>
+    </xsl:call-template>
+  </link>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Adding images                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:image">
+  <img>
+    <xsl:call-template name="xsl.set-image-src-attributes"/>
+    <xsl:apply-templates select="@*"/>
+  </img>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Adding applets                                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:applet">
+  <xsl:choose>
+    <xsl:when test="$use-object-element-for-applets='yes'">
+      <object>
+        <xsl:call-template name="xsl.set-applet-object-src-attributes"/>
+        <xsl:apply-templates select="@*"/>
+        <xsl:apply-templates/>
+      </object>
+    </xsl:when>
+    <xsl:otherwise>
+      <applet>
+        <xsl:call-template name="xsl.set-applet-src-attributes"/>
+        <xsl:apply-templates select="@*"/>
+        <xsl:apply-templates/>
+      </applet>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Selection options                                                           -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:options[@src='user-group-names']">
+  <xsl:variable name="default" select="@default"/>
+  <xsl:for-each select="/*/mumie:dynamic_data/mumie:store[@name='user_groups']/*/*">
+    <xsl:sort select="mumie:name"/>
+    <xsl:variable name="name" select="mumie:name"/>
+    <option>
+      <xsl:if test="$default=$name">
+        <xsl:attribute name="selected">selected</xsl:attribute>
+      </xsl:if>
+      <xsl:value-of select="$name"/>
+    </option>
+  </xsl:for-each>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Footer                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mmx:footer">
+  <xsl:variable name="doctype" select="local-name(/*)"/>
+  <xsl:variable name="id" select="/*/@id"/>
+  <div class="footer">
+    <span class="footer">
+      <!-- "Powered by MUMIE" -->
+      <xsl:call-template name="powered-by-mumie"/>
+    </span>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top-level template                                                           -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <xsl:apply-templates select="/*/mumie:content/*"/>
+</xsl:template>
+
+</xsl:stylesheet>

@@ -1,0 +1,60 @@
+Autor: Markus Gronau
+$Id: applet_zusatz_dateien.txt,v 1.1 2007/06/06 10:42:00 gronau Exp $
+
+            Zusatz-Dateien für Applets
+           ============================
+
+Konzept
+-------
+
+Um die Nutzung von einigen Features in Mathlets zu ermöglichen benötigen diese
+zur Laufzeit spezielle Zusatz-Dateien, welche sich alle in einem gesonderten
+Verzeichnis befinden müssen.
+Dieses befindet sich im (Package-)Ordner der Mathlet-Klasse.
+Sein Name setzt sich aus dem Mathlet-Name und der Endung ".files" zusammen.
+Folgende Features benötigen Zusatz-Dateien:
+ - Mehrsprachigkeit der Texte im Mathlet
+ - Hilfe-/Info-Seite zum Mathlet
+ - Bilder/Icons
+
+Beispiel-Baum für ein Mathlet "mypackage.MyApplet":
+  mypackage
+      |- MyApplet (Java-Klasse)
+      |- MyApplet.files
+      |       |- Messages_de.properties
+      |       |- Messages_en.properties
+      |       |- Help_de.html
+      |       |- Help_en.html
+      |       |- image1_de.gif
+      |       |- image1_en.gif
+
+Im Applet kann auf sprach-abhängige Resourcen über den Basis-Namen zugegriffen
+werden (d.h. ohne Angabe eines Pfades, Sprach-Kürzels oder Datei-Endung).
+Dazu steht die Klasse ResourceManager zur Verfügung.
+
+
+Mehrsprachigkeit von Zusatz-Dateien
+-----------------------------------
+
+Das Konzept der Mehrsprachigkeit ist auf alle Zusatz-Dateien verallgemeinert.
+So ist es möglich, sprach-abhängige Resourcen generisch ins Applet zu laden,
+d.h. ohne explizite Angabe einer bestimmten Sprache.
+Die Benennung der Resourcen folgt dabei folgenden Regeln:
+ - die Default-Resource trägt einen Namen, der aus dem Basis-Namen und der
+   Datei-Endung zusammengesetzt ist
+ - der Name von sprach-abhängigen Resourcen setzt sich aus dem Basis-Namen,
+   dem Sprach-Kürzel und der Datei-Endung zusammen.
+
+Gültige Sprach-Kürzel sind:
+ a) "_" + language (z.B. "_de", "_en")
+ b) "_" + language + "_" + country (z.B. "_de_DE", "_en_US")
+ c) "_" + language + "_" + country + "_" + variant
+   ("The variant argument is a vendor or browser-specific code",
+    e.g. "Traditional_WIN")
+
+Jede sprach-abhängige Resource benötigt eine separate Datei, die auf die
+jeweilige Sprache verweist.
+Wird keine Resource zu einer speziellen Sprache gefunden, wird die
+Default-Resource geladen.
+
+FIN

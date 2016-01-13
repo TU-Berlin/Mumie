@@ -1,0 +1,28 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: skript_interface_mathletfactory.txt,v 1.1 2005/05/19 09:04:54 rassy Exp $
+
+
+			SKRIPT-INTERFACE MATHLETFACTORY
+
+
+1. Applet-Methoden für die Kommunikation Javaskript->Applet
+   ========================================================
+
+  1.1. public void selectData (String path)
+
+           Weist das Applet an, die Daten mit dem Pfad PATH aus dem Data-Sheet
+           auszuwählen. Was genau mit den Daten geschieht und wie sie
+           eingesetzt werden. hängt vom Applet ab.
+
+  1.2. public void selectSubtask (int subtask)
+
+           Informiert das Applet darüber, dass der Benutzer die Teilaufgabe
+           SUBTASK bearbeiten möchte. SUBTASK ist die Nummer der Teilaufgabe,
+           gezählt ab 0.
+
+           Diese Methode braucht nur dann implementiert zu werden, wenn die
+           Aufgabe in Teilaufaben unterteilt ist.
+
+
+
+-- ENDE DER DATEI --

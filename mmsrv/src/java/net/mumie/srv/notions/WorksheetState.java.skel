@@ -1,0 +1,144 @@
+package net.mumie.srv.notions;
+
+public class WorksheetState
+{
+  // --------------------------------------------------------------------------------
+  // Global variables and constants, except autocoded 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The undefined state.
+   */
+
+  public static final int UNDEFINED = -1;
+
+  // --------------------------------------------------------------------------------
+  // Auxiliaries 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the array index of the specified worksheet state code.
+   */
+
+  protected static final int indexOf (int code)
+  {
+    int index = -1;
+    for (int i = 0; i < states.length && index == -1; i++)
+      {
+        if ( states[i] == code )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid worksheet state code: " + code);
+    return index;
+  }
+
+  /**
+   * Returns the array index of the worksheet state with the specified name.
+   */
+
+  protected static final int indexOf (String name)
+  {
+    int index = -1;
+    for (int i = 0; i < names.length && index == -1; i++)
+      {
+        if ( names[i].equals(name) )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid worksheet state name: " + name);
+    return index;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting codes for names and vice versa
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the name of the worksheet state represented by the specified numerical code.
+   */
+
+  public static final String nameFor (int code)
+  {
+    return names[indexOf(code)];
+  }
+
+  /**
+   * Returns the numerical code for the specified worksheet state name.
+   */
+
+  public static final int codeFor (String name)
+  {
+    return states[indexOf(name)];
+  }
+
+  // --------------------------------------------------------------------------------
+  // Checking whether a code or name exists as a worksheet state
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns true if the specified integer exists as a worksheet state code;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (int code)
+  {
+    for (int i = 0; i < states.length; i++)
+      {
+        if ( states[i] == code )
+          return true;
+      }
+    return false;
+  }
+
+  /**
+   * Returns true if the specified string exists as a worksheet state name;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (String name)
+  {
+    for (int i = 0; i < names.length; i++)
+      {
+        if ( names[i].equals(name) )
+          return true;
+      }
+    return false;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting all states
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns an array containing all worksheet states. The array is is not backed by any
+   * variables of this class, so changes to the array do not effect this class. 
+   */
+
+  public static final int[] allStates ()
+  {
+    int[] statesCopy = new int[states.length];
+    System.arraycopy(states, 0, statesCopy, 0, states.length);
+    return statesCopy;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private WorksheetState ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("WorksheetState must not be instanciated");
+  }
+}

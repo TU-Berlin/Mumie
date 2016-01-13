@@ -1,0 +1,156 @@
+
+
+Mumie-Komponenten
+=================
+
+  - Japs
+  - Umgebung: Apache, Tomcat, Postgres
+  - Datenbank
+  - Mmcdk
+  - Mmtex
+  - Course-Creator
+  - Mathlet-Factory
+  - Applets
+
+Serverseitige Umgebung: Japs als auf Cocoon aufsetzendes Servlet, Tomcat,
+Apache, Postgres.
+
+
+Dokumente und Pseudo-Dokumente
+==============================
+
+Charakterisierung. Generische Dokumente (Konzept)
+
+Dokumente:
+
+  applet
+  course
+  course_section
+  css_stylesheet
+  element
+  flash
+  image
+  jar
+  jar
+  java_class
+  js_lib
+  movie
+  page
+  problem
+  sound
+  subelement
+  summary
+  worksheet
+  xsl_stylesheet
+
+(jeweils mit Angabe, zu welchen Dokumenten ein entsprechender generischer Typ
+existiert).
+
+Pseudo-Dokumente:
+
+  class
+  language
+  section
+  semester
+  theme
+  tutorial
+  user
+  user_group
+
+Besondere Beziehungen zwischen den (Pseudo-)Dokumenttypen ("Anhängbarkeit",
+course - course_section - worksheet - element -subelement - problem, user -
+tutorial - class -semester, usw.) [etv. in eigenen Spezifikationen]
+
+
+Meta-Informationen
+==================
+
+Definition, Behandlung von Content wie eine Meta-Information, Darstellung als
+XML (grundsätzlich), Darstellung in der Datenbank (grundsätzlich).
+
+Auflistung aller Meta-Informationen und ihrer Darstellung als XML und in der
+Datenbank (detailiert).
+
+Angabe, welches (Pseudo-)Dokument welche Meta-Informationen hat.
+
+
+Use-Modi
+========
+
+Definition, Zweck, Auflistung.
+
+
+Sections
+========
+
+S. bestehende Spezifikation "Sections".
+
+
+Pages
+=====
+
+Definition
+
+
+Elemente und Sublemente
+=======================
+
+Kategorien und Formatvorlagen
+
+
+Aufgaben (Problems)
+===================
+
+Kategorien und Formatvorlagen
+
+
+Kurse (courses, course sections, worksheets)
+============================================
+
+Charakterisierung, Zusammenhang mit class und tutorial.
+
+Bestandteile von Kursen, Kursabschnittem und Übungsblättern
+
+Netzstruktur
+
+
+XSL-Stylesheets
+===============
+
+XSL-Stylesheet-System (s. bestehende Spezifikation)
+
+
+CSS-Stylesheets
+===============
+
+CSS-Stylesheet-System
+
+
+MmTeX
+=====
+
+  - Generische Befehle
+  - Befehle fuer Elemente und Subelemente
+  - Befehle für Aufgaben
+  - Befehle für Summaries
+
+
+XML
+===
+
+XML für Dokument-Content:
+
+  - Page-XML
+  - XSL-Erweiterungs-XML
+  - CSS-XML
+  - MathML-Erweiterungs-XML
+  - MmTeX-Standard-XML
+  - Element- u. Subelemnt-XML
+  - Aufgaben-XML
+  - Kurs-XML
+
+Sonstiges XML:
+
+  - Datasheet-XML
+  - PPD-XML
+  - Aufgaben-Antwort-XML

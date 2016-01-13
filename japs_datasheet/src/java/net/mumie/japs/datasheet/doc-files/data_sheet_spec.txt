@@ -1,0 +1,164 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: data_sheet_spec.txt,v 1.3 2005/04/01 19:42:07 rassy Exp $
+[Kopie von japs/docs/notes/training/data_sheet_spec.txt Revision 1.4]
+
+
+                       SPEZIFIKATION: DATA SHEET XML
+
+
+  Das "Data Sheet XML" ist ein generisches XML-Format zur Beschreibung von
+  Konfigurationsdaten u.ä. mit einer einfachen hierarchischen Struktur. Es
+  soll insbesondere zur Versorgung der Trainings-Applets mit Eingabedaten
+  verwendet werden.
+
+
+1. Grundsätzliches
+   ===============
+
+  1.1. Namespace: http://www.mumie.net/xml-namespace/data-sheet
+
+  1.2. Root-Element: 'data_sheet'
+
+  1.3. Darin: Beliebig viele 'unit'- und/oder 'data'-Elemente.
+
+  1.4. In einem 'unit-Element: Beliebig viele 'unit'- und/oder
+       'data'-Elemente.
+
+  1.5. Die 'data'-Elemente dienen zur Aufnahme der eigentlichen Daten. Jedes
+       solche Element entspricht einem Datum. Der Inhalt eines 'data'-Elements
+       darf beliebiges XML sein, dass jedoch entweder nicht zum
+       Data-Sheet-Namespace (http://www.mumie.net/xml-namespace/data-sheet)
+       gehört oder ein reiner Text-Knoten ist.
+
+  1.6. Die 'unit'-Elemente dienen zur Gliederung und Strukturierung der
+       Daten. Sie können beliebig geschachtelt werden. Dadurch lässt sich eine
+       baumartige Anordnung der Daten erreichen.
+
+  1.7. Jedes 'unit'- und 'data'-Element hat ein 'name'-Attribut und damit einen
+       Namen. Der Name darf aus Buchstaben, Zahlen, und den Zeichen "-", "_",
+       "." bestehen und muss mit einem Buchstaben beginnen. Unter den
+       Kindelementen eines 'unit'-Elements muss der Name eindeutig sein.
+
+
+
+2. XML-Elemente
+   ============
+
+<data_sheet>
+  <!-- Content: unit* data* -->
+</data_sheet>
+
+<unit
+  name="NAME">
+  <!-- Content: unit* data* -->
+</unit>
+
+<data
+  name="NAME">
+  <!-- PCDATA ANY_EXCEPT_DS_ELEMENT* -->
+</data>
+
+
+Abkürzungen/Platzhalter:
+
+  NAME
+      Name eines unit- oder data-Elements. S. 1.7.
+
+  PCDATA
+      Text
+
+  ANY_EXCEPT_DS_ELEMENT
+      Element ausserhalb des Data-Sheet-Namespaces.
+
+
+
+3. Beispiel
+   ========
+
+<data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+  <unit name="matrix_pair">
+    <data name="left_matrix">
+      <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+        <!-- MathML-Code  -->
+      </mtable>
+    </data>
+    <data name="right_matrix">
+      <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+        <!-- MathML-Code -->
+      </mtable>
+    </data>
+  </unit>
+  <data name="vectors"/>
+    <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+      <!-- MathML-Code -->
+    </mrow>
+    <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+      <!-- MathML-Code -->
+    </mrow>
+  </data>
+</data_sheet>
+
+
+
+4. Adressierung
+   ============
+
+Jedes 'data'-Element lässt sich durch einen XPath-artigen String
+adressieren. Dieser wird aus den Namen der Eltern-Units und seinem eigenen
+Namen, mit "/"-Zeichen getrennt, gebildet:
+
+  UNIT_NAME/KIND_UNIT_NAME/.../DATA_NAME
+
+Z.B. hätte die zweite Matrix in obigen Beispiel die Adresse
+
+  matrix_pair/right_matrix
+
+Statt "Adresse" wird auch (häufiger) die Bezeichnung "Pfad" ("path")
+verwendet.
+
+
+
+5. Extraction-XML
+   ==============
+
+  5.1. Das sogenannnte Extraction-XML bietet die Möglichkeit, Knoten in
+       beliebigen XML-Dokumenten als Data-Sheet-Daten zu markieren. Diese
+       können dann extrahiert und zu einem Data-Sheet zusammengefasst werden.
+
+  5.2. Namespace des Extraction-XMLs:
+           http://www.mumie.net/xml-namespace/data-sheet/extract 
+
+       Üblicher Prefix: dsx
+
+       Extraction-XML-Elemente werden immer mit Prefix geschrieben.
+
+  5.3. Das Extraction-XML umfasst zwei Elemente: 'dsx:data' und
+       'dsx:datalabel'.
+
+  5.4. Das 'dsx:data'-Element zeichnet seine Nachfahren als den Inhalt eines
+       'data'-Elements des Data-Sheets aus. Es hat ein oder zwei Attribute:
+
+    5.4.1. path
+               Der Pfad des 'data'-Elements im Data-Sheet.
+
+    5.4.2. clickable
+               Optional. Mögliche Werte: "yes|no". Gibt an, ob die Daten in der
+               gerenderten Form des Quelldokuments anklickbar sein sollen. Was
+               beim Klick passiert, ist Sache der Transformation, die das
+               Quelldokument nach (X)HTML (oder ein anderers Endformat)
+               übersetzt.
+
+  5.5. Das 'dsx:datalabel'-Element zeichnet sein Elternelement als den Inhalt
+       eines 'data'-Elements des Data-Sheets aus. Leer, ein oder zwei
+       Attribute:
+
+    5.5.1. path
+               S. 5.4.1.
+
+    5.5.2. clickable
+               S. 5.4.2.
+
+
+
+
+-- ENDE DER DATEI --

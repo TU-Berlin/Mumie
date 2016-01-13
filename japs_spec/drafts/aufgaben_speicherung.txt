@@ -1,0 +1,100 @@
+Autor: Markus Gronau
+$Id: aufgaben_speicherung.txt,v 1.5 2007/11/15 10:35:35 gronau Exp $
+
+                   Lade- und Speichervorgang von Applets in der JAPS-Umgebung
+                  ============================================================
+
+Einleitung
+----------
+   Diese Spezifikation beschreibt den Lade- und Speichervorgang von Applets in der JAPS-Umgebung.
+   Dies schließt die jüngste Revision des Speichervorgangs ein.
+
+
+1. Begriffsbildungen
+====================
+   DS     : Data Sheet (ein XML-Format der Mumie)
+   In-DS  : Incoming Data Sheet (DS mit Vorgaben und alten Antworten vom Server)
+            Wird zum Initialisieren der MM-Objekte und zum Speichern von neuen Antworten benötigt.
+            Da nach dem Speichern kein neues Datasheet vom Server angefordert wird, muss das Applet
+            eine "Kopie" der aktuell auf dem Server liegenden Daten haben, die es nach erfolgreichem
+            Speichern selbstständig "synchronisiert". Das In-DS wäre somit identisch mit einem vom
+            Server neu geladenen DataSheet nach einem Speichervorgang.
+   Temp-DS: Temporary Data Sheet (DS für das temporäre Speichern der Werte aller MM-Objekte)
+            Es wird vor jedem Speichern neu erstellt.
+   Out-DS : Outgoing Data Sheet (DS mit den Antworten für den Server)
+            Wird vor jedem Senden neu erstellt und enthält alle jemals gespeicherten Antworten zur
+            Aufgabe. Die Antworten aller nicht aktuellen Subtasks werden dabei vom In-DS kopiert.
+   Subtask: Unteraufgabe in einer Applet-Aufgabe
+            Der "aktuelle" Subtask ist die gerade sichtbare Unteraufgabe im Applet, die "anderen"
+            Subtasks sind somit alle nicht sichtbaren Subtasks. Die Subtask-Indizes starten mit "1".
+
+
+2. Ladevorgang
+==============
+   2.1 Laden des Datasheets vom Server
+   -----------------------------------
+       Das In-DS wird von der Klasse MumieExcercise vom Server geladen wie es beschrieben ist 
+       in der Spezifikation "IO-INTERFACE MATHLETFACTORY" (Datei "io_interface_mathletfactory.txt").
+
+   2.2 Laden der Werte in die MM-Objekte
+   -------------------------------------
+       Die MM-Objekte können die Vorgaben und alten Antworten über die Klasse MumieExcercise mittels
+       geeigneter "load..."-Methoden laden. Dabei sollen die Werte dem In-DS entnommen werden,
+       da dies stets mit den auf dem Server gespeicherten Daten konform ist und so ein Neuladen der 
+       gespeicherten Antworten in die MM-Objekte im Nachhinein möglich ist.
+
+
+3. Speichervorgang
+==================
+   3.1 Sammeln aller Anworten
+   --------------------------
+       Der Speichervorgang wird in den Applets durch Aufruf der Methode "collectAnswers()" initiiert.
+       In dieser schreiben die MM-Objekte ihre Werte durch geeignete "setAnswer(...)"-Methoden ins Temp-DS.
+       Dieses wird vor jedem Speichern neu erstellt, damit es keine alten Antworten mehr enthält.
+       Es ist unerheblich, welche Unteraufgabe gerade bearbeitet wird, da durch die "setAnwser"-Methoden 
+       den Werten ein Subtask zugeordnet werden muss. Der Pfad einer Antwort beginnt dabei stets mit
+       "user/answer/subtask_X" wobei X der Index der jeweiligen Unteraufgabe ist.
+       Dadurch können die Antworten durch ihre Pfade im Datasheet eindeutig einem Subtask zugeordnet werden.
+
+       Die MultipleChoice Applets bilden hier eine Ausnahme: sie benutzen ein sogenanntes lokales
+       Datasheet, dessen Inhalt später direkt in das Antwort-Sheet übertragen wird. Auf diese Weise hat
+       die "MChoiceForm"-Klasse volle Kontrolle über das ausgehende Datasheet.
+
+   3.2 Erstellen des Antwort-Datasheets
+   ------------------------------------
+       Es werden alle (alten) Werte zum aktuellen Subtask aus dem In-DS gelöscht (sofern sie existieren),
+       so daß dieses im Moment nur die bereits gespeicherten Antworten der anderen Subtasks enthält.
+       Nun werden alle Werte des aktuellen Subtasks vom Temp-DS ins In-DS kopiert.
+       Damit enthält das In-DS die aktuellen Werte des aktuellen Subtasks und die "alten"
+       (d.h. bereits gespeicherten) Werte der anderen Unteraufgaben.
+
+       Antworten, die aus DS-Pfaden bestehen (d.h. in der Website selektierte Elemente) werden per Konvention
+       unter "user/answer/subtask_X/selected_Y" gespeichert, wobei Y das n-te Element bezeichnet.
+       Es können jedoch auch benutzerdefinierte Pfade benutzt werden.
+       Zusätzlich wird der Inhalt der Elemente im "generic" Block unter dem gleichen Teilpfad gespeichert,
+       d.h. unter "user/answer/generic/subtask_X/selected_Y" bzw. "user/answer/generic/subtask_X/<name>",
+       da in den Quittungen keine Aufgaben-Daten stehen.
+       
+       Antworten können auch in "Unter-Units" verschachtelt werden, wobei für die darin
+       enthaltenen DATA-Elemente die gleiche Regeln gelten wie oben.
+       
+       Es wird unter "user/answer/generic/currentSubtask" der Index des aktuellen Subtasks abgespeichert
+       (beginnend mit "1").
+
+       Die MultipleChoice Applets schreiben lediglich den Inhalt des lokalen Datasheets in das Antwort-Sheet.
+       
+   3.3 Senden der Antworten zum Server
+   -----------------------------------
+       Das Out-DS wird von der Klasse MumieExcercise zum Server gesendet wie es beschrieben ist 
+       in der Spezifikation "IO-INTERFACE MATHLETFACTORY" (Datei "io_interface_mathletfactory.txt").
+       Wenn dies erfolgreich ist, wird mit Punkt 3.4 fortgefahren.
+
+   3.4 Aktualisieren des Incoming-Datasheets
+   ------------------------------------
+       Es werden alle (alten) Werte zum aktuellen Subtask aus dem In-DS gelöscht (sofern sie existieren),
+       so daß dieses im Moment nur die bereits gespeicherten Antworten der anderen Subtasks enthält.
+       Nun werden alle Werte des aktuellen Subtasks vom Temp-DS ins In-DS kopiert.
+       Damit enthält das In-DS die aktuellen Werte des aktuellen Subtasks und die "alten"
+       (d.h. bereits gespeicherten) Werte der anderen Unteraufgaben.
+
+FIN

@@ -1,0 +1,61 @@
+Dies ist eine kurzzusammenfassung wie eine neue Variable in die CCConfig aufgenommen wird am Beispiel der Variable key_new
+
+0. logisch zusammenhängende Variablen Drücken zusammenhang durch Variablennamen aus (Bsp: DEBUG_..)
+
+1. Anlegen der Variable in der CCConfig-Klasse (und ggf gleich den Defaultwert setzen):
+
+private String KEY_NEW= DEFAULT_KEY_NEW; // neue Datei
+
+2. Erstellen eines Tags für das xml-file:
+private static String TAG_KEY_NEW = "new"; // neue Datei
+
+3. Erstellen des Defaultwertes:
+private static final String DEFAULT_KEY_NEW = "n"; // neue Datei
+
+4. Getter und Settermethoden:
+
+mehrere gleichlautende
+5. Einfügen der laden und speichern Methoden:
+5.1. Speichern mehrerer gleichlautender:
+in der Funktion public void writeConfig(boolean local):
+Element keyList = doc.createElement(TAG_KEY_LIST);
+    	
+this.createKeyEntry(TAG_KEY_NEW, this.getKey_new(), keyList);
+...
+
+Sowie die Funktion createKeyEntry:
+private Element createKeyEntry(String name, String value, Element parent){
+	Element key = doc.createElement(TAG_KEY);
+	key.setAttribute("name",name);
+	key.setAttribute("value",String.valueOf(value));
+	parent.appendChild(key);
+	return key;
+}
+
+5.2. Laden:
+in der Funktion private boolean readConfig(File f) füge ein:
+
+tmp = this.getSingleNode(root, TAG_KEY_LIST);
+	if (tmp!=null)	{
+		NodeList keyC = tmp.getChildNodes();
+		for (int i=0;i<keyC.getLength();i++){
+			Node child = keyC.item(i);
+			if(child.getNodeName().equals(TAG_KEY)){
+				this.setKeyValue(child,child.getAttributes().getNamedItem("name").getNodeValue());
+			}				
+		}
+	}
+
+Sowie die Funktion, die die einzelnen Tags liest:
+private void setKeyValue(Node node, String name){
+	String value = (node.getAttributes().getNamedItem("value").getNodeValue());
+	
+	if (name.equals(TAG_KEY_CHECKRED)) this.setKey_checkRed(value);
+	else if (name.equals(TAG_KEY_CONNECT)) this.setKey_connect(value);
+	...
+	else babble("Key not found: "+ value);
+}
+
+6. Defaultwert setzen:
+in der Funktion setDefaultValues()
+this.KEY_NEW 		= DEFAULT_KEY_NEW;

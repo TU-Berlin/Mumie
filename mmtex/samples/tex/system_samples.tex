@@ -1,0 +1,26 @@
+\documentclass{webpage}
+
+
+\begin{document}
+
+\title{Tests for the system libary}
+
+\section{The test section}
+Here is some test text, followed by a system command which will be displayed in the shell...
+
+\message[stdout]{\n \n Hello, I'm a system message... I will appear on the command line, and none of the symbols entered here will be evaluated !@ \n \n }
+
+
+%  NOT WORKING \dump[stdout]{testtext}
+
+
+\dump[stdout]{stdout} % Working, but not the way it should..
+
+
+
+
+And some more text..
+
+
+\message[stdout]{\n\n Some Space \n\n}
+\end{document}

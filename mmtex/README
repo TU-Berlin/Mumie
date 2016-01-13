@@ -1,0 +1,35 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.7 2007/03/05 16:49:42 rassy Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                                     MMTEX
+
+
+Mmtex is a tool to convert (generalized) LaTeX to XML, with a special focus on
+mathematical texts. The XML produced by Mmtex is intended to be transformed
+further to XHTML/MathML or other formats. This distribution contains
+XSL-Stylesheets for the transformation to XHTML/MathML. The transformation to
+other formats is not implemented yet.
+
+Currently, two different LaTeX dialects are implemented: a standard LaTeX
+similar one, and a very specialized one for the contents of the MUMIE
+e-learning platform. With both dialects, non-mathematical parts are converted
+to a particular XML, whereas mathematical parts are converted to MathML
+(presentation markup plus a few extra elements to get a slightly more
+semantical description). This distribution contains only the first dialect.
+
+Mmtex is written in Perl. It is highly modular, flexible and customizable. No
+LaTeX commands or environments except \documentclass are hardcoded in the core
+sources. Commands, environments, and the resulting XML are implemented in
+exchangeable Perl libraries, controlled by the document class, which is a Perl
+library, too.
+
+Mmtex has been developed in the e-learning project MUMIE (see
+www.mumie.net). MUMIE was founded by the German Federal Ministry of Education
+and Research and is a cooperation of the Berlin and Munich Universities of
+Technology and the Universities of Aachen and Potsdam.
+
+You can use Mmtex under the terms of the GNU General Public Licence. See the
+file "LICENSE" for details.

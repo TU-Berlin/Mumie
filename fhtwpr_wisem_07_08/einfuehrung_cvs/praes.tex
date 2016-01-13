@@ -1,0 +1,167 @@
+% Author: Tilman Rassy <rassy@math.tu-berlin.de>
+% $id$
+
+% $Id: praes.tex,v 1.2 2007/10/14 01:03:00 rassy Exp $
+
+\documentclass{article}
+
+\usepackage{ngerman}
+\usepackage{amssymb,amsbsy}
+\usepackage[pdftex,pdfpagemode=None,bookmarks=false,colorlinks=true,linkcolor=blue]{hyperref}
+\usepackage{epsfig}
+\usepackage[display]{texpower}
+\usepackage{color}
+
+\input{../util/macros}
+
+\hoffset0cm
+\voffset0cm
+\topmargin0cm
+\headheight0cm
+\headsep0cm
+\topskip0cm
+\marginparwidth0cm
+\marginparsep0cm
+
+\paperheight16cm
+\paperwidth20cm
+\textheight14cm
+\textwidth16cm
+
+\oddsidemargin0mm
+\evensidemargin0mm
+
+\nonfrenchspacing
+\parindent0em
+\parskip0.2\baselineskip
+
+\pagestyle{empty}
+
+\sloppy
+
+\begin{document}
+
+\sffamily
+
+\pagebreak
+
+
+\begin{center}
+
+\textbf{\color{headlinecolor}\titlesize 
+CVS}
+
+\vspace{1.0cm}
+
+\normalsize
+Tilman Rassy
+
+\vspace{1.0cm}
+
+Technische Universit"at Berlin \\
+Fakult"at II -- Mathematik und Naturwissenschaften \\
+Institut f"ur Mathematik
+
+\end{center}
+
+\pagebreak
+
+\mysection{Was ist CVS?}
+
+\begin{mylist}
+
+  \pitem CVS : Cuncurrent Versions System
+
+  \pitem Fr"uhere Versionen einer Datei k"onnen rekonstruiert werden
+
+  \pitem Mehrere Entwickler k"onnen gleichzeitig an einer Datei\\ arbeiten
+     (Konflikt-Aufl"osung, Merging)
+
+  \pitem \term{Repository:} Zentraler Aufbewahrungsort f"ur alle Dateien eines Projekts
+     unter Versionsverwaltung, einschl. alter Versionen
+
+  \pitem \term{Working directory:} Lokale Version der Dateien eines\\ Entwicklers
+
+  \pitem Repository und Working Directory m"ussen nicht auf demselben Rechner liegen
+     (Client-Server-Architektur)
+
+\end{mylist}
+
+\pagebreak
+
+\mysection{Benutzung}
+
+\begin{mylist}
+
+  \pitem Aufruf:
+
+    \verb'  '\code{cvs [-d \var{cvsroot}] \var{cmd} \var{params}}
+
+     \var{cvsroot} = Wurzelverzeichnis der Repositories (s.u.)
+
+     \var{cmd}     = CVS-Commando
+
+     \var{params}  = Parameter f"ur \var{cmd}
+
+  \pitem Format von \var{cvsroot}:
+
+    \begin{mylist}[\mylabelitemii]
+
+       \pitem Repository auf selben Rechner: Absoluter Pfad
+
+       \pitem Repository auf anderem Rechner:
+
+           \verb'  '\code{:ext:\var{user}}\verb'@'\code{\var{host}:\var{absoluter\_pfad}}
+
+         \var{user} = Benutzername, \var{host} = Rechner-Adresse.
+
+    \end{mylist}
+
+\end{mylist}
+
+\pagebreak
+
+\mysection{Umgebungsvariablen}
+
+\begin{mylist}
+  \pitem \code{CVSROOT} --  Default f"ur \var{cvsroot}
+
+  \pitem\code{CVS\_RSH} -- Muss auf \code{ssh} gesetzt sein, damit Remote-Zugriff "uber ssh
+                  erfolgt
+\end{mylist}
+
+\pagebreak
+
+
+\mysection{Wichtigste Befehle}
+
+\begin{mylist}
+
+  \pitem \code{cvs checkout \var{name}}
+
+       Checkt das Repository \var{name} aus
+
+  \pitem \code{cvs update [\var{dat1} \var{dat2} ...]}
+
+       Aktualisiert Dateien im Working Directory
+
+  \pitem \code{cvs commit -m '\var{logmeldung}' [\var{dat1} \var{dat2} ...]}
+
+       "Ubertr"agt "Anderungen vom Working Directory ins Repository
+
+  \pitem \code{cvs add [\var{dat1} \var{dat2} ...]}
+
+       Meldet neue Dateien f"ur Versionskontrolle an
+
+  \pitem \code{cvs status \var{dat}}
+
+       Gibt den Status einer Datei an
+
+
+  \pitem \code{cvs log \var{dat}}
+
+       Gibt die Logmeldungen zu einer Datei aus
+
+\end{mylist}
+
+\end{document}

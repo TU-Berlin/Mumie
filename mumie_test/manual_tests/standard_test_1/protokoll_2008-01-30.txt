@@ -1,0 +1,4 @@
+Tester: grudzin
+Beginn/Ende: 2008-01-30
+Grund: Manueller Test nach einem kompletten auto. Test + "Tag"-setzung
+Bug: #495

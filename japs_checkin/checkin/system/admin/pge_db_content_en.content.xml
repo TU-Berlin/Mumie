@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   $Id: pge_db_content_en.content.xml,v 1.2 2009/12/14 11:18:32 linges Exp $
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+
+  <head>
+    <title>MUMIE Db-Content</title>
+    <mmx:css-stylesheet/>
+  </head>
+
+  <body>
+
+    <mmx:top-bar/>
+
+    <div class="main-bounded-width">
+      
+     <div class="h1-container">
+        <div class="breadcrumb">
+          <a mmx:href="lid=pge-admin-home">Admin</a> &gt;
+        </div>
+       <h1>Db-Content</h1>
+    </div>
+
+
+    <table class="list">
+      <tr>
+        <td class="list-label">
+          <table class="genuine">
+            <thead>
+              <tr>
+                <td>Documents</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/applet">Applets</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/course">Courses</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/course_section">Course-Sections</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/css_stylesheet">CSS-Stylesheets</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/element">Elements</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/flash">Flash's</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/image">Images</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/jar">Jars</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/java_class">Java Classes</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/js_lib">JavaScript Libraries</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/movie">Movies</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/page">Pages</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/problem">Problems</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/sound">Sounds</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/subelement">Subelements</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/summary">Summaries</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/worksheet">Worksheets</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/document-index/type-name/xsl_stylesheet">XSL-Stylesheets</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+        <td class="list-label">
+          <table class="genuine">
+            <thead>
+              <tr>
+                <td>Pseudo-Documents</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/class">Classes</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/language">Languages</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/section">Sections</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/semester">Semester</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/theme">Themes</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/tutorial">Tutorials</a>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/user">User</a>
+                </td>
+               </tr>
+              <tr>
+                <td>
+                  <a href="%{prefix}/protected/view/pseudo-document-index/type-name/user_group">User-Groups</a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </table>
+
+  <mmx:footer/>
+  </div>
+
+  </body>
+
+</html>
+

@@ -1,0 +1,2729 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_problem.content.xml,v 1.90 2009/12/11 12:23:56 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:prb="http://www.mumie.net/xml-namespace/document/problem"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:math-ext="http://www.mumie.net/xml-namespace/mathml-ext"
+                xmlns:ds="http://www.mumie.net/xml-namespace/data-sheet"
+                xmlns:dsx="http://www.mumie.net/xml-namespace/data-sheet/extract"
+                xmlns:ppd="http://www.mumie.net/xml-namespace/personalized-problem-data"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie prb mtx math math-ext ds dsx ppd">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-stdlayout" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-math" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-media" internal="yes"/>
+<xsl-ext:import lid="xsl-problem-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Parameters in the dynamic data section                                       -->
+<!-- ================================================================================ -->
+
+<!--
+  course
+      Id of the course
+
+  worksheet
+      Id of the worksheet
+
+  worksheet-category
+      Category of the worksheet, as name
+
+  is-staff-member
+      Whether the user is a member of the staff. Default is "no".
+
+  is-course-member
+      Whether the user is a member of the course. Currently unused.
+
+  tutor-view
+      Whether tutor view is enabled. Default is "no".
+
+  timeframe-relation
+      Whether the current time is before, inside, or after the timeframe.
+
+  worksheet-state
+      State of the worksheet with respect to the user. Only if worksheet category is "seftest".
+
+  student-selection-failed
+      Whether this is the response after a failed selection of a student. Default is "no".
+
+  student-selection-error-message
+      Contains a respective error message if this is the response after a failed selection of
+      a student.
+
+  setting-points-failed
+      Whether this is the response after a failed attempt to set the points. Default is "no".
+
+  setting-points-error-message
+      Contains a respective error message if this is the response after a failed attempt to
+      set the points
+
+  corrected
+      Whether this is the response after a correction triggered by the user. Default is "no".
+
+  as-frame
+      Whether this content is shown in a frame. Default is "no".
+
+  session-user
+      Id of the user owning the session
+
+  applet-input-datasheet
+      URI of the input datasheet (preview only)
+
+  applet-output-datasheet
+      URI of the output datasheet (preview only)
+
+  applet-corrector-class
+      The corrector class (preview only)
+      
+  is-default-course
+      Whether course is default course     
+-->
+
+<!-- ================================================================================ -->
+<!-- h1: Global variables                                                             -->
+<!-- ================================================================================ -->
+
+<!-- The ref id of the problem (id of the worksheet-problem reference) -->
+<xsl:variable name="ref-id">
+  <xsl:value-of select="//mumie:dynamic_data/mumie:store[@name='ref']/mumie:ref/@id"/>
+</xsl:variable>
+
+<!-- The id of this problem -->
+<xsl:variable name="problem" select="/*/@id"/>
+
+<!-- The category of this problem -->
+<xsl:variable name="category" select="/*/mumie:category/@name"/>
+
+<!-- The id of the course -->
+<xsl:variable name="course">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">course</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The id of the worksheet -->
+<xsl:variable name="worksheet">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Category of the worksheet: -->
+<xsl:variable name="worksheet-category">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet-category</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The worksheet state -->
+<xsl:variable name="worksheet-state">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet-state</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The 'context' property of this page's URL -->
+<xsl:variable name="this-url-context">
+  <xsl:choose>
+    <xsl:when test="$worksheet-category='selftest'">selftest</xsl:when>
+    <xsl:when test="$worksheet-category='training'">training</xsl:when>
+    <xsl:otherwise>homework</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- The URL of this page -->
+<xsl:variable name="this-url">
+  <xsl:call-template name="xsl.document-url">
+    <xsl:with-param name="context" select="$this-url-context"/>
+    <xsl:with-param name="document-type.name">problem</xsl:with-param>
+    <xsl:with-param name="id" select="/*/@id"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the user is a member of the staff  -->
+<xsl:variable name="is-staff-member">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">is-staff-member</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the user is a member of the course -->
+<xsl:variable name="is-course-member">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.boolean-to-yes-or-no">
+        <xsl:with-param name="boolean">
+          <xsl:call-template name="xsl.get-param-from-dynamic-data">
+            <xsl:with-param name="name">is-course-member</xsl:with-param>
+            <xsl:with-param name="default">no</xsl:with-param>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+
+<!--  Whether course is default course -->
+<xsl:variable name="is-default-course">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.boolean-to-yes-or-no">
+        <xsl:with-param name="boolean">
+          <xsl:call-template name="xsl.get-param-from-dynamic-data">
+            <xsl:with-param name="name">is-default-course</xsl:with-param>
+            <xsl:with-param name="default">no</xsl:with-param>
+          </xsl:call-template>
+        </xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether tutor view is enabled -->
+<xsl:variable name="tutor-view">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">tutor-view</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The timeframe relation -->
+<xsl:variable name="timeframe-relation">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">timeframe-relation</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the student selection is enabled -->
+<xsl:variable name="with-student-selection">
+  <xsl:choose>
+    <xsl:when test="$worksheet-category != 'selftest' and $is-staff-member='yes' and $timeframe-relation='after' and  $is-default-course='no'">yes</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether this is the response after a failed selection of a student
+     (tutor view only) -->
+<xsl:variable name="student-selection-failed">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">student-selection-failed</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Error message, in case the student selection failed (tutor view only) -->
+<xsl:variable name="student-selection-error-message">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">student_selection_error_message</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether this is the response after a failed attempt to set the points -->
+<xsl:variable name="setting-points-failed">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">setting-points-failed</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Error message, in case of a failed attempt to set the points -->
+<xsl:variable name="setting-points-error-message">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">setting-points-error-message</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Last modification time of the answers -->
+<xsl:variable name="answers-last-modified">
+  <xsl:variable name="value"
+                select="/*/mumie:dynamic_data//
+                          mumie:user_problem_data/mumie:answers_last_modified/@value"/>
+  <xsl:choose>
+    <xsl:when test="$value">
+      <xsl:value-of select="$value"/>
+    </xsl:when>
+    <xsl:otherwise></xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether this is the response after a correction triggered by the user -->
+<xsl:variable name="corrected">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">corrected</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the problem is editable, i.e., the user can work on the solution. -->
+<xsl:variable name="is-editable">
+  <xsl:choose>
+    <xsl:when test="$worksheet-category='selftest'">
+      <xsl:choose>
+        <xsl:when test="$worksheet-state='work' or $is-staff-member='yes'">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$timeframe-relation='inside' or ( $is-staff-member='yes' and $tutor-view='no' )">
+          <xsl:text>yes</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Just a special version of the 'is-editable' flag for the applet. The values are "true"
+  and "false" instead of "yes" oand "no", respectively. -->
+<xsl:variable name="applet-homework-editable">
+  <xsl:choose>
+    <xsl:when test="$is-editable='yes'">true</xsl:when>
+    <xsl:otherwise>false</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the user is allowed to access the correction. This parameter controls whether the
+     'correction' button is displayed. -->
+<xsl:variable name="with-correction">
+  <xsl:choose>
+    <xsl:when test="$worksheet-category='selftest'">
+      <xsl:choose>
+        <xsl:when test="$worksheet-state='feedback' or $is-staff-member='yes'">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="$worksheet-category='training'">
+      <xsl:choose>
+        <xsl:when test="$timeframe-relation='inside' or $timeframe-relation='after' or $is-staff-member='yes'">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$timeframe-relation='after' or $is-staff-member='yes'">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the correction and marking of the multiple choice questions should be displayed.
+     Has effect only if category is 'mchoice' (the counterpart for category 'applet' is
+     'with-correction'). -->
+<xsl:variable name="mc-with-correction">
+  <xsl:choose>
+    <xsl:when test="$category!='mchoice'">no</xsl:when>
+    <xsl:when test="$worksheet-category='selftest'">
+      <xsl:choose>
+        <xsl:when test="$worksheet-state='feedback' or ( $is-staff-member='yes' and $corrected='yes' )">
+          <xsl:text>yes</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="$worksheet-category='training'">
+      <xsl:choose>
+        <xsl:when test="($timeframe-relation='inside' and $corrected='yes') or 
+                  $timeframe-relation='after' or 
+                  ( $is-staff-member='yes' and $corrected='yes' )">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$timeframe-relation='after' or ( $is-staff-member='yes' and $corrected='yes' )">
+          <xsl:text>yes</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the achieved points are displayed -->
+<xsl:variable name="display-achieved-points">
+  <xsl:choose>
+    <xsl:when test="$worksheet-category='selftest'">
+      <xsl:choose>
+        <xsl:when test="$worksheet-state='feedback' or ( $is-staff-member='yes' and $corrected='yes' )">
+          <xsl:text>yes</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="$worksheet-category='training'">
+      <xsl:choose>
+        <xsl:when test="$timeframe-relation='inside' or $timeframe-relation='after' or $is-staff-member='yes'">yes</xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$timeframe-relation='after' or ( $is-staff-member='yes' and $corrected='yes' )">
+          <xsl:text>yes</xsl:text>
+        </xsl:when>
+        <xsl:otherwise>no</xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether this content is shown in a frame -->
+<xsl:variable name="as-frame">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">as-frame</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Contains the id of the user owning the session -->
+<xsl:variable name="session-user">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">session-user</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- URI of the input datasheet (preview only) -->
+<xsl:variable name="applet-input-datasheet">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">applet-input-datasheet</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- URI of the output datasheet (preview only) -->
+<xsl:variable name="applet-output-datasheet">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">applet-output-datasheet</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The corrector class (preview only) -->
+<xsl:variable name="applet-corrector-class">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">applet-corrector-class</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!--  The problem applet element, if any -->
+<xsl:variable name="applet" select="/*//prb:execute/mtx:applet"/>
+
+<!-- Embedding mode of the applet -->
+<xsl:variable name="applet-embedding-mode">
+  <xsl:variable name="mode" select="$applet/mtx:param[@name='embeddingMode']/@value"/>
+  <xsl:choose>
+    <xsl:when test="$mode and $mode!=''">
+      <xsl:value-of select="$mode"/>
+    </xsl:when>
+    <xsl:otherwise>label</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- The 'codebase_lookup' property of the applet -->
+<xsl:variable name="applet-codebase-lookup">
+  <xsl:variable name="lookup" select="$applet/mtx:param[@name='codebase_lookup']/@value"/>
+  <xsl:choose>
+    <xsl:when test="$lookup and $lookup!=''">
+      <xsl:value-of select="$lookup"/>
+    </xsl:when>
+    <xsl:otherwise>false</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Width of the applet -->
+<xsl:variable name="applet-width">80</xsl:variable>
+
+<!-- Height of the applet -->
+<xsl:variable name="applet-height">25</xsl:variable>
+
+<!-- The root element of the datasheet -->
+<xsl:variable name="datasheet" select="//ds:data_sheet"/>
+
+<!-- HTML id of the main element, ie. the "table" element containing all the content -->
+<xsl:variable name="main-element-html-id">_MAIN_</xsl:variable>
+
+<!-- HTML id of the 'div' element representing the error message dialog. -->
+<xsl:variable name="error-html-id">_ERROR_</xsl:variable>
+
+<!-- HTML id of the 'div' element representing the applet-init-message dialog. -->
+<xsl:variable name="init-applet-msg-html-id">_INIT_APPLET_MSG_</xsl:variable>
+
+<!-- HTML id of the 'div' element representing the change-student dialog. -->
+<xsl:variable name="change-student-html-id">_CHANGE_STUDENT_</xsl:variable>
+
+<!-- HTML id of the 'div' element representing the change-points dialog. -->
+<xsl:variable name="change-points-html-id">_CHANGE_POINTS_</xsl:variable>
+
+<!-- HTML id of the 'applet' or 'object' element containing the problem applet. -->
+<xsl:variable name="applet-html-id">_APPLET_</xsl:variable>
+
+<!-- HTML id of the 'button' element representing the "toggle explanations" button. -->
+<xsl:variable name="toggle-expl-button-html-id">_TOGGLE_EXPL_</xsl:variable>
+
+<!-- HTML id of the textfield to input program code (category 'program' only) -->
+<xsl:variable name="prginput-html-id">_PRGINPUT_</xsl:variable>
+
+<!-- Appended to the output of generate-id() to obtain the HTML ids for
+     form control img elements -->
+<xsl:variable name="html-id-suffix-control-img">_CONTROL_IMG</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: Auxiliaries                                                                  -->
+<!-- ================================================================================ -->
+
+<!-- Copies the content of the datasheet element with the specified path to the current
+     location in the result tree. -->
+
+<xsl:template name="copy-from-datasheet">
+  <xsl:param name="path"/>
+  <xsl:param name="root" select="$datasheet"/>
+  <xsl:choose>
+    <xsl:when test="contains($path,'/')">
+      <xsl:call-template name="copy-from-datasheet">
+        <xsl:with-param name="path" select="substring-after($path,'/')"/>
+        <xsl:with-param name="root" select="$root/*[@name=substring-before($path,'/')]"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates select="$root/*[@name=$path]/*" mode="math"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- Gets the value of the datasheet element with the specified path as a string. -->
+
+<xsl:template name="query-datasheet">
+  <xsl:param name="path"/>
+  <xsl:param name="root" select="$datasheet"/>
+  <xsl:param name="default"/>
+  <xsl:choose>
+    <xsl:when test="contains($path,'/')">
+      <xsl:call-template name="query-datasheet">
+        <xsl:with-param name="path" select="substring-after($path,'/')"/>
+        <xsl:with-param name="root" select="$root/*[@name=substring-before($path,'/')]"/>
+        <xsl:with-param name="default" select="$default"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:variable name="value" select="$root/*[@name=$path]"/>
+      <xsl:choose>
+        <xsl:when test="$value and $value != ''">
+          <xsl:value-of select="$value"/>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$default"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript common to categories "applet", "mchoice", and "program"           -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript-mchoice-applet-program">
+
+  <!--
+    Informs the user that an error occurred.
+  -->
+
+  function notifyError (message)
+  {
+    alert("ERROR: " + message);
+  }   
+
+  <!--
+    Sets the 'visibility' CSS property of the node with the specified XHTML id to
+    the specified value.
+  -->
+
+  function setVisibility (id, visibility)
+  {
+    document.getElementById(id).style.visibility = visibility;
+  }
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript specific to the category "mchoice"                                -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript-mchoice">
+
+  <!--
+    Represents the answers of the user:
+  -->
+
+  var problemAnswers = new MchoiceProblemAnswers(<!-- 
+     --><xsl:value-of select="$ref-id"/>, <!-- 
+     --><xsl:value-of select="$problem"/>, <!-- 
+     --><xsl:value-of select="$worksheet"/>, <!-- 
+     --><xsl:value-of select="$course"/>, <!-- 
+     -->"<xsl:value-of select="$worksheet-category"/>");
+
+  <!--
+     The form control buttons:
+  -->
+
+  var checkboxCheckedImage = new Image();
+  checkboxCheckedImage.src = "<xsl-ext:url lid="checkbox-checked-image"/>";
+  var checkboxUncheckedImage = new Image();
+  checkboxUncheckedImage.src = "<xsl-ext:url lid="checkbox-unchecked-image"/>";
+  var radioButtonCheckedImage = new Image();
+  radioButtonCheckedImage.src = "<xsl-ext:url lid="radio-button-checked-image"/>";
+  var radioButtonUncheckedImage = new Image();
+  radioButtonUncheckedImage.src = "<xsl-ext:url lid="radio-button-unchecked-image"/>";
+
+  <!--
+    HTML-ids of the "checked" radio buttons. This is an associative array mapping control
+    names to HTML-ids. For a control name "foo", checkedRadioButtonIds["foo"] is the id
+    of the img element which represents the currently checked button of the group of radio
+    buttons with the name "foo".
+  -->
+
+  var checkedRadioButtonIds = new Array();
+
+  <!--
+    Function to set a radio button. 'id' is the HTML-id of the 'img' element representing
+    the button to be set. 'name' is the control name. A currently checked button of the
+    same control is unchecked if such a button exists. The button specified by 'id' is
+    checked and 'checkedRadioButtonIds' is updated.
+  -->
+
+  function setRadioButton (id, name)
+  {
+    if ( checkedRadioButtonIds[name] )
+      {
+        oldId = checkedRadioButtonIds[name];
+        document.getElementById(oldId).src = radioButtonUncheckedImage.src;
+      }
+
+    document.getElementById(id).src = radioButtonCheckedImage.src;
+    checkedRadioButtonIds[name] = id;
+  }
+
+  <!--
+    The states of the checkboxes. This is an associative array mapping HTML-ids to
+    booleans. The HTML-ids correspond to 'img' elements representing checkboxes. The
+    booleans represent the state of the checkboxes: true means "checked", false means
+    "unchecked".
+  -->
+
+  var checkboxStates = new Array();
+
+  <!--
+    Function to set a checkbox. 'id' is the HTML-id of the 'img' element representing
+    the checkbox. If the checkbox is currently checked, it is unchecked; otherwise, it
+    is checked. Thus, this method actually toggles the checkbox.
+  -->
+
+  function setCheckbox (id)
+  {
+    if ( checkboxStates[id] )
+      document.getElementById(id).src = checkboxUncheckedImage.src;
+    else
+      document.getElementById(id).src = checkboxCheckedImage.src;
+    checkboxStates[id] = !checkboxStates[id];
+  }
+
+  <!--
+    Function to set a choice of type "unique". 
+  -->
+
+  function setChoiceUnique (id, name, value)
+  {
+    try
+      {
+        problemAnswers.setControl(name, value);
+        setRadioButton(id, name);
+      }
+    catch (error)
+      {
+        notifyError("setChoiceUnique: " + error);
+      }
+  }
+
+  <!--
+    Function to set a choice of type "multiple".
+  -->
+
+  function setChoiceMultiple (id, name, value)
+  {
+    try
+      {
+        problemAnswers.toggleControl(name, value);
+        setCheckbox(id);
+      }
+    catch (error)
+      {
+        notifyError("setChoiceMultiple: " + error);
+      }
+  }
+
+  <!--
+    Function to set a choice of type "yesno".
+  -->
+
+  function setChoiceYesno (id, name, value)
+  {
+    try
+      {
+        problemAnswers.setControl(name, value);
+        setRadioButton(id, name);
+      }
+    catch (error)
+      {
+        notifyError("setChoiceYesno: " + error);
+      }
+  }
+
+  <!--
+    Function to save the answers.
+  -->
+
+  function saveAnswers ()
+  {
+    try
+      {
+        problemAnswers.save();
+      }
+    catch (error)
+      {
+        notifyError("saveAnswers: " + error);
+      }
+  }
+
+  <!--
+    Initializing of the control states:  
+  -->
+
+  <xsl:for-each select="//prb:choice">
+    <xsl:variable name="user-answer">
+      <xsl:call-template name="mc-user-answer"/>
+    </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="../@type='unique' and $user-answer='true'">
+        checkedRadioButtonIds["<xsl:call-template name="mc-control-name-unique"/>"] = <!--
+          -->"<xsl:call-template name="mc-control-html-id-unique"/>";
+      </xsl:when>
+      <xsl:when test="../@type='multiple' and $user-answer='true'">
+        checkboxStates["<xsl:call-template name="mc-control-html-id-multiple"/>"] = true;
+      </xsl:when>
+      <xsl:when test="../@type='yesno' and ( $user-answer='true' or $user-answer='false' )">
+        checkedRadioButtonIds["<xsl:call-template name="mc-control-name-yesno"/>"] = <!--
+          -->"<xsl:call-template name="mc-control-html-id-yesno">
+                <xsl:with-param name="value" select="$user-answer"/>
+              </xsl:call-template>";
+      </xsl:when>
+    </xsl:choose>
+  </xsl:for-each>
+
+  <!--
+    List of explanations
+  -->
+
+  var explIds = new Array
+    (
+    <xsl:if test="$mc-with-correction='yes'">
+      <xsl:for-each
+        select="//prb:choice[prb:explanation or not(../prb:commonexpl)]|//prb:choices[prb:commonexpl]">
+        "<xsl:call-template name="mc-expl-html-id"/>"
+        <xsl:if test="position()!=last()">,</xsl:if>
+      </xsl:for-each>
+    </xsl:if>
+    );
+
+  <!--
+    Explanations state
+  -->
+
+  var explVisible = false;
+
+  <!--
+    Toggles explanation visibility
+  -->
+
+  function toggleExplanations ()
+    {
+      explVisible = !explVisible;
+      visibility = (explVisible ? "visible" : "collapse");
+      for (i = 0; i &lt; explIds.length; i++)
+        setVisibility(explIds[i], visibility);
+      button = document.getElementById("<xsl:value-of select="$toggle-expl-button-html-id"/>");
+      button.firstChild.nodeValue =
+        (explVisible
+         ? "<xsl:value-of select="$i18n-hide-explanations"/>"
+         : "<xsl:value-of select="$i18n-show-explanations"/>");
+    }
+
+  <!-- 
+    Initializes the page. This function is called by the 'onload' handler of the
+    'body' element.
+  -->
+
+  function initPage ()
+  {
+    <xsl:if test="$student-selection-failed='yes'">
+    popupCentered("<xsl:value-of select="$error-html-id"/>");
+    </xsl:if>
+
+    problemAnswers.load();
+  }   
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript specific to the category "applet"                                 -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript-applet">
+
+  <!--
+    Returns the HTML element of the problem applet
+  -->
+
+  function getProblemApplet ()
+  {
+    return document.getElementById("<xsl:value-of select="$applet-html-id"/>");
+  }
+
+  <!--
+    Flag indicating if waiting for applet initialization is aborted.
+  -->
+
+  var waitForAppletAborted = false;
+
+  <!--
+    Counts how many times the applet initialization has been checked.
+  -->
+
+  var waitForAppletTries = 0;
+
+  <!--
+    Waits until the problem applet is ready. The check relies on the applet having
+    an 'isInitialized' method. Works as follows: The function tries to call the
+    isInitialized method. If the method can be accessed and returns true, the
+    "initializing applet" window is closed. Otherwise, a timeout is triggered which
+    calls the function again after one second. - Some more details:
+
+    If applet initialization has been aborted (gloabl variable 'waitForAppletAborted'),
+    the function returns immediately. If the maximum number of tries is exeeded, the
+    whole process of waiting is aborted.
+  -->
+
+  function waitForApplet ()
+  {
+    try
+      {
+        if ( waitForAppletAborted ) return;
+        delay = 1000;
+        maxTries = 10;
+        waitForAppletTries++;
+        applet = getProblemApplet();
+        if ( waitForAppletTries &gt; maxTries )
+          abortWaitForApplet();
+        else if ( applet.isInitialized &amp;&amp; applet.isInitialized() )
+          abortWaitForApplet();
+        else
+          setTimeout("waitForApplet()", delay);
+      }
+    catch (error)
+      {
+        abortWaitForApplet();
+        notifyError("waitForApplet: " + error);
+      }
+  }
+
+  <!--
+    Stops the waiting-for-applet process. The 'waitForAppletAborted' flag is set
+    true, and the respective message window is closed.
+  -->
+
+  function abortWaitForApplet ()
+  {
+    waitForAppletAborted = true;
+    closeWindow("<xsl:value-of select="$init-applet-msg-html-id"/>");
+  }   
+
+  <!--
+    Informs the user that the applet is not ready yet.
+  -->
+
+  function notifyAppletNotReady ()
+  {
+    alert("<xsl:value-of select="$i18n-applet-not-ready"/>");
+  }   
+
+  <!--
+    Displays the applet to edit the problem
+  -->
+
+  function editProblem ()
+  {
+    try
+      {
+        if ( getProblemApplet().showAppletFrame )
+          getProblemApplet().showAppletFrame();
+        else
+          notifyAppletNotReady();
+      }
+    catch (error)
+      {
+        notifyError("editProblem: " + error);
+      }
+  }
+
+  <!--
+    Selects the data with the specified path in  the applet.
+  -->
+
+  function setData (path)
+  {
+    try
+      {
+        if ( getProblemApplet().selectData )
+          getProblemApplet().selectData(path);
+        else
+          notifyAppletNotReady();
+      }
+    catch (error)
+      {
+        notifyError("setData: " + error);
+      }
+  }
+
+  <!--
+    Contains the HTML-id if the 'div' representing the currently selected subtask,
+    or the enpty string if no subtask is selected.
+  -->
+
+  var selectedSubtaskId = "";
+
+  <!--
+    Called when the user clicks on a subtask to select it in the applet. 'num ' is the
+    number of the subtask, 'id' the HTML-id of the 'div' representing the subtask. The
+    function calls the 'selectSubtask' method of the applet and visually marks the
+    'div' of the subtask by highlighting . A 'div' previously highlighted like this is
+    dis-highlighted before.
+
+    REMARK: The visual marking of selected subtasks currently does not work
+  -->
+
+  function setSubtask (num, id)
+  {
+    try
+      {
+        if ( getProblemApplet().selectSubtask )
+          {
+            getProblemApplet().selectSubtask(num);
+            if ( selectedSubtaskId != "" )
+              document.getElementById(selectedSubtaskId).className = "subtask clickable";
+            document.getElementById(id).className = "subtask clickable selected";
+            selectedSubtaskId = id;
+          }
+        else
+          notifyAppletNotReady();
+      }
+    catch (error)
+      {
+        notifyError("setData: " + error);
+      }
+  }
+
+  <!-- 
+    Initializes the page. This function is called by the 'onload' handler of the
+    'body' element.
+  -->
+
+  function initPage ()
+  {
+    <xsl:if test="$student-selection-failed='yes'">
+    popupCentered("<xsl:value-of select="$error-html-id"/>");
+    </xsl:if>
+
+    <!-- Currently disabled:
+    popupCentered("<xsl:value-of select="$init-applet-msg-html-id"/>");
+    waitForApplet(); -->
+  }   
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript specific to the category "traditional"                            -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript-traditional">
+
+    <!-- 
+      Initializes the page. This function is called by the 'onload' handler of the
+      'body' element.
+    -->
+
+    function initPage ()
+      {
+        <xsl:if test="$student-selection-failed='yes'">
+        popupCentered("<xsl:value-of select="$error-html-id"/>");
+        </xsl:if>
+      }   
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript specific to the category "program"                                -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript-program">
+
+  <!--
+    Represents the answers of the user:
+  -->
+  
+  var problemAnswers = new TextInputProblemAnswers(<!-- 
+     --><xsl:value-of select="$ref-id"/>, <!-- 
+     --><xsl:value-of select="$problem"/>, <!-- 
+     --><xsl:value-of select="$worksheet"/>, <!-- 
+     --><xsl:value-of select="$course"/>, <!-- 
+     -->"<xsl:value-of select="$worksheet-category"/>");
+  
+  <!-- Function to save the answer. -->
+
+  function saveAnswers ()
+  {
+    <xsl:choose>
+    <xsl:when test="//prb:prginput">
+    try
+      {
+        var textField = document.getElementById("<xsl:value-of select="$prginput-html-id"/>");
+        var answer = textField.value;
+        
+        problemAnswers.setTextAnswer("code", answer);
+        problemAnswers.save();
+      }
+    catch (error)
+      {
+        notifyError("saveAnswers: " + error);
+      }
+    </xsl:when>
+    <xsl:otherwise>
+    try
+      {
+        problemAnswers.readTextAnswerFromFile("code"); <!-- Not implemented yet -->
+      }
+    catch (error)
+      {
+        notifyError("saveAnswers: " + error);
+      }
+    </xsl:otherwise>
+    </xsl:choose>
+  }
+
+  <!-- 
+    Initializes the page. This function is called by the 'onload' handler of the
+    'body' element.
+  -->
+
+  function TextAreaTab(area,event)
+  {
+  
+    key=event.which;
+    
+    if(key==9)
+    {
+      start = area.selectionStart;
+      area.value = area.value.substr(0, area.selectionStart) + "\t" + area.value.substr(area.selectionEnd);
+      area.selectionStart = start+1; 
+      area.selectionEnd = area.selectionStart;      
+      call = "document.getElementById('<xsl:value-of select="$prginput-html-id"/>').focus()";
+      setTimeout(call, 0);  
+    }
+  
+  }
+
+ 
+  
+  function initPage ()
+  {
+    <xsl:if test="$student-selection-failed='yes'">
+    popupCentered("<xsl:value-of select="$error-html-id"/>");
+    </xsl:if>
+    
+    problemAnswers.load();
+    
+  }   
+  
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: General JavaScript                                                           -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript">
+
+  <xsl:choose>
+    <xsl:when test="$category='mchoice'">
+      <script type="text/javascript" xsl-ext:src="mmajax-js"/>
+      <script type="text/javascript" xsl-ext:src="datasheet-js"/>
+      <script type="text/javascript" xsl-ext:src="problem-answers-js"/>
+      <script type="text/javascript" xsl-ext:src="mchoice-problem-answers-js"/>
+    </xsl:when>
+    <xsl:when test="$category='program'">
+      <script type="text/javascript" xsl-ext:src="mmajax-js"/>
+      <script type="text/javascript" xsl-ext:src="datasheet-js"/>
+      <script type="text/javascript" xsl-ext:src="textinput-problem-answers-js"/>
+      <script type="text/javascript" xsl-ext:src="problem-answers-js"/>
+    </xsl:when>
+  </xsl:choose>
+
+  <script type="text/javascript">
+
+    <!-- Popup "windows": -->
+
+    <xsl:call-template name="popup-javascript">
+      <xsl:with-param name="main" select="$main-element-html-id"/>
+    </xsl:call-template>
+
+    <!-- Category specific JavaScript: -->
+
+    <xsl:choose>
+      <xsl:when test="$category='mchoice'">
+        <xsl:call-template name="javascript-mchoice-applet-program"/>
+        <xsl:call-template name="javascript-mchoice"/>
+      </xsl:when>
+      <xsl:when test="$category='applet'">
+        <xsl:call-template name="javascript-mchoice-applet-program"/>
+        <xsl:call-template name="javascript-applet"/>
+      </xsl:when>
+      <xsl:when test="$category='program'">
+        <xsl:call-template name="javascript-mchoice-applet-program"/>
+        <xsl:call-template name="javascript-program"/>
+      </xsl:when>
+      <xsl:when test="$category='traditional'">
+        <xsl:call-template name="javascript-traditional"/>
+      </xsl:when>
+    </xsl:choose>
+
+  </script>
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Header                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="header">
+  <table class="header">
+    <tr>
+      <td>
+        <div class="doctype">
+          <xsl:value-of select="$i18n-problem"/>
+          <xsl:text> </xsl:text>
+          <xsl:value-of select="//mumie:ref_attribute[@name='label']/@value"/>
+        </div>
+      </td>
+      <td>
+        <xsl:apply-templates select="prb:title" mode="header"/>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template match="prb:title" mode="header">
+  <div class="title">
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<xsl:template match="prb:title">
+  <!-- Ignored in normal processing -->
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Student selection                                                            -->
+<!-- ================================================================================ -->
+
+<!-- Popup-"window" informing the user that a previeous student selection failed -->
+
+<xsl:template name="student-selection-failed-msg">
+  <div id="{$error-html-id}" class="dialog">
+    <table class="dialog">
+      <thead>
+        <tr>
+          <td class="error">
+            <xsl:value-of select="$i18n-error"/>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-error-in-student-selection"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <xsl:value-of select="$student-selection-error-message"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-try-again"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button"
+                    onclick="javascript:closeWindow('{$error-html-id}')">
+              <xsl:value-of select="$i18n-close-window"/>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</xsl:template>
+
+<!-- Popup-"window" for selecting a student -->
+
+<xsl:template name="select-student-dialog">
+  <div id="{$change-student-html-id}" class="dialog">
+    <form method="get" action="{$this-url}">
+      <table class="dialog">
+        <thead>
+          <tr>
+            <td colspan="2">
+              <xsl:value-of select="$i18n-change-student"/>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <xsl:value-of select="$i18n-new-student"/>
+              <xsl:text>: Id = </xsl:text>
+              <input type="text" name="student" size="5"/>
+              <input type="hidden" name="ref" value="{$ref-id}"/>
+              <input type="hidden" name="as-frame" value="{$as-frame}"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <a class="button">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="$this-url"/>
+                  <xsl:value-of select="concat('?ref=', $ref-id)"/>
+                  <xsl:value-of select="'&amp;student=clear'"/>
+                  <xsl:value-of select="concat('&amp;as-frame=', $as-frame)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-clear-student"/>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button type="submit">Ok</button>
+            </td>
+            <td>
+              <button type="button"
+                      onclick="javascript:closeWindow('{$change-student-html-id}')">
+                <xsl:value-of select="$i18n-cancel"/>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>  
+</xsl:template>
+
+<!-- Student selection panel -->
+
+<xsl:template name="student-selection">
+  <table class="meta">
+    <tr>
+      <td class="left">
+        <xsl:choose>
+          <xsl:when test="$tutor-view='yes'">
+            <xsl:variable name="student" select="//mumie:store[@name='user']/mumie:user"/>
+            <!-- Name: -->
+            <span class="label"><xsl:value-of select="$i18n-student"/>:</span>
+            <span class="value">
+              <xsl:value-of select="$student/mumie:first_name"/>
+              <xsl:text> </xsl:text>
+              <xsl:value-of select="$student/mumie:surname"/>        
+            </span>
+            <!-- Account: -->
+            <span class="label"><xsl:value-of select="$i18n-account"/>:</span>
+            <span class="value"><xsl:value-of select="$student/mumie:login_name"/></span>
+            <!-- Id: -->
+            <span class="label"><xsl:value-of select="$i18n-id"/>:</span>
+            <span class="value"><xsl:value-of select="$student/@id"/></span>
+          </xsl:when>
+          <xsl:otherwise>
+            <span class="label"><xsl:value-of select="$i18n-student"/>:</span>
+            <span class="value"><xsl:value-of select="$i18n-no-student-selected"/></span>
+          </xsl:otherwise>
+        </xsl:choose>
+      </td>
+      <td class="right">
+        <!-- "Change" button: -->
+        <button type="button" class="inline"
+                onclick="javascript:popupAtMouse('{$change-student-html-id}', event)">
+          <xsl:value-of select="$i18n-change"/>
+        </button>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Status                                                                       -->
+<!-- ================================================================================ -->
+
+<!--
+   Creates the status display. Depending on certain circumstances, this display
+   has different forms. See the specification for details.
+ -->
+
+<xsl:template name="status">
+  <!-- Max. number of points: -->
+  <xsl:variable name="points-max" select="//mumie:ref_attribute[@name='points']/@value"/>
+
+  <!-- Score: -->
+  <xsl:variable name="score"
+    select="$datasheet/ds:unit[@name='user']/ds:unit[@name='meta']/ds:data[@name='score']"/>
+
+  <!-- Points achieved by the user: -->
+  <xsl:variable name="points">
+    <xsl:if test="$score and $score!='' and $score != -1">
+      <xsl:variable name="temp" select="round($points-max * $score * 10) div 10"/>
+      <xsl:if test="string($temp)!='NaN'">
+        <xsl:value-of select="$temp"/>
+      </xsl:if>
+    </xsl:if>
+  </xsl:variable>
+
+  <table class="meta">
+    <tr>
+
+      <!-- Points: -->
+      <td class="left">
+        <!-- Label: -->
+        <span class="label">
+          <xsl:value-of select="$i18n-points"/>
+          <xsl:text>: </xsl:text>
+        </span>
+
+        <!-- Points: -->
+        <span class="value">
+          <xsl:choose>
+            <xsl:when test="$display-achieved-points='yes'">
+              <!-- In this case the entry has the form "n/m", where n is the number of
+              points achieved by the user, and m the maximum number of points achievable.
+              If the user is a staff member and the category is "traditional", a "change"
+              button is placed behind the points. -->
+              <xsl:value-of select="$points"/>
+              <xsl:text>/</xsl:text>
+              <xsl:value-of select="$points-max"/>
+              <xsl:if test="$is-staff-member='yes' and $category='traditional'">
+                <!-- "Change" button: -->
+                <button type="button" class="inline"
+                        onclick="javascript:popupAtMouse('{$change-points-html-id}', event)">
+                  <xsl:value-of select="$i18n-change"/>
+                </button>
+                <!-- Change-points dialog: -->
+                <div id="{$change-points-html-id}" class="dialog">
+                  <form method="get" action="{$this-url}">
+                    <table class="dialog">
+                      <thead>
+                        <tr>
+                          <td colspan="2">
+                            <xsl:value-of select="$i18n-change-points"/>
+                          </td>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td colspan="2">
+                            <xsl:value-of select="$i18n-new-points"/>
+                            <xsl:text>:</xsl:text>
+                            <input type="text" name="points" size="3" value="{$points}"/>
+                            <input type="hidden" name="ref" value="{$ref-id}"/>
+                            <input type="hidden" name="as-frame" value="{$as-frame}"/>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <button type="submit">Ok</button>
+                          </td>
+                          <td>
+                            <button type="button"
+                                    onclick="javascript:closeWindow('{$change-points-html-id}')">
+                              <xsl:value-of select="$i18n-cancel"/>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </form>
+                </div>
+              </xsl:if>
+            </xsl:when>
+            <xsl:otherwise>
+              <!-- In this case, only the maximum number of points is displayed -->
+              <xsl:value-of select="$points-max"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </span>
+      </td>
+
+      <!-- Last save: -->
+      <td class="right">
+        <xsl:choose>
+          <xsl:when test="$category='traditional'">
+            <xsl:value-of select="$i18n-give-tutor"/>
+          </xsl:when>
+          <!-- Disabled:
+          <xsl:when test="$answers-last-modified=''">
+            <span class="label">
+              <xsl:value-of select="$i18n-last-answer-time"/>
+              <xsl:text>: </xsl:text>
+            </span>
+            <span class="value">
+              <xsl:value-of select="$i18n-no-answers-yet"/>
+            </span>
+          </xsl:when>
+          <xsl:otherwise>
+            <span class="label">
+              <xsl:value-of select="$i18n-last-answer-time"/>
+              <xsl:text>: </xsl:text>
+            </span>
+            <span class="value">
+              <xsl:value-of select="$answers-last-modified"/>
+            </span>
+          </xsl:otherwise>
+          -->
+        </xsl:choose>
+      </td>
+
+    </tr>
+  </table>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Options [unsused; likely to be deleted]                                      -->
+<!-- ================================================================================ -->
+
+<xsl:template name="options">
+  <div class="options">
+    <button type="button" class="small" id="{$toggle-expl-button-html-id}"
+            onclick="javascript:toggleExplanations()">
+      <xsl:value-of select="$i18n-show-explanations"/>
+    </button>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Buttons                                                                      -->
+<!-- ================================================================================ -->
+
+<!-- Work button -->
+<xsl:template name="work-button">
+  <a class="button" href="javascript:editProblem()">
+    <xsl:value-of select="$i18n-edit"/>
+  </a>
+</xsl:template>
+
+<!-- Save button -->
+<xsl:template name="save-button">
+  <a class="button" href="javascript:saveAnswers()">
+    <xsl:value-of select="$i18n-save"/>
+  </a>
+</xsl:template>
+
+<!-- Correction button -->
+<xsl:template name="correction-button">
+  <xsl:choose>
+    <xsl:when test="$category='mchoice'">
+      <a class="button">
+        <xsl:attribute name="href">
+          <xsl:value-of select="$this-url"/>
+          <xsl:text>?ref=</xsl:text>
+          <xsl:value-of select="$ref-id"/>
+          <xsl:text>&amp;correct=true</xsl:text>
+          <xsl:text>&amp;as-frame=</xsl:text>
+          <xsl:value-of select="$as-frame"/>
+        </xsl:attribute>
+        <xsl:value-of select="$i18n-correction"/>
+      </a>
+    </xsl:when>
+    <xsl:otherwise>
+      <a class="button">
+        <xsl:attribute name="href">
+          <xsl:value-of select="$xsl.url-prefix"/>
+          <xsl:text>/protected/homework/problem-correction?ref=</xsl:text>
+          <xsl:value-of select="$ref-id"/>
+          <xsl:text>&amp;problem=</xsl:text>
+          <xsl:value-of select="$problem"/>
+          <xsl:choose>
+            <xsl:when test="$tutor-view='yes'">
+              <xsl:text>&amp;user=</xsl:text>
+              <xsl:value-of select="//mumie:store[@name='user']/mumie:user/@id"/>
+            </xsl:when>
+            <xsl:when test="$is-staff-member='yes' or $worksheet-category='training'">
+              <xsl:text>&amp;correct=true</xsl:text>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:attribute>
+        <xsl:value-of select="$i18n-correction"/>
+      </a>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- Solution button.
+  DEPRECATED: solution and correct button are now merged to the correction button -->
+<xsl:template name="solution-button">
+  <a class="button">
+    <xsl:attribute name="href">
+      <xsl:value-of select="$xsl.url-prefix"/>
+      <xsl:text>/protected/homework/problem-correction?ref=</xsl:text>
+      <xsl:value-of select="$ref-id"/>
+      <xsl:text>&amp;problem=</xsl:text>
+      <xsl:value-of select="$problem"/>
+      <xsl:if test="$tutor-view='yes'">
+        <xsl:text>&amp;user=</xsl:text>
+        <xsl:value-of select="//mumie:store[@name='user']/mumie:user/@id"/>
+      </xsl:if>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-solution"/>
+  </a>
+</xsl:template>
+
+<!-- Correct button.
+  DEPRECATED: solution and correct button are now merged to the correction button -->
+<xsl:template name="correct-button">
+  <a class="button">
+    <xsl:attribute name="href">
+      <xsl:value-of select="concat($this-url,'?ref=',$ref-id,'&amp;correct=true','&amp;as-frame=',$as-frame)"/>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-correct"/>
+  </a>
+</xsl:template>
+
+<!-- New-data button -->
+<xsl:template name="new-data-button">
+  <a class="button">
+    <xsl:attribute name="href">
+      <xsl:value-of select="concat($this-url,'?ref=',$ref-id,'&amp;clear-data=true','&amp;as-frame=',$as-frame)"/>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-new-data"/>
+  </a>
+</xsl:template>
+
+<!-- Toggle-explanations button -->
+<xsl:template name="toggle-expl-button">
+  <a class="button" id="{$toggle-expl-button-html-id}" href="javascript:toggleExplanations()">
+    <xsl:value-of select="$i18n-show-explanations"/>
+  </a>
+</xsl:template>
+
+<!-- Button area -->
+<xsl:template name="buttons">
+  <div class="buttons">
+
+    <!-- 'Work' button: -->
+    <xsl:if test="$category='applet' and $is-editable='yes' and $applet-embedding-mode='label'">
+      <xsl:call-template name="work-button"/>
+    </xsl:if>
+
+    <!-- 'Save' button: -->
+    <xsl:if test="( $category='mchoice' or $category='program' ) and $is-editable='yes'">
+      <xsl:call-template name="save-button"/>
+    </xsl:if>
+
+    <!-- 'Show/hide explanations' button: -->
+    <xsl:if
+      test="$category='mchoice' and $mc-with-correction='yes'">
+      <xsl:call-template name="toggle-expl-button"/>
+    </xsl:if>
+
+    <!-- 'Correction' button: -->
+    <xsl:if test="$category!='traditional' and $with-correction='yes'">
+      <xsl:call-template name="correction-button"/>
+    </xsl:if>
+
+    <!-- 'New data' button: -->
+    <xsl:if test="$category!='traditional' and $is-editable='yes' and
+                  ( $is-staff-member='yes' or $worksheet-category='training' )">
+      <xsl:call-template name="new-data-button"/>
+    </xsl:if>
+
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Applet                                                                       -->
+<!-- ================================================================================ -->
+
+<!-- Creates the applet section -->
+
+<xsl:template name="applet">
+  <xsl:choose>
+    <xsl:when test="$category='mchoice'">
+      <table class="applet">
+        <tr>
+          <td class="label">
+            <xsl:value-of select="$i18n-applet-status"/>:
+          </td>
+          <td class="applet">
+            <xsl-ext:applet lid="mchoice-applet"
+                            id="{$applet-html-id}"
+                            width="{$applet-width}"
+                            height="{$applet-height}">
+              <xsl:call-template name="applet-params"/>
+            </xsl-ext:applet>
+          </td>
+        </tr>
+      </table>
+    </xsl:when>
+    <xsl:when test="$category='program'">
+      <table class="applet">
+        <tr>
+          <td class="label">
+            <xsl:value-of select="$i18n-applet-status"/>:
+          </td>
+          <td class="applet">
+            <xsl-ext:applet lid="program-applet"
+                            id="{$applet-html-id}"
+                            width="{$applet-width}"
+                            height="{$applet-height}">
+              <xsl:call-template name="applet-params"/>
+            </xsl-ext:applet>
+          </td>
+        </tr>
+      </table>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:choose>
+        <xsl:when test="$applet-embedding-mode='label'">
+          <table class="applet">
+            <tr>
+              <td class="label">
+                <xsl:value-of select="$i18n-applet-status"/>:
+              </td>
+              <td class="applet">
+                <xsl:call-template name="create-applet-element">
+                  <xsl:with-param name="applet" select="$applet"/>
+                </xsl:call-template>
+              </td>
+            </tr>
+          </table>
+        </xsl:when>
+        <xsl:otherwise>
+          <div class="applet">
+            <xsl:call-template name="create-applet-element">
+              <xsl:with-param name="applet" select="$applet"/>
+            </xsl:call-template>
+          </div>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- Creates the applet HTML element. Depending on the parameter 'applet-element', this is an
+  'applet' or 'object' element -->
+
+<xsl:template name="create-applet-element">
+  <xsl:param name="applet"/>
+  <xsl:choose>
+    <xsl:when test="applet-element='object'">
+      <object>
+        <xsl:attribute name="id"><xsl:value-of select="$applet-html-id"/></xsl:attribute>
+        <xsl:choose>
+          <xsl:when test="$applet-embedding-mode='label'">
+            <xsl:call-template name="xsl.set-applet-object-src-attributes">
+              <xsl:with-param name="lid" select="$applet/@lid"/>
+              <xsl:with-param name="width" select="$applet-width"/>
+              <xsl:with-param name="height" select="$applet-height"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="xsl.set-applet-object-src-attributes">
+              <xsl:with-param name="lid" select="$applet/@lid"/>
+              <xsl:with-param name="width" select="$applet/@width"/>
+              <xsl:with-param name="height" select="$applet/@height"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:call-template name="applet-params"/>
+        <xsl:apply-templates select="$applet/mtx:param[@name!='embeddingMode']"/>
+      </object>
+    </xsl:when>
+    <xsl:otherwise>
+      <applet>
+        <xsl:attribute name="id"><xsl:value-of select="$applet-html-id"/></xsl:attribute>
+        <xsl:attribute name="mayscript">mayscript</xsl:attribute>
+        <xsl:choose>
+          <xsl:when test="$applet-embedding-mode='label'">
+            <xsl:call-template name="xsl.set-applet-src-attributes">
+              <xsl:with-param name="lid" select="$applet/@lid"/>
+              <xsl:with-param name="width" select="$applet-width"/>
+              <xsl:with-param name="height" select="$applet-height"/>
+            </xsl:call-template>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="xsl.set-applet-src-attributes">
+              <xsl:with-param name="lid" select="$applet/@lid"/>
+              <xsl:with-param name="width" select="$applet/@width"/>
+              <xsl:with-param name="height" select="$applet/@height"/>
+            </xsl:call-template>
+          </xsl:otherwise>
+        </xsl:choose>
+        <xsl:call-template name="applet-params"/>
+        <xsl:apply-templates select="$applet/mtx:param[@name!='embeddingMode']"/>
+      </applet>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- Auxiliary for the 'create-applet-element' template. Inserts the HTML elements for the
+  applet parameters. -->
+
+<xsl:template name="applet-params">
+  <xsl:choose>
+    <xsl:when test="$xsl.mode='preview'">
+      <param name="embeddingMode" value="{$applet-embedding-mode}"/>
+      <param name="homeworkMode" value="local:preview"/>
+      <param name="homeworkEditable" value="{$applet-homework-editable}"/>
+      <param name="inputDatasheet" value="{$applet-input-datasheet}"/>
+      <param name="outputDatasheet" value="{$applet-output-datasheet}"/>
+      <param name="correctorClass" value="{$applet-corrector-class}"/>
+      <param name="codebase_lookup" value="{$applet-codebase-lookup}"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <param name="embeddingMode" value="{$applet-embedding-mode}"/>
+      <param name="homeworkMode" value="remote:japs"/>
+      <param name="homeworkEditable" value="{$applet-homework-editable}"/>
+      <param name="urlPrefix" value="{$xsl.url-prefix}"/>
+      <param name="problemRef" value="{$ref-id}"/>
+      <param name="userId" value="{$session-user}"/>
+      <param name="courseId" value="{$course}"/>
+      <param name="worksheetId" value="{$worksheet}"/>
+      <param name="problemId" value="{$problem}"/>
+      <xsl:if test="$worksheet-category = 'selftest'">
+        <param name="saveAnswersPath" value="/protected/store/selftest-problem-answers"/>
+      </xsl:if>
+      <param name="codebase_lookup" value="{$applet-codebase-lookup}"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- The "window" asking the user to wait until the applet is initialized. Currently
+   unused. -->
+
+<xsl:template name="applet-init-msg">
+  <div class="dialog" id="{$init-applet-msg-html-id}">
+    <table class="dialog">
+      <thead>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-initializing-applet"/>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="align-left">
+            <xsl:value-of select="$i18n-initializing-applet-descr"/>
+          </td>
+        </tr>
+        <tr>
+          <td class="buttons">
+            <button type="button"
+                    onclick="javascript:abortWaitForApplet()">
+              <xsl:value-of select="$i18n-close-window"/>
+            </button>
+         </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</xsl:template>
+
+<xsl:template match="prb:execute">
+  <!-- Ignored in normal processing -->
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Hidden areas                                                                 -->
+<!-- ================================================================================ -->
+
+<xsl:template match="prb:hidden">
+  <!-- Ignored -->
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Personalized data                                                            -->
+<!-- ================================================================================ -->
+
+<xsl:template name="ppd-placeholder">
+  <mi class='ppd-placeholder'>P</mi>
+</xsl:template>
+
+<xsl:template match="ppd:random_real" mode='math'>
+  <xsl:choose>
+    <xsl:when test="$datasheet">
+      <xsl:call-template name="copy-from-datasheet">
+        <xsl:with-param name="path" select="@path"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="ppd-placeholder"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="ppd:random_integer" mode='math'>
+  <xsl:choose>
+    <xsl:when test="$datasheet">
+      <xsl:call-template name="copy-from-datasheet">
+        <xsl:with-param name="path" select="@path"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="ppd-placeholder"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="ppd:random_rational" mode='math'>
+  <xsl:choose>
+    <xsl:when test="$datasheet">
+      <xsl:call-template name="copy-from-datasheet">
+        <xsl:with-param name="path" select="@path"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+        <xsl:call-template name="ppd-placeholder"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="ppd:copy" mode='math'>
+  <xsl:choose>
+    <xsl:when test="$datasheet">
+      <xsl:call-template name="copy-from-datasheet">
+        <xsl:with-param name="path" select="@path"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="ppd-placeholder"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="ppd:random_select">
+  <xsl:choose>
+    <xsl:when test="$datasheet">
+      <xsl:apply-templates/>
+    </xsl:when>
+    <xsl:otherwise>
+      <div class="prev-container">
+        <div class="prev-remark">
+          random_select <xsl:value-of select="@number"/>
+        </div>
+        <xsl:apply-templates/>
+      </div>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="ppd:option">
+  <xsl:choose>
+    <xsl:when test="$datasheet">
+      <xsl:variable name="selected">
+        <xsl:call-template name="query-datasheet">
+          <xsl:with-param name="path"
+            select="concat('user/problem/selection-', ../@key, '/option-', @key, '/selected')"/>
+          <xsl:with-param name="default">true</xsl:with-param>
+        </xsl:call-template>
+      </xsl:variable>
+      <xsl:if test="$selected='true'">
+        <xsl:apply-templates/>
+      </xsl:if>
+    </xsl:when>
+    <xsl:otherwise>
+      <div class="prev-container">
+        <div class="prev-remark">option</div>
+        <xsl:apply-templates/>
+      </div>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: DSX elements                                                                 -->
+<!-- ================================================================================ -->
+
+<xsl:template match="dsx:data">
+  <xsl:choose>
+    <xsl:when test="@clickable='yes'">
+      <span class="action" onclick="javascript:setData('{@path}')">
+        <xsl:apply-templates/>
+      </span>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="dsx:data" mode="math">
+  <xsl:choose>
+    <xsl:when test="@clickable='yes'">
+      <span class="action" onclick="javascript:setData('{@path}')">
+        <xsl:apply-templates mode="math"/>
+      </span>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates mode="math"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Category 'mchoice': form control names, values, and HTML ids                 -->
+<!-- ================================================================================ -->
+
+<!-- Control name of a "unique" choice. Must be called inside a "choice" element
+  to work properly. -->
+
+<xsl:template name="mc-control-name-unique">
+  <xsl:value-of select="concat('answer.unique.', ../@key)"/>
+</xsl:template>
+
+<!-- Control value of a "unique" choice. Must be called inside a "choice" element
+  to work properly. -->
+
+<xsl:template name="mc-control-value-unique">
+  <xsl:value-of select="@key"/>
+</xsl:template>
+
+<!-- HTML id if the img element representing the selected control of a "unique" choice.
+  Must be called inside a "choice" element to work properly. -->
+
+<xsl:template name="mc-control-html-id-unique">
+  <xsl:value-of select="concat(generate-id(), $html-id-suffix-control-img)"/>
+</xsl:template>
+
+<!-- Control name of a "multiple" choice. Must be called inside a "choice" element
+  to work properly. -->
+
+<xsl:template name="mc-control-name-multiple">
+  <xsl:value-of select="concat('answer.multiple.', ../@key, '.', @key)"/>
+</xsl:template>
+
+<!-- Control value of a "multiple" choice. Must be called inside a "choice" element
+  to work properly. -->
+
+<xsl:template name="mc-control-value-multiple">
+  <xsl:value-of select="'selected'"/>
+</xsl:template>
+
+<!-- HTML id if the img element representing the selected control of a "unique" choice.
+  Must be called inside a "choice" element to work properly. -->
+
+<xsl:template name="mc-control-html-id-multiple">
+  <xsl:value-of select="concat(generate-id(), $html-id-suffix-control-img)"/>
+</xsl:template>
+
+<!-- Control name of a "yesno" choice. Must be called inside a "choice" element
+  to work properly. -->
+
+<xsl:template name="mc-control-name-yesno">
+  <xsl:value-of select="concat('answer.yesno.', ../@key, '.', @key)"/>
+</xsl:template>
+
+<!-- Control value of a "yesno" choice. Must be called inside a "choice" element
+  to work properly. -->
+
+<xsl:template name="mc-control-value-yesno">
+  <xsl:param name="value"/>
+  <xsl:choose>
+    <xsl:when test="$value='true'">yes</xsl:when>
+    <xsl:when test="$value='yes'">yes</xsl:when>
+    <xsl:when test="$value='false'">no</xsl:when>
+    <xsl:when test="$value='no'">no</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- HTML id if the img element representing the selected control of a "yesno" choice.
+  Must be called inside a "choice" element to work properly. -->
+
+<xsl:template name="mc-control-html-id-yesno">
+  <xsl:param name="value"/>
+  <xsl:value-of select="generate-id()"/>
+  <xsl:value-of select="$html-id-suffix-control-img"/>
+  <xsl:choose>
+    <xsl:when test="$value='true'">_YES</xsl:when>
+    <xsl:when test="$value='yes'">_YES</xsl:when>
+    <xsl:when test="$value='false'">_NO</xsl:when>
+    <xsl:when test="$value='no'">_NO</xsl:when>
+    <xsl:otherwise>_NO</xsl:otherwise>
+  </xsl:choose>
+  
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Category 'mchoice': explanation HTML ids                                     -->
+<!-- ================================================================================ -->
+
+<xsl:template name="mc-expl-html-id">
+  <xsl:value-of select="concat(generate-id(),'_EXPL')"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Category 'mchoice': user answer, solution                                    -->
+<!-- ================================================================================ -->
+
+<!-- Returns the user answer to the question with the specified choices and choice
+     keys. -->
+
+<xsl:template name="mc-user-answer">
+  <xsl:param name="choices-key" select="../@key"/>
+  <xsl:param name="choice-key" select="@key"/>
+  <xsl:value-of select="$datasheet/
+                          ds:unit[@name='user']/
+                            ds:unit[@name='answer']/
+                              ds:unit[@name=concat('choices-',$choices-key)]/
+                                ds:data[@name=concat('choice-',$choice-key)]"/>
+</xsl:template>
+
+<!-- Returns the solution to the question with the specified choices and choice keys. -->
+
+<xsl:template name="mc-solution">
+  <xsl:param name="choices-key" select="../@key"/>
+  <xsl:param name="choice-key" select="@key"/>
+  <xsl:variable name="user-specific-solution"
+                select="$datasheet/
+                          ds:unit[@name='user']/
+                            ds:unit[@name='solution']/
+                              ds:unit[@name=concat('choices-',$choices-key)]/
+                                ds:data[@name=concat('choice-',$choice-key)]"/>
+  <xsl:choose>
+    <xsl:when test="$user-specific-solution and $user-specific-solution != ''">
+      <xsl:value-of select="$user-specific-solution"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$datasheet/
+                              ds:unit[@name='common']/
+                                ds:unit[@name='solution']/
+                                  ds:unit[@name=concat('choices-',$choices-key)]/
+                                    ds:data[@name=concat('choice-',$choice-key)]"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Category 'mchoice': choices                                                  -->
+<!-- ================================================================================ -->
+
+<!-- Type "unique". This template processes 'prb:choices' elements with a 'type' attribute
+     equal to "unique". -->
+
+<xsl:template match="prb:choices[@type='unique']">
+  <table class="choices">
+    <xsl:if test="$mc-with-correction='yes'">
+      <thead>
+        <tr>
+          <td><xsl:value-of select="$i18n-assertion"/></td>
+          <td><xsl:value-of select="$i18n-your-choice"/></td>
+          <td><xsl:value-of select="$i18n-right-choice"/></td>
+          <td><xsl:value-of select="$i18n-correction"/></td>
+        </tr>
+      </thead>
+    </xsl:if>
+    <tbody>
+      <xsl:for-each select="prb:choice">
+        <xsl:variable name="user-answer">
+          <xsl:call-template name="mc-user-answer"/>
+        </xsl:variable>
+        <xsl:variable name="control-html-id">
+          <xsl:call-template name="mc-control-html-id-unique"/>
+        </xsl:variable>
+        <tr>
+          <!-- Assertion: -->
+          <td class="assertion">
+            <xsl:apply-templates select="prb:assertion"/>
+          </td>
+          <!-- Radio button, user choice: -->
+          <td class="icon">
+            <img>
+              <xsl:attribute name="id">
+                <xsl:value-of select="$control-html-id"/>
+              </xsl:attribute>
+              <xsl:attribute name="src">
+                <xsl:choose>
+                  <xsl:when test="$user-answer='true'">
+                    <xsl-ext:url lid="radio-button-checked-image"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl-ext:url lid="radio-button-unchecked-image"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:attribute>
+              <xsl:attribute name="class">radio</xsl:attribute>
+              <xsl:if test="$is-editable='yes'">
+                <xsl:attribute name="onclick">
+                  <xsl:text>javascript:setChoiceUnique("</xsl:text>
+                  <xsl:value-of select="$control-html-id"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-name-unique"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-value-unique"/>
+                  <xsl:text>")</xsl:text>
+                </xsl:attribute>
+              </xsl:if>
+            </img>
+          </td>
+          <xsl:if test="$mc-with-correction='yes'">
+            <xsl:variable name="solution">
+              <xsl:call-template name="mc-solution"/>
+            </xsl:variable>
+            <!-- Radio button, right choice: -->
+            <td class="icon">
+              <img>
+                <xsl:attribute name="src">
+                  <xsl:choose>
+                    <xsl:when test="$solution='true'">
+                      <xsl-ext:url lid="radio-button-checked-image"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl-ext:url lid="radio-button-unchecked-image"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:attribute>
+                <xsl:attribute name="class">radio</xsl:attribute>
+              </img>
+            </td>
+            <!-- Symbol "correct" or symbol "false" or empty: -->
+            <td class="icon">
+              <xsl:choose>
+                <xsl:when test="$user-answer='true' and $solution='true'">
+                  <img>
+                    <xsl:attribute name="src">
+                      <xsl-ext:url lid="mark-correct-image"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">corr</xsl:attribute>
+                  </img>
+                </xsl:when>
+                <xsl:when test="$user-answer='true' and not($solution='true')">
+                  <img>
+                    <xsl:attribute name="src">
+                      <xsl-ext:url lid="mark-false-image"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">corr</xsl:attribute>
+                  </img>
+                </xsl:when>
+              </xsl:choose>
+            </td>
+          </xsl:if>
+        </tr>
+        <!-- Explanation: -->
+        <xsl:call-template name="mc-explanation">
+          <xsl:with-param name="colspan">4</xsl:with-param>
+        </xsl:call-template>
+      </xsl:for-each>
+      <!-- Common explanation: -->
+      <xsl:call-template name="mc-commonexpl">
+        <xsl:with-param name="colspan">4</xsl:with-param>
+      </xsl:call-template>
+    </tbody>
+  </table>
+</xsl:template>
+
+<!-- Type "multiple". This template processes 'prb:choices' elements with a 'type' attribute
+     equal to "multiple". -->
+
+<xsl:template match="prb:choices[@type='multiple']">
+  <table class="choices">
+    <xsl:if test="$mc-with-correction='yes'">
+      <thead>
+        <tr>
+          <td><xsl:value-of select="$i18n-assertion"/></td>
+          <td><xsl:value-of select="$i18n-your-choice"/></td>
+          <td><xsl:value-of select="$i18n-right-choice"/></td>
+          <td><xsl:value-of select="$i18n-correction"/></td>
+        </tr>
+      </thead>
+    </xsl:if>
+    <tbody>
+      <xsl:for-each select="prb:choice">
+        <xsl:variable name="user-answer">
+          <xsl:call-template name="mc-user-answer"/>
+        </xsl:variable>
+        <xsl:variable name="control-html-id">
+          <xsl:call-template name="mc-control-html-id-multiple"/>
+        </xsl:variable>
+        <tr>
+          <!-- Assertion: -->
+          <td class="assertion">
+            <xsl:apply-templates select="prb:assertion"/>
+          </td>
+          <!-- Checkbox, user choice:: -->
+          <td class="icon">
+            <img>
+              <xsl:attribute name="id">
+                <xsl:value-of select="$control-html-id"/>
+              </xsl:attribute>
+              <xsl:attribute name="src">
+                <xsl:choose>
+                  <xsl:when test="$user-answer='true'">
+                    <xsl-ext:url lid="checkbox-checked-image"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl-ext:url lid="checkbox-unchecked-image"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:attribute>
+              <xsl:attribute name="class">checkbox</xsl:attribute>
+              <xsl:if test="$is-editable='yes'">
+                <xsl:attribute name="onclick">
+                  <xsl:text>javascript:setChoiceMultiple("</xsl:text>
+                  <xsl:value-of select="$control-html-id"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-name-multiple"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-value-multiple"/>
+                  <xsl:text>")</xsl:text>
+                </xsl:attribute>
+              </xsl:if>
+            </img>
+          </td>
+          <xsl:if test="$mc-with-correction='yes'">
+            <xsl:variable name="solution">
+              <xsl:call-template name="mc-solution"/>
+            </xsl:variable>
+            <!-- Checkbox, right choice: -->
+            <td class="icon">
+              <img>
+                <xsl:attribute name="src">
+                  <xsl:choose>
+                    <xsl:when test="$solution='true'">
+                      <xsl-ext:url lid="checkbox-checked-image"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl-ext:url lid="checkbox-unchecked-image"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </xsl:attribute>
+                <xsl:attribute name="class">checkbox</xsl:attribute>
+              </img>
+            </td>
+            <!-- Symbol "correct" or symbol "false": -->
+            <td class="icon">
+              <xsl:choose>
+                <xsl:when test="$user-answer=$solution or ($solution = 'false' and $user-answer='')">
+                  <img>
+                    <xsl:attribute name="src">
+                      <xsl-ext:url lid="mark-correct-image"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">corr</xsl:attribute>
+                  </img>
+                </xsl:when>
+                <xsl:otherwise>
+                  <img>
+                    <xsl:attribute name="src">
+                      <xsl-ext:url lid="mark-false-image"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">corr</xsl:attribute>
+                  </img>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </xsl:if>
+        </tr>
+        <!-- Explanation: -->
+        <xsl:call-template name="mc-explanation">
+          <xsl:with-param name="colspan">4</xsl:with-param>
+        </xsl:call-template>
+      </xsl:for-each>
+      <!-- Common explanation: -->
+      <xsl:call-template name="mc-commonexpl">
+        <xsl:with-param name="colspan">4</xsl:with-param>
+      </xsl:call-template>
+    </tbody>
+  </table>
+</xsl:template>
+
+<!-- Type "yesno". This template processes 'prb:choices' elements with a 'type' attribute
+     equal to "yesno". -->
+
+<xsl:template match="prb:choices[@type='yesno']">
+  <table class="choices">
+    <xsl:if test="$mc-with-correction='yes'">
+      <thead>
+        <tr>
+          <td><xsl:value-of select="$i18n-assertion"/></td>
+          <td colspan="2"><xsl:value-of select="$i18n-your-choice"/></td>
+          <td><xsl:value-of select="$i18n-right-choice"/></td>
+          <td><xsl:value-of select="$i18n-correction"/></td>
+        </tr>
+      </thead>
+    </xsl:if>
+    <tbody>
+      <xsl:for-each select="prb:choice">
+        <xsl:variable name="user-answer">
+          <xsl:call-template name="mc-user-answer"/>
+        </xsl:variable>
+        <xsl:variable name="control-html-id-yes">
+          <xsl:call-template name="mc-control-html-id-yesno">
+            <xsl:with-param name="value">yes</xsl:with-param>
+          </xsl:call-template>
+        </xsl:variable>
+        <xsl:variable name="control-html-id-no">
+          <xsl:call-template name="mc-control-html-id-yesno">
+            <xsl:with-param name="value">no</xsl:with-param>
+          </xsl:call-template>
+        </xsl:variable>
+        <tr>
+          <!-- Assertion: -->
+          <td class="assertion">
+            <xsl:apply-templates select="prb:assertion"/>
+          </td>
+          <!-- "Yes" radio button, user choice: -->
+          <td class="yesno-left">
+            <xsl:value-of select="$i18n-yes"/>
+            <xsl:text> </xsl:text>
+            <img>
+              <xsl:attribute name="id">
+                <xsl:value-of select="$control-html-id-yes"/>
+              </xsl:attribute>
+              <xsl:attribute name="src">
+                <xsl:choose>
+                  <xsl:when test="$user-answer='true'">
+                    <xsl-ext:url lid="radio-button-checked-image"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl-ext:url lid="radio-button-unchecked-image"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:attribute>
+              <xsl:attribute name="class">radio</xsl:attribute>
+              <xsl:if test="$is-editable='yes'">
+                <xsl:attribute name="onclick">
+                  <xsl:text>javascript:setChoiceYesno("</xsl:text>
+                  <xsl:value-of select="$control-html-id-yes"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-name-yesno"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-value-yesno">
+                    <xsl:with-param name="value">yes</xsl:with-param>
+                  </xsl:call-template>
+                  <xsl:text>")</xsl:text>
+                </xsl:attribute>
+              </xsl:if>
+            </img>
+          </td>
+          <!-- "No" radio button, user choice: -->
+          <td class="yesno-right">
+            <xsl:value-of select="$i18n-no"/>
+            <xsl:text> </xsl:text>
+            <img>
+              <xsl:attribute name="id">
+                <xsl:value-of select="$control-html-id-no"/>
+              </xsl:attribute>
+              <xsl:attribute name="src">
+                <xsl:choose>
+                  <xsl:when test="$user-answer='false'">
+                    <xsl-ext:url lid="radio-button-checked-image"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl-ext:url lid="radio-button-unchecked-image"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:attribute>
+              <xsl:attribute name="class">radio</xsl:attribute>
+              <xsl:if test="$is-editable='yes'">
+                <xsl:attribute name="onclick">
+                  <xsl:text>javascript:setChoiceYesno("</xsl:text>
+                  <xsl:value-of select="$control-html-id-no"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-name-yesno"/>
+                  <xsl:text>", "</xsl:text>
+                  <xsl:call-template name="mc-control-value-yesno">
+                    <xsl:with-param name="value">no</xsl:with-param>
+                  </xsl:call-template>
+                  <xsl:text>")</xsl:text>
+                </xsl:attribute>
+              </xsl:if>
+            </img>
+          </td>
+          <xsl:if test="$mc-with-correction='yes'">
+            <xsl:variable name="solution">
+              <xsl:call-template name="mc-solution"/>
+            </xsl:variable>
+            <!-- Right choice, as text "Yes" or "No": -->
+            <td>
+              <xsl:choose>
+                <xsl:when test="$solution='true'">
+                  <xsl:value-of select="$i18n-yes"/>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:value-of select="$i18n-no"/>
+                </xsl:otherwise>
+              </xsl:choose>
+              <xsl:attribute name="class">radio</xsl:attribute>
+            </td>
+            <!-- Symbol "correct" or symbol "false": -->
+            <td class="icon">
+              <xsl:choose>
+                <xsl:when
+                  test="( $user-answer='true' or $user-answer='false' )
+                        and $user-answer=$solution">
+                  <img>
+                    <xsl:attribute name="src">
+                      <xsl-ext:url lid="mark-correct-image"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">corr</xsl:attribute>
+                  </img>
+                </xsl:when>
+                <xsl:otherwise>
+                  <img>
+                    <xsl:attribute name="src">
+                      <xsl-ext:url lid="mark-false-image"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">corr</xsl:attribute>
+                  </img>
+                </xsl:otherwise>
+              </xsl:choose>
+            </td>
+          </xsl:if>
+        </tr>
+        <!-- Explanation: -->
+        <xsl:call-template name="mc-explanation">
+          <xsl:with-param name="colspan">5</xsl:with-param>
+        </xsl:call-template>
+      </xsl:for-each>
+      <!-- Common explanation: -->
+      <xsl:call-template name="mc-commonexpl">
+        <xsl:with-param name="colspan">5</xsl:with-param>
+      </xsl:call-template>
+    </tbody>
+  </table>
+</xsl:template>
+
+<!--
+  Explanation (all three types). This is a named template used in the three matching
+  templates for the 'prb:choices' elements (see above). It processes the 'prb:explanation'
+  elements. If the element is lacking, a fixed replacement text is used saying that no
+  explanation is available. The template contains control structures which guarantee that
+  the template generates output only if $mc-with-correction is "yes" and no
+  'prb:commonexpl' element exits.
+-->
+
+<xsl:template name="mc-explanation">
+  <xsl:param name="colspan"/>
+  <xsl:if test="$mc-with-correction='yes' and not(../prb:commonexpl )">
+    <tr>
+      <xsl:attribute name="class">explanation</xsl:attribute>
+      <xsl:attribute name="id">
+        <xsl:call-template name="mc-expl-html-id"/>
+      </xsl:attribute>
+      <td>
+        <xsl:attribute name="class">explanation</xsl:attribute>
+        <xsl:attribute name="colspan">
+          <xsl:value-of select="$colspan"/>
+        </xsl:attribute>
+        <div class="explanation">
+          <xsl:choose>
+            <xsl:when test="prb:explanation">
+              <xsl:apply-templates select="prb:explanation"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <xsl:value-of select="$i18n-no-expl-available"/>
+            </xsl:otherwise>
+          </xsl:choose>
+        </div>
+      </td>
+    </tr>
+  </xsl:if>
+</xsl:template>
+
+<!--
+  Common explanation (all three types). This is a named template used in the three matching
+  templates for the 'prb:choices' elements (see above). It processes the 'prb:commonexpl'
+  element if existing. The the element does not exist, this template does not produce any
+  output.
+-->
+
+<xsl:template name="mc-commonexpl">
+  <xsl:param name="colspan"/>
+  <xsl:if test="prb:commonexpl">
+    <tr>
+      <xsl:attribute name="class">commonexpl</xsl:attribute>
+      <xsl:attribute name="id">
+        <xsl:call-template name="mc-expl-html-id"/>
+      </xsl:attribute>
+      <td>
+        <xsl:attribute name="class">commonexpl</xsl:attribute>
+        <xsl:attribute name="colspan">
+          <xsl:value-of select="$colspan"/>
+        </xsl:attribute>
+        <xsl:apply-templates select="prb:commonexpl"/>
+      </td>
+    </tr>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Categories 'applet', 'traditional': subtasks                                 -->
+<!-- ================================================================================ -->
+
+<xsl:template match="prb:subtasks">
+  <table class="subtasks">
+    <xsl:for-each select="prb:subtask">
+      <tr>
+        <td class="number">
+          <!-- Number: -->
+          <div class="number">
+            <xsl:number value="@num" format="a)"/>
+          </div>
+        </td>
+        <td>
+          <!-- Subtask: -->
+          <xsl:choose>
+            <xsl:when test="@clickable='yes'">
+              <xsl:variable name="id" select="generate-id()"/>
+              <div id="{$id}" class="subtask clickable"
+                   onclick="javascript:setSubtask('{@num}', '{$id}')">
+                <xsl:apply-templates/>
+              </div>
+            </xsl:when>
+            <xsl:otherwise>
+              <div class="subtask">
+                <xsl:apply-templates/>
+              </div>
+            </xsl:otherwise>
+          </xsl:choose>
+        </td>
+      </tr>
+    </xsl:for-each>    
+  </table>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Category 'program': User input                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template match="prb:prganswer">
+  <pre class="code"><xsl:apply-templates/></pre>
+</xsl:template>
+
+<xsl:template match="prb:prginput">
+  <textarea id="{$prginput-html-id}" rows="{@rows}" cols="{@cols}" onkeydown="TextAreaTab(this,event)">
+    <xsl:call-template name="query-datasheet">
+      <xsl:with-param name="path">user/answer/code</xsl:with-param>
+    </xsl:call-template>
+  </textarea>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Misc.                                                                        -->
+<!-- ================================================================================ -->
+
+<xsl:template name="debug-info">
+  <pre>
+    $category           = <xsl:value-of select="$category"/>
+    $this-url           = <xsl:value-of select="$this-url"/>
+    $worksheet-category = <xsl:value-of select="$worksheet-category"/>
+    $worksheet-state    = <xsl:value-of select="$worksheet-state"/>
+    $with-correction    = <xsl:value-of select="$with-correction"/>
+    $mc-with-correction = <xsl:value-of select="$mc-with-correction"/>
+    $student-selection-failed = 
+                          <xsl:value-of select="$student-selection-failed"/>
+    $student-selection-error-message = 
+                          <xsl:value-of select="$student-selection-error-message"/>
+  </pre>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main template                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/*/mumie:content/prb:problem">
+  <table id="{$main-element-html-id}" class="root">
+    <tr>
+      <td>
+        <!-- Header: -->
+        <xsl:call-template name="header"/>
+      </td>
+    </tr>
+    <xsl:if test="$with-student-selection='yes'">
+      <tr>
+        <td>
+          <!-- Student selection: -->
+          <xsl:call-template name="student-selection"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <tr>
+      <td>
+        <!-- Status: -->
+        <xsl:call-template name="status"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- Main: -->
+        <div class="plain">
+          <xsl:apply-templates/>
+        </div>
+      </td>
+    </tr>
+    <xsl:if test="$category = 'applet'">
+      <tr>
+        <td>
+          <!-- Applet: -->
+          <xsl:call-template name="applet"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <tr>
+      <td>
+        <!-- Buttons: -->
+        <xsl:call-template name="buttons"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <xsl:call-template name="footer"/>
+      </td>
+    </tr>  
+  </table>
+  <xsl:if test="$with-student-selection='yes'">
+    <!-- The student-selection dialog: -->
+    <xsl:call-template name="select-student-dialog"/>
+    <xsl:if test="$student-selection-failed='yes'">
+      <!-- The message saying that the student selection failed: -->
+      <xsl:call-template name="student-selection-failed-msg"/>
+    </xsl:if>
+  </xsl:if>
+  <xsl:if test="$category!='traditional'">
+    <!-- The applet initializing message (currently disabled): -->
+    <xsl:call-template name="applet-init-msg"/>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top-level structure                                                          -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="/*/mumie:name"/>        
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmtex-stdlayout"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-element"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-problem"/></xsl:attribute>
+      </link>
+      <xsl:call-template name="javascript"/>
+    </head>
+    <body onload="javascript:initPage()">
+      <xsl:apply-templates select="/*/mumie:content/*"/>
+      <!-- <xsl:call-template name="debug-info"/> -->
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

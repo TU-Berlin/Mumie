@@ -1,0 +1,1747 @@
+\documentclass[12pt]{article}
+
+\RequirePackage{../macros/mumie}
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+\texttt{\Huge mumie} \textsf{\Huge Spezifikation}
+\bigskip
+
+\styletitle{Test-Szenarien}
+\phantom.
+\vspace*{3cm}
+
+\ifx\pdfoutput\undefined
+  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+\else
+  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Maintainer:}& Dominik Eberlein\\
+\textsf{Autoren:}& Dominik Eberlein, Diana Gross\\
+\textsf{Datum:}& \verb+$Date: 2004/05/28 07:21:08 $+\\                  % Wird vom cvs eingetragen
+\textsf{CVS-Version:}& \verb+$Revision: 1.42 $+\\                % Wird vom cvs eingetragen
+\textsf{CVS-Source:}& \verb+$Source: /net/mumie/cvs/styles/testing/main.tex,v $+\\                % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%% 
+
+\tableofcontents
+\eject
+
+\section{Übersicht: Benötigte Funktionalitäten}
+
+\subsection{Einzelfunktionalitäten}
+
+Die folgenden atomaren Funktionalitäten oder Einzelfunktionalitäten
+sind zu testen. Die genaue Vorgehensweise wird in
+Abschnitt~\ref{sec:detail} beschrieben.
+
+\begin{tabular}{|l|l|l|l|}
+\hline
+Fkt.-Nr.&Funktionalität&Durchf.&Freigabe\\
+\hline
+\hline
+E1&Konvertierung von mumieTeX nach mumieXML&DG&TR\\
+\hline
+E2&Preview aller eingecheckten Dateien im Rootverzeichnis&DG&TR\\
+\hline
+E3a& build-Checkin: Allgemeine Dokumente&AH&FLG\\
+\hline
+E3b& build-Checkin: Würfel zur Linearen Algebra&AH&FLG\\
+\hline
+E3c& build-Checkin: Flash, Exercises&&AH\\
+\hline
+E4&Online Checkin&TD&US\\
+\hline
+E4b&Online Checkin: Flash, Exercises&&AH\\
+\hline
+E5a&Auslieferung von Dokumenten: Binärdokumente&TE&TR\\
+\hline
+E5b&Auslieferung von Dokumenten: Roh-XML&DG&TR\\
+\hline
+E5c&Auslieferung von Dokumenten: XHTML-Dokumente&DG&TR\\
+\hline
+E5d&Auslieferung von Dokumenten: Kurse/Navigationsnetze&ND&TD\\
+\hline
+E5e&Auslieferung von Dokumenten: Auflösung generischer Dokumente&DG&TR\\
+\hline
+E5f&Auslieferung von Dokumenten: Flash, Exercises&&AH\\
+\hline
+E5g&Auslieferung von Dokumenten: Navigationsnetze mit Übungen&&TD\\
+\hline
+E6&Kursauswahl&HV&AH\\
+\hline
+E7a&Kurserzeugung: Navigationsstruktur definieren&ND&TD\\
+\hline
+E7b&Kurserzeugung: Elemente zuweisen&ND&TD\\
+\hline
+E7c&Kurserzeugung: Navigationsstruktur mit Übungen definieren&&TD\\
+\hline
+\end{tabular}
+
+
+\subsection{Zusammengesetzte Funktionalitäten}
+
+Für den Arbeitsfluss entscheidend ist letztendlich die erfolgreiche
+Zurverfügungstellung komplexerer Funktionalitäten. Diese bauen auf die
+Einzelfunktionalitäten auf, sind aber jeweils mehr als die Summe derer.
+
+\begin{tabular}{|l|l|l|l|}
+\hline
+{\small Fkt.-Nr.}&Funktionalität&Durchf.&Freigabe\\
+\hline
+\hline
+Z1&Dateien erstellen und in der Datenbank ablegen&DG&TR+US\\
+\hline
+Z2&Einen Kurs bearbeiten oder erstellen und in der
+Datenbank ablegen&ND&US+TD\\
+\hline
+Z3&Einen Kurs als Nutzer ansehen&ND&TR+AH\\
+\hline
+Z4&Übungen in einen Kurs integrieren und diesen als Nutzer ansehen&&AH+TD\\
+\hline
+\end{tabular}
+
+
+
+\section{Grundsätzliches}
+
+\subsection{Referenzumgebung}
+
+Folgende Software-Versionen sind maßgeblich für die Testszenarien und
+in der Testumgebung zu verwenden:
+
+\begin{tabular}{l|l}
+Software&Version\\
+\hline
+Apache&1.3\\
+Tomcat&4.1.$x$, $x \geq 24$\\
+PostgreSQL&7.3.4\\
+Java&1.4.2\\
+Xalan&2.5.2 (via endorsed)\\
+Perl&v5.6.1\\
+Ant&1.6.0\\
+Cocoon&2.1.3\\ %(*)
+Apache-JK-Modul&1.2.x
+\end{tabular}
+ 
+ 
+%(*) \texttt{excalibur-datasource-vm14-20021121.jar} mit \texttt{excalibur-datasource-1.1.1.jar} ersetzen.
+
+\subsection{\texttt{mumie}Software-Versionen}
+
+Die im Projekt erstellte und zu testende Software ist mit
+CVS-Tags zu versehen. In der Testumgebung sind nur getaggte
+Version zu verwenden.
+
+Betroffen sind folgende CVS-Projekte:
+
+\begin{tabular}{l|l}
+Modul&CVS Root\\
+\hline
+japs&\texttt{:ext:\char'100\relax fs.math.tu-berlin.de:\slash
+net\slash multimedia\slash JAPS\slash cvs}\\
+mmutil&\texttt{:ext:\char'100\relax fs.math.tu-berlin.de:\slash 
+net\slash multimedia\slash JAPS\slash cvs}\\
+mmxsl&\texttt{:ext:\char'100\relax fs.math.tu-berlin.de:\slash 
+net\slash multimedia\slash JAPS\slash cvs}\\
+mmtex&\texttt{:ext:\char'100\relax fs.math.tu-berlin.de:\slash
+net\slash multimedia\slash JAPS\slash cvs}\\
+content&\texttt{:ext:\char'100\relax fs.math.tu-berlin.de:\slash
+net\slash multimedia\slash Content\slash cvs}\\
+CourseCreator&\texttt{:ext:\char'100\relax mumie.ma.tum.de:\slash var\slash cvs}\\
+mmathlibs&\texttt{:ext:\char'100\relax mumie.ma.tum.de:\slash var\slash cvs}\\
+mmathrsc&\texttt{:ext:\char'100\relax mumie.ma.tum.de:\slash var\slash cvs}\\
+\end{tabular}
+
+\subsection{Test-Protokoll}
+
+Die Tests werden in dem
+CVS Modul 
+\begin{center}
+\texttt{testing}\quad Root: \texttt{:ext:\char'100\relax mumie.ma.tum.de:\slash var\slash cvs}
+\end{center}
+protokolliert.
+
+Folgende Dokumente sind abzulegen:
+
+\begin{itemize}
+\item \texttt{<testname>-testing-V<testrunde>.txt}: 
+\begin{verbatim}
+Test: Name + Kurzbeschreibung des Tests
+
+Test-Durchf\"uhrung: Wer und wann?
+
+Verwendete mumieSoftware: Welche?, Tags?
+
+Protokoll der Vorbereitungsschritte: 
+                o Durchsehen der Spezifikation styles/testing/main.tex
+                  und ggf. Präzisierung.
+                o Sind Probleme aufgetreten?
+                o Abweichungen?
+                o Welche Dateien wurden verwendet (Name und Ablage)?
+
+Protokoll der Testschritte: 
+                o Was ist das Ergebnis?  
+                o Welche Dateien wurden angelegt (Name und Ablage)?  
+                o Sind Probleme aufgetreten? 
+                o Beschreibung der Fehler und der Schritte, die 
+                   zu dem Fehler gefuehrt haben. 
+                o Eventuell (wenn vorhanden) Auszuege aus log-Dateien.
+                o Konnten die Fehler behoben werden bzw. wo werden 
+                  sie vermutet?  
+                o Wann und an wen wurde ein Fehlerreport gesandt?
+                  
+\end{verbatim}
+\item Bei der Vorbereitung erstellte Dokumente (Test-Input).
+\item Dokumente zur Durchf\"uhrung der Tests (Skripte etc.)
+\item Bei den Tests erzeugte Dokumente (Test-Output).
+\item Sonstige Dokumente.
+\end{itemize}
+
+\subsection{Abh\"angigkeiten}
+
+In der folgenden Tabelle sind die Abhängigkeiten der einzelnen Tests
+voneinander dargestellt. Die Funktionalitäten sind zeilenweise
+aufgeführt. Dabei geben die Einträge in den Zellen einer jeder Zeile
+an, welche Funktionalität zuvor erfolgreich getestet werden muss.
+\smallskip
+
+{\tiny
+\begin{tabular}{|l||p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|p{2.5mm}|}
+\hline
+   &E1&E2&E3a&E3b&E3c&E4&E4b&E5a&E5b&E5c&E5d&E5e&E5f&E5g&E6&E7a&E7b&E7c&Z1&Z2&Z3&Z4\\
+\hline
+\hline
+E1 &&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E2 &x&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E3a&x&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E3b&&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E3c&&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E4 &x&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E4b &&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E5a&&&&&&x&&&&&&&&&&&&&&&&\\
+\hline
+E5b&x&&&&&x&&&&&&&&&&x&x&&&&&\\
+\hline
+E5c&x&&&&&x&&&&&&&&&&&&&&&&\\
+\hline
+E5d&&&&&&x&&&&&&&&&&x&x&&&&&\\
+\hline
+E5e&&&&&&x&&&&&&&&&&&&&&&&\\
+\hline
+E5f&&&&&&&x&&&&&&&&&&&&&&&\\
+\hline
+E5g&&&&&&&&&&&&&&&&x&x&x&&&&\\
+\hline
+E6 &&&&&&x&&&&&&&&&&x&x&&&&&\\
+\hline
+E7a&&&&&&&&&&&&&&&&&&&&&&\\
+\hline
+E7b&&&&x&&&&&&&&&&&&x&&&&&&\\
+\hline
+E7c&&&&&&x&&&&&&&&&&&&&&&&\\
+\hline
+Z1 &x&x&x&&&x&&&&&&&&&&&&&&&&\\
+\hline
+Z2 &x&&&x&&x&&&x&&&&&&&x&x&&&&&\\
+\hline
+Z3 &x&&&&&x&x&x&x&x&x&x&&&&x&x&&&&&\\
+\hline
+Z4&&&&&x&&x&&&&&&x&x&&x&x&x&&&&\\
+\hline
+\end{tabular}}
+\smallskip
+
+\textbf{Bemerkung:} Jede Einzelfunktionalität wird auch als
+Bestandteil einer zusammengesetzten Funktionalität getestet.
+
+\eject
+
+\section{Testdefinitionen für die Einzelfunktionalitäten}
+\label{sec:detail}%
+
+\subsection{E1: Konvertierung von mumieTeX nach mumieXML}
+
+\textbf{Beschreibung:} 
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont mmtex]
+
+\item[\normalfont mmathlibs]
+\end{description}
+
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item \begin{verbatim} cvs -d /var/cvs co testing \end{verbatim}
+\item Testumgebung von Jan updaten:
+\begin{verbatim}
+cd testing
+scripts/update
+\end{verbatim}
+\item Die zu konvertierenden MumieTeX-Testdateien sind mit \texttt{scripts\slash update}
+im Ordner \texttt{testing\slash data\slash
+tex\_templates\slash} angelegt. Sie sind mit den Dateien aus \texttt{mumieTests\slash aachen\slash tex\_templates\slash} identisch. 
+Zus\"atzliche zu konvertierende MumieTeX-Dateien sind in \texttt{testing\slash data\slash tex\_templates\slash} anzulegen.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+
+\begin{enumerate}
+\item MathML Tests starten
+\begin{verbatim}
+cd testing
+scripts/run_test e1
+\end{verbatim}
+\item Die in \texttt{testing\slash e1\slash e1-testing-VXX} erstellte 
+Dateien einchecken. Wichtig: \texttt{out.log} - die Logfile f\"ur \texttt{scripts\slash run\_test e1}
+\item Erstellte Dateien in \texttt{testing\slash e1\slash e1-testing-VXX} analysieren:
+\begin{enumerate}
+\item{index.html} : korrekte Navigation und korrekte MathML-Darstellung in \texttt{Math.xhtml}
+\item{tex\_templates\slash*.tex} : Vergleich mit den entsprechenden .content- und .meta-Dateien
+\item{tex\_templates\slash*.content} : Vergleich mit der MumieXML-Spezifikation
+\item{tex\_templates\slash*.meta.xml} : Vergleich mit der MetainfoXML-Spezifikation
+\end{enumerate}
+\item Protokoll \texttt{testing\slash e1\slash e1-testing-VXX} schreiben und ins CVS einchecken.
+\end{enumerate}
+\eject
+
+\subsection{E2: Preview aller eingecheckten Dateien im Rootverzeichnis}
+
+\textbf{Beschreibung:} Es ist zu testen, ob die (Pseudo-)Dokumente
+vom Entwickler-Preview korrekt transformiert werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+tools/xsl/
+\end{verbatim}
+
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation eines getaggten JAPS.
+\item Erstellung von Testdateien f\"ur generische und nicht-generische
+ Dokumenttypen
+und Ablage im CVS (\texttt{testing\slash e2})
+-- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{element}]
+\begin{itemize}
+\item 2~Dokumente ohne Referenzen 
+\item 1~Dokumente mit Referenzen, so dass folgende Typen abgedeckt sind:
+\texttt{element}, \texttt{subelement}, \texttt{image},
+\texttt{applet}, \texttt{jar}, \texttt{js\_lib}.
+\end{itemize}
+\item[\texttt{subelement}] 2 Dokumente
+\item[\texttt{image}] 1 Dokument
+\item[\texttt{applet}] 1 Dokument
+\item[\texttt{jar}] 1 Dokument
+\item[\texttt{js\_lib}] 1 Dokument
+\end{description}
+\item Ablegen der Dokumente im JAPS-Preview Root \texttt{japs\slash checkin}.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Offline XSLTs erstellen (\texttt{mmant create-xsl-offline}).
+\item Stylsheets erzeugen \texttt{mmant create-mmathrsc-stylesheets}).
+\item Preview File Liste erzeugen (\texttt{mmant create-preview-master-file-list}).
+\item Preview aufrufen (\texttt{mmant create-preview}).
+\item Vergleich der erzeugten Dateien mit den Originaldateien.
+\item Preview-Dateien löschen (\texttt{mmant clear-preview}).
+\item Überprüfung, ob alle vom Preview erzeugten Dateien gelöscht
+wurden (und nicht mehr).
+\end{enumerate}
+
+\eject
+
+\subsection{E3a:  build-Checkin: Allgemeine Dokumente}
+
+\textbf{Beschreibung:} Es soll getestet werden, ob allgemeine Dokumente
+mit dem build-Target \texttt{checkin} in die DB korrekt eingecheckt werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+db/
+tools/xsl/
+\end{verbatim}
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+\item[\normalfont mmathrsc]
+(alles)
+\end{description}
+
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung.
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS
+(\texttt{testing\slash e3a}) -- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{element}] 
+\begin{itemize}
+\item 1~Dokument (etwa Theorem) ohne Referenzen 
+\item 1~Dokument (etwa Theorem) mit Referenzen auf je
+ein~\texttt{element}, \texttt{subelement}, \texttt{image},
+\texttt{applet}, \texttt{jar}, \texttt{js\_lib}.
+\end{itemize}
+%\item[\texttt{subelement}] 1~Dokument (etwa Beweis).
+\item[\texttt{course\_section}] 
+\begin{itemize}
+\item Eine Section, die nur Elemente enthält (Elementcontainer).
+\item Eine Section, die 2 Sections (Elementcontainer)
+referenziert. Die Elementcontainer sollen jeweils 4 Elemente
+referenzieren. Die Elemente sollten 0-3 Subelemente haben.
+\end{itemize}
+\item \texttt{image} 1 Dokument
+\item \texttt{applet} 1 Dokument
+\item \texttt{jar} 1 Dokument
+\item \texttt{js\_lib} 1 Dokument
+\item \texttt{xsl\_stylesheet} 1 Dokument
+\item \texttt{css\_stylesheet} 1 Dokument
+\end{description}
+\item Ablage der Testdateien im Checkin Root: \texttt{japs\slash
+checkin\slash ROOT}
+\end{enumerate}
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Checkin starten: \texttt{mmant checkin}
+\item Die eingecheckten Dokumente in der DB anschauen und mit den
+Originaldokumenten vergleichen (Referenztabellen beachten!).
+\end{enumerate}
+
+
+\eject
+
+\subsection{E3b:  build-Checkin: Würfel zur Linearen Algebra}
+
+\textbf{Beschreibung:} Es soll getestet werden, ob die
+\texttt{sections} für den Würfel zur linearen Algebra korrekt in der
+DB angelegt werden.
+\smallskip
+
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+db/
+tools/xsl/
+\end{verbatim}
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+
+\item[\normalfont content]
+(alles)
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung
+\item Kopieren der \texttt{sections} aus content nach
+\texttt{japs\slash checkin\slash content}
+ Siehe auch Dokumentation 
+\texttt{japs\slash docs\slash notes\slash spezi\_sections\_checkin.txt} 
+bzgl. Aufbau von \texttt{sections}.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Checkin starten: \texttt{mmant checkin}
+\item Die relevanten Tabellen (\texttt{sections}, \texttt{...})
+auf Korrektheit überprüfen und mit den Originaldokumenten abgleichen.
+\end{enumerate}
+
+
+\eject
+
+\subsection{E3c:  build-Checkin: Flash und Exercises}
+
+\textbf{Beschreibung:} Es soll getestet werden, ob Flash-Dokumente und
+Exercises-Dokumente durch den build-Checkin korrekt in der DB angelegt
+werden.
+\smallskip
+
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+db/
+tools/xsl/
+\end{verbatim}
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung
+\item Erstellen von Flash-Dokumenten und Exercises-Dokumenten
+(Frameset, das zwei Frames als Exercises-Dokumente enthält).
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Checkin starten: \texttt{mmant checkin}
+\item Die relevanten Tabellen (\texttt{flash}, \texttt{exercise},
+\texttt{ref\_exercise\_*})
+auf Korrektheit überprüfen und mit den Originaldokumenten abgleichen.
+\end{enumerate}
+
+
+\eject
+
+
+\subsection{E4: Online Checkin}
+
+\textbf{Beschreibung:} 
+Es soll getestet werden, ob einzelne oder mehrere Dokumenttypen
+im ZIP-Archiv \"uber ein XHTML Formular online in die DB
+eingecheckt werden. Dar\"uberhinaus soll das Re-Checkin eines
+Dokumenttyps (als ZIP-Archiv) getestet werden.
+
+\smallskip
+\textbf{Ben\"otigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+config/config.xml
+
+java/src/net/mumie/cocoon/generators/CheckInGenerator.java
+
+java/src/net/mumie/cocoon/documents/Document.java
+
+java/src/net/mumie/cocoon/documents/checkin/*
+
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/AbstractHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/notions/*
+
+tools/xsl/*
+\end{verbatim}
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung.
+\item ZIP Archive erstellen,
+und im CVS (\texttt{testing\slash e4}) ablegen -- 
+falls nicht schon geschehen.
+
+\begin{enumerate}
+\item Je ein ZIP-Archiv f\"ur jeden folgenden Dokumenttyp:
+\begin{description}
+\item[\texttt{element}] 
+\begin{itemize}
+\item 1~Dokument (etwa Theorem) ohne Referenzen 
+\item 1~Dokument (etwa Theorem) mit Referenzen auf je
+ein~\texttt{element}, \texttt{subelement}, \texttt{image},
+\texttt{applet}, \texttt{jar}, \texttt{js\_lib}.
+\end{itemize}
+\item[\texttt{subelement}] 1~Dokument (etwa Beweis).
+\item[\texttt{course\_section}] 
+\begin{itemize}
+\item Eine Section, die aus Elementen ohne Referenzen besteht
+(Elementcontainer).
+\item Eine Section, die 2 Sections (Elementcontainer)
+referenziert. Die Elementcontainer sollen jeweils 4 Elemente
+referenzieren. Die Elemente sollten 0-3 Subelemente haben.
+\end{itemize}
+\item \texttt{image} 1 Dokument
+\item \texttt{applet} 1 Dokument
+\item \texttt{jar} 1 Dokument
+\item \texttt{js\_lib} 1 Dokument
+\item \texttt{xsl\_stylesheet} 1 Dokument
+\item \texttt{css\_stylesheet} 1 Dokument
+\end{description}
+
+\item F\"ur folgende Dokumenttypenpaare, wobei ein Dokumenttyp 
+auf den anderen referenziert, je ein ZIP-Archiv:
+\begin{description}
+\item \texttt{element} und \texttt{image} : das Element referenziert 
+ein Bild, das aus demselben Archiv eingecheckt werden soll 
+\item \texttt{subelement} und \texttt{element} : das Subelement
+referenziert ein Element, das aus demselben Archiv eingecheckt werden soll. 
+\end{description}
+\item F\"ur das Re-Checkin folgender Dokumenttypen, je ein ZIP-Archiv::
+\begin{description}
+\item \texttt{image} : ein Bild, das von einem Element 
+referenziert wird, soll aktualisiert werden; die Referenz soll 
+hinterher auf die neue Version des Bildes zeigen.
+\item \texttt{subelement} : ein Subelement wird aktualisiert; 
+neue Container-Referenzen sollen eingetragen, 
+die alten jedoch zur Archivierung beibehalten werden. 
+\end{description}
+
+
+\end{enumerate}
+
+\item Dummy-Struktur in die Datenbank mit \texttt{sections.sql} 
+(\texttt{testing\slash e4}) erzeugen. 
+\item XHTML-Formular im Browser aufrufen (\texttt{...cocoon\slash 
+document\slash page\slash id\slash 2})
+\end{enumerate}
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Im XHTML-Formular: Auswahl und Absenden des ZIP-Archivs
+\item Die eingecheckten Dokumente direkt in der DB betrachten.
+Vergleich der Dokumente mit der MetainfoXML-Spezifikation und den
+Originaldokumenten
+\end{enumerate}
+
+
+\eject
+
+\subsection{E4b:  Online-Checkin: Flash und Exercises}
+
+\textbf{Beschreibung:} Es soll getestet werden, ob Flash-Dokumente und
+Exercises-Dokumente durch den Online-Checkin korrekt in der DB angelegt
+werden.
+\smallskip
+
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+db/
+tools/xsl/
+\end{verbatim}
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung
+\item Erstellen von Flash-Dokumenten und Exercises-Dokumenten
+(Frameset, das zwei Frames als Exercises-Dokumente enthält) und
+Einpacken aller Dateien in einem Zip-File.
+Das Frameset soll dabei drei Sprungmarken vorsehen.
+\item XHTML-Formular zum Upload im Browser aufrufen.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Checkin starten: ZIP-Datei im XHTML-Formular angeben und absenden.
+\item Die relevanten Tabellen (\texttt{flash}, \texttt{exercise},
+\texttt{ref\_exercise\_*})
+auf Korrektheit überprüfen und mit den Originaldokumenten abgleichen.
+\end{enumerate}
+
+
+\eject
+
+
+
+\subsection{E5a: Auslieferung von Dokumenten: Binärdokumente }
+
+\textbf{Beschreibung:}
+Es soll getestet werden, ob Bin\"ardokumente (\texttt{image}, 
+\texttt{applet}, \texttt{jar}) aus der DB vom JAPS korrekt 
+ausgeliefert werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/AbstractDocument.java
+java/src/net/mumie/cocoon/documents/Document.java
+
+java/src/net/mumie/cocoon/readers/DocumentReader.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+\end{verbatim}
+\end{description}
+
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB etc.
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS
+(\texttt{testing\slash e5a}) -- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{image}] 1 Dokument
+\item[\texttt{applet}] 1 Dokument
+\item[\texttt{jar}]  1 Dokument
+\end{description}
+F\"ur jeden der Dokumenttyp erstellt man je eine Metainfo- und eine
+Content-Datei.
+\item Einchecken der Testdokumente in die DB (ID's protokollieren).
+\end{enumerate}
+
+
+\smallskip
+\textbf{Testschritte:}
+F\"ur jedes oben eingecheckte Dokument:
+\begin{enumerate}
+\item Dokument mit wget abrufen. 
+\item Vergleich des abgerufenen Dokuments mit dem eingecheckten
+Originaldokument.
+\end{enumerate}
+
+
+\eject
+
+\subsection{E5b: Auslieferung von Dokumenten: Roh-XML}
+\label{sec:RohXML}%
+\textbf{Beschreibung:} Es soll getestet werden, ob XML-Dokumenttypen
+(\texttt{element}, \texttt{subelement}, \texttt{course\_section},  
+\texttt{js\_lib}, \texttt{xsl\_stylesheet}, \texttt{css\_stylesheet}) 
+als XML aus der DB vom JAPS korrekt ausgeliefert werden (MetainfoXML
+inklusive dem Content). Es sind keine XSLT-Transformationen oder
+\"ahnliches durchzuf\"uhren.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/AbstractDocument.java
+java/src/net/mumie/cocoon/documents/Document.java
+
+java/src/net/mumie/cocoon/generators/DocumentGenerator.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+\end{verbatim}
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB etc.
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS
+(\texttt{testing\slash e5b}) -- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{element}] 
+\begin{itemize}
+\item 1~Dokument (etwa Theorem) ohne Referenzen 
+\item 1~Dokument (etwa Theorem) mit Referenzen auf je
+ein~\texttt{element}, \texttt{subelement}, \texttt{image},
+\texttt{applet}, \texttt{jar}, \texttt{js\_lib}.
+\end{itemize}
+\item[\texttt{subelement}] 1~Dokument (etwa Beweis).
+\item[\texttt{course\_section}] 
+\begin{itemize}
+\item Eine Section, die nur Elemente enthält (Elementcontainer).
+\item Eine Section, die 2 Sections (Elementcontainer)
+referenziert. Die Elementcontainer sollen jeweils 4 Elemente
+referenzieren. Die Elemente sollten 0-3 Subelemente haben.
+\item[\texttt{js\_lib}]  1 Dokument
+\item[\texttt{xsl\_stylesheet}]  1 Dokument
+\item[\texttt{css\_stylesheet}]  1 Dokument
+\end{itemize}
+\end{description}
+\item Einchecken der Testdokumente in die DB (ID's protokollieren).
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+
+F\"ur jedes oben eingecheckte Dokument:
+\begin{enumerate}
+\item Dokument vom cocoon anfordern, etwa mit dem Programm wget $\to$
+Abrufe protokollieren und als Skript im CVS ablegen (einfache
+Wiederholbarkeit).
+\item Vergleich des abgerufenen Dokuments mit der MetainfoXML-Spezifikation
+\item Vergleich des abgerufenen Dokuments mit dem eingecheckten
+Originaldokument
+\end{enumerate}
+
+
+\eject
+
+\subsection{E5c: Auslieferung von Dokumenten mit XSLT-Transformation}
+
+\textbf{Beschreibung:} Es soll gestetet werden, ob XML-Dokumenttypen
+(\texttt{element},~\texttt{subelement}, \texttt{js\_lib},
+\texttt{xsl\_stylesheet}, \texttt{css\_stylesheet})
+durch XSLT-Transformationen als XHTML-Dokumente korrekt 
+aus der DB ausgeliefert werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/*.java
+
+java/src/net/mumie/cocoon/generators/DocumentGenerator.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+\end{verbatim}
+
+\end{description}
+\begin{description}
+\item[\normalfont mmathrsc]
+(alle XSLT's)
+\end{description}
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB etc.
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS
+(\texttt{testing\slash e5c}) -- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{element}] 
+\begin{itemize}
+\item 1~Dokument (etwa Theorem) ohne Referenzen 
+\item 1~Dokument (etwa Theorem) mit Referenzen auf je
+ein~\texttt{element}, \texttt{subelement}, \texttt{image},
+\texttt{applet}, \texttt{jar}, \texttt{js\_lib}.
+\end{itemize}
+\item[\texttt{subelement}] 1~Dokument (etwa Beweis)
+\item[\texttt{js\_lib}]  1 Dokument
+\item[\texttt{xsl\_stylesheet}]  1 Dokument
+\item[\texttt{css\_stylesheet}]  1 Dokument
+\end{description}
+\item Einchecken der Dokumente in die DB (ID's protokollieren).
+\item \texttt{mmathrsc} in JAPS installieren oder in der Pipeline vom Filesystem 
+aufrufen
+\item Pipeline f\"ur die Auslieferung der Dokumente erstellen. Die Pipeline enth\"alt die
+ XSLT-Transformation.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:} F\"ur jedes oben eingecheckte Dokument
+\begin{enumerate}
+\item Dokument von cocoon mit wget anfordern.
+\item Vergleich des abgerufenen XHTML-Dokuments mit dem eingecheckten
+XML-Originaldokument.
+\end{enumerate}
+
+
+\eject
+
+\subsection{E5d: Auslieferung von Dokumenten: Navigationsnetze}
+\label{sec:Kurse}%
+\textbf{Beschreibung:} Es soll getestet werden, ob Navigationsnetz vom JAPS korrekt dargestellt werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/*.java
+
+java/src/net/mumie/cocoon/generators/Course*
+
+java/src/net/mumie/cocoon/transformers/StructTransformer.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+\end{verbatim}
+\end{description}
+\begin{description}
+\item[\normalfont CourseCreator]
+(Alles)
+\end{description}
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung und ggf.~eines
+getaggten CourseCreators.
+
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS
+(\texttt{testing\slash e5d}) -- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{element}] Mehrere Dokument ohne Referenzen 
+\item[\texttt{subelement}] Mehrere Dokumente.
+\item[\texttt{course\_section}] 
+\begin{itemize}
+\item Je eine Section und ein Element ohne Referenzen.
+\item Eine Section, die 2 Sections (Elementcontainer)
+referenziert. Die Elementcontainer sollen jeweils 4 Elemente
+referenzieren. Die Elemente sollten 0-3 Subelemente haben.
+\end{itemize}
+\end{description}
+
+\item Einchecken der Testdokumente in die DB (ID's protokollieren)
+\item Pipeline erstellen, die mit dem StructTransformer transformiert.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Kurs von cocoon mit wget anfordern.
+\item Ablage der Ergebnisdokumente (HTML) in \texttt{testing\slash e5d}
+\item Browseransicht des Navigationsnetzes $\to$ Ergebnis
+protokollieren (etwa Screenshot)
+\end{enumerate}
+
+
+\eject
+
+\subsection{E5e: Auslieferung von Dokumenten: Auflösung generischer
+Dokumente}
+
+\textbf{Beschreibung:} Es soll getestet werden, ob generische Dokumente 
+vom JAPS korrekt ausgeliefert werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/AbstractDocument.java
+java/src/net/mumie/cocoon/documents/Document.java
+
+java/src/net/mumie/cocoon/generators/DocumentGenerator.java
+java/src/net/mumie/cocoon/readers/DocumentReader.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+
+java/src/net/mumie/cocoon/actions/ResolveGenericDocumentAction.java
+java/src/net/mumie/cocoon/actions/ResolveTheme*java
+\end{verbatim}
+\end{description}
+
+
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung.
+\item Erstellung von  Testdokumenten
+\begin{description}
+\item[\texttt{image}] 1 generisches Dokument + 2 Dokumente
+(nicht-generisch)
+\item[\texttt{xsl\_stylesheet}] 1 generisches Dokument + 2 Dokumente
+(nicht-generisch)
+\item[\texttt{css\_stylesheet}] 1 generisches Dokument + 2 Dokumente
+(nicht-generisch)
+\item[\texttt{theme}] 2 Pseudo-Dokument
+\end{description}
+\item Einchecken der Testdokumente in die DB (ID's protokollieren)
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Generisches Dokument vom cocoon mit wget anfordern.
+\item Jeweils Vergleich des abgerufenen Dokuments mit dem eingecheckten
+Originaldokument.
+\end{enumerate}
+
+
+\eject
+
+\subsection{E5f: Auslieferung von Dokumenten: Flash, Exercises }
+
+\textbf{Beschreibung:} Es soll getestet werden, ob Flash und
+Exercise-Dokumente aus der DB vom JAPS korrekt ausgeliefert werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+
+db
+
+tools/xsl/
+
+\end{verbatim}
+
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+\end{description}
+
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB etc.
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS:
+\begin{description}
+\item[\texttt{flash}] 2 Dokumente
+\item[\texttt{exercise}] 1 Frameset mit zwei Frames
+\end{description}
+F\"ur jeden der Dokumenttyp erstellt man je eine Metainfo- und eine
+Content-Datei.
+\item Einchecken der Testdokumente in die DB (ID's protokollieren).
+\end{enumerate}
+
+
+\smallskip
+\textbf{Testschritte:}
+F\"ur jedes oben eingecheckte Dokument:
+\begin{enumerate}
+\item Dokument abrufen. 
+\item Vergleich des abgerufenen Dokuments mit dem eingecheckten
+Originaldokument.
+\end{enumerate}
+
+
+\eject
+
+\subsection{E5g: Auslieferung von Dokumenten: Navigationsnetze mit Übungen }
+
+\textbf{Beschreibung:} Es soll getestet werden, ob Navigationsnetze
+mit Übungen vom Japs (StructTransformer) korrekt ausgeliefert werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+java/src/net/mumie/cocoon/transformers/Struct*
+
+db
+
+tools/xsl/
+
+\end{verbatim}
+
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+
+\item[\normalfont content]
+(alles)
+\end{description}
+
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung (E7c):}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB etc.
+\item Installation der Icons für den StructTransformer (automatisch
+mit buildCheckin)
+\item Erstellung eines Kurses inklusive Übungen und Ablage im CVS mit
+folgenden Eigenschaften:
+\begin{itemize}
+\item Theorie-Elementgraph ohne Übung
+\item Theorie-Elementgraph mit Übung
+\item Kursabschnittsgraph ohne Übung
+\item Kursabschnittsgraph mit Übung
+\end{itemize}
+\item Abspeichern der Testdokumente in die DB.
+\end{enumerate}
+
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Navigationsnetz abrufen.
+\item Navigation durch das Netz mit Überprüfung, ob die Links korrekt
+zusammengestellt werden.
+\end{enumerate}
+
+
+\eject
+
+
+\subsection{E6: Kursauswahl}
+
+\textbf{Beschreibung:} Es soll die Kursauswahl (aus Sicht des Nutzers)
+mit JAPS getestet werden.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/*.java
+
+java/src/net/mumie/cocoon/generators/Course*
+
+java/src/net/mumie/cocoon/transformers/StructTransformer.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+
+java/src/net/mumie/treeview/*
+\end{verbatim}
+\end{description}
+\begin{description}
+\item[\normalfont CourseCreator](Alles)
+\end{description}
+
+\smallskip
+
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung und ggf.~eines
+getaggten CourseCreators.
+\item Erstellung mehrerer Kurse und Ablage im CVS (\texttt{testing\slash e6}) 
+-- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{course\_section}] Da nur die Auswahl der Top-level Kurse
+getestet werden soll, ist die Untergliederung der jeweiligen Kurse
+nicht so wichtig.
+\end{description}
+\item Einchecken der Testdokumente in die DB (ID's protokollieren)
+\item Pipeline erstellen -- falls nicht schon geschehen.
+
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Kursauswahl aufrufen
+\item Kurse im Browser ausw\"ahlen $\to$ Ergebnis jeweils protokollieren.
+\item Feststellen ob beim Ausw\"ahlen eines Kurses der richtige Kurs
+referenziert wird: Referenziert der Start-Link im vom TreeviewApplet
+aufgerufenen Frame den richtigen Kurs?
+\end{enumerate}
+
+\eject
+
+\subsection{E7a: Kurserzeugung: Navigationsstruktur definieren}
+\label{sec:NavStrukt}%
+\textbf{Beschreibung:} Es soll getestet werden, ob mit dem CourseCreator
+korrekte Navigationsnetze erzeugt werden k\"onnen.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+
+\begin{description}
+\item[\normalfont CourseCreator] (alles)
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation eines getaggten CourseCreators.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+Testlauf I(A/B): Schritte~1 bis~6
+
+Testlauf~II(A/B): Schritte~1, 5, 6.
+
+A.
+\begin{enumerate}
+\item Erstellung zweier miteinander verbundener Sections
+\item Erstellung eines Elementcontainers ( Elementcontainer $\to$
+Elemente mit Subelementen) mit allen Elementen, Subelementen und einer
+\texttt{und}- sowie \texttt{oder}-Verzweigung  in beiden Sections.
+\item Abspeichern als unfertiger Kurs
+\item CourseCreator beenden und neu starten.
+\item Neuladen des abgespeicherten Kurses.
+\item Abspeichern des Kurses als ZIP-File (HTTP-Post Request an
+SimpleUploadGenerator).
+\item Vergleich der erzeugten Dateien im ZIP-File mit der
+structXML-Spezifkation (\texttt{styles\slash kurs\_komposition\slash
+structXML.txt}) und der MetainfoXML-Spezifikation
+(\texttt{styles\slash metainfo-xml}).
+\end{enumerate}
+
+B. Wie A, aber unterhalb der beiden ersten Sections soll ein neuer Kursabschnittsgraph
+(bestehend aus f\"unf Sections, die \"uber eine \texttt{und} -sowie eine \texttt{oder} -
+Verzweigung  verf\"ugen) erstellt werden. Es sollen innerhalb zweier dieser Sections
+Elementcontainer erstellt werden (bei mindestens einem mit allen Elementen und Subelementen).
+
+\eject
+
+\subsection{E7b: Kurserzeugung: Elemente zuweisen }
+
+\textbf{Beschreibung}: Es soll getestet werden, ob mit dem CourseCreator
+korrekte Elementzuweisungen erzeugt werden k\"onnen.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont CourseCreator] (alles)
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/treeview/*
+\end{verbatim}
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB, CourseCreator etc. und
+\"Ubersetzung des Treeview Applets.
+\item Erstellung von folgenden Testdokumenten und Ablage im CVS
+(\texttt{testing\slash e7b}) -- falls nicht schon geschehen:
+\begin{description}
+\item[\texttt{element}] mehrere Dokumente ohne Referenzen
+\item[\texttt{subelement}] 1~Dokument (etwa Beweis).
+\end{description}
+\item Einchecken der Testdokumente in die DB (ID's protokollieren).
+
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+Testlauf I: Schritte~1 bis~7
+
+Testlauf~II: Schritte~1, 2, 6, 7.
+\begin{enumerate}
+\item Im CourseCreator Navigationsnetz erzeugen
+\item Elemente zuweisen, Zuweisungen protokollieren.
+\item Abspeichern als unfertiger Kurs
+\item CourseCreator beenden und neu starten
+\item Laden des unfertiger Kurses
+\item Abspeichern des Kurses als ZIP-File (HTTP-Post Request an
+SimpleUploadGenerator) 
+\item Vergleich der erzeugten Dateien im ZIP-File mit der
+structXML-Spezifkation (\texttt{styles\slash kurs\_komposition\slash
+structXML.txt}) und der MetainfoXML-Spezifikation
+(\texttt{styles\slash metainfo-xml}).
+\end{enumerate}
+
+
+\eject
+
+\subsection{E7c: Kurserzeugung: Navigationsstruktur mit Übungen definieren}
+
+\textbf{Beschreibung}: Es soll getestet werden, ob mit dem CourseCreator
+korrekte Navigationsnetze inklusive Übungen erzeugt werden können.
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont CourseCreator] (alles)
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/treeview/*
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+db/
+tools/xsl/
+\end{verbatim}
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB, CourseCreator etc. und
+\"Ubersetzung des Treeview Applets.
+e\item Erstellung von Testdokumenten und Einchecken zum Zuweisen im
+CourseCreator (wenigstens ein Element und eine Übung).
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+
+\begin{enumerate}
+\item Erstellung eines Kurses inklusive Übungen und Ablage im CVS mit
+folgenden Eigenschaften:
+\begin{itemize}
+\item Theorie-Elementgraph ohne Übung
+\item Theorie-Elementgraph mit Übung
+\item Kursabschnittsgraph ohne Übung
+\item Kursabschnittsgraph mit Übung
+\end{itemize}
+\item Abspeichern des Kurses in die DB.
+\item Beenden des CourseCreators
+\item Neuladen des Kurses aus der DB.
+\item Lokal Speichern des Kurses.
+\item Beenden des CourseCreators
+\item Neuladen des lokal gespeicherten Kurses.
+\end{enumerate}
+
+
+\eject
+
+
+\section{Testdefinitionen für die zusammengesetzten Funktionalitäten}
+
+\subsection{Z1: Dateien erstellen und in der Datenbank ablegen}
+
+\textbf{Beschreibung:} Es werden f\"ur verschiedene Dokumenttypen 
+Dateien erstellt und in die DB angelegt. 
+
+\smallskip
+\textbf{Benötigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+db/
+tools/xsl/*
+config/config.xml
+
+java/src/net/mumie/cocoon/notions/*
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+
+java/src/net/mumie/cocoon/generators/CheckInGenerator.java
+
+java/src/net/mumie/cocoon/documents/Document.java
+
+java/src/net/mumie/cocoon/documents/checkin/*
+
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/AbstractHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+\end{verbatim}
+
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+\item[\normalfont mmathrsc]
+(alles)
+
+
+\end{description}
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat, Cocoon, PostgresDB, etc.
+\item Erstellung von Dokumentinhalten und  darstellenden Dateien:
+
+Erstellung von~\texttt{mumieTeX}-Testdateien (für jeden Dokumenttyp
+eines) inkl. Einbindung von Bildern und Applets
+
+\item Ablage der Dateien im CVS (\texttt{testing\slash z1}).
+\end{enumerate}
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Übersetzen aller \texttt{mumieTeX}-Dokumente mit \texttt{./mmant mmtex-test}.
+\item Preview der Dateien (E2):
+\texttt{mmant preview} aufrufen .
+
+\item Build-Checkin (E3a):
+\begin{enumerate}
+\item Kopieren aller Dateiem (außer \texttt{mumieTeX} und \texttt{theme}) von \texttt{testing\slash z1} nach 
+\texttt{japs\slash checkin\slash ROOT }
+\item Checkin starten: \texttt{mmant checkin}
+\item Die eingecheckten Dokumente in der DB anschauen und mit den
+Originaldokumenten vergleichen (Referenztabellen beachten!).
+\end{enumerate}
+\item Online-Checkin (E4):
+\begin{enumerate}
+\item Erstellen eines ZIP-Archivs mit allen \texttt{*.content} und
+\texttt{*.meta.xml}-Dateien aus \texttt{testing\slash z1} .
+\item Auswahl und Absenden des ZIP-Archivs im XHTML-Formular.
+\item Die eingecheckten Dokumente in der DB anschauen. Vergleich der Dokumente 
+mit der MetainfoXML-Spezifikation und den Originaldokumenten (Referenztabellen beachten!).
+\end{enumerate}
+\end{enumerate}
+ 
+
+
+\eject
+
+\subsection{Z2: Einen Kurs bearbeiten oder erstellen und in der
+Datenbank ablegen}
+
+\textbf{Beschreibung:} Es soll getestet werden, wie ein Kurs erstellt oder bearbeitet
+(\"Anderungen im Navigationsnetz, Elementzuweisung oder beides)
+und anschliessend in die DB angelegt wird.
+\smallskip
+
+\textbf{Ben\"otigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+db/
+tools/xsl/*
+config/config.xml
+
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/*.java
+java/src/net/mumie/cocoon/documents/checkin/*
+java/src/net/mumie/cocoon/documents/AbstractDocument.java
+java/src/net/mumie/cocoon/documents/Document.java
+
+java/src/net/mumie/cocoon/generators/Course*
+java/src/net/mumie/cocoon/generators/DocumentGenerator.java
+java/src/net/mumie/cocoon/generators/CheckInGenerator.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+
+java/src/net/mumie/treeview/*
+\end{verbatim}
+
+\item[\normalfont CourseCreator](Alles)
+\end{description}
+\smallskip
+
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat, Cocoon, PostgresDB, etc. und eines
+getaggten CourseCreators.
+\item F\"ur Kurserstellung:
+\begin{enumerate}
+\item Erstellung von Testdateien und Ablage im CVS (\texttt{testing\slash z2}):
+ \begin{description}
+\item[\texttt{element}] Mehrere Dokumente ohne Referenzen 
+\item[\texttt{subelement}] Mehrere Dokumente.
+\end{description}
+\item Einchecken der Testdokumente in die DB (ID's protokollieren)
+
+\end{enumerate}
+
+
+\end{enumerate}
+
+\smallskip
+
+\textbf{Testschritte:}
+Testlauf I(A\slash B) f\"ur Kurserstellung:
+
+A.
+\begin{enumerate}
+\item Aufruf CourseCreator 
+\item Navigationsnetz erzeugen: Erstellung eines Elementcontainers ( Elementcontainer $\to$
+Elemente mit Subelementen) mit allen Elementen, Subelementen und einer
+und- sowie oder-Verzweigung.
+\item Abspeichern als unfertiger Kurs
+\item CourseCreator beenden und neu starten.
+\item Neuladen des abgespeicherten Kurses.
+\item Abspeichern des Kurses in der DB (HTTP-Post Request an
+CheckInGenerator).
+\item In der DB abgelegte Kurse \"uberpr\"ufen (SELECT).
+\end{enumerate}
+B. Wie A., aber drei Hierachiestufen definieren (Section $\to$ Section $\to$
+Elementcontainer $\to$ Elemente mit Subelementen).
+
+Testlauf II f\"ur die Bearbeitung eines Kurses:
+\begin{enumerate}
+\item Im CourseCreator einen Kurs aus der DB laden 
+\item Navigationsnetz \"andern und\slash oder Elemente zuweisen 
+\item Abspeichern des  Kurses in der DB (HTTP-Post Request an
+CheckInGenerator).
+\item In der DB abgelegte Kurse \"uberpr\"ufen (SELECT).
+\end{enumerate}
+
+
+
+\eject
+
+\subsection{Z3: Einen Kurs als Nutzer ansehen}
+
+\textbf{Beschreibung:} Es soll die Kursauswahl (aus der Sicht des Nutzers) im TreeViewApplet getestet werden. 
+Dabei wird auch die korrekte Auslieferung der Kursinhalte \"uberpr\"uft.
+\smallskip
+
+\textbf{Ben\"otigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+
+\begin{verbatim}
+java/src/net/mumie/cocoon/db/AbstractDbHelper.java
+java/src/net/mumie/cocoon/db/DbHelper.java
+java/src/net/mumie/cocoon/db/PostgreSQLDbHelper.java
+
+java/src/net/mumie/cocoon/documents/*.java
+
+java/src/net/mumie/cocoon/readers/DocumentReader.java
+
+java/src/net/mumie/cocoon/generators/DocumentGenerator.java
+
+java/src/net/mumie/cocoon/generators/Course*
+
+java/src/net/mumie/cocoon/transformers/StructTransformer.java
+
+java/src/net/mumie/cocoon/notions/DbValue.java
+java/src/net/mumie/cocoon/notions/RelType.java
+java/src/net/mumie/cocoon/notions/RequestParameter.java
+java/src/net/mumie/cocoon/notions/UseMode.java
+
+java/src/net/mumie/treeview/*
+\end{verbatim}
+\end{description}
+\begin{description}
+\item[\normalfont CourseCreator]
+(Alles)
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB, CourseCreator etc. und \"Ubersetzung des Treeview Applets.
+\item Erstellung mehrerer Kurse und Ablage im CVS (\texttt{testing\slash z3}), so wie in Z2 beschrieben.
+\item Checkin der \texttt{course\_section}-Dateien inkl. Elemente (Subelemente) in der DB.
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Kursauswahl aufrufen (TreeViewApplet)
+\item Kurse im Browser ausw\"ahlen
+\item Kurs starten (\"uber den Start-Link)
+\item Mittels Navigationsweg durch den Kurs navigieren.
+\end{enumerate}
+
+\eject
+
+
+\subsection{Z4: Übungen in einen Kurs integrieren und diesen als
+Nutzer ansehen}
+
+\textbf{Beschreibung:} Es sollen die für den Kursautor und Nutzer
+notwendigen Funktionalitäten hinsichtlich der Übungen getestet werden.
+\smallskip
+
+\textbf{Ben\"otigte Software-Komponenten:}
+\begin{description}
+\item[\normalfont japs]
+\begin{verbatim}
+java/src/net/mumie/cocoon/notions/
+java/src/net/mumie/cocoon/util/
+java/src/net/mumie/postgresql/
+db/
+tools/xsl/
+\end{verbatim}
+\item[\normalfont mmutil]
+(alles)
+
+\item[\normalfont mmxsl]
+(alles)
+
+\item[\normalfont mmathrsc]
+(alles)
+
+\item[\normalfont content]
+(alles)
+
+\item[\normalfont CourseCreator]
+(alles)
+\end{description}
+
+\smallskip
+\textbf{Vorbereitung und Erstellung der Referenzumgebung:}
+
+\begin{enumerate}
+\item Installation einer getaggten JAPS Umgebung inkl. Apache, Tomcat,
+Cocoon, PostgresDB, CourseCreator etc. und \"Ubersetzung des Treeview Applets.
+\item Erstellung und Einchecken von Testdokumenten wie in Z1 (Elemente).
+\item E4b zur Bereitstellung von Testdateien 
+\end{enumerate}
+
+\smallskip
+\textbf{Testschritte:}
+\begin{enumerate}
+\item Testdateien aus E4b mit OnlineCheckin in der Datenbank ablegen.
+\item Kurs wie in E7c erstellen und in DB abspeichern, dabei auch die
+Übung mit Sprungmarken berücksichtigen (je einmal Sprung auf eine
+Section, ein Element bzw.~ein Subelement).
+\item Kurs aufrufen.
+\item Mittels Navigationsweg durch den Kurs navigieren. Dabei auch die
+drei Sprungmarken ausprobieren.
+\end{enumerate}
+
+\eject
+
+
+
+\end{document}

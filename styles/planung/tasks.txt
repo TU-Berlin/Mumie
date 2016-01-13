@@ -1,0 +1,467 @@
+ToDo-Liste  
+(ND, DE, US: $Id: tasks.txt,v 1.34 2003/05/28 10:43:30 sinha Exp $)
+-----------------------------------------------------------------------------
+
+
+Teilprojekt Prototyp
+====================
+Verantwortlich:         US, ND
+
+Bemerkung:              Tasks anderer Teilprojekte mit "Proto" am Zeilenende 
+                        sind zusaetzl. notwendig fuer die Realisierung des 
+			Prototypen
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+StructTransformer Integration	 
+ - in die Sitemap		 14.04.03       erledigt       TD
+ - in den Prototypen		    ?           20.06.03    4  US, ND
+
+tex2xml (Previewpaket)		 sofort	        30.05.03   10  HV, JS
+ Download/Testing
+
+Doku-Darsteller-Classes		 09.06.03       20.06.03   20  US, ND
+ Demo integrieren
+
+Kommunikationstool
+ Abstimmung                                     06.06.03       SJ, US, ND
+ Integration	  		    ?		offen        ? US, ND, MJ
+
+Lexikontool			 21.04.03       erledigt     1 NN, US, ND
+ Integration
+
+Server
+ - Installation Server Software	 22.04.03       erledigt    30 US, ND, SR
+ - Installation JAPS		 22.04.03       erledigt    20 US, ND
+ - Update JAPS-Demo		 laufend	             ? US, ND
+
+www.mumie.net für EU		 sofort	        erledigt    10 HV, ND
+ aktualisieren
+
+
+Teilprojekt JAPS
+================
+Verantwortlich:         US, TR
+
+Task                              ab          bis          h  Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+TreeviewApplet			 
+ - TreeviewXMLGenerator	  	  14.04.03     30.05.03	   20 US, FL
+ - Integration mit 
+      CourseCreator		  05.05.03     offen        4 TD, US
+
+PullDown Menue
+ - Bug fixes			 12.03.03     erledigt	   10 PO
+ - ggf. Oeffnen nach links	 19.03.03     erledigt	   20 PO
+ - Integration			 07.04.03     offen   	   10 ND
+ - Javascript für Menüfunktionen nach Bedarf		      PO
+ - PullDown Menue XML in				    ? ND, TR
+    PageXML integrieren		 28.04.03
+
+StructTransformer
+ - *.java, Perl-Skript und   	 17.03.03     erledigt	    2 TD, TR
+    Bild-Libs ins JAPS CVS 
+    aufnehmen
+ - Anpassung Perl-Skript         21.03.03     erledigt      5 TD
+ - Mapping Bildname<->DB ID	 24.03.03     erledigt	   20 FL,TR
+ - Anpassung Transformer an	 12.04.03     15.04.03	    2 TD
+    Mapping
+ - Anpassung an Namespaces	 24.03.03     erledigt      1 TD
+ - Anpassung an Root-Element	 05.05.03     12.05.03      8 TD
+ - bug fix xcf2img               04.04.03     11.04.03     10 PO
+
+mumieContentXML XSLTs		 31.03.03     17.04.03	   10 FM,TR
+ - Integration
+
+build.xml
+ - README			sofort	       erledigt	    4 TR
+ - für StructTransformer
+   o xcf2img aus CVS holen	 24.03.03      erledigt	    3 TR, FL, TD
+   o Bilder aus Bild-Libs	 31.03.03      erledigt	    1 TR, FL, TD
+     erzeugen
+ - Automatisches Checkin
+    von DB-Inhalten(bei 
+    Installation)    
+    o Implementierung		 sofort		erledigt    8 FL,TR
+    o Test & Debugging			laufend		      FL,TR
+ - config.xml/
+   config.xsl entwickeln		laufend		      TR
+
+Doku-Darsteller-Classes
+ - DocumentGenerator 
+    SAXFilter/DokuDarstel-
+    ler Klassen an	
+    Namespaces anpassen		  sofort       30.05.03    10 TR
+ - restliche Dokumenttypen				                
+   o Einarbeitung		 17.03.03      erledigt	    5 CO
+   o XSLT, CSS, JavaScript	 24.03.03      erledigt	   20 CO, DG, TR
+       jar/Applet
+ - Dokumentation(Apidocs)		erledigt	      TR
+ - Filterung root-Tag im				      TR
+    Content				erledigt
+ - Änderungen bzgl. 
+    Dok.-Typen                   			    
+    o Implementierung		 sofort	       erledigt	   24 TR, FL
+    o Testing & Debugging	 26.05.03      laufend	      TR
+ - Erweiterungen/Bugfixes		laufend		      TR
+ 
+
+Namespaces
+ - Dokumentation		 sofort		erledigt    1 TR
+ - Java-Klasse			 sofort		erledigt    3 TR
+
+Checkin-Prozess
+ - "old ID"implementieren			erledigt      FL, US
+ - Visualisierung Class-Design	 sofort		erledigt    1 US
+ - Abstimmung DBHelper		 sofort		erledigt    4 US, FL
+ - Implementierung DB-Seite	 
+     des Checkin-Prozesses
+   o Erweiterung DB-Helper	 sofort		30.05.03    8 FL
+   o Transactions		 sofort         06.06.03    8 US, FL
+   o Zugriff auf Metainfo-
+      Elemente			 sofort		28.05.03    8 US  
+
+ - "Bogus"-Modus für		 sofort		   ?       ?? DG
+     CheckInManager
+ - Upload(Server)
+   o Einarbeitung		  17.03.03     erledigt	   30 DG
+   o Konzept / Abstimmung	  05.05.03     erledigt	   20 DG, TR, US
+   o Implementierung                  ?            ?        ? DG, TR, US
+   o aus Applet(clientseitig)	      ?		   ?	    ? DG, US
+
+ - Fehlerbehandlung		  
+   o Konzept / Abstimmung	  27.05.03	03.06.03    8 US, TR, DG
+   o Implementierung		  04.06.03	20.06.03    ? US, DG
+
+ - Konverter zur Aufbereitung
+     für Checkin		
+   o Konzept			  30.06.03		    ? DG, US, TR
+   o Implementierung		  14.07.03		    ? DG, US, TR
+   o Einbindung externer 
+      Prozesse (z.B. mmtex)           ?         30.09.03    ? TR, US       
+ 
+Caching
+ - Überprüfung des Caches	  19.05.03	13.06.03   40 US, TD
+   beim Checkin
+- Profiling			  01.06.03      27.06.03   20 JF, TD
+
+DB-Helper Classes
+ - für Checkin		enthalten in DB seitiger Impl.	      FL, US
+ - allgemein			  nach Bedarf		      FL, TR, US
+
+
+Neuer Cocoon mit Java 1.4.1	              erledigt      1 HV, US
+  testen
+
+Postgres/JDBC mit Java 1.4	  sofort      erledigt	    5 FL,HV,TR
+
+PDF-Ausgabe
+ - JEuclid-Status erfragen	  30.06.03		    3 TR
+ - direkte Konvertierung	  30.06.03		    3 TR
+    TeX->Java?
+ - Ausgabe ohne Formeln		  24.03.03    12.05.03	    8 CO, DG
+    implementieren
+ - Ausgabe mit Formeln		  ?			      ?
+    implementieren
+
+SessionManagement
+ - Konzept			 12.05.03    30.05.03	    20 ND,TR
+ - Rollenadaptivität		 	     20.06.03	      ?
+ - Benutzeradaptivität			     18.09.03	      ?
+
+Evaluierung Lucene		sofort	     30.06.03	    ? HV,TR
+ - Ideen f. Präsentation
+   der Suchergebnisse			     30.06.03	      HV + alle!
+
+Teilprojekt DB
+==============
+Verantwortlich:         FL
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Dokument-Tabellen:
+ - "created"-Datum rausnehmen	  erledigt		    2 FL
+ - Umbenennung courses		  erledigt		    2 FL
+ - Default-Belegung für content	  erledigt		    2 FL
+
+Build-Prozeß in allgemeinen
+ Build-Prozeß integrieren	  sofort	20.06.03   20 FL, TR
+
+Dokumentation			  laufend                     FL
+
+Redesign Quellenverwaltung				     
+ - Brainstorming                  26.05.03	?	    2 FL, TR, US
+ - Konzept(ergibt sich 
+    nach Brainstorming)		  ?			    ? FL, TR, US
+ - Umsetzung			  ?		18.09.03    ? FL, TR, US
+
+Clientseitiges LO_IMPORT
+ implementieren			  sofort	erledigt    1 FL
+
+Encoding			  sofort	20.06.03   ?? FL, JS
+
+Teilprojekt Zugriff auf Dokumente
+=================================
+Verantwortlich:         DE
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+mmtex-Dokumentenklassen
+ - Ausgabe in Metas und Content	  22.04.03    02.05.03     10 PH
+    in 2 Dateien
+ - Anpassung entsprechend
+   Protokoll 25/26.03.03          07.04.03    erledigt     15 PH
+ - Dokumentation                  ??          ??           15 PH
+ - Erweiterung f. Begleitfigur    12.05.03    17.05.03     10 PH
+ - Anpassung an Root-Element      05.05.03    12.05.03      5 PH
+
+XSLTs
+ - Erweiterung f. Begleitfigur    12.05.03    17.05.03     10 FM
+ - Anpassung an Root-Element      05.05.03    12.05.03      5 FM
+
+
+
+tex2xml Version 0.6
+ - Debugging                      27.03.03    erledigt     10 FM
+ - Integration von Binnen-IDs     27.03.03    erledigt     10 FM
+ - Tests			  16.04       erledigt      5 FM, PH
+
+tex2xml Version 0.7
+ - Transformation von XSLTs       22.04.03    09.05.03     15 FM
+
+
+
+Teilprojekt mmtex
+=================
+Verantwortlich:		TR       
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Mathematische Formeln/MathML					
+ - Def. mit \newcommands            ??          ??          ?  ??
+ - Std.-LaTeX-Befehle 	            ??     	20.06.03    ?  TR
+    implementieren		
+ - Webspezifische Features	    ??		20.06.03    ?  TR
+
+Bibliotheken 
+ - benutzerdefinierte Befehle      sofort       20.06.03   20  TR, CR
+ - Redesign Tabellenbibliothek     sofort       erledigt   20  TR, CR
+ - Implementierung von Boxen       sofort       20.06.03   10  CR
+ - CSS-Anbindung                   sofort       20.06.03   10  TR, CR
+ - Listen: Ergänzungen             sofort       erledigt    4  TR, CR
+ - Multimedia-Einbindung           sofort       20.06.03    ?  TR, CR
+
+Erzeugung kompletter                                 ?      ?  TR, CR
+ Webauftritte
+
+XEmacs-Integration                 sofort       erledigt    ?  TR, CR
+
+Integration in JAPS		   ???		18.09.03    ?  TR
+
+Wartung	                          laufend                      TR
+
+Build-Prozess für mmtex
+ - einfaches Perl Skript	  26.05.03	06.06.03   10  TR,CR
+ - Konfiguration		  26.05.03	06.06.03   10  TR,CR
+
+
+Teilprojekt mmtex-Dokumentation
+===============================
+Verantwortlich:		TR       
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Beschreibung des Projektes	  sofort	20.06.03    4 TR
+
+Installationsanleitung		  sofort	erledigt    6 TR,CR
+
+User Doku des TeX-Dialekts                              
+- Ergaenzung Selbst-              sofort        erledigt   16 CR,TR
+   dokumentation 
+- Konzeption der		  sofort	erledigt    8 CR,TR
+   Sprachbeschreibung				   
+- Umsetzung					     ?	    ? CR,TR
+- Konvertierung des 
+   "Selbstdokumetations-XML"			erledigt   16 CR
+   nach HTML 
+
+Doku der Perl-Skripte				      
+- Konvertierung der in den			     ?	   40 TR,CR	
+   Skripten enthaltenen Doku 
+   nach XML
+- allg. Manual, Tutorials			     ? 	    ? TR,CR
+
+Beispiele (scratch.tex etc.)			erledigt    4 TR,CR 
+
+
+
+Teilprojekt Styles/Guidelines/Spezifikationen
+=============================================
+Verantwortlich:         SJ
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+---------------
+                                |            |           |   |
+
+InterfaceDesign Spezifikation                 15.08.03        SJ
+
+Autoren-Guide CourseCreator				     
+ - Gliederung			  22.04.03    10.05.03	    5 JF
+ - Inhalte			  12.05.03    13.06.03     15 JF
+
+Übungstool
+ - Lastenheft				?	20.06.03      EZ 
+ - Konzept und Spezifikation		?	später	      EZ, ND u.a.
+ - Abstimmung				?	später        alle
+ - Spielwiese				?	?	      ?
+
+Mathem. Elemente in mumieTeX
+ - Ueberarbeitung Style-Guide     28.04.03     27.06.03    ?? JS, HV, TR
+
+XML Metainfo
+ - "created"-Datum rausnehmen		erledigt	     FL
+ - "old ID" spezifizieren		erledigt	     FL, US
+ - Korrektur bzgl.		sofort		erledigt   2 FL
+    parametrisierbarer Seiten
+    
+XML Spezifikationen					  
+ - Unter- statt Bindestriche 		erledigt	     FL
+ - Content muss gültiges	sofort		erledigt   ? FL,TR
+    XML sein, Spezis abklopfen
+ 
+
+Teilprojekt Kurs Komposition
+============================
+Verantwortlich:         TD,DE
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Implementierung/Konzept (Rest)
+ - Konverter 
+    o Konzept                                 erledigt     10 TD
+    o Modell -> XML              14.03.03     erledigt     30 TE
+    o XML -> Modell              04.04.03     12.05.03     30 TE, TD
+    o XML -> DB                                            ?? ? 
+ - Applet Kommunikation          20.03.03     erledigt     18 JF, TD
+ - KeyListener                   03.03.03     erledigt      4 JF
+
+Abspeichern unfertiger Kurse				      
+ - Konzept/XML-Design            09.04.03     16.05.03     20 TD
+ - Speichern aus Applet, Tests   19.05.03     21.06.03     30 TE, TD
+ - Implementierung               23.06.03     11.07.03     20 JF, TE, TD
+
+Kommunikation mit DB-Browser				      
+ (via LiveConnect m. JavaScript) 
+ - Tests                         09.04.03     erledigt     30 JF, TD, US, ND
+ - Implementierung		 19.05.03     14.06.03	   20 JF, TE, TD
+
+
+
+Teilprojekt Dokumentation
+=========================
+Verantwortlich:		US,ND     
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Vervollständigung                 laufend		      ND, US
+
+Dokumentation NewDocType,	 13.03.03     erledigt	   10 DG
+  Installation Mch
+
+Dokumentationsstruktur		 31.03.03     erledigt	    2 ND
+ überarbeiten
+
+Teilprojekt Inhalt
+==================
+Verantwortlich:         RS
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Inhalte RS
+ - Elemente in TeX			laufend		      HV
+ - Elemente in XML/XHTML		laufend		      HV
+ - Elementcontainer					      ?
+ - neue Inhalte			 sofort		20.06.03  ?   RS, SJ + ?
+
+Inhalte Wüst
+ - Aufwandsschätzung		 sofort 	erledigt      JS
+ - Elemente in TeX		 läuft   	06.06.03      JS
+ - Elemente in XML/XHTML	 )	 	              JS
+ - Elementcontainer		 } abhängig von mmTeX         JS
+ - Kurs				 )	 	              JS
+ - Demo-Applets				?	       ?      ??
+
+Inhalte für Evaluierung WS03/04				  
+ - Schreiben						      ?
+ - Elemente in TeX					      ?
+ - Elemente in XML/XHTML				      ?
+ - Elementcontainer					      ?
+ - Kurs							      ?
+ - Demo-Applets						      ?? 
+
+Begleitfigur
+ - Galerie www.mumie.net				      
+   o Vorbereitung		 17.03.03     erledigt	   10 PO
+   o Integration		 07.04.03     erledigt      5 HV
+ - Einbauen in Page-Seiten
+   o Abstimmung			 17.03.03     04.04.03        DE, SJ
+   o Integration in page.xml     28.04.03                     TR
+ - Einbauen in Inhaltsseite				   
+   o XML-Spezifikation           31.03.03     17.04.03      5 DE
+   o JavaScript                  22.04.03     23.05.03     15 JF
+   o Integration in Inhalt-	 			      JS?
+      seiten
+ - Drehbuch Ideen					      alle
+
+
+Teilprojekt Verschiedenes
+=========================
+Verantwortlich:		SJ
+
+Task                              ab          bis           h Durchfuehrung
+--------------------------------+------------+-----------+---+----------------
+                                |            |           |   |
+Lizenzfrage verfolgen            laufend		      EZ
+
+MumieLap hüten und pflegen       laufend                      US
+
+Lexikontool                      laufend                      NN
+
+Abstimmungung bzgl. 
+ Projektmanagement-Software	 sofort		erledigt      DE, ND, SJ
+
+Who is who
+==========
+
+CO  Christian Oeser (M)
+CR  Christian Ruppert (B)
+DE  Dominik Eberlein (M)
+DG  Diana Gross (M)
+EZ  Erhard Zorn (B)
+FL  Fritz Lehmann-Grube (B)
+FM  Fiete Meyer (M)
+HV  Helmut Vieritz (B)
+JF  Johannes Fricke (M)
+JS  Jan Sablatnig (B)
+MJ  Michael Jeschke (B)
+MV  Michael Vossbeck (B)
+ND  Nina Dahlmann (B)
+NN  Nicole Natho (B)
+PH  Philipp Hudelmaier (M)
+PO  Peter Ossipov (M)
+RS  Ruedi Seiler (B)
+SJ  Sabina Jeschke (B)
+SR  Sebastian Rittau (B)
+TD  Thomas Döhring (M)
+TE  Tilo Eissler (M)
+TR  Tilman Rassy (B)
+US  Uwe Sinha (B)

@@ -1,0 +1,121 @@
+\documentclass[11pt,makeidx,fleqn]{article}
+\usepackage[intlimits,fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+\usepackage{german}
+\usepackage{graphics}
+\usepackage{wrapfig}                            
+                                            
+
+\ifx\pdfoutput\undefined
+  \usepackage[xdvi]{epsfig}
+\else
+  \usepackage{graphicx}
+\fi
+
+%\documentstyle[amstex,style,11pt]{article}
+\setlength{\parindent}{0mm}
+\setlength{\textwidth}{140mm}
+\setlength{\textheight}{232mm}
+\setlength{\topmargin}{-20mm}
+\setlength{\headheight}{0in}
+\setlength{\headsep}{1in}
+%\setlength{\footheight}{0in}
+\setlength{\footskip}{10mm}
+\setlength{\oddsidemargin}{0.2in}
+\setlength{\evensidemargin}{0.2in}
+\setlength{\parskip}{4pt}                                
+                               
+
+
+\setcounter{secnumdepth}{5}   % bewirkt Aenderung der maximalen
+                              % Kapitel-Nummerierung,
+                              % hier von 3 (default) auf 5
+\setcounter{tocdepth}{5}      % bewirkt Uebernahme der zusaetzlichen
+                              % Kapitel-Ueberschriften ins Inhaltsverzeichnis
+                                                                                  
+            
+%\usepackage{amsmath,amsthm,epsfig,amstext,amssymb,a4,makeidx,amscd,german}%amsfonts}
+%\usepackage{graphicx,subfigure} %nickis Zeichnung??
+%
+
+\sloppy % fuer eine lockere Silbentrennung!!
+
+\parindent0cm %keine Einrueckung nach Absatz
+                
+\pagestyle{myheadings} %kapitelueberschrift in Kopfzeile
+\bibliographystyle{amsalpha}
+%\DeclareGraphicsRule{.gif}{bmp}{}{}
+
+%\styletitle{Interfacedesign}
+
+\begin{document}
+
+%***************************************************************************************
+
+\newenvironment{list_sabina}{\begin{list}{$\bullet$}{\setlength{\labelwidth}{3mm} \setlength{\labelsep}{2mm} \setlength{\parsep}{1mm} \setlength{\topsep}{0mm} \setlength{\itemsep}{0mm}}}{\end{list}}
+ 
+\newenvironment{sub_list_sabina}{\begin{list}{$\circ$}{\setlength{\labelwidth}{2.5mm} \setlength{\labelsep}{1mm} \setlength{\parsep}{1mm} \setlength{\topsep}{0mm} \setlength{\itemsep}{-1mm}}}{\end{list}}             
+
+%***************************************************************************************
+
+\input{titel.tex}
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\input{name.tex}
+
+\clearpage
+
+\input{entree.tex}
+
+\clearpage
+
+\input{lerntool.tex}
+
+\clearpage
+
+\section{"Ubungstool}\label{lerntool}
+to be specified...
+
+\section{Lexikontool}\label{lerntool}
+to be specified...
+
+\section{Kommunikationstool}\label{lerntool}
+to be specified...
+
+\section{Weitere Tools}\label{weitere_tools}
+to be specified...
+
+
+
+
+
+%%%\input{overview.tex}
+%%%\clearpage
+
+
+
+%***************************************************************************************
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

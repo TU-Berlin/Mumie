@@ -1,0 +1,147 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Kurs als Netz}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+  \author[seiler@math.tu-berlin.de]{Ruedi Seiler}
+\end{authors}
+
+\version{$Id: kurs_als_netz.tex,v 1.5 2006/08/11 16:18:22 rassy Exp $}
+
+\tableofcontents
+\section{Pr"aambel}\label{preambel}
+Didaktisches Ziel: Vermittlung nicht nur von Konzepten, Resultaten und Anwendungen, sondern
+vor allem von \emph{(logischen) Zusammenhängen}. Dies ist wichtige
+Voraussetzung für die Fähigkeit, Probleme zu lösen, d.h. Verbindungen vom
+Bekanntem zum Unbekannten herzustellen.
+
+Typische Zusammenhänge, die es zu vermitteln gilt, sind:
+\begin{enumerate}
+\item Die \emph{Rückwärtssicht} (''was-wird-gebraucht?''): Welche Begriffe,
+  Definitionen usw. werden gebraucht, um ein gegebenes Resultat (z.B.  ein
+  Theorem) formulieren zu können? Welche Resultate werden gebraucht, um eine
+  gebene Anwendungen ausführen zu können? Welche Begriffe müssen bekannt sein,
+  um einen gegebenen Begriff zu verstehen?
+\item Die \emph{Vorwärtssicht} (''wofür-hat-das-Bedeutung?''): Welche
+  Definitionen, Theoreme usw. setzen eine gebene Definition oder ein gebenenes
+  Theorem voraus? Was hängt alles von einem gegebenem Begriff ab?
+\end{enumerate}
+
+Die o.g. Zusammenhänge können natürlich sprachlich ausgedrückt werden.
+Tatsächlich ist dies die Methode, die in Lehrbüchern normalerweise angewandt
+wird. Dieser Spezifikation liegt jedoch die Überzeugung zu Grunde, dass sich
+die Zusammenhänge übersichtlicher und einprägsamer durch \emph{Graphen}
+vermitteln lassen. ''Graph'' ist hierbei durchaus im Sinne der Graphentheorie
+zu verstehen: Eine Menge $G$ von \emph{Knoten} mit einer Menge $K\subset G
+\times G$ von \emph{Kanten}. $G$ besteht in diesem Fall aus Definitionen,
+Theoremen usw. sowie aus logischen ''und''- und ''oder''-Verknüpfungen (Näheres
+s. \ref{struct_graph}).
+
+In der \emph{Rückwärtssicht} sind z.B. alle Definitionen, von einem gegebenem Theorem gebraucht
+werden, durch einen gerichteten Pfad im Graphen mit einem logischen
+''und''-Knoten verbunden und dieser wiederum mit dem Theorem:
+
+\image{rueckwaertssicht.png}
+
+Falls es mehrere Gruppierungen von Definitionen gibt, die jeweils genügen, um
+das Theorem zu formulieren, kann dies mit einem logischen ''oder''-Knoten
+ausgedrückt werden:
+
+\image{rueckwaertssicht\_02.png}
+
+Anstelle von Definitionen können natürlich auch andere Theoreme stehen, die von
+dem gegebenen Theorem gebraucht werden.
+
+In der \emph{Vorwärtssicht} zeigt z.B. ein Theorem auf alle von ihm
+beeinflussten Theoreme, Anwendungen usw. Zeigen heisst: Es gibt einen
+vorwärtsgerichteten Pfad von dem Theorem auf eine davon beeinflussten Theoreme, Anwendungen usw.
+
+
+\section{Struktur des Graphen}\label{struct_graph}
+
+Graphen der eben skizzierten Art gibt es für Dokumente des Typs \val{course}
+(Kurs), \val{course_section} (Kursabschnitt) und \val{course_subsection}
+(Kurs-Unterabschnitt, z.B. Übungsblatt). Die Graphen bestehen aus Knoten und
+Kanten wie oben beschrieben. 
+
+\subsection{Knoten}
+
+Es gibt folgende Typen von Knoten:
+  
+\begin{enumerate}
+\item\label{elem_knoten} \emph{Element-Knoten} -- stellen Elemente dar, also
+  Dokumente vom Typ \val{element}
+\item\label{aufg_knoten} \emph{Aufgaben-Knoten} -- stellen Aufgaben dar, also
+  Dokumente vom Typ \val{problem}
+\item\label{kursabschn_knoten} \emph{Ein Kursabschnitts-Knoten} -- stellen
+  Kursabschnitte dar, also Dokumente vom Typ \val{course_section}
+\item \emph{''Und''-Knoten}
+\item \emph{''Oder''-Knoten}
+\item \emph{Neutrale Verzweigungsknoten}
+\item\label{aux_knoten} \emph{Stützknoten} -- unsichtbare Hilfsknoten, um die Linien in
+  bestimmter Weise zu führen
+\end{enumerate}
+
+\ref{elem_knoten}, \ref{aufg_knoten} und \ref{kursabschn_knoten} werden auch
+zusammenfassend \emph{Dokument-Knoten} genannt. Für ihr Auftreten gelten
+folgende Einschränkungen:
+
+\label{einschr_dokumentknoten}
+\begin{enumerate}
+  \setcounter{enumi}{7}
+  \item \emph{Element-Knoten} gibt es nur in Kurse-Abschnitten,
+  \item \emph{Aufgaben-Knoten} gibt es nur in Kurse-Unterabschnitten [gilt
+    zumindest für die beiden derzeit einzigen Kurs-Unterabschnitt-Kategorien
+    \val{homework} und \val{pretest}],
+  \item \emph{Kursabschnitts-Knoten} gibt es nur in Kursen.
+\end{enumerate}
+
+Jeder Knoten hat eine eindeutige \emph{Knoten-Id}, mit der er
+ggf. identifiziert werden kann.
+
+An Dokumentknoten können mehrere ''Subdokumentknoten'' angehängt sein,
+z.B. Subelemente an Elemente, diese werden aber nicht als Teil des Graphen
+aufgefasst.
+
+\subsection{Kanten}
+
+Eine Kante ist ein geordnetes Paar von Knoten. Sie kann mit dem geordneten
+Paar der entsprechenden Knoten-Ids identifiziert werden. Die Interpretation der
+Richtung der Kante ist wie folgt: Ist $(g_1, g_2)$ eine Kante, so ist der
+Knoten $g_1$ logische Voraussetzung von $g_2$.
+
+
+\section{Darstellung des Graphen}
+
+\subsection{Knoten}
+
+Für die visuelle Darstellung erhalten Knoten eine x- und eine y-Koordinate in
+Pixeln. Die Knoten selbst werden durch Icons dargestellt. Die an einen
+Dokumentknoten angehängten ''Subdokumentknoten'' werden ebenfalls durch Icons
+dargestellt. Die möglichen Positionen der ''Subdokumentknoten''-Icons relativ
+zum Dokumentknoten-Icon sind \emph{oben-links}, \emph{oben-rechts},
+\emph{unten-rechts}, \emph{unten-links}. Siehe auch folgende Zeichnung: 
+
+\image{course\_darstellung\_ohne\_text.png}
+
+\subsection{Kanten}
+
+Eine Kante wird durch eine Linie dargestellt, die das Icon des Startknotens mit
+dem Icon des Endknotens verbindet. Die Linie besteht aus einem oder mehreren
+\emph{Segmenten}. Jedes Segment ist entweder senkrecht oder waagerecht. Die
+Punkte, an denen sich die Segmente berühren, werden \emph{Zwischenpunkte}
+genannt. Die Zwischenpunkte werden mit $1$ beginnend durchnumeriert. Die
+Numerierung beginnt beim Startknoten.
+
+Die folgende Abbildung zeigt vier Beispiele von Kanten unterschiedlicher
+Gestalt. $P_1$, $P_2$, $\ldots$ bezeichnen die Zwischenpunkte.
+
+\image{kanten\_schritte.png}
+
+\end{document}

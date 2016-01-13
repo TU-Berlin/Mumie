@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+
+// --------------------------------------------------------------------------------
+// h1:  Page-global variables and functions
+// --------------------------------------------------------------------------------
+
+/**
+ * Contains all MmHttpRequest objects created on the website. Each object in this
+ * array recieves notification if a login procedure has completed or was aborted
+ * by the user.
+ */
+
+var mmHttpRequests = new Array();
+
+/**
+ * Iterates through all objects in mmHttpRequests and calls the notifyLogin method of
+ * each object.
+ */
+
+function mmHttpRequestNotifyLogin ()
+{
+  for (var i = 0; i &lt; mmHttpRequests.length; i++)
+    mmHttpRequests[i].notifyLogin();
+}
+
+// --------------------------------------------------------------------------------
+// h1:  The MmHttpRequest class
+// --------------------------------------------------------------------------------
+
+/**
+ * A wrapper for a XMLHttpRequest object which hides the login problem from the
+ * application programmer.
+ */
+
+function MmHttpRequest ()
+{
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Class-global constants
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  /**
+   * The URL prefix of the Mumie server.
+   */
+
+  const URL_PREFIX = "<txt:url-prefix/>";
+
+  /**
+   * The Mumie-specific response header indicating whether (re)login is necessary
+   * or not.
+   */
+
+  const LOGIN_REQUIRED_HDR = "X-Mumie-Login-Required";
+
+  /**
+   * Path of the page shown in the login window.
+   */
+
+  const LOGIN_PATH = "protected/auth/ajax-login-successful";
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Class-global variables
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  /**
+   * The wrapped XMLHttpRequest object.
+   */
+
+  var _xmlHttpRequest = null;
+
+  /**
+   * The Http method.
+   */
+
+  var _method = null;
+
+  /**
+   * The path of the resource on the server (part of the URL after the URL_PREFIX).
+   * Possibly with request parameters.
+   */
+
+  var _path = null;
+
+  /**
+   * The content to send with the request.
+   */
+
+  var _content = null;
+
+  /**
+   * The request headers, as an associative array of name/value pairs.
+   */
+
+  var _requestHeaders = null;
+
+  /**
+   * Whether the request is asynchrone.
+   */
+
+  var _async = null;
+
+  /**
+   * Function to call on state changes of the wrapped XMLHttpRequest object.
+   */
+
+  var _handler = undefined;
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Registration of this object in mmHttpRequests
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  mmHttpRequests.push(this);
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Auxiliary methods
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  /**
+   * Throws an exception with the specified message. The string "MmHttpRequest: " is
+   * prepended to the message.
+   */
+
+  var _error = function (msg)
+    {
+      throw "MmHttpRequest: " + msg;
+    }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Methods to init, configure, and send the request
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  /**
+   * Initializes this object for a (new) request.
+   * @param  method  the Http method (GET, POST, or HEAD)
+   * @param  path    the path of the resource on the server (part of the URL after
+   *                 the URL_PREFIX); possibly with request parameters.
+   * @param  async   Boolean, wether the request is asynchronous. Optinal,
+   *                 default is true.
+   */
+
+  this.init = function (method, path, async)
+    {
+      _method = method.toUpperCase();
+      _path = path;
+      _async = (async == undefined ? async : true);
+      _xmlHttpRequest = new XMLHttpRequest();
+      _requestHeaders = new Array();
+    };
+
+  /**
+   * Sets a request header with the specified name and value.
+   */
+
+  this.setRequestHeader = function (name, value)
+    {
+      _requestHeaders[name] = value;
+    };
+
+  /**
+   * Sets the function to call on state changes of the wrapped XMLHttpRequest object.
+   */
+
+  this.setHandler = function (handler)
+    {
+      _handler = handler;
+    };
+
+  /**
+   * Sets the content to be sent.
+   */
+
+  this.setContent = function (content)
+    {
+      _content = content;
+    };
+
+  /**
+   * Sends the request.
+   */
+
+  this.send = function ()
+    {
+      var url = URL_PREFIX  + "/" + _path;
+      _xmlHttpRequest.open(_method, url, _async);
+      for (var name in _requestHeaders)
+        _xmlHttpRequest.setRequestHeader(name, _requestHeaders[name]);
+      _xmlHttpRequest.onreadystatechange = _handlerWrapper;
+      _xmlHttpRequest.send(_content);
+    };
+
+  var _checkLoginRequired = function ()
+    {
+      var value = _xmlHttpRequest.getResponseHeader(LOGIN_REQUIRED_HDR);
+      if ( !value )
+        return false;
+      else
+        {
+          value = value.toLowerCase();
+          if ( value == "yes" || value == "true" )
+            return true;
+          else if ( value == "no" || value == "false" )
+            return false;
+          else
+            error("checkLoginRequired: Unknown " + LOGIN_REQUIRED_HDR + "value: " + value);
+        }
+    };
+
+  var _handlerWrapper = function ()
+    {
+      if ( _xmlHttpRequest.readyState == 4 &amp;&amp; _checkLoginRequired() )
+        _login();
+      else
+        _handler();
+    };
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Methods related to login
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  var _login = function ()
+    {
+      // Configure login window:
+      var width = 500;
+      var height = 300;
+      var left = (screen.width - width)/2;
+      var top = (screen.height - height)/2;
+      var settings=
+        "dependent=yes," +
+        "location=false," +
+        "height=" + height + "," +
+        "width=" + width + "," +
+        "left=" + left + "," +
+        "top=" + top;
+
+      var url = URL_PREFIX + "/" + LOGIN_PATH;
+
+      // Create login window:
+      window.open(url, "Mumie Login", settings);
+    };
+
+  this.notifyLogin = function ()
+    {
+      // Re-send the request:
+      this.send();
+    };
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // h2:  Methods to access response data
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  /**
+   * Returns the readyState value of the wrapped XMLHttpRequest object.
+   */
+
+  this.getReadyState = function ()
+    {
+      return _xmlHttpRequest.readyState;
+    };
+
+  /**
+   * Returns the response of the wrapped XMLHttpRequest object as a string.
+   */
+
+  this.getResponseText = function ()
+    {
+      return _xmlHttpRequest.responseText;
+    };
+
+  /**
+   * Returns the response of the wrapped XMLHttpRequest object as an DOM XML dcoument.
+   */
+
+  this.getResponseXML = function ()
+    {    
+      return _xmlHttpRequest.responseXML;
+    };
+
+  /**
+   * Returns the response header with the specified name
+   */
+
+  this.getResponseHeader = function (name)
+    {
+      return _xmlHttpRequest.getResponseHeader(name);
+    };
+
+  /**
+   * Returns the Http status of the wrapped XMLHttpRequest as an integer (e.g., 200 for
+   * "OK", 500 for "Internal server error").
+   */
+
+  this.getStatus = function ()
+    {
+      return _xmlHttpRequest.status;
+    };
+
+  /**
+   * Returns the Http status of the wrapped XMLHttpRequest as a string
+   */
+
+  this.getStatusText = function ()
+    {
+      return _xmlHttpRequest.statusText;
+    };
+}
+  
+</txt:document>

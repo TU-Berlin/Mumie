@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_traditional_problems_response.content.xml,v 1.2 2008/09/09 12:58:39 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>Eingabe Ruecksprachen</title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-bounded-width">
+        <h1>Eingabe R&#252;cksprachen</h1>
+        <p>
+          Tutorium: <xsl:value-of select="/*/@name"/>
+        </p>
+        <xsl:choose>
+          <xsl:when test="/*/error">
+            <div class="error">
+              <h2 style="margin-bottom: 0.5em">FEHLER:</h2>
+              <table class="enum">
+                <xsl:for-each select="/*/error">
+                  <xsl:sort select="@surname"/>
+                  <xsl:sort select="@first-name"/>
+                  <tr>
+                    <td>
+                      <xsl:value-of select="@surname"/>
+                      <xsl:text>, </xsl:text>
+                      <xsl:value-of select="@first-name"/>
+                      <xsl:text>: </xsl:text>
+                      <xsl:value-of select="@message"/>
+                    </td>
+                  </tr>
+                </xsl:for-each>
+              </table>
+            </div>
+          </xsl:when>
+          <xsl:otherwise>
+            <h2>Daten erfolgreich gespeichert</h2>
+          </xsl:otherwise>
+        </xsl:choose>
+        <p style="margin-top: 1.5em">
+          <a class="button" href="javascript:history.back()">Zur&#252;ck</a>
+        </p>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

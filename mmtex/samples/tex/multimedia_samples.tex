@@ -1,0 +1,80 @@
+\documentclass{webpage}
+
+
+
+\begin{document}
+\title{Multimedia Tests}
+
+\tableofcontents
+
+
+
+\section{Picture tests}
+
+Okay, we will not see the next picture, because it is in the subdirectory ../images.
+\image[][c][A pic of the mumie]{mumie.png}
+
+Now, the same with the path to the picture..
+\image[][c][A pic of the mumie]{../images/mumie.png}
+
+And now we set the imagedir
+\setimagedir{../images}
+
+Now the first example should work the right way..
+\image[][c][A pic of the mumie]{mumie.png}
+
+And now some alignment tests, the rest was centered (c)..
+
+First on the left (l)
+\image[][l][A pic of the mumie]{mumie.png}
+
+Now on the right (r)
+\image[][r][A pic of the mumie]{mumie.png}
+
+Now centered (c)
+\image[][c][A pic of the mumie]{mumie.png}
+
+And now none
+\image[][][A pic of the mumie]{mumie.png}
+
+
+Everthing is working fine...
+
+
+
+\section{Source Code}
+
+\verbatim 
+
+Okay, we will not see the next picture, because it is in the subdirectory ../images.
+\image[][c][A pic of the mumie]{mumie.png}
+
+Now, the same with the path to the picture..
+\image[][c][A pic of the mumie]{../images/mumie.png}
+
+And now we set the imagedir
+\setimagedir{../images}
+
+Now the first example should work the right way..
+\image[][c][A pic of the mumie]{mumie.png}
+
+And now some alignment tests, the rest was centered (c)..
+
+First on the left (l)
+\image[][l][A pic of the mumie]{mumie.png}
+
+Now on the right (r)
+\image[][r][A pic of the mumie]{mumie.png}
+
+Now centered (c)
+\image[][c][A pic of the mumie]{mumie.png}
+
+And now none
+\image[][][A pic of the mumie]{mumie.png}
+
+
+Everthing is working fine...
+\endverbatim
+
+\end{document}
+

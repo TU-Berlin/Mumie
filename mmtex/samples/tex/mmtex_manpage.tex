@@ -1,0 +1,306 @@
+% -*- mmtex -*-
+% Author: Tilman Rassy <rassy@math.tu-berlin.de>
+% $Id: mmtex_manpage.tex,v 1.1 2003/05/08 15:56:42 ruppert Exp $
+% Copyright (C) 2003, Berlin University of Technology
+
+\documentclass{webpage}
+
+\addstyles{manpage.css}
+
+\newcommand{\convertoptions}{\plhld{convert\_options}}
+\newcommand{\queryoptions}{\plhld{query\_options}}
+\newcommand{\MmTeX}{MmTeX}
+\newcommand{\Mumie}{Mumie}
+\newcommand{\LaTeX}{LaTeX}
+
+\begin{document}
+
+\title{MmTeX Manual Page}
+\subtitle{Converting \LaTeX-like code to XML}
+
+Tilman Rassy \link{mailto:rassy@math.tu-berlin.de}{<rassy@math.tu-berlin.de>}
+
+Copyright \copyright 2003, Berlin University of Technology
+
+\verb'$Id: mmtex_manpage.tex,v 1.1 2003/05/08 15:56:42 ruppert Exp $'
+
+\tableofcontents
+
+
+%\section{Name}
+%
+%\code{mmtex} -- Convert \LaTeX-like code to XML.
+
+
+\section[synopsis]{Synopsis}
+
+\begin{preformatted}[code]%
+mmtex [\convertoptions] [--time | --notime] \var{source}
+mmtex [\queryoptions] [--time | --notime]
+mmtex [--help | --version] [--time | --notime]
+\end{preformatted}
+
+
+\section{Description}
+
+This manual describes the usage of the \code{mmtex} executable. For the \MmTeX \LaTeX
+dialect or the Perl modules and libraries, see the respective documentations. 
+
+\code{mmtex} converts the \MmTeX source file \var{source} to XML. By default, the output is
+written to a file with the same name but the suffix replaced by "xml". This can be changed
+using the \code{--output} option. If logging is enabled, \code{mmtex} prints log messages to
+a file. Logging can be switched on and off by the \code{--log} and \code{--nolog} option,
+respectively. Default is off.  By default, the name of the log file is \var{source} with the
+suffix replaced by "log". This can be changed using the \code{--log-file} option. For more
+information, see the \link{\#convert\_options}{convert options} and the
+\link{\#converting\_examples}{converting examples}.
+
+With query options, \code{mmtex} prints help on \MmTeX commands and environments; either as
+plain text to stdout, or as XML to a file. For details, see the \link{\#query\_options}{query
+options} and \link{\#query\_examples}{query examples}.  
+
+
+\section{Options}
+
+\subsection[convert\_options]{Convert Options}
+
+(Abbreviated with \convertoptions in the \link{\#synopsis}{synopsis}.)
+
+\begin{description}[code-doc]
+  \item[--columns=\var{number}]
+    Set text width to \var{number} columns.
+  \item[--dcl-opts=\var{options}]
+    Set additional document class options \var{options}.
+  \item[--dcl-path=\var{path}]
+    Set the search path for document classes to \var{path}.
+  \item[--inc-path=\var{path}]
+    Set the search path for libraries to \var{path}.
+  \item[--indent=\var{number}]
+    Indent each level by \var{number} columns.
+  \item[--log]
+    Print log messages.
+  \item[--log-exclude=\var{list}]
+    Suppress logging of data specified by \var{list}. \var{list} must be a comma-separated
+    list of keywords. Each keyword specifies a group of logging data. The following keywords
+    are recognized:
+
+    \begin{table}[plain]
+      \head
+        Keyword & Meaning & Default
+      \body[code,normal,normal]
+        cmds & Log command table & off \\
+        envs & Log environment table & off \\
+        tokens & Log token table & off\\
+        allowed-tokens & Log list of alowed tokens & off \\
+        output-functions & Log output function table & off\\
+        output-list & Log output list & off
+    \end{table}
+
+  \item[--log-expand-depth=\var{number}]
+    Set maximal depth of expanding references in logged data to \var{number}. By default,
+    references are not expanded, i.e., they are printed as Perl converts them to
+    strings. But with this option, references are resolved recursively up to a depth of
+    \var{number}. If you changed the default, you can use this option to suppress reference
+    expansion by setting \var{number} to -1.
+  \item[--log-include=\var{list}]
+    Enable logging of data specified by \var{list}. \var{list} must be a comma-separated
+    list of keywords. Each keyword specifies a group of logging data. See option
+    \code{--log-exclude} for the allowed keywords and their meanings.
+
+    \emph{Note:} Sice each of these groups of data is represented by a reference, you should
+    consider the \code{--log-expand-depth} option.
+  \item[--log-file=\var{file}]
+    Set the file where the log messages go to \var{file}.
+  \item[ --log-root=\var{path}]
+    Set the root directory of the log files to \var{path}.
+  \item[--nolog]
+    Don't print log messages.
+  \item[ --output=\var{file}]
+    Set the name of the output file to \var{file}. If omitted, the name is constructed from
+    \var{source} by replacing the suffix by \code{xml}.
+ \item[--source-root=\var{path}]
+    Set the root directory of the sources to \var{path}. Noramlly, sources (either
+    \var{source} or files imported from \var{source} by means of the \code{\verb'\insert'}
+    command) are searched with the current directory as root. This can by changed using this
+    option.
+ \item[--special-char-mode=\var{mode}]
+    Set special character mode to \var{mode}. This controles how special characters are
+    represented in the XML output. The following modes are defined:
+
+    \begin{table}[plain]
+      \head
+        Mode & Meaning
+      \body[code,normal]
+        as-entities & As entities (e.g., \code{\&uuml;}) \\
+        as-numcodes & As numerical codes (e.g., \code{\&\#252;}) \\
+        literal & Literally (e.g., \code{\"{u}}), except \code{<},\code{>}, and \code{\&} \\
+        strictly-literal & Literally including  \code{<},\code{>}, and \code{\&}
+    \end{table}
+
+    Default is \code{as-numcodes}.
+ \item[--src-root=\var{path}]
+    Same as --source-root=\var{path}.
+ \item[--target-root=\var{path}]
+    Set the root directory of the "final" targets to \var{path}. Final targets are the
+    documents made from the XML; usually HTML or XHTML documents. This option may be
+    necessary for \code{mmtex} to be able to set links correctly.
+
+    \emph{Note: This option may become deprecated soon.}
+ \item[--trg-root=\var{path}]
+    Same as --target-root=\var{path}.
+ \item[--xml-root=\var{path}]
+    Set the root directory of the XML output files to \var{path}. Noramlly, XML outputs are
+    written to locations with the current directory as root. This can by changed using this
+    option.
+ \item[--xsl-stylesheet=\var{uri}]
+    Set the default XSL stylesheet to \var{uri}. This is the stylesheet entered in the
+    \code{xml-stylesheet} processing instruction.
+\end{description}
+
+\subsection[query\_options]{Query Options}
+
+(Abbreviated with \queryoptions in the \link{\#synopsis}{synopsis}.)
+
+\newcommand{\HintDclNeeded}{Use this together with the \code{--dcl} or \code{--query-dcl} option
+ to specify a documentclass to which the list referres.}
+
+\begin{description}[code-doc]
+  \item[--dcl=\var{documentclass}]
+    Same as \code{--query-dcl=\var{documentclass}}.
+  \item[--describe-cmd=\var{cmd}]
+    Describe command \var{cmd}.
+  \item[--describe-env=\var{env}]
+    Describe environment \var{env}.
+  \item[--help-cmd=\var{cmd}]
+    Same as \code{--describe-cmd=\var{cmd}}.
+  \item[--help-env=\var{env}]
+    Same as \code{--describe-env=\var{env}}.
+  \item[--lib=\var{library}]
+    Same as \code{--query-lib=\var{library}}.
+  \item[--list-cmd-libs]
+    List all libraries that may export commands.
+  \item[--list-env-libs]
+    List all libraries that may export environments.
+  \item[--list-cmds]
+    List commands.
+  \item[--list-envs]
+    List environments.
+  \item[--output=\var{file}]
+    Set the name of the file where the documentation produced by the
+    \code{--xdoc-\plhld{xxx}} options should go to. If omitted, a default is used depending
+    on the particular \code{--xdoc-\plhld{xxx}} option.
+  \item[--query-dcl=\var{documentclass}]
+    Set the documentclass to which the queries refer.
+  \item[--query-dcl=\var{library}]
+    Set the library to which the queries refer.
+  \item[--xdoc-cmd-libs]
+    Make a list of all command-exporting libraries, and write it in an XML format to the
+    file \file{libraries.xml}. The latter filename can by changed using the \code{--output}
+    option. 
+  \item[--xdoc-env-libs]
+    Make a list of all environment-exporting libraries, and write it in an XML format to the
+    file  \file{libraries.xml}. The latter filename can by changed using the \code{--output}
+    option. 
+  \item[--xdoc-cmds]
+    Make a documentation of all commands, and write it in an XML format to the file
+    \file{commands.xml}. The latter filename can by changed using the \code{--output}
+    option. 
+  \item[--xdoc-envs]
+    Make a documentation of all environments, and write it in an XML format to the file
+    \file{environments.xml}. The latter filename can by changed using the \code{--output}
+    option. 
+\end{description}
+
+\subsection{Other Options}
+
+\begin{description}[code-doc]
+  \item[--help]
+    Print a help message and exit.
+  \item[--notime]
+    Don't print elapsed CPU time (default).
+  \item[--time]
+    Print elapsed CPU time
+  \item[--version]
+    Print version information and quit
+\end{description}
+
+
+\section{Examples}
+
+\subsection{Converting Examples}
+
+\begin{preformatted}[code]%
+mmtex \file{foo.tex}
+\end{preformatted}
+
+Converts \file{foo.tex} and writes the result to \file{foo.xml}.
+
+\begin{preformatted}[code]%
+mmtex \file{foo.tex} --output=\file{bar.xml}
+\end{preformatted}
+
+Converts \file{foo.tex} and writes the result to \file{bar.xml}.
+
+\begin{preformatted}[code]%
+mmtex \file{foo.tex} --log
+\end{preformatted}
+
+Converts \file{foo.tex}, writes the result to \file{foo.xml}, and writes log messages to
+\file{foo.log}.
+
+\begin{preformatted}[code]%
+mmtex \file{foo.tex} --log --log-include=cmds,envs --log-expand-depth=2
+\end{preformatted}
+
+Converts \file{foo.tex}, writes the result to \file{foo.xml}, and writes log messages to
+\file{foo.log}. The log messages include the command and environment tables. References in
+the logged data are resolved up to a depth of 2.
+
+\subsection{Query Examples}
+
+To optain a list of all commands defined in the library \code{counter}, type
+
+\begin{preformatted}[code]%
+mmtex --list-cmds --lib=counter
+\end{preformatted}
+
+This should print the following to stdout:
+
+\verbatim[code]
+\Alph                Prints the value of COUNTER as a upper case latin character
+\Roman               Prints the value of COUNTER as a upper case roman number
+\addtocounter        Adds NUMBER to the value of COUNTER
+\alph                Prints the value of COUNTER as a lower case latin character
+\arabic              Prints the value of COUNTER as an arabic number
+\fnsymbol            Prints the value of COUNTER as a footnote symbol
+\newcounter          Defines COUNTER as a new counter
+\roman               Prints the value of COUNTER as a lower case roman number
+\setcounter          Sets the value of COUNTER to VALUE
+\stepcounter         Increases the value of COUNTER by 1
+\value               Returns the value of COUNTER
+\endverbatim
+
+To get more information about the \verb'\newcounter' command, type
+
+\begin{preformatted}[code]%
+mmtex --describe-cmd=newcounter --lib=counter
+\end{preformatted}
+
+This should print the following to stdout:
+
+\verbatim[code]
+\newcounter{COUNTER}[MASTER]
+
+  Defines COUNTER as a new counter. If MASTER is set, it must be the name of
+  another counter. Each time MASTER is incremented, COUNTER is reset to 0.
+
+  COUNTER   Name of the new counter
+
+  MASTER    Counter that resets COUNTER
+
+  Defined in: counter
+\endverbatim
+
+
+
+\end{document}

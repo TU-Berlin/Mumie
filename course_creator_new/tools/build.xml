@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Marek Grudzinski <grudzin@math.tu-berlin.de>
+  
+  $Id: build.xml,v 1.3 2007/08/08 13:53:02 grudzin Exp $
+-->
+
+<project name="cc" default="all" basedir="..">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property environment="env"/>
+  <property name="cc.install.lib.java.dir" value=""/>
+  <property name="cc.src.dir" value="src"/>
+  <property name="cc.src.java.dir" value="${cc.src.dir}/java"/>
+  <property name="cc.lib.dir" value="lib"/>
+  <property name="cc.lib.java.dir" value="${cc.lib.dir}/java"/>
+  <property name="cc.lib.java.classes.dir" value="${cc.lib.java.dir}/classes"/>
+  <property name="cc.java.param.iconPath" value="${cc.java.src.dir}/net/mumie/coursecreator/pics/" />
+  <property name="cc.doc.dir" value="doc"/>
+  <property name="cc.doc.apidocs.dir" value="${cc.doc.dir}/apidocs"/>
+  <property name="cc.resources.dir" value="resources"/>
+  <property name="cc.resources.apidocs.css.file"
+            value="${cc.resources.dir}/apidocs.css"/>
+  <property name="cc.verbose" value="no"/>
+  <property name="cc.force" value="no"/>
+  <property name="cc.javac.verbose" value="no"/>
+  <property name="cc.javac.deprecation" value="no"/>
+  <property name="cc.javac.debug" value="yes"/>
+  <property name="cc.jar.file" value="mumie-cc.jar"/>
+  <property name="cc.jdk.apidocs.url" value=""/>
+  <property name="cc.jar.manifest" value="${cc.lib.java.dir}/META-INF/MANIFEST.MF"/>
+  <property name="cc.signjar.alias" value="NO_ALIAS_GIVEN" />
+  <property name="cc.signjar.storepass" value="NO_PASSWORD_GIVEN" />
+  <property name="cc.java.include.dir" value="${java.home}/../include"/>
+  <property name="cc.vendor" value="Berlin University of Technology"/>
+  <property name="cc.version" value="-NONE-"/>
+
+  <!--
+    ================================================================================
+    Auto-set properties
+    ================================================================================
+  -->
+
+  <tstamp>
+    <format property="cc.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="cc.internal.force">
+    <istrue value="${cc.force}"/>
+  </condition>
+
+  <!--
+    ================================================================================
+    Path for compiling
+    ================================================================================
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <pathelement path="${cc.lib.java.classes.dir}"/>
+      <fileset dir="${cc.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${cc.install.lib.java.dir}">
+        <include name="mumie-japs-client.jar"/>
+        <include name="jcookie-0.8c.jar"/>
+      </fileset>
+    </path>
+    <property name="cc.classpath" refid="classpath" />
+  </target>
+
+  <!--
+    ================================================================================
+    Printing properties
+    ================================================================================
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="cc."/>
+  </target>
+
+  <!--
+    ================================================================================
+    Java classes
+    ================================================================================
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$cc.verbose}">
+      <fileset dir="${cc.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clear-classes.iff-force" if="cc.internal.force">
+    <!-- Deletes the compiled classes if (and only if) cc.internal.force
+         is set, which is equivalent to cc.force being true. -->
+    <antcall target="clear-classes"/>
+  </target>
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="classpath">
+    <javac srcdir="${cc.src.java.dir}"
+           destdir="${cc.lib.java.classes.dir}"
+           listfiles="${cc.verbose}"
+           deprecation="${cc.javac.deprecation}"
+           verbose="${cc.javac.verbose}"
+           debug="${cc.javac.debug}"
+           includeAntRuntime="yes"
+           failonerror="yes">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!--
+    ================================================================================
+    Jars
+    ================================================================================
+  -->
+
+  <target name="manifest">
+    <manifest file="${cc.jar.manifest}">
+      <attribute name="Created" value="${cc.timestamp}"/>
+      <section name="net/mumie/coursecreator">
+        <attribute name="Specification-Title" value="Mumie Course Creator"/>
+        <attribute name="Specification-Version" value="${cc.version}"/>
+        <attribute name="Specification-Vendor" value="${cc.vendor}"/>
+        <attribute name="Implementation-Title" value="net.mumie.coursecreator"/>
+        <attribute name="Implementation-Version" value="${cc.version}"/>
+        <attribute name="Implementation-Vendor" value="${cc.vendor}"/>
+      </section>
+    </manifest>  
+  </target>
+
+  <target name="jar" 
+          description="Creates a jar with all classes"
+          depends="manifest">
+    <jar destfile="${cc.lib.java.dir}/${cc.jar.file}"
+         basedir="${cc.lib.java.classes.dir}"
+         excludes=".KEEP_ME"
+         manifest="${cc.jar.manifest}"/>
+  </target>
+
+  <target name="clear-jars"
+          description="Deletes the jar archives">
+    <delete verbose="{$cc.verbose}">
+      <fileset dir="${cc.lib.java.dir}">
+        <include name="${cc.jar.file}"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+    ================================================================================
+    API docs
+    ================================================================================
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${cc.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Course Creator API "
+             packagenames="net.mumie.coursecreator.*"
+             sourcepath="${cc.src.java.dir}"
+             destdir="${cc.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${cc.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${cc.verbose}">
+      <link href="${cc.jdk.apidocs.url}"/>
+    </javadoc>
+  </target>
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${cc.verbose}"
+            dir="${cc.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Main target - creates all
+    ================================================================================
+  -->
+
+  <target name="all"
+          description="Creates all"
+          depends="clear-classes.iff-force,
+                   classes,
+                   jar">
+  </target>
+
+  <!--
+    ================================================================================
+    Clears all
+    ================================================================================
+  -->
+
+  <target name="clear"
+          description="Deletes all generated files"
+          depends="clear-classes,
+                   clear-jars,
+                   clear-apidocs">
+  </target>
+    
+</project>

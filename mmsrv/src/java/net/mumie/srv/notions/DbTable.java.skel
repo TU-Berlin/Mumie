@@ -1,0 +1,126 @@
+package net.mumie.srv.notions;
+
+public class DbTable
+{
+  // --------------------------------------------------------------------------------
+  // Tables for entity types
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the database table name of the specified entity type. Same as
+   * {@link EntityType#dbTableOf EntityType.dbTableOf(type)}.
+   */
+
+  public static final String ofEntityType (int type)
+  {
+    return EntityType.dbTableOf(type);
+  }
+
+  /**
+   * Returns the name of the "read" database table of the specified entity type. Same as
+   * {@link EntityType#dbReadTableOf EntityType.dbReadTableOf(type)}.
+   */
+
+  public static final String ofEntityTypeForRead (int type)
+  {
+    return EntityType.dbReadTableOf(type);
+  }
+
+  /**
+   * Returns the name of the "read" database table of the specified entity type. If the
+   * <code>onlyLatest</code> is true and the type is a document (not a pseudo-document),
+   * the name of the view containing only the latest versions is returned.
+   */
+
+  public static final String ofEntityTypeForRead (int type, boolean onlyLatest)
+  {
+    return
+      (onlyLatest && EntityType.natureOf(type) == Nature.DOCUMENT
+       ? "latest_" + EntityType.dbReadTableOf(type)
+       : EntityType.dbReadTableOf(type));
+  }
+
+  /**
+   * Returns the name of the db reference table of the specified data entity types. Same as
+   * {@link EntityType#dbRefTableOf EntityType.dbRefTableOf(originType, targetType)}.
+   */
+
+  public static final String ofRefs (int originType, int targetType)
+  {
+    return EntityType.dbRefTableOf(originType, targetType);
+  }
+
+  /**
+   * Returns the name of the db table storing the read permissions for the specified data
+   * entity types. Same as 
+   * {@link EntityType#dbReadPermTableOf EntityType.dbReadPermTableOf(type))}.
+   * 
+   */
+
+  public static final String ofReadPerms (int type)
+  {
+    return EntityType.dbReadPermTableOf(type);
+  }
+
+  /**
+   * Returns the name of the db table storing the write permissions for the specified data
+   * entity types. Same as 
+   * {@link EntityType#dbWritePermTableOf EntityType.dbWritePermTableOf(type)}.
+   * 
+   */
+
+  public static final String ofWritePerms (int type)
+  {
+    return EntityType.dbWritePermTableOf(type);
+  }
+
+  /**
+   * Returns the name of the vc thread table of the specified type. Same as
+   * {@link EntityType#dbVCThreadTableOf EntityType.dbVCThreadTableOf(type)}.
+   */
+
+  public static final String ofVCThread (int type)
+  {
+    return EntityType.dbVCThreadTableOf(type);
+  }
+
+  /**
+   * Returns the name of the authors table of the specified type. Same as
+   * {@link EntityType#dbAuthorTableOf EntityType.dbAuthorTableOf(type)}.
+   */
+
+  public static final String ofAuthors (int type)
+  {
+    return EntityType.dbAuthorTableOf(type);
+  }
+
+  /**
+   * Returns the name of the GDIM db table of the specified type. Same as
+   * {@link EntityType#dbGDIMTableOf EntityType.dbGDIMTableOftype)}.
+   */
+
+  public static final String ofGDIM (int type)
+  {
+    return EntityType.dbGDIMTableOf(type);
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private DbTable ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("DbTable must not be instanciated");
+  }
+}

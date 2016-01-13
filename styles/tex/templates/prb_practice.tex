@@ -1,0 +1,84 @@
+\documentclass[practice]{japs.problem.applet}
+%$Id: prb_practice.tex,v 1.2 2006/04/03 19:45:38 vieritz Exp $
+%Template fuer ein Arbeitsblatt mit Applet
+
+\begin{metainfo}
+  \name{}
+  \begin{description}
+
+  \end{description}
+  \copyrightinfo{(c) MUMIE-Projekt Technische Universitaet Berlin 2003}
+  %\authors{}
+% Hier kann die Masterdatei der Section angegeben werden.
+% Fuer Default muss das Kommando nicht gesetzt sein.
+  %\containedin{}
+  \begin{components}
+    \defapplet{}{applet1}
+  \end{components}
+% Bitte loeschen Sie alle redaktionellen Status bis auf den gewuenschten.
+% Details finden Sie im mmtex Style Guide.
+  \status{pre|devel_ok|content_ok|content_complete|ok_for_publication|final}
+  \begin{changelog}
+
+  \end{changelog}
+\end{metainfo}
+
+\begin{content}
+\title{}
+% Leere Umgebungen muessen entfernt werden!
+
+%Umgebung fuer Aufgabentext
+\begin{task}
+
+  \begin{subtasks}
+
+    \subtask
+%Teilaufgabe
+
+   \subtask
+%Teilaufgabe
+
+ \end{subtasks}
+\end{task}
+
+%Umgebung mit Angaben fuer das Datasheet, Mit Stern bedeutet anklickbar.
+\begin{input}
+
+%Eigene Data-Umgebung
+    \begin{data}{Path}
+
+    \end{data}
+
+    \begin{data*}{Path}
+
+    \end{data*}
+
+%Eigener Data-Befehl
+    \data{DATA}{Path}
+    \data*{DATA}{Path}
+
+%Bezieht sich auf die laufende Umgebung
+    \datalabel{Path}
+    \datalabel*{Path}
+
+\end{input}
+
+%Referenziert genau ein Applet
+\begin{execute}
+
+%Applet in Dokument eingebettet
+  \begin{applet}[Breite des Applets][Hoehe des Applets]{applet1}
+    \param{lang}{de|en}           %Spracheinstellung fuer das Applet
+  \end{applet}
+  
+%Applet in eigenem Fenster
+  \begin{applet}[Breite des Buttons][Hoehe des Buttons]{applet1}
+    \param{buttonText}{}          %Text fuer den Button
+    \param{separateWindow}{true}  %eigenes Fenster
+    \param{appletWidth}{}         %Breite des Fensters
+    \param{appletHeight}{}        %Hoehe des Fensters
+    \param{lang}{de|en}           %Spracheinstellung fuer das Applet
+  \end{applet}
+
+\end{execute}
+\end{content}

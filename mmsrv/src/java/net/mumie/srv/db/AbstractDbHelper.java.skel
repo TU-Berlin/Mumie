@@ -1,0 +1,364 @@
+package net.mumie.srv.db;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import net.mumie.srv.notions.Category;
+import net.mumie.srv.notions.DbColumn;
+import net.mumie.srv.notions.DbTable;
+import net.mumie.srv.notions.EntityType;
+import net.mumie.srv.notions.Id;
+import net.mumie.srv.notions.Lang;
+import net.mumie.srv.notions.Nature;
+import net.mumie.srv.notions.RefType;
+import net.mumie.srv.notions.Theme;
+import net.mumie.srv.notions.UserGroupName;
+import net.mumie.srv.notions.WorksheetState;
+import net.mumie.srv.service.AbstractMumieService;
+import net.mumie.srv.util.LogUtil;
+import net.mumie.srv.util.PathTokenizer;
+import net.mumie.sql.SQLComposer;
+import org.apache.avalon.excalibur.pool.Recyclable;
+import org.apache.avalon.framework.configuration.Configurable;
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.avalon.framework.logger.AbstractLoggable;
+import org.apache.avalon.framework.parameters.ParameterException;
+import org.apache.avalon.framework.parameters.Parameterizable;
+import org.apache.avalon.framework.parameters.Parameters;
+import org.apache.avalon.framework.service.ServiceException;
+import org.apache.avalon.framework.service.ServiceManager;
+import org.apache.avalon.framework.service.ServiceSelector;
+import org.apache.avalon.framework.service.Serviceable;
+
+/**
+ * Implementation of {@link DbHelper} as far as possible without relying to a special DBMS.
+ */
+
+public abstract class AbstractDbHelper extends AbstractMumieService
+  implements DbHelper, Configurable, Recyclable
+{
+  // --------------------------------------------------------------------------------
+  // h1: Global variables and constants
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The database connection used by this db helper.
+   */
+
+  protected Connection connection;
+
+  /**
+   * The url of the connection this db helper should use.
+   */
+
+  protected String connectionUrl = "";
+
+  /**
+   * The name of the connection this db helper should use.
+   */
+
+  protected String connectionName = "default";
+
+  /**
+   * The userName this db helper should use.
+   */
+
+  protected String userName = "";
+
+  /**
+   * The userPassword of the connection this db helper should use.
+   */
+
+  protected String userPassword = "";
+
+  /**
+   * The SQL composer of this instance
+   */
+
+  protected SQLComposer sqlComposer = new SQLComposer();
+
+  /**
+   * The path tokenizer of this instance
+   */
+
+  protected PathTokenizer pathTokenizer = new PathTokenizer();
+
+  /**
+   * Autocommit state before a transaction started.
+   */
+
+  protected boolean oldAutoCommitState = true;
+
+  /**
+   * Isolation level before a transaction started.
+   */
+
+  protected int oldIsolationLevel = Connection.TRANSACTION_NONE;
+
+  /**
+   * Whether a transaction is in progress.
+   */
+
+  protected boolean transactionInProgress = false;
+
+  // --------------------------------------------------------------------------------
+  // h1: Lifecycle related methods
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Sets the connection name ({@link #connectionName}), connection URL 
+   * ({@link #connectionUrl}), user name ({@link #userName}), and password
+   * ({@link #userPassword}). The values are read from the child elements
+   * <code>connection-name</code>, <code>connection-url</code>, <code>user-name</code>, and
+   * <code>user-password</code>, respectively.
+   */
+
+  public void configure (Configuration configuration)
+    throws ConfigurationException 
+  {
+    final String METHOD_NAME = "configure";
+    this.logDebug(METHOD_NAME + " 1/2: Started");
+    this.connectionName = configuration.getChild("connection-name").getValue().trim();
+    this.connectionUrl = configuration.getChild("connection-url").getValue().trim();
+    this.userName = configuration.getChild("user-name").getValue().trim();
+    this.userPassword = configuration.getChild("user-password").getValue().trim();
+    this.logDebug
+      (METHOD_NAME + " 2/2: Done." +
+       " this.connectionName = " + this.connectionName +
+       ", this.connectionUrl = " + this.connectionUrl +
+       ", this.userName = " + this.userName +
+       ", this.userPassword = " + LogUtil.hide(this.userPassword));
+  }
+
+  /**
+   * Recycles this <code>AbstractDbHelper</code>.
+   */
+
+  public void recycle ()
+  {
+    final String METHOD_NAME = "recycle";
+    if ( this.transactionInProgress )
+      {
+        this.logWarn(METHOD_NAME + ": Transaction in progress. Will be aborted");
+        try
+          {
+            this.abortTransaction();
+          }
+        catch (Exception exception)
+          {
+            this.logError(METHOD_NAME + ": Error while aboring transaction" , exception);
+          }
+      }
+  }
+
+  // --------------------------------------------------------------------------------
+  // h1: Identification method
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns a string that identificates this instance. Used in log messages.
+   */
+
+  public String getIdentification ()
+  {
+    return this.toString();
+  }
+
+  // --------------------------------------------------------------------------------
+  // h1: Filtering column names
+  // --------------------------------------------------------------------------------
+
+  /**
+   * <p>
+   *   Pre-processes the specified column name. Provides a means to replace a column name in
+   *   a <code>SELECT</code> query by another expressions dynamically. A typical application
+   *   is to replace <code>foo</code> by
+   *   <pre>
+   *     <var>expression</var> AS foo</pre>
+   *   where <var>expression</var> is code to retrieve the column value.
+   * </p>
+   * <p>
+   *   This implementation does nothing (returns <code>column</code> unchanged). Extending
+   *   classes may overwrite this method.
+   * </p>
+   */
+
+  protected String filterColumn (String column)
+    throws SQLException
+  {
+    return column;
+  }
+
+  /**
+   * Does the same as {@link #filterColumn(String) filterColumn(String)}, but adds the
+   * specified prefix to the column name in addition. This implementaion simply returns
+   * <code>prefix + "." +column</code>.
+   */
+
+  protected String filterColumn (String column, String prefix)
+    throws SQLException
+  {
+    return prefix + "." + column;
+  }
+
+  /**
+   * Pre-processes the specified column names. Provides a means to replace a column name in
+   * a <code>SELECT</code> query by another expressions dynamically. See
+   * {@link #filterColumn(String) filterColumn} for an example. This implementation applies
+   * {@link #filterColumn(String) filterColumn} to each element of the array. Note that the
+   * original array is altered by this method.
+   */
+
+  protected String[] filterColumns (String[] columns)
+    throws SQLException
+  {
+    for (int i = 0; i < columns.length; i++)
+      columns[i] = this.filterColumn(columns[i]);
+    return columns;
+  }
+
+  /**
+   * Does the same as {@link #filterColumns(String[]) filterColumns(String[])}, but adds the
+   * specified prefix to each column name in addition.  This implementation applies
+   * {@link #filterColumn(String,String) filterColumn} to each element of the array.
+   */
+
+  protected String[] filterColumns (String[] columns, String prefix)
+    throws SQLException
+  {
+    for (int i = 0; i < columns.length; i++)
+      columns[i] = this.filterColumn(columns[i], prefix);
+    return columns;
+  }
+
+  // --------------------------------------------------------------------------------
+  // h1: Transactions
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Starts a transaction. The transaction isolation is set to
+   * {@link Connection#TRANSACTION_SERIALIZABLE TRANSACTION_SERIALIZABLE}, the autocommit
+   * state is set to false. The old transaction isolation and autocommit state are saved in
+   * the variabled {@link #oldAutoCommitState oldAutoCommitState} and
+   * {@link #oldIsolationLevel oldIsolationLevel}, respectively.
+   *
+   * @throws SQLException if the modification of the transaction isolation or the autocommit
+   *   state fails
+   * @throws IllegalStateException If a transaction is already in progress
+   */
+
+  public void beginTransaction ()
+    throws SQLException, IllegalStateException
+  {
+    final String METHOD_NAME = "beginTransaction";
+    this.logDebug(METHOD_NAME + " 1/2: Started");
+    if ( this.transactionInProgress )
+      throw new IllegalStateException
+        (this.getIdentification() + ": " + METHOD_NAME + ": Transaction already in progress");
+    this.oldIsolationLevel = this.connection.getTransactionIsolation(); 
+    this.oldAutoCommitState = this.connection.getAutoCommit(); 
+    this.connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+    this.connection.setAutoCommit(false);
+    this.transactionInProgress = true;
+    this.logDebug(METHOD_NAME + " 2/2: Done");
+  }
+
+  /**
+   * Ends a transaction. All statements of the transaction are committed and the transaction
+   * isolation and autocommit state are reset to the values before the transaction.
+   *
+   * @throws SQLException if the commit, the setting the transaction isolation, or the
+   *   setting of the autocommit state fails
+   * @throws IllegalStateException If no transaction is in progress
+   */
+
+  public void endTransaction ()
+    throws SQLException, IllegalStateException
+  {
+    final String METHOD_NAME = "endTransaction";
+    this.logDebug(METHOD_NAME + " 1/2: Started");
+    if ( !this.transactionInProgress )
+      throw new IllegalStateException
+        (this.getIdentification() + ": " + METHOD_NAME + ": No transaction in progress");
+    this.connection.commit();
+    this.connection.setTransactionIsolation(this.oldIsolationLevel);
+    this.connection.setAutoCommit(this.oldAutoCommitState);
+    this.transactionInProgress = false;
+    this.logDebug(METHOD_NAME + " 2/2: Done");
+  }
+
+  /**
+   * Aborts a transaction. Rolls back all statements of the transaction and resets the
+   * transaction isolation and autocommit state to the values before the transaction.
+   *
+   * @throws SQLException if the rollback or the setting of the autocommit state fails
+   *   (exceptions while setting the isolation level only result in a warning in the logs)
+   * @throws IllegalStateException If no transaction is in progress
+   */
+
+  public void abortTransaction ()
+    throws SQLException, IllegalStateException
+  {
+    final String METHOD_NAME = "abortTransaction";
+    this.logDebug(METHOD_NAME + " 1/2: Started");
+
+    if ( !this.transactionInProgress )
+      throw new IllegalStateException
+        (this.getIdentification() + ": " + METHOD_NAME + ": No transaction in progress");
+
+    // Reset isolation level:
+    try
+      {
+        this.connection.setTransactionIsolation(this.oldIsolationLevel);      
+      }
+    catch (SQLException exception)
+      {
+        this.logWarn(this.getIdentification() + ": " + METHOD_NAME, exception); 
+      }
+
+    // Rollback:
+    this.connection.rollback(); 
+
+    // Reset autocommit:
+    this.connection.setAutoCommit(this.oldAutoCommitState);
+
+    this.transactionInProgress = false;
+
+    this.logDebug(METHOD_NAME + " 2/2: Done");
+  }
+
+  /**
+   * Returns true if a transaction is in progress, otherwise false.
+   */
+
+  public final boolean transactionInProgress ()
+  {
+    return this.transactionInProgress;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+}

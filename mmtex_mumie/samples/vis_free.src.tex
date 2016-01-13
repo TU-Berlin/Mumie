@@ -1,0 +1,38 @@
+% $Id: vis_free.src.tex,v 1.2 2008/02/07 13:19:52 rassy Exp $
+
+\documentclass{japs.subelement.visualization}
+
+\begin{metainfo}
+  \name{Test}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \begin{components}
+    \component{applet}{samples/apl_an_applet.meta.xml}{the-applet}
+    \component{flash}{samples/fla_a_flash_movie.meta.xml}{the-flash}
+    \component{image}{samples/img_an_image.meta.xml}{the-image}
+  \end{components}
+  \creategeneric
+\end{metainfo}
+
+
+\begin{content}
+
+\title{Titel}
+
+  Ein Applet:
+
+  \applet{the-applet}
+
+  Ein Bild:
+
+  \image{the-image}
+
+  Ein Flash-Movie:
+
+  \flash{the-flash}
+
+\end{content}

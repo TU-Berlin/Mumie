@@ -1,0 +1,86 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: INSTALL,v 1.3 2007/07/25 00:12:30 rassy Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                       MMJVMD INSTALLATION INSTRUCTIONS
+
+
+1.Requirements
+  ============
+
+  1.1. Java 6 JDK
+
+  1.2. Mmjutil - this is another Mumie Software Package
+
+  1.3. Mmjipc - this is still another Mumie Software Package
+
+  1.4. Ant 1.6.2. Other (but not too old) versions probably work, too.
+
+
+2. Installation location
+   =====================
+
+All files are installed under a directory <prefix> which defaults to
+/usr/local. If you want to change the default, you have two options:
+
+  2.1. Set the environment variable MM_BUILD_PREFIX, and give it the value
+       <my-prefix>, where <my-prefix> is the directory where you want the files
+       to be installed. This option has the advantage that MM_BUILD_PREFIX is
+       recognized by other build scripts of the MUMIE project, too.
+
+  2.2. Change to the root directory of the Japs Client distribution (the
+       directory this file is in), create a file named build.conf and add 
+       the following line to it: 
+
+         prefix=<my-prefix>
+
+       Remark: The build and installation are done by a Bash script which reads
+       the file build.conf by means of the 'source' command. Thus, you can use
+       shell substitution in build.conf. E.g.,
+
+         prefix=$HOME
+
+       would set the installation location to your home directory.
+
+If <prefix> is set both in build.conf and by the environment variable
+MM_BUILD_PREFIX, the setting in build.conf takes precedence.
+
+
+3. Build and Installation
+   ======================
+
+  3.1. Change to the root directory of the Mmjvmd distribution (the
+       directory this file is in).   
+
+  3.2. Type
+
+         $ ./build.sh
+
+       This builds Mmjvmd. 
+
+  3.4. Make sure you have write permission in <prefix>. Switch user to root if
+       necessary.
+
+  3.5. Type
+
+         $ ./build.sh install
+
+       This installs Mmjvmd.
+
+Remark: build.sh is Mmjvmd's build script. To get more information about it,
+type
+
+  $ ./build.sh -h
+
+
+4. Post-installation setup
+   =======================
+
+The executables mmjvmd and mmjvmc are installed in <prefix>/bin. Make sure this
+is in your PATH environment variable if you want to be able to start the
+executables without specifying the path.
+
+
+-- END OF FILE --

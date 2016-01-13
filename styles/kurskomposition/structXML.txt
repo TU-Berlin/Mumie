@@ -1,0 +1,462 @@
+Spezifikation StructXML zur Verwaltung von Kursen
+=================================================
+
+23.11.2002 SJ, TR, US, ND
+29.11.2002 DE, TD
+11.12.2002 DE, TR
+15.09.2003 TD
+18.09.2003 TD
+06.02.2003 DE,TD
+
+Struct-XML
+==========
+
+Auf der obersten Ebene gibt es den Knoten <csection>, der
+ die Knoten <structure />, <thread /> und ggf. <parent /> entthaelt.
+CVS-Angaben:
+============
+$Date: 2004/02/06 15:29:25 $ // Wird vom cvs eingetragen
+$Revision: 1.9 $ // Wird vom cvs eingetragen
+$Source: /net/mumie/cvs/styles/kurskomposition/structXML.txt,v $ // Wird vom cvs eingetragen
+
+
+Das Root-Tag <csection> ist für den Dokumentengenerierungsprozess nötig.
+
+Der Namespace von StructXML innerhalb des Mumie-Projekts ist:
+http://www.mumie.net/xml-namespace/documents/content/course_section
+Gebraeuliches NS-Prefix: 'struct'
+
+Root-Tag
+--------
+
+Knotenname:	<csection />
+
+Attribute:	-
+
+Kinder:		<structure />
+		<thread />
+		<parent />
+		<exercises />
+
+
+Struktur
+--------
+
+Knotenname:	<structure />
+
+Attribute:	-
+
+Kinder:		
+ type=section	<branches />	Vaterelement zur Aufnahmen verschiedener
+				Zweige
+		<section-ref lid=".." />
+ type=element   <element-ref lid=".." />
+		<subelement-ref lid=".." />
+		<exercises-ref lid=".." />
+
+Thread
+------
+
+Knotenname:	<thread />
+
+Attribute:	name:	Name/Typ des Threads, derzeit nur "roter Faden"
+
+Kinder:		<section-ref lid=".."/>
+		<element-ref lid=".."/>
+		<subelement-ref lid=".."/>
+		<exercises-ref lid=".."/>
+
+
+Section-Refs
+------------
+
+Beschreibung:   Knoten zur Referenzierung einzubindender Sections 
+		Knoten zur Spezifikation der Reihenfolge der Sections
+			im Thread
+
+Knotenname:	<section-ref />
+
+Attribute:	lid:	local ID (Binnen ID)
+		posx:   x-Position
+		posy:   y-Position
+
+Kinder: 	-
+
+
+Verzweigungen
+-------------
+
+Knotenname:	<branches />
+
+Attribute:	type:	and|or
+		startx:	x (Positionsangabe)
+		starty:	y (Positionsangabe)
+		endx:	x (Positionsangabe)
+		endy:	y (Positionsangabe)
+
+Kinder:		<branch />
+
+
+Verzweigung
+-----------
+
+Knotenname:	<branch />
+
+Attribute:	-
+
+Kinder:		<section-ref lid=".."/>
+
+
+Theorie-Element
+---------------
+
+Beschreibung:	Referenz auf ein Dokument vom Typ "element"
+
+Knotenname:	<element-ref />
+
+Attribute:	lid:	Binnen-ID
+		posx:	x (Positionsangabe)
+		posy:	y (Positionsangabe)
+
+Kinder:		-
+
+
+Theorie-Subelement
+------------------
+
+Beschreibung:	Referenz auf ein Dokument vom Typ "subelement"
+
+Knotenname:	<subelement-ref />
+
+Attribute:	lid:	Binnen-ID
+		posx:	x (Positionsangabe)
+		posy:	y (Positionsangabe)
+
+Kinder:		-
+
+
+Übungs-Element
+--------------
+
+Beschreibung:	Referenz auf ein Dokument vom Typ "exercises"
+
+Knotenname:	<exercises-ref />
+
+Attribute:	lid:	Binnen-ID
+		posx:	x (Positionsangabe)
+		posy:	y (Positionsangabe)
+
+Kinder:		<goto name="..." lid="..."/>
+
+
+Sprungmarke
+-----------
+
+Beschreibung:   Sprungmarke für ein Dokument vom Typ "exercises"
+
+Knotenname      <goto />
+
+Attribute:      name:   Name der Sprungmarke
+                lid:    Binnen-ID
+
+Kinder:         -
+
+
+Vater-Kurs
+----------
+
+Beschreibung:	Verweis auf den in der Hierachie darueberliegenden
+		 Kurs
+		Nicht vorhanden bei root-Kursen und Elementgruppen
+
+Knotenname:	<parent />
+
+Attribute:	lid="parent":	Binnen-ID; muss den Wert "parent" haben
+
+Kinder:		-
+
+
+Übungs-Kursabschnitt
+--------------------
+
+Beschreibung:	Verweis auf den einem Theorie-Kursabschnitt zugeordneten 
+		Übungs-Kursabschnitt.
+
+Knotenname:	<exercises />
+
+Attribute:	lid="exercises":  Binnen-ID; muss den Wert "exercises" haben
+
+Kinder:		-
+
+*************************
+
+MetainfoXML
+===========
+
+MetainfoXML-Spezifikation (soweit es structXML betrifft).
+(Das sollte hier rauswandern und einmal generisch für alle
+Dokumenttypen aufgeschrieben werden.)
+
+Namespace-Name:
+http://www.mumie.net/xml-namespace/documents/metainfo
+gebraeuchliche NS-Prefixes: 'meta' oder 'mumie'
+
+Sections
+--------
+
+Beschreibung:	Vater-Knoten der MetainfoXML fuer den
+		 Dokumenttyp "course_section"
+
+Knotenname:	<course_section />
+
+Attribute:	id:	DB-ID
+		type:	section|element
+
+Kinder: 	<name />		Metainformationen
+		<description />
+		<copyright />
+		<components />
+          	<content />		Struktur der Section
+		<content_type />	Typ des Inhalts
+
+Name
+----
+
+Knotenname:	<name />
+
+Attribute:	-
+
+Kinder:		Text-Knoten mit dem Namen
+
+
+Description
+-----------
+
+Knotenname:	<description />
+
+Attribute:	-
+
+Kinder:		Text-Knoten mit der Beschreibung
+
+
+Copyright
+---------
+
+Knotenname:	<copyright />
+
+Attribute:	-
+
+Kinder:		Text-Knoten mit dem copyright Vermerk
+
+
+Komponenten
+-----------
+
+Beschreibung:	Gibt die Zuordnung von LID zu DB-ID an.
+
+Knotenname:	<components />
+
+Attribute:	-
+
+Kinder:		<course_section lid=".." id=".." />
+		bzw.
+		<element lid=".." id=".." />
+		<subelement lid=".." id=".." />
+
+
+Inhalte
+-------
+
+Knotenname:	<content />
+
+Attribute:	-
+
+Kinder:		<csection /> Root-Tag der structXML-Definition
+
+
+Typ des Inhalts
+---------------
+
+Knotenname:	<content_type />
+
+Attribute:	type:	      Haupttyp (bei course_sections immer "text")
+		subtype:      Untertyp (bei course_sections immer "xml")
+
+Kinder:		-
+
+*************************
+
+Beispiele
+=========
+
+1) Checkin
+----------
+File: sectiongraph.meta.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<meta:course_section use-mode="checkin"
+ xmlns:meta="http://www.mumie.net/xml-namespace/document/metainfo">
+  <meta:name>Name</meta:name>
+  <meta:description>Beschreibung</meta:description>
+  <meta:copyright>Munich University of Technology</meta:copyright>
+  <meta:components>
+    <meta:course_section lid="1" url="course1.meta.xml" />
+    <meta:course_section lid="2" url="course2.meta.xml" />
+    <meta:course_section lid="3" url="course3.meta.xml" />
+    <meta:course_section lid="4" url="course4.meta.xml" />
+    <!-- falls nicht root-Kurs -->
+    <meta:course_section lid="parent" url="parentcourse.meta.xml" />
+  </meta:components>
+  <meta:content>
+    <meta:link url="sectiongraph.content"/>
+  </meta:content>
+  <meta:content_type type="text" subtype="xml" />
+</meta:course_section>
+EOF
+
+File: sectiongraph.content
+<?xml version="1.0" encoding="UTF-8" ?>
+<struct:csection
+ xmlns:struct="http://www.mumie.net/xml-namespace/document/content/course_section">
+  <struct:structure>
+    <struct:section-ref lid="1" posx="100" posy="20" />
+    <struct:branchpoint type="or" startx="100" starty="70" endx="100" endy="170"/>
+      <struct:branch>
+        <struct:section-ref lid="2" posx="50" posy="120"/>
+      </struct:branch>
+      <struct:branch>
+        <struct:section-ref lid="3" posx="150" posy="120" />
+      </struct:branch>
+    </struct:branchpoint>
+    <struct:section-ref lid="4" posx="100" />
+  </struct:structure>
+  <struct:thread name="roter Faden">
+    <struct:section-ref lid="1" />
+    <struct:section-ref lid="2" />
+    <struct:section-ref lid="4" />
+  </struct:thread>
+  <!-- falls nicht root Kurs, Verweis auf darueberliegenden Kurs -->
+  <struct:parent lid="parent" />
+</struct:csection>
+
+File: elementgruppe.meta.xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<meta:course_section use-mode="checkin"
+ xmlns:meta="http://www.mumie.net/xml-namespace/document/metainfo">
+  <meta:name>Der Name</meta:name>
+  <meta:description>Beschreibung</meta:description>
+  <meta:copyright>Munich University of Technology</meta:copyright>
+  <meta:components>
+    <meta:element lid="3" id="100204" />
+    <meta:subelement lid="5" id="43980" />
+    <meta:subelement lid="7" id="8539803" />
+    <meta:subelement lid="8" id="789430" />
+  </meta:components>
+  <meta:content>
+    <meta:link url="course_0.content" />
+  </meta:content>
+  <meta:content_type type="text" subtype="xml" />
+</meta:course_section>
+EOF
+
+File: elementgruppe.content
+<?xml version="1.0" encoding="UTF-8" ?>
+<struct:csection xmlns:struct="http://www.mumie.net/xml-namespace/document/content/course_section">
+  <struct:structure>
+    <struct:element-ref lid="3" posx="0" posy="0"/>
+    <struct:subelement-ref lid="6" posx="-17" posy="15"/>
+    <struct:subelement-ref lid="7" posx="-27" posy="25"/>
+    <struct:subelement-ref lid="8" posx="18" posy="15"/>
+  </struct:structure>
+  <struct:thread name="roter Faden">
+    <struct:element-ref lid="3"/>
+    <struct:subelement-ref lid="6"/>
+  </struct:thread>
+</struct:csection>
+EOF
+
+
+2) Checkout
+-----------
+
+sectiongraph:
+<?xml version="1.0" encoding="UTF-8" ?>
+<mumie:course_section use-mode="checkout" id="10039"
+ xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>Name</mumie:name>
+  <mumie:description>Beschreibung</mumie:description>
+  <mumie:copyright>Munich University of Technology</mumie:copyright>
+  <mumie:components>
+    <mumie:course_section lid="1" id="428390" />
+    <mumie:course_section lid="2" id="853902" />
+    <mumie:course_section lid="3" id="753094" />
+    <mumie:course_section lid="4" id="849304" />
+    <!-- falls nicht root-Kurs -->
+    <mumie:course_section lid="parent" id="84390" />
+  </mumie:components>
+  <mumie:content>
+
+    <struct:csection
+      xmlns:struct="http://www.mumie.net/xml-namespace/document/content/course_section">
+      <struct:structure>
+        <struct:section-ref lid="1" posx="100" posy="20" />
+        <struct:branchpoint type="or" startx="100" starty="70" endx="100" endy="170"/>
+          <struct:branch>
+            <struct:section-ref lid="2" posx="50" posy="120"/>
+          </struct:branch>
+          <struct:branch>
+            <struct:section-ref lid="3" posx="150" posy="120" />
+          </struct:branch>
+        </struct:branchpoint>
+        <struct:section-ref lid="4" posx="100" />
+      </struct:structure>
+      <struct:thread name="roter Faden">
+        <struct:section-ref lid="1" />
+        <struct:section-ref lid="2" />
+        <struct:section-ref lid="4" />
+      </struct:thread>
+      <!-- falls nicht root Kurs, Verweis auf darueberliegenden Kurs -->
+      <struct:parent lid="parent" />
+    </struct:csection>
+
+  </mumie:content>
+</mumie:course_section>
+EOF
+
+ElementGruppe:
+<?xml version="1.0" encoding="UTF-8" ?>
+<mumie:course_section use-mode="checkin" id="387902"
+ xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>Der Name</mumie:name>
+  <mumie:description>Beschreibung</mumie:description>
+  <mumie:copyright>Munich University of Technology</mumie:copyright>
+  <mumie:components>
+    <mumie:element lid="3" id="100204" >
+      <mumie:category id="1" />
+    </mumie:element>
+    <mumie:subelement lid="5" id="43980" >
+      <mumie:category id="8" />
+    </mumie:subelement>
+    <mumie:subelement lid="7" id="8539803" >
+      <mumie:category id="9" />
+    </mumie:subelement>
+    <mumie:subelement lid="8" id="789430" >
+      <mumie:category id=7" />
+    </mumie:subelement>
+  </mumie:components>
+  <mumie:content>
+    <struct:csection xmlns:struct="http://www.mumie.net/xml-namespace/document/content/course_section">
+      <struct:structure>
+        <struct:element-ref lid="3" posx="0" posy="0"/>
+        <struct:subelement-ref lid="6" posx="-17" posy="15"/>
+        <struct:subelement-ref lid="7" posx="-27" posy="25"/>
+        <struct:subelement-ref lid="8" posx="18" posy="15"/>
+      </struct:structure>
+      <struct:thread name="roter Faden">
+        <struct:element-ref lid="3"/>
+        <struct:subelement-ref lid="6"/>
+      </struct:thread>
+    </struct:csection>
+  </mumie:content>
+  <mumie:content_type type="text" subtype="xml" />
+</mumie:course_section>
+EOF

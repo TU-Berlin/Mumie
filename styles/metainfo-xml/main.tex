@@ -1,0 +1,2829 @@
+\documentclass[12pt]{article}
+
+\RequirePackage{../macros/mumie}
+
+% defs für dieses dokument:
+\def\xml{\texttt{mumie}XML}
+
+\newcommand{\note}[1]
+{%
+  \fboxsep3mm%
+  \fbox{%
+    {\Huge!}
+    \hspace{1mm}%
+    \begin{minipage}{12cm}#1\end{minipage}%
+    \hspace{1mm}%
+    {\Huge!}%
+  }%
+}
+
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+\texttt{\Huge mumie} \textsf{\Huge Style Guide}
+\bigskip
+
+\styletitle{\texttt{mumie} Metainfo-XML}
+\phantom.
+\vspace*{3cm}
+\begin{center}
+Dominik Eberlein, Fiete Meyer, Tilman Rassy, Jan Remy, Fritz Lehmann-Grube
+\end{center}
+
+\ifx\pdfoutput\undefined
+  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+\else
+  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Datum:}&
+   \verb+$Date: 2006/07/14 12:02:01 $+\\ % Wird vom cvs eingetragen
+\textsf{CVS-Version:}&
+   \verb+$Revision: 1.44 $+\\            % Wird vom cvs eingetragen
+\textsf{CVS-Source:}&\verb+$Source: /net/mumie/cvs/styles/metainfo-xml/main.tex,v $+\\ % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%%
+
+\tableofcontents
+\eject
+\section{Einführung}
+
+Dieser Style spezifiziert das \texttt{mumieXML} für die Metainformationen von Dokumenten.\\
+FIXME: und pseudo-Dokumenten ??
+
+Zur Terminologie: Wir betrachten \texttt{<para>Das ist ein
+Text-Knoten.</para>}. Dann heißt \texttt{<para> </para>} Knoten und
+der davon umschlossene Text ist der aktuelle Text-Knoten oder kurz der
+Text-Knoten.\\
+
+Ob und wie eine Meta-Information gegeben werden darf, kann oder muss, h"angt im wesentlichen von
+drei Rahmenbedingungen ab:\\
+1. Welcher Dokumenttyp wird beschrieben (\texttt{<image/>} oder \texttt{<element/>} oder ...) ?\\
+2. In welchem Use-Mode soll es vorliegen (\texttt{checkin} oder \texttt{serve} oder ...) ?\\
+\\
+Diese Spezifikation gliedert sich in drei Teile.\\
+ In Teil \ref{sec_root} werden die zu den verschiedenen Dokumenttypen geh"origen Wurzelknoten beschrieben.\\
+ In Teil \ref{sec_mode} werden die Use-Modi beschrieben.\\
+ In Teil \ref{sec_meta} werden die Meta-Knoten beschrieben.\\
+%FIXME: revision des folgenden Abschnitts nach update dieser Spezifikation 09.03\\
+Die Dokumentation der Meta-Knoten ist aufgeteilt:\\
+ Abschnitt \ref{sec_vc_thread} behandelt Meta-Knoten zur Versionskontrolle.\\
+ Abschnitt \ref{sec_generic} behandelt in allen Dokumenttypen verwendete Meta-Knoten.\\
+ Im Gegensatz dazu werden im folgenden Abschnitt \ref{sec_special} spezielle Meta-Knoten
+ beschrieben, welche nur f"ur wenige Dokumenttypen verwendet werden, wie
+ z.B. \texttt{<category/>} f"ur {\it Element} und {\it Subelement} (\ref{sec_category}).\\
+ Auf das Mapping der Komponenten und Links wird schließlich in Abschnitt \ref{sec_components} eingegangen.\\
+ In Teil \ref{sec_kniff} werden besonders knifflige Themen nochmal speziell behandelt.
+
+\pagebreak[10]
+%%%%%%%%%%%%%%%%%%%%%%  DOCUMENTS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\part{Die Dokumente}
+\label{sec_root}
+
+\section{Wurzelknoten}
+
+\subsection{Beschreibung}
+
+Die Wurzelknoten enthalten sowohl Metainformationen als auch Inhalte. 
+
+%\subsection{Knoten}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{"Ubersicht}
+Die folgende Liste von Dokumenttypen ist veraenderlich. Letzte Instanz in dieser Hinsicht
+ist die Datei (path\_to\_japs\_cvs)/japs/config/config.xml im JAPS CVS, und in dieser der Abschnitt \texttt{<document-types>}\\
+\emph{Knoten-Name:}
+\begin{minipage}[t]{20cm}
+  \begin{flushleft}
+    \texttt{<mumie:page/>}\\
+    \texttt{<mumie:element/>}\\
+    \texttt{<mumie:subelement/>}\\
+    \texttt{<mumie:image/>}\\
+    \texttt{<mumie:applet/>}\\
+    \texttt{<mumie:flash/>}\\
+    \texttt{<mumie:sound/>}\\
+    \texttt{<mumie:movie/>}\\
+    \texttt{<mumie:jar/>}\\
+    \texttt{<mumie:js\_lib/>}\\
+    \texttt{<mumie:xsl\_stylesheet/>}\\
+    \texttt{<mumie:css\_stylesheet/>}\\
+    \texttt{<mumie:course\_section/>}\\
+    \texttt{<mumie:exercise/>}\\
+  \end{flushleft}
+\end{minipage}
+Typen, deren Dokumente im Sinne des Theme-Konzepts (siehe Abschnitt \ref{sec_themes})
+Gegenstand von Themeaufl"osungen sein k"onnen, haben generische Pendants. Dokumente
+generischen Typs haben insbesondere \emph{keinen} content. Sie gelten
+auch als Dokumenttypen und sind hier aufgelistet:\\
+\emph{Knoten-Name:}
+\begin{minipage}[t]{10cm}
+  \begin{flushleft}
+    \texttt{<mumie:generic\_page/>}\\
+    \texttt{<mumie:generic\_image/>}\\
+    \texttt{<mumie:generic\_sound/>}\\
+    \texttt{<mumie:generic\_movie/>}\\
+    \texttt{<mumie:generic\_xsl\_stylesheet/>}\\
+    \texttt{<mumie:generic\_css\_stylesheet/>}\\
+  \end{flushleft}
+\end{minipage}
+
+\label{sec_common_attrs}
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{xmlns:mumie}&\texttt{http://www.mumie.net/xml-namespace/document/metainfo}\\
+\texttt{use\_mode}&\texttt{serve|component|link|info|checkin|checkout|container}\\
+\texttt{id}&\textit{Id}\\
+\texttt{lid}&\textit{Local Id}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Wurzelknoten für Metainformationen und Informationen
+bezüglich der Dokumentenstruktur. Für jeden Dokumenttyp (Page, Element, Subelement, Image,
+Applet usw.) ist ein jeweils eigener Wurzelknoten  vorgesehen. Die Zuordnung zwischen
+Dokumenttypen und Knotennamen d"urfte selbsterkl"arend sein.
+
+\begin{description}
+\item[\texttt{xmlns:mumie}] ist die xml-Namespacedeklaration. Sie sollte gleichzeitig mit
+  den use-modi \texttt{serve}, \texttt{info}, \texttt{checkin} und \texttt{checkout}
+  vorkommen, aber nicht bei den use-modi \texttt{component}, \texttt{link} und
+  \texttt{container}. (siehe Kapitel \ref{sec_namespace} Namespaces)\\
+\item[\texttt{use\_mode}] ist der Kontext, in dem dieses Dokument gerade benutzt wird oder
+  benutzt werden soll. (siehe Abschnitt \ref{sec_mode} Use-Modi)\\
+\item[\texttt{Id}] ist eine Id in der dem Dokumenttyp entsprechenden Datenbank-Tabelle, also eine
+int4-Zahl. Dieses Attribut muss fehlen beim checkin einer \emph{ersten Version} des
+Dokuments. Siehe dazu auch den Abschnitt (\ref{sec_write_permissions}, 2. Fall) "uber das
+Recht, neue VCThreads, dals erste Versionen von Dokumenten anzulegen.\\
+ Wird dagegen beim checkin eine g"ultige Datenbank-Id eines existierenden Dokuments
+ desselben Typs angegeben, so erh"alt dieses neue Dokument zwar dennoch eine neue (n"amlich
+ NICHT die angegebene) Id. Es wird aber als aktualisierte Version des anderen betrachtet,
+ und es werden alle internen Referenzen (component, link, etc.) von Mumie-Dokumenten auf das
+ alte zu Referenzen auf das neue Dokument ge"andert.\\
+Ebenso werden ausserdem Theme-Map-Referenzen von der angegebenen auf die neue Version des
+Dokuments aktualisiert. Ist n"amlich das (alte) Dokument mit der angegebenen id f"ur ein
+oder mehrere gewisse Themes die Realisierung eines gewissen generischen Dokuments, so soll
+in Zukunft die neue, jetzt einzucheckende Version diese Rolle "ubernehmen.\\
+ \emph{siehe auch \ref{sec_vc_thread} vc\_thread}\\
+ \emph{siehe auch \ref{sec_checkin} use-mode checkin}\\
+\item[\texttt{Local Id}] Nur bei den  use\_modi \texttt{component} und \texttt{link}.\\
+\item[\texttt{URL}] Nur beim Use-Mode \texttt{component}.\\
+\end{description}
+
+\emph{Kinder:} Meta-Knoten, allgemeine und spezielle für den jeweiligen
+Dokumentyp wie in Abschnitt \ref{sec_meta} beschrieben. Content-Knoten wie in
+\ref{sec_content} beschrieben.
+
+\subsection{Use-Modi}
+(siehe auch Teil \ref{sec_mode})\\
+ Wesentlich ist die Unterscheidung der verschiedenen Benutzungs-Modi (\texttt{use\_mode}):
+\pagebreak[0]
+\begin{description}
+\item[\texttt{serve}] Spezifiziert ein Dokument, das gerade an einen Client
+  ausgeliefert werden soll.
+\item[\texttt{component}] Spezifiziert ein Dokument, das als Komponente in einem anderen
+  Dokument auftaucht.
+\item[\texttt{link}] Spezifiziert ein Dokument, auf das in einem anderen Dokument mit Hilfe
+  des \texttt{<link>}-Tags (siehe \ref{sec_links}) verwiesen wird.
+\item[\texttt{info}] Spezifiziert eine Infoseite "uber das Dokument, die gerade an einen Client
+  ausgeliefert werden soll.
+\item[\texttt{checkin}] Spezifiziert ein Dokument, das gerade eingecheckt
+  werden soll.
+\item[\texttt{checkout}] Spezifiziert ein Dokument, das gerade zur Bearbeitung, also etwa
+  inclusive eventueller Quelldateien, ausgecheckt werden soll.
+%FIXME: klaeren, ob der use-mode "container auch in net.mumie.cocoon.notions.UseMode
+%FIXME: vorkommen sollte.\\
+%FIXME_030105\emph{siehe Abschnitt \ref{sec_contained_in_element}}
+\end{description}
+\note{
+  Es k"onnte sein, dass die Spezifikation dahingehend ge"andert wird, dass anstelle der
+  Use-Mode-Namen numerische Codes verwendet werden. Siehe hierzu auch die API-Dokumentation der
+  Java-Klasse \texttt{net.mumie.cocoon.notions.UseMode}.
+}
+
+\vspace{1\baselineskip}
+
+%-------------------------------------------------------------------------------------------------------
+%                               PAGES
+%-------------------------------------------------------------------------------------------------------
+\subsection{Page}
+\label{sec_page}
+
+\emph{Knoten-Name:} \texttt{<mumie:page> ... </mumie:page>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               EXERCISES
+%-------------------------------------------------------------------------------------------------------
+\subsection{Übungen}
+\label{sec_exercise}
+
+\emph{Knoten-Name:} \texttt{<mumie:exercise> ... </mumie:exercise>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:category/>} siehe \emph{\ref{sec_category}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:contained\_in></mumie:contained\_in>} siehe \emph{\ref{sec_contained_in_multi_sections}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               ELEMENTE
+%-------------------------------------------------------------------------------------------------------
+\subsection{Element}
+\label{sec_element}
+
+\emph{Knoten-Name:} \texttt{<mumie:element> ... </mumie:element>}
+
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:category/>} siehe \emph{\ref{sec_category}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\\
+
+%FIXME: ALLE Beispiele mit use-mode checkin muessen den build-checkin passieren !\\
+\subsubsection{Beispiel}
+Ein neues Element mit Name f"ur den anzulegenden \texttt{<mumie:vc\_thread/>}.
+
+\begin{verbatim}
+<mumie:element xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+               use_mode="checkin">
+  <mumie:vc_thread name="Edmonds Satz"/>
+  <mumie:category name="theorem"/>    
+  <mumie:status name="pre"/>
+  <mumie:name>Satz von Edmond</mumie:name>
+  <mumie:description>
+    Der Satz von Edmond beschreibt, wie perfekte Matchings in bipartiten 
+    Graphen mit Hilfe von Determinaten und probabilistischen Verfahren 
+    ermittelt werden können.
+  </mumie:description>
+  <mumie:copyright>
+    Mit freundlicher Genehmigung ...
+  </mumie:copyright>
+  <mumie:authors>
+    <mumie:author id="34"/>
+    <mumie:author id="12"/>
+  </mumie:authors>
+  <mumie:custom_metainfo>
+    <mumie:link url="current:Satz von Edmond.custom_metainfo.xml"/>
+  </mumie:custom_metainfo>
+  <mumie:sources>
+    <mumie:text_source url="current:Satz von Edmond.tex"/>
+    <mumie:text_source url="japs/sources/templates/x_template.tex"/>
+  </mumie:sources>
+  <mumie:components>
+    <mumie:element lid="Isolating Lemma" id="85"/>
+    <mumie:element lid="Schwarz-Zippel Theorem" id="12"/>
+    <mumie:image lid="bild_01" id="34"/>
+    <mumie:image lid="bild_02" url="japs/document/image/bild_05.meta.xml"/>
+    <mumie:applet lid="applet_01" id="34"/>
+    <mumie:applet lid="applet_02" id="35"/>
+    <mumie:applet lid="applet_03" url="japs/document/applet/applet_05.meta.xml"/>
+  </mumie:components>
+  <mumie:content>
+    <mumie:link url="current:Satz von Edmond.content"/>
+  </mumie:content>
+</mumie:element>
+\end{verbatim}
+
+Bemerkungen dazu:\\
+Die Datei heisse\\
+ 'Satz von Edmond.meta.xml'\\
+Im selben Verzeichnis m"ussen dann die (xml-)Dateien\\
+ 'Satz von Edmond.content' (muss g"ultiges XML sein, insbes. mit Roottag !),\\
+ 'Satz von Edmond.custom\_metainfo.xml' und\\
+die (text-)Datei 'Satz von Edmond.tex'\\
+liegen, sowie (relativ zum Root-Verzeichnis desselben checkin-Prozesses) die Dateien\\
+ 'japs/document/image/bild\_05.meta.xml'\\
+ 'japs/document/image/bild\_05.content'\\
+ 'japs/document/applet/applet\_05.meta.xml'\\
+ 'japs/document/applet/applet\_05.content'\\
+ 'japs/sources/templates/x\_template.tex'\\
+\pagebreak[3]
+%-------------------------------------------------------------------------------------------------------
+%                               SUBELEMENTE
+%-------------------------------------------------------------------------------------------------------
+\subsection{Subelement}
+\label{sec_subelement}
+
+\emph{Knoten-Name:} \texttt{<mumie:subelement> ... </mumie:subelement>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:category/>} siehe \emph{\ref{sec_category}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:attachable></mumie:attachable>} siehe \emph{\ref{sec_attachable}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+\pagebreak[3]
+%-------------------------------------------------------------------------------------------------------
+%                               IMAGES
+%-------------------------------------------------------------------------------------------------------
+\subsection{Image}
+\label{sec_image}
+
+\emph{Knoten-Name:} \texttt{<mumie:image> ... </mumie:image>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:qualified\_name></mumie:qualified\_name>} siehe \emph{\ref{sec_qualified_name}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:content\_type/>} siehe \emph{\ref{sec_content_type}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+\texttt{<mumie:width/>} siehe \emph{\ref{sec_width}}\\
+\texttt{<mumie:height/>} siehe \emph{\ref{sec_height}}\\
+\\
+
+%FIXME: ALLE Beispiele mit use-mode checkin muessen den build-checkin passieren !
+\subsubsection{Beispiel}
+Die Datei heisse (relativ zum Root-Verzeichnis dieses Checkinprozesses): document/image/Gauss\_10Mark.meta.xml
+\begin{verbatim}
+<mumie:image xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+             id="5463" 
+             use_mode="checkin">
+  <mumie:status name="final"/>
+  <mumie:name>Abbildung von Gauss auf dem 10-DM-Schein</mumie:name>
+  <mumie:description>
+    Der Mathematiker C.F.Gauss auf dem 10-DM Schein.
+  </mumie:description>
+  <mumie:copyright>
+    (c) 1991 Deutsche Bundesbank
+  </mumie:copyright>
+  <mumie:authors>
+    <mumie:author id="34"/>
+  </mumie:authors>
+  <mumie:custom_metainfo>
+    <mumie:link url="current:Gauss_10Mark.custom_metainfo.xml"/>
+  </mumie:custom_metainfo>
+  <mumie:width value="142"/>
+  <mumie:height value="87"/>
+  <mumie:content_type name="image/jpeg"/>
+  <mumie:content>
+    <mumie:link url="current:Gauss_10Mark.content"/>
+  </mumie:content>
+  <mumie:manual id="4801"/>
+</mumie:image>
+\end{verbatim}
+
+Bemerkung: Hier wird, obwohl der Use-Mode \texttt{checkin} ist, eine id im Wurzel-Tag
+angegeben. Daher wird dieses Dokument als Aktualisierung des Bildes mit dieser id
+aufgefasst, und es werden intern alle Referenzen (durch \texttt{<mumie:component>} oder \texttt{<mumie:link>})
+von irgendwelchen anderen Dokumenten auf das alte Bild zu Referenzen auf diese neue Version
+ersetzt. Trotzdem bekommt dieses neue Bild eine {\bf neue} id, und {\bf nicht} die angegebene.\\
+
+%-------------------------------------------------------------------------------------------------------
+%                               SOUNDS
+%-------------------------------------------------------------------------------------------------------
+\subsection{Sound}
+\label{sec_sound}
+
+\emph{Knoten-Name:} \texttt{<mumie:sound> ... </mumie:sound>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:content\_type/>} siehe \emph{\ref{sec_content_type}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+\texttt{<mumie:alt\_image/>} siehe \emph{\ref{sec_alt_image}}\\
+\texttt{<mumie:print\_image/>} siehe \emph{\ref{sec_print_image}}\\
+\texttt{<mumie:duration/>} siehe \emph{\ref{sec_duration}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               MOVIES
+%-------------------------------------------------------------------------------------------------------
+\subsection{Movie}
+\label{sec_movie}
+
+\emph{Knoten-Name:} \texttt{<mumie:movie> ... </mumie:movie>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:content\_type/>} siehe \emph{\ref{sec_content_type}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+\texttt{<mumie:alt\_image/>} siehe \emph{\ref{sec_alt_image}}\\
+\texttt{<mumie:print\_image/>} siehe \emph{\ref{sec_print_image}}\\
+\texttt{<mumie:width/>} optional je nach Typ. siehe \emph{\ref{sec_width}}\\
+\texttt{<mumie:height/>} optional je nach Typ. siehe \emph{\ref{sec_height}}\\
+\texttt{<mumie:duration/>} siehe \emph{\ref{sec_duration}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               JARS
+%-------------------------------------------------------------------------------------------------------
+\subsection{Jar}
+\label{sec_jar}
+
+\emph{Knoten-Name:} \texttt{<mumie:jar> ... </mumie:jar>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               APPLETS
+%-------------------------------------------------------------------------------------------------------
+\subsection{Applet}
+\label{sec_applet}
+
+\emph{Knoten-Name:} \texttt{<mumie:applet> ... </mumie:applet>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:qualified\_name></mumie:qualified\_name>} siehe \emph{\ref{sec_qualified_name}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+
+%FIXME: sind in core.sql nicht als Tabellenspalte vorhanden !!
+%\texttt{<mumie:alt\_image/>} siehe \emph{\ref{sec_alt_image}}\\
+%\texttt{<mumie:print\_image/>} siehe \emph{\ref{sec_print_image}}\\
+
+\texttt{<mumie:width/>} siehe \emph{\ref{sec_width}}\\
+\texttt{<mumie:height/>} siehe \emph{\ref{sec_height}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               FLASHS
+%-------------------------------------------------------------------------------------------------------
+\subsection{Flash}
+\label{sec_flash}
+
+\emph{Knoten-Name:} \texttt{<mumie:flash> ... </mumie:flash>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+
+%FIXME: sind in core.sql nicht als Tabellenspalte vorhanden !!
+%\texttt{<mumie:alt\_image/>} siehe \emph{\ref{sec_alt_image}}\\
+%\texttt{<mumie:print\_image/>} siehe \emph{\ref{sec_print_image}}\\
+
+\texttt{<mumie:width/>} siehe \emph{\ref{sec_width}}\\
+\texttt{<mumie:height/>} siehe \emph{\ref{sec_height}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               JS_LIBS
+%-------------------------------------------------------------------------------------------------------
+\subsection{Js\_Lib}
+\label{sec_js_lib}
+
+\emph{Knoten-Name:} \texttt{<mumie:js\_lib> ... </mumie:js\_lib>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}} beschrieben.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_components}}\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+\texttt{<mumie:manual/>} siehe \emph{\ref{sec_manual}}\\
+\\
+
+%\subsubsection{Beispiel}
+
+%\begin{verbatim}
+
+%\end{verbatim}
+
+%-------------------------------------------------------------------------------------------------------
+%                               KURSE
+%-------------------------------------------------------------------------------------------------------
+\subsection{Course\_section}
+\label{sec_course_section}
+
+\emph{Knoten-Name:} \texttt{<mumie:course\_section> ... </mumie:course\_section>}
+
+\emph{Beschreibung:} Eine strukturierte Gliederungseinheit eines Kurses.\\
+Das kann auf unterster Ebene \mbox{(type=element)} ein integriertes Element mit\\
+angegliederten Subelementen sein.\\
+In \texttt{<mumie:components></mumie:components>} d"urfen nur \texttt{course\_section}s (bei
+\mbox{type=section)}\\
+ oder genau ein \texttt{element} und beliebig viele \texttt{subelement}e (bei
+type=element) enthalten sein ! \\
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, lid, url+ wie oben in \emph{Abschnitt \ref{sec_common_attrs}}
+beschrieben.\\
+Ausserdem: 
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{section|element}\\
+\end{tabular}
+\end{center}
+\textit{section}, falls in dieser wieder course\_sections enthalten sind\\
+\textit{element}, falls in dieser ein Element und beliebige viele Subelemente enthalten sind.
+
+\emph{Kinder:}\\ 
+%FIXME: checken, ob vollstaendig\\
+\texttt{<mumie:contained\_in/>} siehe \emph{\ref{sec_contained_in_section}}\\
+\texttt{<mumie:vc\_thread/>} siehe \emph{\ref{sec_vc_thread}}\\
+\texttt{<mumie:version/>} siehe \emph{\ref{sec_version}}\\
+\texttt{<mumie:status/>} siehe \emph{\ref{sec_status}}\\
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:copyright></mumie:copyright>} siehe \emph{\ref{sec_copyright}}\\
+\texttt{<mumie:authors></mumie:authors>} siehe \emph{\ref{sec_authors}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_modified/>} siehe \emph{\ref{sec_last_modified}}\\
+\texttt{<mumie:sources></mumie:sources>} siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+\texttt{<mumie:components></mumie:components>} ! Anders als sonst k"onnen hier nur
+course\_sections oder Elemente und Subelemente enthalten sein ! siehe oben.\\
+\texttt{<mumie:links></mumie:links>} siehe \emph{\ref{sec_links}}\\
+\texttt{<mumie:content></mumie:content>} siehe \emph{\ref{sec_content}}\\
+\texttt{<mumie:content\_length/>} siehe \emph{\ref{sec_content_length}}\\
+
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+<mumie:course_section xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+                      type="section" 
+                      id="445545" 
+                      use_mode="checkout">
+  <mumie:status name="pre"/>
+  <mumie:name>Gauss-Elimination</mumie:name>
+  <mumie:description>
+    Der Gauss-Algorithmus zur Loesung eines LGS.
+  </mumie:description>
+  <mumie:copyright>
+    Mit freundlicher Genehmigung ...
+  </mumie:copyright>
+  <mumie:last_modified  format="yyyy-mm-dd hh:mm:ss" value="2003-06-18 21:06:44"/>
+  <mumie:authors>
+    <mumie:author id="34"/>
+  </mumie:authors>
+  <mumie:custom_metainfo 
+        xmlns:custom="http://www.mumie.net/xml-namespace/document/custom-metainfo">
+    <custom:abstaction_level value="5"/>
+  </mumie:custom_metainfo>
+  <mumie:components>
+    <mumie:section lid="9" id="23423" />
+    <mumie:section lid="15" id="325635" />
+    <mumie:section lid="3" id="12343" />
+    <mumie:section lid="parent" id="78439" />
+  </mumie:components>
+  <mumie:content 
+        xmlns:struct="http://www.mumie.net/xml-namespace/document/content/course_section">
+    <struct:csection>
+      <struct:structure>
+      ...
+      </struct:structure>
+      <struct:thread>
+      ...
+      </struct:thread>
+      <struct:parent lid="parent" />
+    </struct:csection>
+  </mumie:content>
+</mumie:course_section>
+
+\end{verbatim}
+
+Der use-mode ist 'checkout'.\\
+Hier sind der Inhalt des Dokuments im \texttt{mumie:content}-Element und semantische
+Metainformationen im \texttt{mumie:custom\_metainfo}-Element direkt in der Datei enthalten
+(, was ja im use-mode 'checkin' verboten ist !).\\
+Beachte, wie daf"ur jeweils der besondere xml-namespace deklariert ist.\\
+
+\pagebreak[10]
+%%%%%%%%%%%%%%%%%%%%%%  USE-MODi  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\part{Die Use-Modi}
+\label{sec_mode}
+In verschiedenen Use-Modi werden jeweils gewisse Metainfos ben"otigt oder weggelassen.\\
+\section{Detaillierte Beschreibung der verschiedenen Use-Modi}
+
+\begin{description}
+
+\subsection{serve}
+\item[\texttt{use\_mode=serve}] Spezifiziert ein Dokument, das gerade an ein Klientprogramm,
+ meistens den Browser eines Benutzers, ausgeliefert werden soll.\\
+Im allgemeinen wird das Dokument nicht direkt in dieser Form ausgeliefert, sondern zun"achst
+vom JAPS intern weiterverarbeitet.\\
+Der Wurzelknoten enth"alt die Attribute:
+\begin{itemize}
+\item \texttt{xmlns:mumie}
+\item \texttt{id} (Datenbank-Id)
+\item \texttt{use\_mode=serve}
+\end{itemize}
+und {\bf nicht} die Attribute \texttt{lid} und \texttt{url}.\\
+ \\
+Der Wurzelknoten enth"alt nur die Kindknoten:
+\begin{itemize}
+\item \texttt{<mumie:components/>}
+\item \texttt{<mumie:links/>}
+\item \texttt{<mumie:content/>}.\\
+\end{itemize}
+Dabei m"ussen Komponenten und Links in aufgel"oster Form, also mit expliziter Datenbank-Id
+statt URL referenziert sein.\\
+Der Inhalt (mumie:content) kann mittels URL referenziert werden, aber bei Dokumenten mit
+XML-Inhalt auch integriert sein.\\
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+            id="35" 
+            use_mode="serve">
+  <mumie:components>
+    <mumie:page lid="topframe" id="34"/>
+    <mumie:page lid="bottomframe" id="1"/>
+  </mumie:components>
+  <mumie:content>
+    <frameset rows="28%,72%">
+      <frame lid="topframe" scrolling="no"/>
+      <frame lid="bottomframe"/>
+    </frameset>
+  </mumie:content>
+</mumie:page>
+\end{verbatim}
+
+\subsection{component}
+\item[\texttt{use\_mode=component}] Spezifiziert ein Dokument, das als Komponente in einem anderen
+ Dokument auftaucht. Siehe auch \emph{\ref{sec_components}}\\
+Enth"alt die Attribute: \\
+\begin{itemize}
+\item \texttt{lid} und \texttt{id} oder
+\item \texttt{lid} und \texttt{param} oder
+\item \texttt{lid} und \texttt{url} (wenn der uebergeordnete Wurzelknoten den use\_mode
+  checkin hat)\\
+\end{itemize}
+Kann die Kindknoten enthalten:
+\begin{itemize}
+\item \texttt{<mumie:param/>}\\ 
+und gegebenenfalls, also bei Bildern, Movies und Applets:
+\item \texttt{<mumie:width/>} und
+\item \texttt{<mumie:height/>}
+\end{itemize}
+
+\subsubsection{Beispiele}
+
+\begin{verbatim}
+<mumie:page use_mode="component" lid="referenced_page_01" id="34"/>
+<mumie:page use_mode="component" lid="referenced_page_02" param="top"/>
+
+<!-- so nur, wenn das enthaltende Dokument den use-mode 'checkin' hat !-->
+<mumie:page use_mode="checkin" ...>
+  .
+  <mumie:components>
+    <mumie:generic_image 
+          use_mode="component" 
+          lid="referenced_image_01" 
+          url="documents/generic_image/img03.meta.xml">
+      <mumie:param lid="image_param_1" name="colorfilter"/>
+      <mumie:width value="256"/>
+      <mumie:height value="384"/>
+    </mumie:generic_image>
+    .
+  </mumie:components>
+  .
+</mumie:page>
+\end{verbatim}
+
+\subsection{link}
+\item[\texttt{use\_mode=link}] Spezifiziert ein Dokument, auf das in einem anderen Dokument mit Hilfe
+  des \texttt{<link>}-Tags (siehe \ref{sec_links}) verwiesen wird.\\
+Enth"alt die Attribute: 
+\begin{itemize}
+\item \texttt{lid} und \texttt{id} oder\\
+\item \texttt{lid} und \texttt{url} (wenn der uebergeordnete Wurzelknoten den Use-Mode
+\texttt{checkin} hat)
+\end{itemize}
+
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+<mumie:page use_mode="link" lid="link_to_page_01" id="34"/>
+\end{verbatim}
+
+\subsection{info}
+\item[\texttt{use\_mode=info}] Spezifiziert eine Infoseite "uber das Dokument, die gerade an einen Client
+  ausgeliefert werden soll. In diesem Use-Mode kommen alle moeglichen
+  Metainfos dieses Dokumenttyps vor, wie (in Teil \emph{\ref{sec_root}}: Dokumente) jeweils zu den
+  verschiedenen Wurzelknoten aufgelistet.
+
+\subsection{checkin}
+\label{sec_checkin}
+\item[\texttt{use\_mode=checkin}] Spezifiziert ein Dokument, das gerade eingecheckt
+  werden soll.\\
+Siehe hierzu auch die genauere Beschreibung in Kapitel \ref{sec_dateien}.\\
+
+Enth"alt die Attribute:  \texttt{xmlns:mumie}, \texttt{use\_mode} und, falls es sich um das
+wieder-einchecken eines zu ersetzenden Dokuments handelt, \texttt{id}.\\
+Kindknoten: alle zu diesem Wurzelknoten m"oglichen, wie (in Teil (\emph{\ref{sec_root}}: Dokumente) aufgelistet, ausser:\\
+\texttt{<mumie:last\_modified/>} und \texttt{<mumie:version/>}.\\
+Dabei sind optional:\\
+\texttt{<mumie:status/>} (default: \texttt{pre}),
+\texttt{<mumie:vc\_thread/>} (default: \texttt{wird neu angelegt}, oder, falls eine Id des
+Dokuments angegeben ist, der \texttt{vc\_thread} dieser "alteren Version. siehe \emph{\ref{sec_vc_thread}}).
+
+
+\subsection{checkout}
+\item[\texttt{use\_mode=checkout}] Spezifiziert ein Dokument, das gerade zur Bearbeitung, also etwa
+  inclusive eventueller Quelldateien ausgecheckt werden soll. siehe \emph{\ref{sec_sources} und \ref{sec_quellen}}\\
+ (Noch nicht genauer spezifiziert)
+
+\end{description}
+
+\note{
+  Es k"onnte sein, dass die Spezifikation dahingehend ge"andert wird, dass anstelle der
+  Use\_Mode-Namen numerische Codes verwendet werden. Siehe hierzu auch die API-Dokumentation der
+  Java-Klasse \texttt{net.mumie.cocoon.notions.UseMode}.
+}
+
+\vspace{1\baselineskip}
+
+\pagebreak[10]
+%%%%%%%%%%%%%%%%%%%%%%  METAINFOS  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Die Metainfos}
+\label{sec_meta}
+{\bf Vorbemerkung}\\
+ \\
+Allgemein gilt: 
+\begin{itemize}
+\item Wenn eine Metainformation gegeben werden soll, muss sie auch sinnvoll gef"ullt werden.
+\item Wenn eine Metainformation {\bf nicht} angegeben werden soll, muss das entsprechende Tag ganz
+  fehlen.
+\end{itemize}
+Insbesondere wenn ein Meta-Knoten ein 'id'-Attribut oder einen Ersatz dafuer (z.B.
+ein 'name'- oder 'url'-Attribut) hat, dann {\bf muss} entweder das id-Attribut
+oder der Ersatz angegeben sein. Das Fehlen einer Meta-Information wird
+durch das Fehlen des entsprechenden Knotens angezeigt.\\
+%-------------------------------------------------------------------------------------------------------
+%                       DATEIINFORMATIONEN
+%-------------------------------------------------------------------------------------------------------
+\section{Meta-Knoten f"ur Dateiinformationen}
+\label{sec_file}
+\subsection{Beschreibung}
+Informationen, die die Datei betreffen die das Dokument in einem Dateisystem repr"asentiert.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Dateiname}\label{sec_filename}
+
+\emph{Knoten-Name:} \texttt{<mumie:filename/>}
+
+\emph{Attribute:}  keine\\
+
+
+\emph{Beschreibung:} Der Rumpf des Dateinamens in einem Dateisystem.
+\emph{Eltern:}  Kommt bei allen Dokumenten und Pseudo-Dokumenten vor.\\
+\emph{Kinder:}  Textknoten.\\
+\emph{Kontext:} ??? FIXME ???\\
+Kommt NICHT vor in den Use-Modi \texttt{component}, \texttt{link}. Im Use-Mode \texttt{checkin} gibt es folgende M"oglichkeiten:
+\begin{itemize}
+\item
+\end{itemize}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Zugeh"origkeit zu einer Section}
+\label{sec_contained_in_section}
+
+\emph{Knoten-Name:} \texttt{<mumie:contained\_in />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Gibt die Section an,
+ in der das Element enthalten ist.
+
+\begin{description}
+\item[\textit{Id}] ist die id eines existierenden Eintrags in der Datenbanktabelle
+\texttt{sections}.\\
+\item[\textit{URL}] ist die Quelle, von der diese \texttt{section} zugleich eingecheckt werden
+  kann (vorl"aufig nur beim build-checkin !). Siehe dazu Kapitel \ref{sec_url} und \ref{sec_dateien}.\\
+\end{description}
+\emph{Eltern:}  Kommt bei allen (Pseudo-)Dokumenttypen vor.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} Kommt vor bei den Use-Modi \texttt{info} und \texttt{checkout}.\\
+Wird bei den Use-Modi \texttt{serve}, \texttt{component}, \texttt{link} weggelassen.\\
+ und beim online-checkin nur mit dem \texttt{id}-Attribut.\\
+Beim Use-Mode \texttt{checkin} muss der Knoten weggelassen werden. Denn das
+(Pseudo-)Dokument ist immer in dem Unterverzeichnis enthalten, in dem die Datei enthalten
+ist, d.h in der Section, die durch die \texttt{.meta.xml}-Datei stehen.\\
+Siehe dazu Kapitel \ref{sec_dateien}
+
+%-------------------------------------------------------------------------------------------------------
+%                       VERSIONSINFORMATIONEN
+%-------------------------------------------------------------------------------------------------------
+\section{Meta-Knoten zur Versionskontrolle}
+\label{sec_vc_thread}
+
+\subsection{Beschreibung}
+
+Informationen, die die Versionskontrolle betreffen. Werden nur bei den Use-Modi
+\texttt{info}, \texttt{checkout} und, wenn es sich um das Wiedereinchecken eines bereits
+bestehenden Dokuments handelt, \texttt{checkin} eingef"ugt.\\
+Versionskontrolle gibt es bei allen nicht generischen Dokumenttypen.\\
+
+\subsection{Informationen}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Version Control Thread (VCT)}
+\emph{Knoten-Name:} \texttt{<mumie:vc\_thread />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{name}&\textit{Name}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Ein Version Control Thread ist eine Folge von Dokumenten, die alle als
+verschiedene Versionen des gleichen Dokuments angesehen werden. In einem VCT k"onnen Dokumente
+verschiedenen Typs vorkommen.\\
+\textit{Id} ist die Datenbank-Id des Version Control Threads, dem dieses Dokument zugeordnet
+ist.\\
+\textit{Name} ist der Name eines neu anzulegenden VCT beim checkin, wenn keine Id angegeben ist.\\
+\emph{Eltern:}  Kommt bei allen nicht generischen Dokumenttypen vor und bei allen
+generischen nicht.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:}\\
+Kommt NICHT vor in den Use-Modi \texttt{component}, \texttt{link}. Im Use-Mode \texttt{checkin} gibt es folgende M"oglichkeiten:
+\begin{itemize}
+\item \texttt{mumie:vc\_thread} fehlt, aber es ist auch {\bf kein} \texttt{id}-Attribut im
+  Wurzelelement des Dokuments angegeben. Dann wird zuerst ein neuer VCT erzeugt und dieses
+  Dokument als erste Version eingecheckt. Der neue VCT erh"alt denselben Namen wie das
+  Dokument.
+\item Mit \texttt{mumie:vc\_thread} ist der Name eines neu anzulegenden VC-Threads
+  angegeben, und {\bf kein} \texttt{id}-Attribut im Wurzelelement des Dokuments. Dann wird zuerst
+  der neue VCT erzeugt und dieses Dokument als erste Version eingecheckt.
+\item Mit \texttt{mumie:vc\_thread} ist die Datenbank-Id eines existierenden VC-Threads
+  angegeben, und {\bf kein} \texttt{id}-Attribut im Wurzelelement des Dokuments. Dann wird dieses
+  Dokument als neue Version eingecheckt, aber es werden keine Referenzen ge"andert.
+\item Mit \texttt{mumie:vc\_thread} {\bf ist} die Datenbank-Id eines existierenden VC-Threads
+  angegeben, und es {\bf ist} ein \texttt{id}-Attribut im Wurzelelement des Dokuments
+  angegeben. Dann wird dieses Dokument als neue Version des angegebenen VCT eingecheckt.\\
+\item \texttt{mumie:vc\_thread} fehlt, aber es {\bf ist} ein \texttt{id}-Attribut im
+  Wurzelelement des Dokuments angegeben. Dann wird dieses Dokument als neue Version in
+  dessen VCT eingecheckt.
+\end{itemize}
+  In den beiden letzteren F"allen, wenn ein \texttt{id}-Attribut im
+  Wurzelelement des Dokuments angegeben ist, und nur in diesen F"allen, werden alle internen Referenzen, welche von irgendwelchen Dokumentn auf die alte Version zeigten, auf die neue Version umgelenkt.\\
+Zum "andern von Referenzen siehe auch Kapitel \ref{sec_common_attrs}.\\ 
+
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Version}
+\label{sec_version}
+\emph{Knoten-Name:} \texttt{<mumie:version />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{value}&\textit{Integer}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} \textit{Integer} ist die Versionsnummer des Dokuments in seinem Version
+Control Thread. Darf beim \texttt{checkin} nicht angegeben werden.
+
+\emph{Eltern:}  Kommt bei allen nicht generischen Dokumenttypen vor und bei allen
+generischen nicht.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} Kommt nur vor in den Use-Modi
+\begin{itemize}
+\item \texttt{serve}
+\item \texttt{info}
+\item \texttt{checkout}
+\end{itemize}
+Kommt {\bf nicht} vor in den Use-Modi \texttt{component}, \texttt{link} und \texttt{checkin}.\\ 
+
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Status}
+\label{sec_status}
+\emph{Knoten-Name:} \texttt{<mumie:status />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{name}&\textit{Name}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Status des Dokuments. Angabe als \\
+\textit{Id} in der Datenbank-Tabelle \texttt{statuses}, die die m"oglichen Status-Werte
+definiert oder als\\
+\textit{Name} in derselben Tabelle. Beim build-checkin bitte nur als \textit{Name}\\
+ Zur Zeit sind folgende Status vorgesehen:\\
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+0&'pre' dh. in der Entwicklung\\
+1&'devel ok' dh. fertig aber ungepr"uft\\
+2&'content ok' dh. inhaltlich nicht komplett aber brauchbar, technisch ungepr"uft\\
+3&'content complete' dh. inhaltlich komplett, technisch ungepr"uft\\
+4&'ok for publication' dh. inhaltlich nicht komplett aber brauchbar, technisch ok\\
+5&'final' inhaltlich komplett, technisch gepr"uft\\
+\end{tabular}
+\end{center}
+ Letzte Instanz in dieser Hinsicht ist die Datei (path\_to\_japs\_cvs)/japs/config/config.xml im JAPS CVS, und in dieser der Abschnitt \texttt{<statuses>}
+
+\emph{Eltern:}  Kommt bei allen Dokumenten vor.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:}\\
+Kommt vor bei den Use-Modi
+\begin{itemize}
+\item \texttt{serve}
+\item \texttt{info}
+\item \texttt{checkout}
+\item \texttt{checkin} (optional)
+\end{itemize}
+ Kommt nicht bei den Use-Modi \texttt{component}, \texttt{link}.\\
+Optional beim Checkin. Falls beim Checkin kein Status angegeben wird,
+wird als Default 0, also 'pre' eingetragen.\\
+
+\pagebreak[5]
+%-------------------------------------------------------------------------------------------------------
+%                       ALLGEMEIN
+%-------------------------------------------------------------------------------------------------------
+\section{Allgemeine Meta-Knoten}
+\label{sec_generic}
+
+\subsection{Beschreibung}
+
+Unter diese Kategorie von Meta-Knoten fallen solche, die bei allen oder den meisten Dokumenttypen
+verwendet werden können.  Dabei handelt es sich um grundlegende Informationen, wie Name, Beschreibung.\\
+Wo solch eine Metainformation NICHT vorkommt, wie z.B. Permissions auf Generischen
+Dokumenten, wird speziell darauf hingewiesen.
+
+\subsection{Knoten}
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Name}
+\label{sec_name}
+\emph{Knoten-Name:} \texttt{<mumie:name> ... </mumie:name>}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Name des Dokuments. Kann willk"urlich vergeben werden. Dient nur
+internen Zwecken (soll z.B. beim Browsen in der Datenbank angezeigt werden). Darf
+h"ochstens 120 Zeichen lang sein.
+
+\emph{Eltern:}  alle Dokument-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+\emph{Kontext:} Muss immer vorhanden sein, ausser bei den Use-Modi \texttt{component},
+\texttt{link}.\\
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Beschreibung (Description)}
+\label{sec_description}
+\emph{Knoten-Name:} \texttt{<mumie:description> ... </mumie:description>}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Kurze Beschreibung des Dokuments.
+
+\emph{Eltern:}  alle Dokument-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+%FIXME: sollte nicht zwingend da sein m"ussen beim checkin. ggfs. default
+\emph{Kontext:} Muss immer vorhanden sein, ausser bei den Use-Modi \texttt{component},
+\texttt{link}.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Copyright}
+\label{sec_copyright}
+\emph{Knoten-Name:} \texttt{<mumie:copyright> ... </mumie:copyright>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Copyrightangaben.
+
+\emph{Eltern:} Kommt bei allen Dokumenten vor.\\
+\emph{Kinder:} Textknoten.\\
+%FIXME: sollte nicht zwingend da sein m"ussen beim checkin. ggfs. default
+\emph{Kontext:} Muss immer vorhanden sein, ausser bei den Use-Modi \texttt{component},
+\texttt{link}.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Qualified Name}
+\label{sec_qualified_name}
+\emph{Knoten-Name:} \texttt{<mumie:qualified\_name> ... </mumie:qualified\_name>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Innerhalb der Mumie eindeutige Textreferenz (alternativ zur id) auf ein Dokument
+
+\emph{Eltern:} Kommt vor bei image, generic\_image, applet, flash.\\
+\emph{Kinder:} Textknoten.\\
+\emph{Kontext:} Kann vorhanden sein, ausser bei den Use-Modi \texttt{component},
+\texttt{link}.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Zeitpunkt der letzten Änderung (Last Modified)}
+\label{sec_last_modified}
+\emph{Knoten-Name:} \texttt{<mumie:last\_modified />}
+
+\emph{Attribute:}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{format}&\textit{Format}\\
+\texttt{value}&\textit{Timestamp}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Zeitpunkt der letzten "Anderung an dem Dokument. 
+Darf beim \texttt{checkin} nicht angegeben werden.
+\begin{description}
+\item[\textit{Format}] Spezifikation eines Formates, welchem
+entsprechend die nachfolgende Zeitangabe interpretiert werden soll.
+\item[\textit{Timestamp}] Der entsprechend \textit{Format} zu
+interpretierende Zeitpunkt.
+\end{description}
+
+\emph{Eltern:} Kommt vor bei allen Dokumenten.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Muss immer vorhanden sein bei den Use-Modi \texttt{serve}, \texttt{checkout}
+und \texttt{info}.\\
+                Darf nicht vorhanden sein bei den Use-Modi \texttt{checkin}, \texttt{component},
+\texttt{link}.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Inhalte (Content)}
+\label{sec_content}
+\emph{Knoten-Name:} \texttt{<mumie:content> ... </mumie:content>}
+
+\emph{Attribute:}
+
+\emph{Beschreibung:} Container für die eigentlichen Elementeninhalte.\\
+Bei Dokumenten mit XML-Inhalt \verb+(element, subelement, page, course\_section)+ k"onnen im Inhalt
+die unter \texttt{<mumie:components> ... </mumie:components>} und \texttt{<mumie:links> ... </mumie:links>}aufgef"uhrten Wurzelknoten mit Local Ids
+referenziert werden.\\
+
+\emph{Eltern:}  Kommt vor bei allen Dokumenten vor.\\
+\emph{Kinder:}  Entweder: Genau ein \texttt{link}-Knoten, oder xml-Inhalt.\\
+\emph{Kontext:} Wird bei den Use-Modi \texttt{info} \texttt{component}, \texttt{link} weggelassen.\\
+Bei Dokumenten mit XML-Inhalt \verb+(element, subelement, page, course\_section)+ kann hier bei den
+Use-Modi \texttt{serve} und \texttt{checkout} der Inhalt integriert sein. Dann muss der
+Inhalt g"ultiges XML sein, also insbesondere mit genau einem Wurzelknoten.\\
+Sonst, also bei Dokumenten mit Bin"arinhalten und beim Use-Mode \texttt{checkin} immer, wird im
+enthaltenen \texttt{link}-Knoten die URL des eigentlichen Dokumentinhaltes
+spezifiziert. Siehe dazu auch Kapitel \ref{sec_url}.
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Dateiformat (content\_type)}
+\label{sec_content_type}
+\emph{Knoten-Name:} \texttt{<mumie:content\_type />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+
+%FIXME: Nochmal "uberlegen, ob hier auch Name oder Type/Subtype angegeben werden kann
+%FIXME: In den zust"andigen JAPS-Klassen bisher nur id. DB-Tabelle "media_types" h"angt in
+%FIXME: der Luft !!
+\texttt{type}&\textit{Typ}\\
+\texttt{subtype}&\textit{SubTyp}\\
+
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation
+\begin{itemize}
+\item einer\textit{Id} oder
+\item eines Paares (\textit{Typ},\textit{SubTyp})
+\end{itemize}
+in der Datenbanktabelle \texttt{media\_types}.\\
+Es sind zur Zeit folgende Medien-Typen vorgesehen:
+\begin{center}
+\begin{tabular}{l|l|l}
+ id & type  & subtype\\
+\hline
+  0 & audio & mpeg\\
+  1 & audio & wav\\
+  2 & image & gif\\
+  3 & image & jpeg\\
+  4 & image & png\\
+  5 & image & tiff\\
+  6 & text  & css\\
+  7 & text  & html\\
+  8 & text  & plain\\
+  9 & text  & xml\\
+\end{tabular}
+\end{center}
+Letzte Instanz in der Frage, welche Media-Typen in dieser Tabelle deklariert werden, ist die
+Datei japs/config/config.xml und hier der Abschnitt \texttt{<media\_types>}.
+
+\emph{Eltern:} Kommt bei allen Dokumenttypen vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:}\\
+Kommt bei den Use-Modi \texttt{checkout} und \texttt{info} mit dem \textit{Id}-Attribut vor.\\
+Sollte beim Use-Mode \texttt{checkin} angegeben werden. Hier kann das Attributpaar
+(\textit{Typ},\textit{SubTyp}), das dann - falls in der Datenbank vorhanden - intern zur
+entsprechenden Id aufgel"ost wird.\\
+Beim online-checkin, aber NICHT beim build-checkin, kann der content\_type auch als
+\textit{Id}-Attribut angegeben werden.\\
+Wenn kein content\_type angegeben ist, wird {\bf -1},  (d.h. f"ur den JAPS: UNDEFINED) angenommen.\\
+Wird bei den Use-Modi \texttt{serve}, \texttt{component}, \texttt{link} weggelassen.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Gr"osse der Datei (content\_length)}
+\label{sec_content_length}
+\emph{Knoten-Name:} \texttt{<mumie:content\_length />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{value}&\textit{VALUE}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Gr"osse der Daten in Byte
+\begin{description}
+\item[\textit{VALUE}] Integerzahl, die die Anzahl der Bytes des content angibt.
+\end{description}
+
+\emph{Eltern:}  Kommt vor bei allen Dokumenten vor.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} Wird bei den Use-Modi \texttt{serve}, \texttt{component}, \texttt{link} weggelassen.\\
+Beim Checkin ist \texttt{<mumie:content\_length />} optional. Beachte, dass jedoch beim
+Online-Checkin (siehe \ref{sec_checkin}) die Angabe der Dateigr"osse in jedem Fall ignoriert
+und stattdessen neu gemessen wird.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Quellen (Sources)}
+\label{sec_sources}
+Siehe auch die Beschreibung im Anhang (\ref{sec_quellen})\\
+\emph{Knoten-Name:} \texttt{<mumie:sources> ... </mumie:sources>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container für die Spezifikation der Quellen des
+Dokuments.
+
+\emph{Eltern:} Kommt vor bei allen Dokumenten.\\
+\emph{Kinder:} Beliebig viele \texttt{text\_source}-, bzw. \texttt{binary\_source}-Knoten,
+falls f"ur diesen Dokumenttyp durch die boolschen Attribute "has-[text/binary]-source" in
+config/config.xml zugelassen.\\
+\emph{Kontext:} Kann nur vorhanden sein beim Use-Modi \texttt{checkin} (und vermutlich in
+irgendeiner Form beim \texttt{checkout}).\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Quelle im Textformat (Text Source)}
+
+\emph{Knoten-Name:} \texttt{<mumie:text\_source> ... </mumie:text\_source>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation einer an der Entstehung des Dokuments beteiligten
+Quelle. Die \textit{Id} gibt {\bf beim checkout und checkin} die Datenbank-Id der Quelle in der Tabelle
+\texttt{text\_sources} an.
+Die \textit{URL} gibt {\bf beim checkin} die Datei relativ zum checkin-Wurzelverzeichnis an.\\
+
+\emph{Eltern:}  Kommt nur vor als Kind eines \texttt{<mumie:sources>}-Knotens.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} Kann in allen Dokumenttypen vorkommen, nat"urlich genau dann, wenn ein
+\texttt{<mumie:sources>}-Knoten vorkommt und dieser Dokumenttyp laut Konfiguration
+(config/config.xml) Textquellen hat.
+Beim build-checkin muss das \textit{URL}-Attribut gesetzt sein; das \textit{Id}-Attribut
+wird ignoriert\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Quelle im Binaryformat (Binary Source)}
+
+\emph{Knoten-Name:} \texttt{<mumie:binary\_source> ... </mumie:binary\_source>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation einer an der Entstehung des Dokuments beteiligten
+Quelle. Die \textit{Id} gibt {\bf beim checkout und checkin} die Datenbank-Id der Quelle in der Tabelle
+\texttt{binary\_sources} an.
+Die \textit{URL} gibt {\bf beim checkin} die Datei relativ zum checkin-Wurzelverzeichnis an. (siehe \ref{sec_sources}).\\
+
+\emph{Eltern:}  Kommt nur vor als Kind eines \texttt{<mumie:sources>}-Knotens.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} Kann in allen Dokumenttypen vorkommen, nat"urlich genau dann, wenn ein
+\texttt{<mumie:sources>}-Knoten vorkommt und dieser Dokumenttyp laut Konfiguration
+(config/config.xml) Binaryquellen hat.
+Beim build-checkin muss das \textit{URL}-Attribut gesetzt sein; das \textit{Id}-Attribut
+wird ignoriert\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Autoren (Authors)}
+\label{sec_authors}
+\emph{Knoten-Name:} \texttt{<mumie:authors> ... </mumie:authors>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container für die Spezifikation der Autoren des
+Dokuments.
+
+\emph{Eltern:} Kommt vor bei allen Dokumenten.\\
+\emph{Kinder:} Beliebig viele \texttt{author}-Knoten, mindestens einer.\\
+\emph{Kontext:} Muss immer vorhanden sein bei den Use-Modi \texttt{checkin}, \texttt{serve},
+\texttt{checkout} und \texttt{info}.\\
+                Darf nicht vorhanden sein bei den Use-Modi \texttt{component}, \texttt{link}.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Autor (Author)}
+
+\emph{Knoten-Name:} \texttt{<mumie:author> ... </mumie:author>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{url}&\textit{URL}\\
+\texttt{role}&\texttt{developer|content checker|tech checker}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation eines an der Entstehung des Elements beteiligten
+Autors. Die \textit{id} gibt dabei die Datenbank-Id des Autors in der Tabelle
+\texttt{users} an (siehe \ref{sec_user}).\\
+
+\emph{Eltern:}  Kommt nur vor als Kind eines \texttt{<mumie:authors>}-Knotens.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} Kann in allen Dokumenttypen vorkommen, nat"urlich genau dann, wenn ein
+\texttt{<mumie:authors>}-Knoten vorkommt.
+Beim build-checkin muss das \textit{URL}-Attribut gesetzt sein\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Leserechte (ReadPermissions)}\label{sec_document_read_permission}
+
+\emph{Knoten-Name:} \texttt{<mumie:read_permissions> ... </mumie:read_permissions>}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Container für die Spezifikation der Usergruppen mit Leserechten auf dieses (Pseudo-)Dokument.\\
+Eine ausf"uhrliche Beschreibung und Spezifikation von Usern, Usergruppen und Permissions
+findet sich in Kapitel \ref{sec_user}.
+ 
+\emph{Eltern:} Kommt vor bei allen Dokumenten ausser bei generischen und bei
+Sections. FIXME: auch f"ur andere Pseudo-Typen ?!\\
+"Ublicherweise kommt genau ein Knoten \texttt{<mumie:read_permissions>} vor mit der Sammlung der
+leseberechtigten Usergruppen.\\
+\emph{Kinder:} Beliebig viele \texttt{user\_group}-Knoten. Eventuell keiner (man sollte in
+Erw"agung ziehen, an anderer Stelle einen default zu definieren)\\
+\emph{Kontext:} Kann vorhanden sein bei den Use-Modi \texttt{checkin}, \texttt{checkout} und \texttt{info}.\\
+                Darf nicht vorhanden sein bei den Use-Modi \texttt{component}, \texttt{link}.\\
+%TODO: diesen Punkt nochmal besprechen
+
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" use_mode="checkin">
+
+<!--  ... andere Metainformationen ...  -->
+
+  <mumie:read_permissions>
+    <mumie:user_group url="user_groups/gruppe1.meta.xml"/>
+          <!--  beim online-checkin auch:  -->
+    <mumie:user_group id="23"/>
+  </mumie:read_permissions>
+</mumie:page>
+
+\end{verbatim}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Schreibrechte (WritePermissions}\label{sec_document_write_permission}
+
+\emph{Knoten-Name:} \texttt{<mumie:write_permissions> ... </mumie:write_permissions>}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Container für die Spezifikation der Usergruppen mit Schreibrechten auf dieses (Pseudo-)Dokument.\\
+Beachte, dass sich die WritePermissions im Fall eines (Nicht-Pseudo-)Dokuments auf den ganzen zugeh"origen
+VC\_Thread (siehe \ref{sec_vc_thread}) beziehen.\\
+Eine ausf"uhrliche Beschreibung und Spezifikation von Usern, Usergruppen und Permissions
+findet sich in Kapitel \ref{sec_user}.
+ 
+\emph{Eltern:} Kommt vor bei allen Dokumenten ausser bei generischen und bei
+Sections. FIXME: auch f"ur andere Pseudo-Typen ?!\\
+"Ublicherweise kommt genau ein Knoten \texttt{<mumie:write_permissions>} vor
+mit der Sammlung der schreibberechtigten Usergruppen.\\
+\emph{Kinder:} Beliebig viele \texttt{user\_group}-Knoten. Eventuell keiner (man sollte in
+Erw"agung ziehen, an anderer Stelle einen default zu definieren)\\
+\emph{Kontext:} Kann vorhanden sein bei den Use-Modi \texttt{checkin}, \texttt{checkout} und \texttt{info}.\\
+                Darf nicht vorhanden sein bei den Use-Modi \texttt{component}, \texttt{link}.\\
+%TODO: diesen Punkt nochmal besprechen
+
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" use_mode="checkin">
+
+<!--  ... andere Metainformationen ...  -->
+
+  <mumie:write_permissions>
+    <mumie:user_group url="user_groups/gruppe1.meta.xml"/>
+          <!--  beim online-checkin auch:  -->
+    <mumie:user_group id="23"/>
+  </mumie:write_permissions>
+</mumie:page>
+
+\end{verbatim}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Usergruppen (user\_groups)}\label{doc_permission}
+
+\emph{Knoten-Name:} \texttt{<mumie:user\_group/>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation einer Usergruppe mit Leserechten auf dieses Dokument oder
+Schreibrechten auf dessen vc\_thread.\\
+
+Eine ausf"uhrliche Beschreibung und Spezifikation von
+Usern, Usergruppen und Permissions findet sich in Kapitel \ref{sec_user}
+
+\emph{Eltern:} Kommt vor innerhalb des \texttt{<mumie:permission>}-Knotens (vgl
+\ref{sec_document_permission} bei allen Dokumenten ausser bei generischen.\\
+\emph{Kinder:}  keine\\
+
+\emph{Kontext:} Kann vorhanden sein bei den Use-Modi \texttt{checkin}, \texttt{checkout} und
+\texttt{info}.\\
+Beim build-checkin muss das \textit{URL} Attribut gesetzt sein, das \textit{Id} Attribut
+wird dann ignoriert.
+                Darf nicht vorhanden sein bei den Use-Modi \texttt{component}.\\
+%TODO: diesen Punkt nochmal besprechen
+
+\pagebreak[5]
+\pagebreak[5]
+%%%%%                         %%%%%%%%%%%%%%%%%%%%
+%%%    Spezielle Metaknoten     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                         %%%%%%%%%%%%%%%%%%%%
+\section{Spezielle Meta-Knoten}
+\label{sec_special}
+\subsection{Beschreibung}
+
+Unter diese Kategorie von Meta-Knoten fallen solche, welche nur bei bestimmten Dokumenttypen
+verwendet werden können. Es handelt sich dabei z.B. um Informationen "uber Breite und H"ohe
+bei Bildern und Movies.
+
+\subsection{Knoten}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Angepasste Metainformation (Custom Metainfo)}
+\label{sec_custom_metainfo}
+
+\emph{Knoten-Name:} \texttt{<mumie:custom\_metainfo> ... </mumie:custom\_metainfo>}
+
+\emph{Attribute:} ggfs. \verb+xmlns:custom="http://www.mumie.net/xml-namespace/document/custom-metainfo"+\\
+
+\emph{Beschreibung:} Spezielle, angepasste Metainformationen. Angabe als spezielles XML.\\
+
+\emph{Eltern:} Kommt vor bei allen Dokumenten ausser \texttt{js\_libs}, \texttt{jars}, \texttt{pages}.\\
+
+\emph{Kinder:} Abh"angig vom verwendeten speziellen XML (s. jeweilige Spezifikation).
+
+\note{
+  Das Specific Metainfo XML sollte als ein von dem hier beschriebenen XML ganz
+  unabh"angiges XML betrachtet und gesondert spezifiziert werden.
+}
+
+%Nicht mehr als jeweils ein \texttt{education\_level}- und ein
+%\texttt{abstraction\_level}-Knoten. Beliebig viele \texttt{link}-Knoten.
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Benutzerhilfe (manual)}
+\label{sec_manual}
+\emph{Knoten-Name:} \texttt{<mumie:manual/>}
+
+\emph{Attribute:}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{ID}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}Verweis auf ein \texttt{page}-Dokument 
+\begin{description}
+\item[\textit{ID}] Eine Datenbank-ID eines \texttt{page}-Dokuments oder\\ 
+\item[\textit{URL}] beim Checkin: Eine Quelle, von der diese \texttt{page} zugleich eingecheckt werden kann. \\
+\end{description}
+
+Soll "ahnlich wie bei den Kindern von \texttt{<mumie:components/>} funktionieren.
+
+\emph{Eltern:}  Kommt vor bei \texttt{images}, \texttt{sounds}, \texttt{movies}, \texttt{applets}, \texttt{jars} und \texttt{js\_libs}.\\
+\emph{Kinder:}  keine\\
+\emph{Kontext:} immer optional. (noch nicht genauer spezifiziert)\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Kategorie (Category) bei Elementen, Subelementen und Übungen}
+\label{sec_category}
+
+\emph{Knoten-Name:} \texttt{<mumie:category />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{Id}\\
+\texttt{name}&\textit{Name}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Mathematische Kategorie des Dokuments (Definition, Lemma,...). Angabe als 
+
+\textit{Id} in der Datenbank-Tabelle \texttt{categories}, die die m"oglichen Kategorien definiert oder als\\
+\textit{Name} in derselben Tabelle.\\
+
+ Zur Zeit sind folgende Kategorien vorgesehen:\\
+
+\begin{center}
+\begin{tabular}{l|l}
+Id&Wertebereich\\
+\hline
+0 &'definition'\\
+1 &'theorem'\\
+2 &'lemma'\\
+3 &'application'\\
+4 &'motivation'\\
+5 &'algorithm'\\
+6 &'proof'\\
+7 &'visualization'\\
+8 &'deduction'\\
+9 &'remark'\\
+10 &'history'\\
+11 &'example'\\
+12 &'exercise\_prototype'\\
+13 &'exercise\_procedure'\\
+14 &'exercise\_online'\\
+15 &'exercise\_worksheet'\\
+\end{tabular}
+\end{center}
+ Letzte Instanz in dieser Hinsicht ist die Datei (path\_to\_japs\_cvs)/japs/config/config.xml im JAPS CVS, und in dieser der Abschnitt \texttt{<categories>}.\\
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:element/>}, \texttt{<mumie:subelement/>} und \texttt{<mumie:exercise/>} vor.\\
+\emph{Kinder:} - \\
+\emph{Kontext:} Muss beim Use-Mode checkin vorhanden sein. beim build-checkin nur als \textit{Name}.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Bei Subelementen: Zugeh"origkeit zu einem oder mehreren Elementen}
+\label{sec_attachable}
+
+\emph{Knoten-Name:} \texttt{<mumie:attachable/>}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Optional. Gibt die Elemente an, in denen das Subelement enthalten
+ist. Wird "ahnlich wie \texttt{<components>} behandelt.\\
+Diese Struktur setzt die inhaltlich-mathematische Gliederung der Elemente in Sections nach
+unten fort.\\
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:subelement/>} vor.\\
+\emph{Kinder:} Kein, ein oder mehrere \texttt{<mumie:element id=ID/>}knoten.\\
+\emph{Kontext:} Noch nicht implementiert.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Bei Übungen: Zugeh"origkeit zu einer oder mehreren Sections}
+\label{sec_contained_in_multi_sections}
+
+\emph{Knoten-Name:} \texttt{<mumie:contained\_in />}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Optional. Gibt die Sections an, in denen die Übung enthalten
+ist. Wird "ahnlich wie \texttt{<components>} behandelt.\\
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:exercise/>} vor.\\
+\emph{Kinder:} Kein, ein oder mehrere \texttt{<mumie:section/>}knoten. Für deren
+Attribute gelten dieselben Regeln wie bei \emph{\ref{sec_contained_in_section}}.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Abbildungsbreite (Width) bei Applets, Flashs, Bildern und Movies}
+\label{sec_width}
+\emph{Knoten-Name:} \texttt{<mumie:width />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{value}&\texttt{VALUE}\\
+\end{tabular}
+\end{center}
+%FIXME: Wertebereiche von VALUE bei width, heigth UND !! duration.
+
+\emph{Beschreibung:} Spezifikation der Abbildungsbreite.
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:applet/>}, \texttt{<mumie:flash/>}, \texttt{<mumie:image/>} und \texttt{<mumie:movie/>} vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Optional. Im Gegensatz zu den meisten anderen Metaknoten kommt dieser auch im Use-Mode \texttt{component} vor.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Abbildungshöhe (Height) bei Applets, Flashs, Bildern und Movies}
+\label{sec_height}
+\emph{Knoten-Name:} \texttt{<mumie:height />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{value}&\texttt{VALUE}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation der Abbildungshöhe.
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:applet/>}, \texttt{<mumie:flash/>}, \texttt{<mumie:image/>} und \texttt{<mumie:movie/>} vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Optional. Im Gegensatz zu den meisten anderen Metaknoten kommt dieser auch im Use-Mode \texttt{component} vor.\\
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Spieldauer (duration) bei Sounds und Movies}
+\label{sec_duration}
+\emph{Knoten-Name:} \texttt{<mumie:duration/>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{value}&\texttt{VALUE}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation der Zeit, die dieser Sound oder dieser Movie beim abspielen dauert.
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:sound/>} und \texttt{<mumie:movie/>} vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Optional. Ist noch nicht genauer spezifiziert, k"onnte aber wie
+\texttt{<mumie:width/>} und \texttt{<mumie:height />} benutzt werden.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Ersatzbild (alt\_image) bei Sounds, Flashs, Movies und Applets}
+\label{sec_alt_image}
+\emph{Knoten-Name:} \texttt{<mumie:alt\_image />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\textit{ID}\\
+\texttt{url}&\textit{URL}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Verweis auf ein \texttt{image}-Dokument, das anstelle dieses
+Dokuments angezeigt werden kann.
+\begin{description}
+\item[\textit{ID}] Eine Datenbank-ID eines \texttt{image}-Dokuments oder\\ 
+\item[\textit{URL}] beim Checkin: Eine Quelle, von der dieses \texttt{image} zugleich eingecheckt werden kann. \\
+\end{description}
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:sound/>}, \texttt{<mumie:flash/>}, \texttt{<mumie:movie/>} und \texttt{<mumie:applet/>} vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Noch nicht implementiert.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Druckbild (print\_image) bei Sounds, Flashs, Movies und Applets}
+\label{sec_print_image}
+\emph{Knoten-Name:} \texttt{<mumie:print\_image />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\texttt{ID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Spezifikation der Datenbank-Id eines Bildes (\texttt{<mumie:image/>}),
+das anstelle dieses Dokuments ausgedruckt werden kann.
+\begin{description}
+\item[\textit{ID}] Eine Datenbank-ID eines \texttt{image}-Dokuments oder\\ 
+\item[\textit{URL}] beim Checkin: Eine Quelle, von der dieses \texttt{image} zugleich eingecheckt werden kann. \\
+\end{description}
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:sound/>}, \texttt{<mumie:flash/>}, \texttt{<mumie:movie/>} und \texttt{<mumie:applet/>} vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Noch nicht implementiert.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Kurstyp (course\_type) bei course\_sections}
+\label{sec_course_type}
+\emph{Knoten-Name:} \texttt{<mumie:course\_type />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\texttt{ID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} optional: Spezifikation einer Id in der Datenbanktabelle course\_types,
+in der verschiedene Kurstypen beschrieben sind. Es kann der Defaultwert 0 angegeben werden.
+
+\emph{Eltern:} Kommt bei \texttt{<mumie:course\_section/>} vor.\\
+\emph{Kinder:} keine\\
+\emph{Kontext:} Noch nicht implementiert.\\
+
+
+\pagebreak[5]
+%--------------------------------------------------------------------------------------------------------
+%                               KOMPONENTEN
+%--------------------------------------------------------------------------------------------------------
+\section{Meta-Knoten für Komponenten und Links}
+\label{sec_components}
+
+Interne Links und Komponenten sind Mumie-Dokumente, die in anderen Mumie-Dokumenten
+vorkommen. Sie werden im Inhaltsteil über lokale
+Identifikatoren referenziert. Unter dem Knoten \texttt{<mumie:components>} befinden sich sämtliche Informationen die 
+notwendig sind, um diese lokalen Identifikatoren aufzulösen. Dies geschieht automatisch. Dabei wird ein
+lokaler Identifikator in eine Datenbank-ID, in eine URL oder in einen Parameternamen (siehe
+Beispiel 2) umgewandelt.\\
+
+\subsection{Beispiel 1}
+
+\begin{verbatim}
+  <mumie:components>
+    <mumie:element lid="Satz von Lehmann" id="85"/>
+    <mumie:applet lid="applet_01" id="34"/>
+
+<!-- es kann theoretisch mit verschiedenen lid's dasselbe gemeint sein: -->
+    <mumie:image lid="bild_01" id="35"/>
+    <mumie:image lid="bild_03" id="35"/>
+\end{verbatim}
+       (Nur !) im Use-Mode checkin kann die Komponente mit einer URL spezifiziert werden.\\
+       Es wird dann immer auf die entsprechende .meta.xml-Datei verwiesen, welche wirklich 
+        zur Verf"ugung stehen muss, gleichzeitig eingecheckt zu werden.
+      Siehe dazu auch das Kapitel \ref{sec_url} "uber URLs
+\begin{verbatim}
+    <mumie:image lid="bild_05" url="japs/document/image/bild_05.meta.xml"/>
+
+  </mumie:components>
+\end{verbatim}
+
+%FIXME: ALLE Beispiele mit use-mode checkin muessen den build-checkin passieren !
+\subsection{Beispiel 2}
+
+Ein Beispiel f"ur das Aufl"osen von lokalen Identifikatoren zu Parameternamen anhand eines
+ganzen Page-Dokuments beim ein- und auschecken.\\
+
+Die Datei heisse XY\_page.meta.xml
+\begin{verbatim}
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+            use_mode="checkin">
+
+  <mumie:name>parameter_example</mumie:name>
+  <mumie:description>
+static frameset page containing context-sensitively 
+two arbitrary pages as frames, specified at request-time
+through request-parameters.
+  </mumie:description>
+  <mumie:copyright>
+(c) Mumie TU Berlin
+  </mumie:copyright>
+  <mumie:authors>
+    <mumie:author id="1"/>
+  </mumie:authors>
+  <mumie:components>
+    <mumie:page lid="topframe" param="top"/>
+    <mumie:page lid="bottomframe" param="bottom" id="1"/>
+  </mumie:components>
+  <mumie:content>
+    <mumie:link url="current:XY_page.content"/>
+  </mumie:content>
+</mumie:page>
+\end{verbatim}
+
+Im selben Verzeichnis liege die Datei XY\_page.content\\
+Sie kann folgendes enthalten:
+\begin{verbatim}
+    <frameset rows="28%,72%">
+      <frame lid="topframe" scrolling="no"/>
+      <frame lid="bottomframe"/>
+    </frameset>
+\end{verbatim}
+
+%FIXME: "UBERSETZEN
+\begin{verbatim}
+<!-- Note, that any request for this page 
+ must contain the request-parameter "top" and
+ can contain the request-parameter "bottom", e.g. "...?top=345&bottom=376",
+ where "1" is the default for "bottom" when not given by the request,
+ specifying database-id's of pages, that are to be
+ "put into the frames".
+ Any Generator "producing" this page must read these
+ parameters from the request and substitute the
+ appropriate components "param" attribute by them.
+ See this example document in use\_mode="serve":
+ Assume, the database gave this page the id 35,
+ when it was checked in.
+ Assume, this page was requested with given
+ request-parameter top=34, where 34 should be the
+ database id of an existing page:
+ "(url-prefix)/document/page/35?top=34"
+-->
+
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+            id="35" 
+            use_mode="serve">
+  <mumie:components>
+    <mumie:page lid="topframe" id="34"/>
+    <mumie:page lid="bottomframe" id="1"/>
+  </mumie:components>
+  <mumie:content>
+    <frameset rows="28%,72%">
+      <frame lid="topframe" scrolling="no"/>
+      <frame lid="bottomframe"/>
+    </frameset>
+  </mumie:content>
+</mumie:page>
+
+<!-- 
+ Had the request additionally contained the parameter
+ "...&bottom=489"
+ , the according line would say:
+ <mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+             lid="bottomframe"
+             id="489"/>
+ Note, that this is the output of a Generator, that
+ is still to be rendered by a Transformer, which will
+ write something like
+ <frame src="(url-prefix)/document/page/34" .../>
+ to the content.
+-->
+\end{verbatim}
+
+%\subsection{Knoten}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Meta-Knoten für Komponenten}
+
+\emph{Knoten-Name:} \texttt{<mumie:components> ... </mumie:components>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container für Komponenten-Knoten zur Beschreibung
+der Inhalte des Elements sowie seiner Struktur.
+
+\emph{Kinder:} Beliebig viele Wurzelknoten im Use-Mode \texttt{component}, die jeweils als Komponente f"ur diesem Dokumenttyp
+zugelassen sind. Siehe dazu die besondere Spezifikation (JAPS-CVS/japs/config.config.xml).
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{einzelne Komponenten}
+\emph{Knoten-Name:} ( Wurzelknoten im use\_mode component:\\
+ \texttt{<mumie:element use\_mode="component"/>} ...)
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{lid}&\textit{LOCAL\_ID}\\
+\texttt{id}&\textit{ID}\\
+\texttt{url}&\textit{QUELLE}\\
+\texttt{param}&\textit{PARAMETERNAME}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Referenzen enthaltener Dokumente. Dienen zur
+Verknüfung der intern und extern verwendeten Dokumenten-IDs.\\
+Innerhalb von \texttt{<mumie:components> ... </mumie:components>} kommen die Wurzelknoten nur im
+use\_mode component vor. Daher kann man hier das Attribut use\_mode=component weglassen. 
+In diesem Kontext fehlen fast alle Metainfos (Ausnahme s.u.).
+\begin{description}
+\item[\textit{LOCAL\_ID}] Spezifikation der innerhalb des Content-Knotens
+(\ref{sec_content}) verwendeten Bezeichners des Dokuments, z.B.: ``Der Satz von Stokes''.
+\item[\textit{ID}] Spezifikation der innerhalb der Datenbank
+verwendeten ID des Dokuments, z.B.: ``35''.
+\item[\textit{QUELLE}] Spezifikation der ausserhalb der Datenbank
+liegendenen Quelle des Dokuments, wenn es (noch?!) nicht eingecheckt ist,
+z.B. eine URL.\\
+Es sollte nur {\bf entweder} das Attribut \texttt{id} {\bf oder} das Attribut \texttt{url} gesetzt sein !
+\item[\textit{PARAMETERNAME}] Spezifikation des in der Request bzw. in der Komponente 
+verwendeten Namens des Parameters.
+\end{description}
+
+\emph{Eltern:} \texttt{<components>}-Knoten\\
+\emph{Kinder:} Bei images, applets und movies werden, wenn der use\_mode des uebergeordneten Wurzelknotens, also des Elternknotens von \texttt{<mumie:components>}, serve ist, width und height angegeben.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%   DEPRECATED    %%%%%%%%%
+%\subsection{Parameter von Komponenten}
+%\label{sec_params}
+%
+%\emph{Knoten-Name:} \texttt{<mumie:param> ... </mumie:param>}
+%
+%\emph{Attribute:}
+% \begin{center}
+%\begin{tabular}{l|l}
+%Name&Wertebereich\\
+%\hline
+%\texttt{lid}&\texttt{LOCAL\_ID}\\
+%\texttt{name}&\texttt{PARAMETERNAME}\\
+%\end{tabular}
+%\end{center}
+%
+%\emph{Beschreibung:} Kontexabh"angige Parameter zu Komponenten, die etwa
+%als Requestparameter in die Abfrage nach der Komponente uebergeben werden koennen.\\
+%Solche Parameter werden auch ueber lokale IDs aufgel"ost.
+%
+%\begin{description}
+%\item[\texttt{LOCAL\_ID}] Spezifikation der innerhalb des Content-Knotens
+%(\ref{sec_content}) verwendeten ID des Parameters
+%\item[\texttt{PARAMETERNAME}] Spezifikation des in der Request bzw. in der Komponente 
+%(Elternknoten) verwendeten Namens des Parameters.
+%\end{description}
+%
+%\emph{Kinder:} - \\
+%
+%
+%--------------------------------------------------------------------------------------------------------
+%                               LINKS
+%--------------------------------------------------------------------------------------------------------
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Meta-Knoten für Links}
+\label{sec_links}
+
+Wie Komponenten.
+
+\emph{Knoten-Name:} \texttt{<mumie:links> ... </mumie:links>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container für Link-Knoten.
+
+\emph{Kinder:} Beliebig viele Dokument-Wurzelknoten,
+ implizit mit Use-Mode \texttt{link}.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{einzelne  Links}
+\emph{Knoten-Name:} Wurzelknoten im Use-Mode \texttt{link}.\\
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{lid}&\texttt{LOCAL\_ID}\\
+\texttt{id}&\texttt{ID}\\
+\texttt{url}&\texttt{QUELLE}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Es sollte nur {\bf entweder} das Attribut \texttt{id} {\bf oder} das Attribut \texttt{url} gesetzt sein !
+
+\emph{Kinder:} Keine.
+\pagebreak[5]
+%
+%%%%%                          %%%%%%%%%%%%%%%%%%%%
+%%%    Metaknoten für Themes     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                          %%%%%%%%%%%%%%%%%%%%
+\section{Meta-Knoten für das Theme-Konzept}
+\label{sec_theme_knoten}
+%
+\subsection{Beschreibung}
+%
+t.b.c.
+%
+\subsection{Knoten}
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Meta-Knoten für Theme-Informationen}
+%FIXME: doofer Titel
+\emph{Knoten-Name:} \texttt{<mumie:themes>} \dots{} \texttt{</mumie:themes>}
+
+\emph{Attribute:} keine
+
+\emph{Beschreibung:} Container-Knoten für alle theme--relevanten
+Meta--Informationen.  
+
+\emph{Eltern:} Kommt bei Dokumenttypen, zu denen es einen generischen
+Dokumenttyp gibt, vor.\\
+\emph{Kinder:} Vorläufig nur genau ein \texttt{<mumie:theme/>}--Knoten\\
+\emph{Kontext:} Optional. Dokumente, die nicht Realisierungen eines
+generischen Dokuments sind, dürfen diesen Knoten \emph{nicht} haben. 
+%
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Einzelne Theme-Information}
+\emph{Knoten-Name:} \texttt{<mumie:theme/>}.\\
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\texttt{ID}\\
+\texttt{generic\_doc\_id}&\texttt{ID}\\
+\texttt{generic\_doc\_url}&\texttt{QUELLE}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} 
+%
+\begin{description}
+\item[\textit{id}] Spezifikation der Datenbank-ID des Themes, innerhalb
+  dessen das vorliegende Dokument ein generisches Dokument realisiert.
+  Dieses Attribut ist optional -- fehlt es, dann bezieht sich das
+  vorliegende Dokument auf das "`default theme"' (Datenbank-ID 0).
+\item[\textit{generic\_doc\_id}] Spezifikation der innerhalb der Datenbank
+verwendeten ID des vom vorliegenden Dokument realisierten Dokuments. 
+\item[\textit{generic\_doc\_url}] Spezifikation der ausserhalb der Datenbank
+liegendenen Quelle des zugehörigen generischen Dokuments, wenn es (noch?!) nicht eingecheckt ist,
+z.B. eine URL.\\
+\end{description}
+%
+Wird vermutlich (FIXME!) nur im Use--Mode \texttt{checkin} verwendet. Es
+sollte nur {\bf entweder} das Attribut \texttt{generic\_doc\_id} {\bf oder}
+das Attribut \texttt{generic\_doc\_url} gesetzt sein!
+
+\emph{Kinder:} Keine.
+
+t.b.c.
+
+\pagebreak[10]
+%%% Pseudo-Dokumente %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\part{Pseudo-Dokumente}
+\label{sec_pseudo}
+
+\begin{itemize}
+\item User
+\item Usergruppen
+\item Themes
+\item Sections
+\item VCThreads ?
+\end{itemize}
+sind Pseudo-Dokumente. Sie "ahneln richtigen Dokumenten insofern sie Entit"aten mit
+eigenen Datenbanktabellen und weitgehend den gleichen Metainformationen sind.
+
+\section{User und Usergruppen (Permissions)}\label{sec_user}
+
+Das Benutzerverwaltungssystem besteht zur Zeit aus Strukturen, die auf den zwei neuen
+Entit"aten \texttt{User} und \texttt{Usergruppen} basiert.\\
+Einzelne User und Usergruppen werden jeweils durch *.meta.xml Dateien (Masterfiles)
+repr"asentiert. Diese haben also die Wurzelnoten\\
+\emph{Knoten-Name:} \texttt{<mumie:user> ... </mumie:user>}\\
+\emph{Knoten-Name:} \texttt{<mumie:user\_group> ... </mumie:user\_group>}\\
+
+User sind durch die bekannte mehrfach-zu-mehrfach Referenz\\
+\emph{Knoten-Name:} \texttt{<contained\_in/>}
+zu Usergruppen verkn"upft.\\
+
+\label{pic_members}
+%\epsfig{file=Pictures/bild1.eps}
+Zwischen Usergruppen und Dokumenten bestehen \texttt{Permissions} genannte Relationen. (\ref{sec_permissions})\\
+Die User werden au"serdem als Autoren in den Metainformationen von Dokumenten
+referenziert. (siehe dazu \ref{sec_authors})
+
+\subsection{User}
+%-------------------------------------------------------------------------------------------------------
+%                               USER
+%-------------------------------------------------------------------------------------------------------
+\emph{Knoten-Name:} \texttt{<mumie:user> ... </mumie:user>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, url+ wie oben in \emph{Abschnitt
+  \ref{sec_common_attrs}} beschrieben, und mit den gleichen Bedeutungen wie dort.\\
+Es k"onnen f"ur User eventuell andere Usemodi verwendet werden, sie beschreiben aber - wie
+jene - einen Kontext innerhalb des JAPS.\\
+
+\emph{Kinder:}\\ 
+
+\texttt{<mumie:login\_name></mumie:login\_name>} siehe \emph{\ref{sec_login_name}}\\
+Der login\_name hat die gleiche Bedeutung wie der name bei Dokumenten,
+d.h. er wird wie dieser verarbeitet.\\
+\texttt{<mumie:first\_name></mumie:first\_name>} siehe \emph{\ref{sec_first_name}}\\
+\texttt{<mumie:surname></mumie:surname>} siehe \emph{\ref{sec_surname}}\\
+\texttt{<mumie:email></mumie:email>} siehe \emph{\ref{sec_email}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:custom\_metainfo></mumie:custom\_metainfo>} siehe \emph{\ref{sec_custom_metainfo}}\\
+\texttt{<mumie:last\_access/>} siehe \emph{\ref{sec_last_access}}\\
+\\
+\texttt{<mumie:theme></mumie:theme>} siehe \emph{\ref{sec_user_theme}}\\
+Anhand des themes wird i. a. entschieden, welches reale Dokument an diesen User bei Abfrage
+eines generische Dokuments ausgeliefert wird. siehe dazu auch Kapitel \emph{\ref{sec_themes}}\\
+\texttt{<mumie:contained\_in></mumie:contained\_in>} siehe \emph{\ref{sec_contained_in_group}}\\
+
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+<mumie:user xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+            use_mode="checkin">
+  <mumie:login_name>Erster</mumie:login_name>
+  <mumie:first_name>Paul</mumie:first_name>
+  <mumie:surname>Musterstudi</mumie:surname>
+  <mumie:email>erster@example.net</mumie:email>
+  <mumie:description>
+    test user.
+  </mumie:description>
+  <mumie:theme id="0"/>
+  <mumie:custom_metainfo>
+    <mumie:link url="current:erster.custom.xml"/>
+  </mumie:custom_metainfo>
+  <mumie:contained_in>
+    <mumie:user_group url="parent:user_groups/gruppe1.meta.xml"/>
+  </mumie:contained_in>
+</mumie:user>
+\end{verbatim}
+
+\subsection{Spezielle Metaknoten f"ur User}
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Loginname}
+\label{sec_login_name}
+\emph{Knoten-Name:} \texttt{<mumie:login\_name> ... </mumie:login\_name>}\\
+\emph{Beschreibung:} Name des Users innerhalb des JAPS. Kann willk"urlich vergeben werden. Dient nur
+internen Zwecken (soll z.B. beim Browsen in der Datenbank angezeigt werden). Darf
+h"ochstens 120 Zeichen lang sein.\\
+
+\emph{Attribute:} keine\\
+\emph{Eltern:}  User-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+\emph{Kontext:} Muss immer vorhanden sein.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Vorname (first\_name)}
+\label{sec_first_name}
+\emph{Knoten-Name:} \texttt{<mumie:first\_name> ... </mumie:first\_name>}\\
+\emph{Beschreibung:} Vorname des Users im wirklichen Leben. Darf
+h"ochstens 120 Zeichen lang sein.\\
+\emph{Attribute:} keine\\
+\emph{Eltern:}  User-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+\emph{Kontext:} Muss immer vorhanden sein.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Nachname (surname)}
+\label{sec_surname}
+\emph{Knoten-Name:} \texttt{<mumie:surname> ... </mumie:surname>}\\
+\emph{Beschreibung:} Nachname des Users im wirklichen Leben. Darf
+h"ochstens 120 Zeichen lang sein.\\
+\emph{Attribute:} keine\\
+\emph{Eltern:}  User-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+\emph{Kontext:} Muss immer vorhanden sein.\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Email-Adresse}
+\label{sec_email}
+\emph{Knoten-Name:} \texttt{<mumie:email> ... </mumie:email>}\\
+\emph{Beschreibung:} email-Adresse des Users. Darf
+h"ochstens 120 Zeichen lang sein.\\
+\emph{Attribute:} keine\\
+\emph{Eltern:}  User-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+\emph{Kontext:} Optional\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Beschreibung (Description)}
+\emph{Knoten-Name:} \texttt{<mumie:description> ... </mumie:description>}\\
+\emph{Beschreibung:} Wie bei Dokumenten. siehe (\ref{sec_description})\\
+\emph{Attribute:} keine\\
+\emph{Eltern:}  User-Wurzelknoten.\\
+\emph{Kinder:}  Textknoten.\\
+%FIXME: sollte nicht zwingend da sein m"ussen beim checkin. ggfs. default
+\emph{Kontext:} Muss immer vorhanden sein, ausser bei den Use-Modi \texttt{component}.\\
+
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Angepasste Metainformation (Custom Metainfo)}
+\emph{Knoten-Name:} \texttt{<mumie:custom\_metainfo> ... </mumie:custom\_metainfo>}
+\emph{Beschreibung:} Wie bei Dokumenten. siehe (\ref{sec_custom_metainfo})\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Zeitpunkt des letzten Login (Last Access)}
+\label{sec_last_access}
+\emph{Knoten-Name:} \texttt{<mumie:last\_access />}\\
+\emph{Beschreibung:} Beschreibt einen noch nicht genauer (FIXME) definierten Zeitpunkt eines
+Kontakts zu diesem User.
+Syntaktisch wie \texttt{<mumie:last\_modified/>} bei Dokumenten. siehe \ref{sec_last_modified}\\
+
+\emph{Attribute:}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{format}&\textit{Format}\\
+\texttt{value}&\textit{Timestamp}\\
+\end{tabular}
+\end{center}
+
+\begin{description}
+\item[\textit{Format}] Spezifikation eines Formates, welchem
+entsprechend die nachfolgende Zeitangabe interpretiert werden soll.
+\item[\textit{Timestamp}] Der entsprechend \textit{Format} zu
+interpretierende Zeitpunkt.
+\end{description}
+
+\emph{Kinder:} keine\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Theme (theme)}
+\label{sec_user_theme}
+\emph{Knoten-Name:} \texttt{<mumie:theme> ... </mumie:theme>}\\
+\emph{Beschreibung:} Anhand des themes wird i. a. entschieden, welches reale Dokument an diesen User bei Abfrage
+eines generische Dokuments ausgeliefert wird. siehe \emph{\ref{sec_themes}}\\
+\emph{Attribute:} Zur Zeit nur id="0", das default theme.\\
+\emph{Eltern:}  User-Wurzelknoten.\\
+\emph{Kinder:}  keine.\\
+\emph{Kontext:} Optional\\
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Zugeh"origkeit zu einer oder mehreren Usergruppen}
+\label{sec_contained_in_group}
+\emph{Knoten-Name:} \texttt{<mumie:contained\_in />}\\
+\emph{Beschreibung:} Ein User ist Mitglied in den hier referenzierten Usergruppen.\\
+Diese Information ist "ubrigens gegen"uber der Datenbank "aquivalent damit, da"s der User im
+\texttt{<mumie:components/>}knoten der Usergruppe referenziert wird (siehe \ref{sec_group_components})\\
+siehe auch die obige Grafik \ref{pic_members}\\
+\emph{Attribute:} keine.\\
+\emph{Kinder:} Kein, ein oder mehrere \texttt{<mumie:user\_group/>}knoten im Usemode \texttt{container}.\\
+\emph{Kontext:} Optional.\\
+
+
+%%% Usergruppen %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Usergruppen}
+%-------------------------------------------------------------------------------------------------------
+%                               USERGRUPPEN
+%-------------------------------------------------------------------------------------------------------
+\emph{Knoten-Name:} \texttt{<mumie:user\_group> ... </mumie:user\_group>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, url+ wie oben in \emph{Abschnitt
+  \ref{sec_common_attrs}} beschrieben, und mit den gleichen Bedeutungen wie dort.\\
+Es k"onnen f"ur Usergruppen eventuell andere Usemodi verwendet werden, sie beschreiben
+aber jedenfalls einen Kontext innerhalb des JAPS.\\
+
+\emph{Kinder:}\\ 
+
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:components></mumie:components>} siehe \emph{\ref{sec_group_components}}\\
+\texttt{<mumie:read\_permissions></mumie:read\_permissions>} siehe \emph{\ref{sec_read_permissions}}\\
+\texttt{<mumie:write\_permissions></mumie:write\_permissions>} siehe \emph{\ref{sec_write_permissions}}\\
+
+\subsubsection{Beispiel}
+
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<!--  this File should be located at checkin/japs/pseudo_document/user_group/gruppe1.meta.xml  -->
+
+<mumie:user_group xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>gruppe1</mumie:name>
+  <mumie:description>
+    test user_group.
+  </mumie:description>
+  <mumie:components>
+    <mumie:user url="japs/pseudo_document/user/zweiter.meta.xml" admin="yes"/>
+  </mumie:components>
+
+<!--  Hier k"onnen noch Eintr"age f"ur Permissions folgen. 
+      Diese werden sp"ater beschrieben \end{verbatim}(siehe \ref{sec_permissions})\begin{verbatim} -->
+</mumie:user_group>
+\end{verbatim}
+
+\subsection{Spezielle Metaknoten f"ur Usergruppen}
+
+\emph{Knoten-Name:} \texttt{<mumie:read\_permissions/>}
+\emph{Beschreibung:} siehe unten.\\
+\emph{Knoten-Name:} \texttt{<mumie:write\_permissions/>}
+\emph{Beschreibung:}siehe unten.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Zugeh"orige User}
+\label{sec_group_components}
+\emph{Knoten-Name:} \texttt{<mumie:components/>}\\
+\emph{Beschreibung:} Die hier referenzierten User sind Mitglieder in dieser Usergruppe.\\
+Diese Information ist "ubrigens gegen"uber der Datenbank "aquivalent damit, da"s der User im
+\texttt{<mumie:components/>}knoten der Usergruppe referenziert wird (siehe \ref{sec_group_components})\\
+siehe auch die obige Grafik \ref{pic_members}\\
+\emph{Attribute:} keine.\\
+\emph{Kinder:} Kein, ein oder mehrere \texttt{<mumie:user/>}knoten, implizit im Usemode
+\texttt{component}. Diese Knoten k"onnen das Attribut \texttt{admin="true"} haben\\
+\emph{Kontext:} Optional.\\
+
+\emph{Beispiel:}
+\begin{verbatim}
+  <mumie:components>
+    <mumie:user id="69"/>
+    <mumie:user id="701" admin="yes"/>
+    <mumie:user url="parent:users/erster.xml"/>
+  </mumie:components>
+\end{verbatim}
+
+%%% Permissions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Permissions}\label{sec_permissions}
+
+%-------------------------------------------------------------------------------------------------------
+%                               Read Permissions
+%-------------------------------------------------------------------------------------------------------
+\subsubsection{Read Permissions}\label{sec_read_permissions}
+
+Zwischen Usergruppen und allen Dokumenttypen besteht die mehrfach-mehrfach Relation der
+Leserechte. Sie soll in der hier auftauchenden Form \texttt{<mumie:read\_permissions/>}
+Dokumente definieren, die an die Mitgliedern dieser Usergruppe ausgeliefert werden k"onnen.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\emph{Knoten-Name:} \texttt{<mumie:read\_permissions/>}\\
+\emph{Beschreibung:} Sammlung von Dokumenten\\
+Diese Information ist "ubrigens gegen"uber der Datenbank "aquivalent damit, da"s die Usergruppe im
+\texttt{<mumie:permission type="read"/>}knoten des Dokuments referenziert wird (siehe \ref{sec_document_permission})\\
+\emph{Attribute:} keine.\\
+\emph{Kinder:} Kein, ein oder mehrere Dokument-Wurzelknoten wie \texttt{<mumie:page/>} und
+\texttt{<mumie:generic\_image/>}, implizit im Usemode \texttt{component}.\\
+\emph{Kontext:} Optional.\\
+
+\emph{Beispiel:}
+\begin{verbatim}
+  <mumie:read_permissions>
+    <mumie:page url="japs/document/page/fallback.meta.xml"/>
+    <mumie:page url="japs/document/page/blank.meta.xml"/>
+    <mumie:page url="japs/document/page/course_browser_applet.meta.xml"/>
+    <mumie:page url="japs/document/page/my_desktop.meta.xml"/>
+    <mumie:page url="japs/document/page/frameset_course_viewer.meta.xml"/>
+    <mumie:page id="2"/>
+    <mumie:image url="japs/document/image/arrowhead_right_6x12.meta.xml"/>
+  </mumie:read_permissions>
+\end{verbatim}
+%-------------------------------------------------------------------------------------------------------
+%                               Write Permissions
+%-------------------------------------------------------------------------------------------------------
+\subsubsection{Write Permissions}\label{sec_write_permissions}
+
+Es gibt zwei Arten von Schreibrechten:
+\begin{enumerate}
+\item Zwischen Usergruppen und den VCThreads (siehe Kapitel \ref{sec_vc_thread}) besteht die
+mehrfach-mehrfach Relation des Schreibrechts.\\
+Es soll in der hier auftauchenden Form \texttt{<mumie:write\_permissions/>}
+VCThreads definieren, zu denen Mitglieder dieser Usergruppe neue Versionen einchecken
+k"onnen.\\
+Diese Information ist "ubrigens gegen"uber der Datenbank "aquivalent damit, da"s die Usergruppe im
+\texttt{<mumie:permission type="write"/>}knoten eines Dokuments referenziert wird (siehe
+\ref{sec_document_permission}).\\
+Die write\_permission bezieht sich dann auf den zum Dokument
+geh"origen VCThread bzw. (beim checkin der ersten Version eines Dokuments) auf den neuen
+VCTread. \\
+ Weil in manchen F"allen (z.B. build-checkin) der VCThread noch nicht existiert,
+sondern erst gleichzeitig angelegt wird, gibt es hier widerum verschiedene Kontexte
+\begin{enumerate}
+\item checkin dieser Usergruppe gleichzeitig mit ersten Versionen der referenzierten Dokumente
+\item online-checkin dieser Usergruppe mit Verweis auf einen neu zu erzeugenden VCThread
+\item In allen Usemodi au"ser beim build-checkin die Angabe des VCThreads per \texttt{ID}
+\end{enumerate}
+\item Zwischen Usergruppen und Dokumenttypen besteht die mehrfach-einfach Relation der
+  Rechte, neue VCThreads zu erzeugen, und zwar durch schreiben einer ersten Version eines
+  Dokuments des angegebenen Typs.
+%FIXME:
+% Ich bin daf"ur, diese Variante auszugliedern in eine neue <create_permissions/>
+
+\end{enumerate}
+\emph{Knoten-Name:} \texttt{<mumie:write\_permissions/>}\\
+\emph{Beschreibung:} Sammlung von Dokumenten und VCThreads\\
+Diese Information ist "ubrigens gegen"uber der Datenbank "aquivalent damit, da"s die Usergruppe im
+\texttt{<mumie:permission type="write"/>}knoten eines Dokuments referenziert wird (siehe
+\ref{sec_document_permission}) Die write\_permission bezieht sich dann auf den zum Dokument
+geh"origen VCThread bzw. (beim checkin der ersten Version eines Dokuments) auf den neuen
+VCTread. \\
+\emph{Attribute:} keine.\\
+\emph{Kinder:} Kein, ein oder mehrere Dokument-Wurzelknoten wie \texttt{<mumie:page/>} und
+\texttt{<mumie:generic\_image/>}, implizit im Usemode \texttt{component}, wenn diese Usergruppe den
+Usemode \texttt{checkin} hat. (Kontext a)\\
+Kein, ein oder mehrere VCThread-Knoten mit \texttt{URL}-Attribut \texttt{<mumie:vc\_thread
+  url=.../>}, wenn diese Usergruppe den Usemode \texttt{checkin} hat und es ein online-checkin ist. (Kontext b)\\
+Kein, ein oder mehrere VCThread-Knoten mit \texttt{ID}-Attribut \texttt{<mumie:vc\_thread
+  id=.../>}in allen Usemodi au"ser beim build-checkin. (Kontext c)\\
+Kein, ein oder mehrere Dokumenttyp-Knoten \texttt{<mumie:document\_type/>}\\
+\emph{Kontext:} Optional.\\
+
+\emph{Beispiel}
+
+\begin{verbatim}
+  <mumie:write_permissions>
+<!--  Kontext a:
+      Beim build-checkin wird das (zwangslaeufig erste) Dokument angegeben:   -->
+    <mumie:page url="japs/document/page/fallback.meta.xml"/>
+%<!--  Es muss geklaert werden, ob wir diese Form auch beim onlie-checkin zulassen. -->
+
+<!--  Kontext b:
+      Schreibrechte auf gewisse hiermit einzucheckende neue vc_threads 
+      So nur beim online-checkin:   -->
+    <mumie:vc_thread url="content/.../neuesDokument.meta.xml""/>
+    <mumie:vc_thread id="35"/>
+
+<!-- Kontext c:
+      Schreibrechte auf gewisse schon existierende vc_threads   
+      So nur beim onlie-checkin:   -->
+    <mumie:vc_thread id="21"/>
+
+<!--  2. Variante:
+      Rechte, neue vc_threads mit initialem Dokument des angegebenen Typs anzulegen  -->
+    <mumie:document_type name="page"/>
+    <mumie:document_type name="image"/>
+
+  </mumie:write_permissions>
+\end{verbatim}
+
+%%% Themes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Themes (Generische Dokumente)}\label{sec_themes}
+
+Unter anderem mit folgenden Themen:\\
+- themes
+
+%%% Sections %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+%%% Spezielle knifflige Themen %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\part{Spezielle Themen}
+\label{sec_kniff}
+%%% Namespaces %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Namespaces}
+\label{sec_namespace}
+Um anzuzeigen, dass gewisse XML-Knoten mit gewissen Namen wirklich auch semantisch als
+Knoten in MetaXML-Dokumenten der Mumie aufgefasst werden sollen, kann ihnen der sogenannte
+namespace-prefix vorangestellt werden. Zum Beispiel:
+
+\begin{verbatim}
+  <mumie:status id="1"/>
+\end{verbatim}
+
+Hier ist \texttt{status} der eigentliche Name des Knotens und \texttt{mumie} der namespace-prefix.\\
+Im Rootknoten des Dokuments muss dann diesem Prefix eine weltweit eindeutige URI zugeordnet
+werden. Zum Beispiel:
+
+\begin{verbatim}
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+\end{verbatim}
+
+Hier ist \texttt{http://www.mumie.net/xml-namespace/document/metainfo} die
+\texttt{namespace-uri} und 
+\texttt{xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"} die
+\texttt{Deklaration} derselben.\\
+So ist dieser Knoten identifizierbar gegen"uber anderen xml-Knoten desselben Namens
+\texttt{status}, welche zuf"allig in denselben Kontext geraten k"onnten.
+Diese Deklaration ist g"ultig innerhalb des Knotens, in dem er deklariert wird. Das ist
+meistens der Wurzelknoten einer XML-Datei. Es ist "uberfl"ussig, den Namespace in einem
+leeren Knoten wie zum Beispiel:
+ \begin{verbatim}
+<mumie:page use_mode="component" lid="bla" id=".."/>
+\end{verbatim}
+zu deklarieren.\\
+
+In Mumie-MetaXML-Dateien ist die Benutzung des Prefix \texttt{mumie} optional, wird aber
+gew"unscht (der Einfachheit halber).\\
+{\bf Wenn} der Prefix verwendet wird, so {\bf muss} er allerdings auch mit der URI
+\texttt{http://www.mumie.net/xml-namespace/document/metainfo} deklariert werden.\\
+
+\pagebreak[10]
+%%% URLs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{URL als Attribut}
+\label{sec_url}
+
+         t.b.a.
+
+Unter anderem mit folgenden Themen:\\
+- url-prefixe wie current: oder parent:
+
+%%% Dateien %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Verzeichnisstrukturen, Dateinamen und -formate insbes. beim Checkin und Checkout}
+\label{sec_dateien}
+
+\input{filenames}
+
+Siehe auch (erstmal): JAPS-CVS/japs/docs/notes/dateiformat\_checkin\_preview.txt
+
+%%% Dateien %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Quellenverwaltung (Sources)}
+\label{sec_quellen}
+
+Bei nicht-generischen Dokumenten, deren Inhalt {\bf vor} dem einchecken in die JAPS Datenbank
+{\bf gewisse} Transformationen erf"ahrt (insbesondere tex --> xml, aber auch z.B. javac bei
+Applets), soll es m"oglich sein, auch die (tex-)Quelldateien in der Datenbank zu
+speichern. Diese k"onnen dann wieder ausgecheckt werden und das Dokument kann in seiner
+urspr"unglichen (Meta-)Sprache neu bearbeitet werden.\\
+Ein Dokument kann mehrere Quellen haben und eine Quelle kann zu mehreren Dokumenten
+geh"oren.\\
+Quellen werden in
+Textquellen  \begin{verbatim} <mumie:text_source/>\end{verbatim} und Quellen in
+(irgendeinem) Bin"arformat \begin{verbatim} <mumie:binary_source/>\end{verbatim}
+unterschieden. Sie gelten weder als Dokumente, noch als Pseudodokumente, da sie keine
+Metainformationen haben au"ser (nur JAPS-intern: ihrer DatenbankID und) dem Filenamen
+incl. Pfad. Sie sind daher nicht durch eine Masterdatei repr"asentiert.\\
+In einem Checkin-baum k"onnen Quelldateien irgendwo stehen. Auf sie wird in der Masterdatei
+eines Dokuments verwiesen mittels
+\begin{verbatim} 
+<mumie:sources>
+  <mumie:text_source url="...Pfad relativ zum Checkin-baum..."/>
+<!-- \end{verbatim} mit Id nat"urlich {\bf nicht} beim build-checkin: \begin{verbatim} -->
+
+  <mumie:binary_source id="37"/>
+  .
+  .
+</mumie:sources>
+\end{verbatim} 
+
+Dateien, auf die so aus einer Masterdatei verwiesen wird, werden als ''sources'' des
+zugeh"origen Dokuments in die Datenbank aufgenommen.\\
+Nicht jeder Dokumenttyp kann sowohl Texte als auch Binarys als Quelle haben. Dazu haben die
+Dokumentypen in ihrer Beschreibung in config/config.xml die Attribute ''has-text-source''
+und ''has-binary-source''; falls nicht, wird ''no'' angenommen.\\
+{\bf Achtung}:\\
+In Textquellen sollen Komponentenreferenzen nicht vorkommen, weil sie sich ja zwischen checkin und checkout
+"andern k"onnen. Solche Referenzen werden von der "ubersetzenden Instanz (mmtex) in die
+Masterdatei geschrieben und sollten bei dieser Gelegenheit in der Textquelle durch ein
+xml-tag \begin{verbatim} <mumie:reference/>\end{verbatim} (o."a.) ersetzt werden. Dabei muss
+die lokale Id nat"urlich erhalten bleiben.\\
+Muss noch pr"azisiert werden.
+
+%%% LINKS auf andere Spezis %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Andere wichtige Spezifikationen und Dokumentationen}
+\label{sec_others}
+
+         t.b.a.
+
+%%% Anderes %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Noch nicht implementiert:}
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Java-Archiv-Referenzen}
+\emph{Knoten-Name:} \texttt{<mumie:jars> ... </mumie:jars>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container für die Referenzen benötigter Java-Archive.
+
+\emph{Kinder:} Beliebig viele \texttt{jar}-Knoten.
+
+%%% Nächster Knoten %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Java-Archiv-Referenz}
+\emph{Knoten-Name:} \texttt{<mumie:jar />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\texttt{ID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Referenz eines benötigten Java-Archives. Dient
+der datenbankinternen Spezifikation durch die \texttt{ID}.
+
+\emph{Kinder:} -
+
+\end{document}
+
+%%% Bis hierhin durchgearbeitet. Fritz %%%
+
+
+%template
+\subsection{XXX-Knoten}
+
+\emph{Knoten-Name:} \texttt{<mumie:xxx> ... </mumie:xxx>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{}&\texttt{}
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+
+\emph{Kinder:}

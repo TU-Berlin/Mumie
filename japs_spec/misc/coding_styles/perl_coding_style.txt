@@ -1,0 +1,154 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: perl_coding_style.txt,v 1.4 2008/06/03 10:45:27 rassy Exp $
+
+
+                            MUMIE PERL-CODING-STYLE
+
+
+1. Keine Tabs verwenden
+
+  Tabs können von unterschiedlichen Editoren unterschiedlich interpretiert
+  werden. Die Formatierung kann dadurch zunichte gemacht werden.
+
+
+2. Einrückungen im GNU-Stil mit 2 Zeichen Einrücktiefe
+
+  Beispiel:
+
+    if ( $name =~ m/^foo(.*)$/ )
+      {
+        $name = "bar" . $1;
+        $name ~= s/\s+/_/g;
+        # ...
+      }
+
+  Ausnahme: {}-Blöcke mit einzeiligem Inhalt. Hier dürfen die Klammern in der
+  Zeile geschrieben werden. Beispiel:
+
+    if ( $value > 0 && $value < 10 )
+      { $data->{$key} = "foo"; }
+
+
+3. Bei boolschen Ausdrücken ein Leerzeichen nach öffnender und vor schließender
+   Klammer
+
+  Beispiel:
+
+    if ( $value > 2 || $value < -1 )
+      {
+        # ...
+      }
+
+
+4. Ein Leerzeichen vor und nach Operatoren
+
+  Beispiele:
+
+    $name = "foo";
+    $filename =~ s/\.tex$/.xml/;
+    return ($foo ? $foo : "unknown");
+
+  FALSCH:
+
+    $name= "foo";
+    $filename=~ s/\.tex$/.xml/;
+    return ($foo? $foo: "unknown");
+
+
+5. Namen in Kleinbuchstaben mit "_". Namen aussagekräftig wählen
+
+  Beispiele:
+
+    $abs_filename
+    get_abs_filename
+    %names_vs_suffixes
+
+  FALSCH:
+
+    $f (nicht aussagekräftig)
+    $absFilename
+
+
+6. Maximale Zeilenlänge: 90 Zeichen
+
+  Ausnamen sind erlaubt. Wenn möglich, maximale Zeilenlänge jedoch noch unter
+  90 Zeichen halten (ca. 80 Zeichen).
+
+
+7. Nicht mehr als eine Leerzeile zum Trennen von Code-Blöcken
+
+  Beispiel:
+  
+    # Set type and category:
+    $global_data->{document_type_name} = $type;
+    $global_data->{category} = $category;
+
+    # Set the setup and cleanup hooks:
+    $global_data->{setup} = $setup if ( $setup );
+    $global_data->{cleanup} = $cleanup if ( $cleanup );
+
+  FALSCH:
+  
+    # Set type and category:
+    $global_data->{document_type_name} = $type;
+    $global_data->{category} = $category;
+
+
+    # Set the setup and cleanup hooks:
+    $global_data->{setup} = $setup if ( $setup );
+    $global_data->{cleanup} = $cleanup if ( $cleanup );
+
+  Gilt auch für Zwischenräume zwischen Funktions-Definitionen und
+  Top-Level-Kommentaren. Beispiel:
+
+    sub func1
+      {
+        # ...
+      }
+
+    sub func2
+      {
+        # ...
+      }
+
+    # Beschreibung ...
+
+    sub func2
+      {
+        # ...
+      }
+
+  FALSCH:
+
+    sub func1
+      {
+        # ...
+      }
+
+
+    sub func2
+      {
+        # ...
+      }
+
+
+
+    # Beschreibung ...
+
+    sub func2
+      {
+        # ...
+      }
+
+
+8. Zur Gliederung des Codes Kommentare der Form
+
+     # ------------------------------------------------------------------------
+     # Ueberschrift
+     # ------------------------------------------------------------------------
+
+   verwenden.
+
+
+
+-- ENDE DER DATEI --

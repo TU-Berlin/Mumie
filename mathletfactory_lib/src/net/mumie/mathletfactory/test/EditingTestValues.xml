@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+  <unit name="common">
+    <unit name="problem">
+      <data name="d_1">
+        <mn>1,5</mn>
+      </data>
+      <data name="d_2">
+        <mn>1,5</mn>
+      </data>
+      <data name="i_1">
+        <mn>2</mn>
+      </data>
+      <data name="r_1">
+        <mfrac>
+          <mn>1</mn>
+          <mn>2</mn>
+        </mfrac>
+      </data>
+      <data name="c_1">
+        <cnum>
+          <mn>0,5</mn>
+          <mn>0,33</mn>
+        </cnum>
+      </data>
+      <data name="c_2">
+        <cnum>
+        <mfrac>
+          <mn>1</mn>
+          <mn>2</mn>
+        </mfrac>
+        <mfrac>
+          <mn>1</mn>
+          <mn>3</mn>
+        </mfrac>
+        </cnum>
+      </data>
+      <data name="m_1">
+        <mtable xmlns="http://www.w3.org/1998/Math/MathML" class="bmatrix">
+          <mtr>
+            <mtd><mn>1</mn></mtd>
+            <mtd><mi/></mtd>
+          </mtr>
+          <mtr>
+            <mtd><mi/></mtd>
+            <mtd><mn>1</mn></mtd>
+          </mtr>
+        </mtable>
+      </data>
+      
+      <data name="m_2">
+<mtable xmlns="http://www.w3.org/1998/Math/MathML" class="bmatrix">
+  <mtr>
+    <mtd>
+      <mn>2</mn>
+    </mtd>
+    <mtd>
+      <mi/>
+    </mtd>
+  </mtr>
+  <mtr>
+    <mtd>
+      <mi/>
+    </mtd>
+    <mtd>
+      <mn>2</mn>
+    </mtd>
+  </mtr>
+</mtable>
+      </data>
+      
+      <data name="v_1">
+      <mrow>
+      <mn>1</mn>
+      <mn>2</mn>
+      </mrow>
+      </data>
+      
+      <data name="f_1">
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML"><mo>(</mo><mi>x</mi><mo>+</mo><mn>1</mn><mo>)</mo><mo>*</mo><mo>(</mo><msup xmlns="http://www.mumie.net/xml-namespace/mathml-ext"><mrow xmlns="http://www.w3.org/1998/Math/MathML"><mn>1</mn><mo>+</mo><mi>i</mi></mrow><mn xmlns="http://www.w3.org/1998/Math/MathML">-1</mn></msup><mo>)</mo></mrow>
+      </data>
+      
+      
+      <data name="f_3">
+<mrow xmlns="http://www.w3.org/1998/Math/MathML">
+  <mn>2</mn><mi>x</mi>
+</mrow>
+      </data>
+      
+      <data name="f_4">
+        <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+          <mn>2</mn><mi>π</mi>
+        </mrow>
+      </data>
+    </unit>
+  </unit>
+</data_sheet>

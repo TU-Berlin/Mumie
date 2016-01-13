@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy <rassy@math.tu-berlin.de>
+   $Id: xsl_util_i18n_de.content.xml,v 1.11 2009/11/19 11:50:22 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-top-bar-title">MUMIE - Multimediale Mathematikausbildung</xsl:param>
+<xsl:param name="i18n-top-bar-subtitle">TU Berlin &#183; Institut f&#252;r Mathematik</xsl:param>
+<xsl:param name="i18n-start-page">Startseite</xsl:param>
+<xsl:param name="i18n-start-page-descr">Zur Startseite</xsl:param>
+<xsl:param name="i18n-classes">Lehrveranstaltungen</xsl:param>
+<xsl:param name="i18n-courses">Kurse</xsl:param>
+<xsl:param name="i18n-courses-descr">Zur Kursauswahl</xsl:param>
+<xsl:param name="i18n-db-browser">DB-Browser</xsl:param>
+<xsl:param name="i18n-db-browser-descr">Zum DB-Browser</xsl:param>
+<xsl:param name="i18n-admin">Admin</xsl:param>
+<xsl:param name="i18n-admin-descr">Zur Administrator-Seite</xsl:param>
+<xsl:param name="i18n-account">Konto</xsl:param>
+<xsl:param name="i18n-account-descr">&#196;nderung der Konto-Daten</xsl:param>
+<xsl:param name="i18n-info">Metainfos</xsl:param>
+<xsl:param name="i18n-info-expl">Seite mit Metainformationen zu diesem Dokument</xsl:param>
+<xsl:param name="i18n-logged-in-as">Angemeldet&#160;als</xsl:param>
+<xsl:param name="i18n-logout">Abmelden</xsl:param>
+<xsl:param name="i18n-logout-descr">Gesch&#252;tzten Bereich verlassen</xsl:param>
+<xsl:param name="i18n-minimize">Minimieren</xsl:param>
+<xsl:param name="i18n-maximize">Maximieren</xsl:param>
+<xsl:param name="i18n-minimize-top-bar">Titelleiste minimieren</xsl:param>
+<xsl:param name="i18n-maximize-top-bar">Titelleiste maximieren</xsl:param>
+<xsl:param name="i18n-mm-browser">MM-Browser</xsl:param>
+<xsl:param name="i18n-mm-browser-descr">Zum Multimedia-Browser</xsl:param>
+<xsl:param name="i18n-toggle-top-bar">Top-Bar auf-  bzw. zuklappen</xsl:param>
+<xsl:param name="i18n-toggle-nav-frame">Navigationsframe auf- bzw. zuklappen</xsl:param>
+<xsl:param name="i18n-powered-by">Powered by</xsl:param>
+</xsl:stylesheet>

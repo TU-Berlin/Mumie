@@ -1,0 +1,353 @@
+\section{Philosophie und Ziele des "Ubungstools}\label{sec:philosophie}
+
+Die folgenden didaktischen Grund- und Ans"atze sind ein Versuch, die Gedanken
+zu dem Thema, die in den Treffen mit den Vertretern der vier beteiligten
+Hochschulen und im Gespr"ach mit Frau Keitel (FU Berlin) formuliert wurden,
+zusammenzufassen. Sie haben vorl"aufigen Charakter und werden bis Mitte
+September --- zusammen mit Frau Keitel --- "uberarbeitet. Ziel dieser
+Vorabversion ist es, die bereits gesicherten Grunds"atze zu fokussieren und
+an unkritischen Orten mit der konkreten Umsetzung beginnen zu k"onnen.
+
+\subsection{Grunds"atzliches}
+
+Im gesamten Multimediaprojekt soll den Lernenden ein tiefgehendes
+Verst"andnis der Mathematik vermittelt werden. Gleichzeitig soll der
+Anwender in die Lage versetzt werden, das Gelernte zur L"osung seiner
+Probleme zu verwenden.
+
+Die Gesamtkonzeption folgt daher einem zweistufigem Aufbau:\\
+Zur Ausbildung dieses Verst"andnisses und zur Entwicklung von
+Probleml"osungsstrategien ist der sichere Umgang mit den
+\textit{grundlegenden} Elementen der Mathematik wie Definitionen und S"atzen
+und den zugeh"origen prototypischen Anwendungen und Beispielen 
+unabdingbar.\\
+Darauf aufbauend mu"s eine eingehende Besch"aftigung mit
+\textit{komplexeren} Problemen erfolgen, die mit der Entwicklung von
+Probleml"osungs\textit{strategien} einhergeht: Der Lernende soll in
+die Lage versetzt werden, auch komplizierte Probleme selbst"anding zu
+l"osen, f"ur die keine ``Standard''-Methode bekannt ist.
+
+Neben der Sicherheit im Umgang mit den mathematischen Grundlagen ist daher
+nicht die Bereitstellung einer m"oglichst umfangreichen Aufgabensammlung mit
+Musterl"osungen das Ziel, sondern die systematische Heranf"uhrung des
+Lernenden an \text{Strategien} zur Probleml"osung.
+
+\subsection{Didaktische Ans"atze}
+
+t.b.c.
+
+{\footnotesize Um diese Grunds"atze in optimaler Weise didaktisch
+umzusetzen, sind mit Frau Keitel Arbeitstreffen im September geplant.}
+
+\clearpage
+
+\section{Aufbau und Struktur des "Ubungstools}\label{sec:aufbau}
+
+\subsection{Zuordnung der Probleme}
+
+Zur Umsetzung der in Kap. \ref{sec:philosophie} beschriebenen Ziele
+werden im "Ubungstool Aufgaben und Probleme verschiedener Schwierigkeit und
+Komplexit"at zur Verf"ugung gestellt werden. 
+
+Die einfachsten Probleme (\textbf{``Basis-Probleme''}) sind Gesamt-Elementen
+(Elemente zusammen mit ihren Subelementen) zugeordnet.\\
+Sie dienen
+direkt der Ein"ubung des zentralen Gegenstandes eines Elementes
+(Definitionen, S"atze \dots) und setzen daher wenig "ubergreifendes
+Wissen voraus.\\
+Die ``Basis-Probleme'' helfen, die mathematischen Grundlagen zu
+festigen und damit die Grundlage f"ur eine eingehendere Besch"aftigung
+zu schaffen.
+
+Zur L"osung \textbf{komplexerer Probleme} sind mathematische Konzepte aus
+mehreren Elementen oder weiter "ubergeordneten Hierarchien
+(Modulgruppen, Module, Submodule etc.) notwendig. \\
+Erst in solchen Problemen wird das Zusammenwirken der verschiedenen
+mathematischen Ideen deutlich. Gleichzeitig treten erst/gerade diese
+"ubergreifenden Probleme im ``Alltag'' des Anwenders
+auf. \\ 
+"Ubergreifende Probleme werden daher nicht Gesamt-Elementen, sondern
+(je noch ``Komplexit"atsgrad'') den zust"andigen "ubergeordneten
+Hierarchien wie Modulgruppen, Modulen etc. bzw. Kombinationen aus
+diesen zugeordnet.
+
+\clearpage
+
+\subsection{Grundkonzeption}
+
+Den Grund-Baustein des "Ubungstools stellen die
+sog. ``Basis-Probleme'' dar.
+Sie sind inhaltlich identisch mit den (umformulierten) Beispielen
+zu den einzelnen Elementen aus dem Lerntool\footnote{Die Beispiele
+werden von den Autoren von Beginn an in zwei Fassungen formuliert: 
+in einer ``Ziel--L"osung''-Struktur f"ur das Lerntool,
+in einer ``Frage--L"osung''-Struktur f"ur das "Ubungstool.}
+(ggf. auch mit weiteren geeigneten Elementen oder Suelementen
+des Lerntools).\\ 
+Bei der L"osung (komplexer) Probleme kann der Lernende mit Hilfe
+dieser Basisprobleme
+(kleine) Zwischenschritte nachvollziehen, die (mit Hilfe der
+bereitgestellten weiteren Hilfen wie etwa ``kleine Tips'') aufgezeigt
+werden. Sie bilden in diesem Sinne eine ``Basis'' des "Ubungstools, da ("uber
+verschiedene Hierarchiestufen mit immer weniger komplexen
+Teilproblemen) der Lernende bei Bedarf bis zu diesen einfachen
+Problemen gef"uhrt wird\footnote{Da es zu komplexen Problemen keinen
+eindeutigen, "uber Zwischenschritte definierten L"osungsweg gibt, kann
+der Lernende also "uber \textit{unterschiedliche} Basis-Probleme zur
+L"osung gef"uhrt werden.}.
+
+Die Basis-Probleme fungieren hinsichtlich der einzelnen Anteile und
+Themen der komplexen Probleme als ``Musterl"osung'', und zwar im
+Sinne von \textbf{Analog}beispielen\footnote{Allein wegen der sich
+ergebenden Komplexit"at k"onnen die Basis-Probleme nicht auf das
+einzelne komplexe Problem abgestimmt werden (etwa bei einem
+Basis-Problem zur Berechnung einer $3 \times 3$-Determinante w"urden
+die konkreten Zahlen nicht an das jeweilige Problem angepasst).}.
+
+Dieser Ansatz ist konsistent mit der zentralen Philosophie dieses
+Tools: Ziel des "Ubungstools ist die Vermittlung von
+Probleml"osungs\textit{strategien}, nicht die Bereitstellung
+m"oglichst ausgefeilter Musterl"osungen komplexer Probleme, die nicht
+ausreichend auf die sp"atere \textit{eigenst"andige} L"osung
+\text{neuartiger} Probleme vorbereiten w"urden. Auf eine solche
+selbst"andige Bearbeitung von Problemen soll das "Ubungstool
+vorbereiten.
+
+\vspace{5mm}
+
+Grunds"atzlich zu unterscheiden sind somit die folgenden beiden
+Problemtypen:
+
+\begin{list_sabina}
+\item
+\textbf{Basis-Probleme}:
+                 \begin{sub_list_sabina}
+                 \item
+                 sind "aquivalent zu den Beispielen aus dem Lerntool\footnote{modulo 
+                 geeigneter Umformulierung...}
+                 \item
+                 sind direkt einem Gesamt-Element zugeordnet 
+                 \item
+                 haben eine Musterl"osung 
+                 \end{sub_list_sabina}
+\item
+\textbf{komplexe Probleme}: 
+                 \begin{sub_list_sabina}
+                 \item
+                 kommen i.allg. nicht im Lerntool vor
+                 \item
+                 sind "ubergeordneten Hierarchien zugeordnet
+                 \item
+                 haben \textit{keine} Musterl"osung
+                 \item
+                 werden stattdessen stufenweise als Teilprobleme formuliert, die
+                 schlie"slich bis zu den einfachsten Aufgaben f"uhren,
+		 den o.g. Basis-Problemen
+                 \item
+                 haben zus"atzliche Hilfen zur \textit{selbst"andigen} 
+                 Bearbeitung (etwa allgemeine ``Strategie-Elemente'', 
+                 Tips, Zwischenergebnisse, s. Kap. \ref{subsec:hilfen})
+                 \item
+                 leiten den Lernenden mit Hilfe der o.g. Teilprobleme
+		 und den zus"atzlichen Hilfen zu
+		 einer selbst"andigen L"osung an
+                 \end{sub_list_sabina}
+\end{list_sabina}
+
+\clearpage
+
+\subsection{Zugang zum "Ubungstool}\label{subsec:zugang}
+
+Die Benutzung des "Ubungstools ist grunds"atzlich auf zwei verschiedene Arten
+m"oglich: 
+
+\begin{list_sabina}
+\item
+"uber die Hierarchie des Lerntools
+\item
+direkt ("uber eine eigene Einstiegsseite des "Ubungstools)
+\end{list_sabina}
+
+Der dem Benutzer ideal angepa"ste Zugang erfolgt \textbf{aus dem Lerntool}
+bzw. \textbf{aus dessen Hierarchie} 
+heraus: der Lernende kann zu den einzelnen Elementen die Bearbeitung
+von Aufgaben anw"ahlen und dort durch einige (wenige) Einstellungen,
+etwa ein `Heraus/Hineinzoomen'', zu Problemen immer gr"o"serer/kleinerer
+Komplexit"at und anderen Schwierigkeitsgraden gef"uhrt werden. Da bei
+einem Einstieg "uber das Lerntool die komplette inhaltliche
+``Vorgeschichte'' des Benutzers bekannt ist, k"onnen Aufgaben ideal
+ausgew"ahlt und die angebotenen Hilfestellungen f"ur den Benutzer
+optimiert werden. \\
+
+Entscheidende Voraussetzung f"ur diesen Zugang ist lediglich, da"s
+vorher ein Kurs durch den Lernenden ausgew"ahlt wurde, der i.w. seinen
+Vorkenntnissen entspricht\footnote{Der ``"Ubungswillige'' kann also
+durchaus den Eindruck bekommen, er habe es mit einem reinen
+"Ubungstool zu tun, er sieht die Lernelemente des Kurses nicht
+notwendigerweise im Vordergrund.}; es ist jedoch nicht zwingend
+notwendig, da"s zum Einstieg zu den "Ubungsaufgaben einzelne Elemente
+(erneut) angew"ahlt/bearbeitet werden: auch das Abrufen eines
+``Satzes'' kursbegleitender Aufgaben (wieder mit Anpassung an
+verschiedene Schwierigkeitsgrade und Komplexit"atsniveaus) ist
+m"oglich, bei dem der Lernende nur dann zu den Elementen des Lerntools
+zur"uckkehrt, wenn er sie zur Bearbeitung der Aufgaben als
+Hilfestellung (erneut) betrachten m"ochte.
+
+%%Beim Zugang "uber das Lerntool kann
+%%jedoch auch allein die Struktur des bearbeiteten Kurses genutzt
+%%werden, um zu den gew"unschten Aufgaben zu gelangen (ohne die
+%%einzelnen Elemente erneut zu bearbeiten).
+
+Beim reinen Zugang \textbf{"uber das "Ubungstool} (wobei die ``Vorgeschichte''
+des Lernenden unbekannt ist) k"onnen die Hilfestellungen nur wie f"ur
+einen ``Standard-Benutzer'' erfolgen, der einem ``Standard-Kurs''
+gefolgt ist.  Die sich daraus ergebenden Schwierigkeiten liegen auf
+der Hand.\\
+Eine ``vern"unftige'' Eingangsabfrage insbesondere nach den
+Vorkenntnissen des Lernenden w"are enorm aufwendig und damit
+abschreckend f"ur den Benutzer:
+ist eine genaue Benutzeranpassung gew"unscht, so ist es wesentlich
+effizienter und gleichzeitig pr"aziser, wenn der Lernende unter den zu
+einem Gebiet vorhandenen Standardkursen denjenigen ausw"ahlt, der
+seiner Vorgeschichte so nahe wie m"oglich kommt.\\
+Trotz dieser Einschr"ankung bietet sich ein eigenst"andiger Zugang
+als sinnvoll an, dann n"amlich, wenn etwa nach speziellen
+Aufgaben/bestimmten Stichw"ortern gesucht werden soll: hierf"ur mu"s
+eine detaillierte Profisuche bereitgestellt werden.
+
+\clearpage
+
+\subsection{Zus"atzliche Hilfen}\label{subsec:hilfen}
+
+Als Hilfestellungen f"ur die Aufgaben werden angeboten:
+
+\begin{list_sabina}
+\item
+(Verweise auf) \textbf{Basis-Probleme}:
+                 \begin{sub_list_sabina}
+                 \item erscheinen mit vollst"andigen Musterl"osungen
+                 \item bilden die Basis, auf die alle komplexeren Aufgaben
+		 zur"uckgef"uhrt werden k"onnen sollen.
+                 \end{sub_list_sabina}
+\item
+(Verweise auf) \textbf{Strategie-Elemente\footnote{Ein zus"atzliches, 
+bisher noch nicht diskutiertes Tool ``der Mumie'' sollte ein ``Stratego-Tool''
+sein, das allgemeine Probleml"osungsstrategien vermittelt. Die o.g.
+Strategie-Elemente sind Elemente dieses Stratego-Tools. Details folgen.
+Idee: Polya.}}: 
+                 \begin{sub_list_sabina}
+                 \item dienen der Entwicklung von Probleml"osungsstrategien
+zu wichtigen Aufgabentypen
+                 \item vermitteln allgemeine Heransgehensweisen an
+unbekannte Probleme
+                 \end{sub_list_sabina}
+\item
+\textbf{``kleine Tips''}: 
+                 \begin{sub_list_sabina}
+                 \item helfen, komplexere Probleme in handlichere Teilprobleme zu zerlegen
+                 \item f"uhren bei Bedarf bis hin zur Zerlegung in Basis-Probleme
+		 \item k"onnen auch auf Elemente des Lerntools verweisen
+                 \end{sub_list_sabina}
+\item
+\textbf{Zwischenergebnisse}: 
+                 \begin{sub_list_sabina}
+                 \item numerische/boolsche Zwischenergebnisse zur
+"Uberpr"ufung von L"osungen der Teilprobleme
+                 \item dienen der "Uberpr"ufung von Zwischenergebnissen, um
+notfalls eine Zerlegung in weitere Teilprobleme anzuraten
+                 \end{sub_list_sabina}
+\end{list_sabina}
+
+Autoren von "Ubungsaufgaben m"ussen zu jeder "Ubungsaufgabe den
+entsprechenden Satz an Tips, Zwischenergebnissen, Verweisen von
+Basiselemente etc. mitliefern.\\
+Das "Ubungstool sollte daher sinnvollerweise ``von innen nach au"sen''
+entwickelt werden, also von den Aufgaben geringer Komplexit"at hin zu
+den Aufgaben hoher Komplexit"at.
+
+
+\clearpage
+
+\section{Metadaten}\label{sec:metadaten}
+
+Zu beachten ist zun"achst, da"s tats"achlich nicht die einzelnen
+\textit{Probleme}, sondern vielmehr deren \textit{L"osungen} den
+einzelnen Gesamtelementen bzw. Submodulen etc. zugeordnet werden, da
+mehrere L"osungen existieren k"onnen, die \textit{verschiedenen}
+Gesamtelementen bzw. Submodulen etc. zugeordnet werden m"ussen (etwa
+die Berechnung der L"osung eines linearen Gleichungssystemes mit
+verschiedenen Methoden).
+
+Weiter gilt, da"s die Basis-Probleme ebenso wie die komplexeren
+Probleme jeweils die Metadaten der Gesamt-Elemente
+bzw. "ubergeordneten Hierarchien ``erben'', denen sie zugeordnet
+werden. Dadurch wird ihre eigene Metastruktur wesentlich vereinfacht,
+Redundanzen (und Widerspr"uchlichkeiten) vermieden.\\
+
+Als ``eigene'' Metadaten erhalten sie diejenigen zus"atzlichen
+Informationen, die sich auf ``die Aufgabe als solche'', nicht mehr
+aber auf ihre inhaltlichen Abh"angigkeiten beziehen:
+
+\begin{list_sabina}
+\item
+Schl"usselw"orter zur Stichwortsuche
+\item
+Typenbezeichnung wie Rechenaufgabe, Verst"andnisaufgabe, ...
+\item
+Schwierigkeitsgrad, normiert auf ``Erstkontakt''
+\item
+``mathematisches Label'' etwa ``algebraisch'', ``analytisch'', ...
+\item
+...
+\end{list_sabina}
+
+\clearpage
+
+\section{Umsetzung}\label{sec:umsetzung}
+
+Die enge Verkn"upfung vom "Ubungstool mit dem Lerntool erm"oglicht eine
+ideale und f"ur den einzelnen Lernenden optimierte Unterst"utzung des
+Lernprozesses f"ur verschiedenste Nutzergruppen:
+
+\begin{list_sabina}
+\item
+\textbf{komplette ``beginner''} lernen mit Hilfe des Lerntools
+die wesentlichen Begriffe und Konzepte (besser) kennen
+und vertiefen ihre Kenntnisse dann mithilfe der zugeordneten
+"Ubungsaufgaben, die ggf. ihrerseits als Hilfestellung
+wieder auf andere Teile des Lerntools zur"uckverweisen
+\item
+\textbf{Wiederholer, Studierende in der Pr"ufungsvorbereitung}
+spezifizieren mithilfe des Lerntools ihre Vorkenntnisse, 
+erhalten darauf abgestimmte "Ubungsaufgaben und verwenden 
+die Elemente des Lerntools ``zum Nachlesen'', als Hilfestellung etc.
+\end{list_sabina}
+ 
+
+Diese engen Verkn"upfung bedeutet aber, da"s die Realisierung des
+"Ubungstools zur Entwicklung der Inhalte des Lerntools zeitlich
+versetzt geschehen mu"s, da sonst keine Abgleichung hinsichtlich der
+Hierarchie, somit keine inhaltliche Anbindung der Aufgaben an ihre
+Thematik, und keine Spezifikation der Hilfen, Tips und R"uckgriffe auf
+die Basis-Probleme m"oglich sind.\\
+Da die Basis-Probleme selbst (als (umformulierte) Beispiele) bereits
+Bestandteil des Lerntools sind, alle komplexeren Aufgaben aber
+letztlich auf diese zur"uckverweisen, kann mit der Erstellung von
+komplexeren Problemen des "Ubungstools erst begonnen werden, sobald
+die Struktur des Lerntools in den entsprechenden Gebiet weitgehend
+entworfen wurde. 
+
+Das bedeutet aber nicht, da"s nicht bereits mit dem \textit{Sammeln}
+geeigneter Aufgaben schon begonnen werden sollte: in Berlin steht
+das Archivierungsprogramm ``Klaunix'' daf"ur bereit.\\
+Von zentraler Bedeutung ist jedoch \textit{vor} einer Realisierung des
+"Ubungstools eine umfassende Analyse des mathematischen
+Verst"andnisprozesses im allgemeinen mit seinen Auswirkungen auf das
+Design ``vern"unftiger Aufgabentypen und Aufgabenstellungen'' im
+besonderen. Hier erhoffen wir uns intensive Beratung durch Frau
+Prof. Keitel.
+
+
+
+
+

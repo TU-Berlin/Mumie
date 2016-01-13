@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project>
+
+	<target name="init"/>
+	
+  <target name="do.apidoc" depends="init"
+          description="Generates the api documentation">
+    <!-- crazy stuff here, because jar is not recognized
+         within tagletpath -->
+    <unjar src="${taglet.base.dir}/example_taglet.jar"
+           dest="${taglet.base.dir}"/>
+    <javac srcdir="${taglet.base.dir}"
+           destdir="${taglet.base.dir}"
+           debug="off"
+           includeAntRuntime="yes"
+           includes="TodoTaglet.java">
+      <classpath refid="java.tool.classpath"/>
+    </javac>
+    <javadoc sourcepath="doc" destdir="${apidoc.dir}"
+             author="true"
+             version="true"
+             header="${apidoc.header.text}"
+             doctitle="${apidoc.doctitle.text}"
+             windowtitle="${apidoc.windowtitle.text}"
+             bottom="${apidoc.bottom.text}"
+         breakiterator="yes"
+             stylesheetfile="${doc.stylesheet}">
+      <group title="Packages with action-handler and -updater"
+             packages="net.mumie.mathletfactory.action*"/>
+      <group title="Packages with skeleton classes for applet creation"
+             packages="net.mumie.mathletfactory.appletskeleton*"/>
+      <group title="Packages with rendering classes for non-canvas objects"
+             packages="net.mumie.mathletfactory.display*"/>
+      <group title="Packages with mathematical classes"
+             packages="net.mumie.mathletfactory.math*"/>
+      <group title="Packages with MMObject-implementations of mathematical classes"
+             packages="net.mumie.mathletfactory.mmobject*"/>
+      <group title="Packages with transformer classes for MM-Objects"
+             packages="net.mumie.mathletfactory.transformer*"/>
+      <packageset dir="${src.dir}">
+        <exclude name="**/${test.dir.pattern}/"/>
+        <exclude name="**/${sample.dir.pattern}/"/>
+      </packageset>
+      <classpath>
+        <path refid="compile.classpath"/>
+      </classpath>
+      <tag name="mm.sideeffects"
+           description="Side effects:"
+           enabled="yes"
+           scope="methods"/>
+      <tag name="mm.docstatus"
+           description="Document status:"
+           enabled="yes"
+           scope="all"/>
+      <taglet name="ru.k2s.sam.gdk.taglet.ExampleTaglet">
+        <path>
+          <pathelement location="${taglet.base.dir}"/>
+        </path>
+      </taglet>
+      <taglet name="TodoTaglet"
+              path="${taglet.base.dir}"/>
+      <link offline="true"
+            href="${online.java.apidoc}"
+            packagelistLoc="${local.java.apidoc}"/>
+    </javadoc>
+    <antcall target="clean.doc"/>
+  </target>
+     
+  <!--
+    Compiles the doclet classes
+  -->
+  
+  <target name="compile.doclet.classes" depends="init">
+    <javac srcdir="${taglet.base.dir}"
+           destdir="${taglet.base.dir}"
+           includes="**/JavadocStatus.java">
+    </javac>
+  </target>
+
+  <target name="doc.todo"
+          depends="compile.doclet.classes"
+          description="Creates a HTML page that displays the documentation status of the api">
+    <javadoc sourcepath="${src.dir}" doclet="JavadocStatus"
+             docletpath="${taglet.base.dir}"
+             classpathref="compile.classpath">
+      <fileset dir="${src.dir}">
+        <include name="net/**/*.java"/>
+      </fileset>
+      <arg line="-sort a,s -link ../apidoc -destdir ${apidoc.dir}"/> 
+    </javadoc>    
+  </target>
+      
+  <target name="clean.doc" description="Removes all temporary files for the apidoc-taglet">
+    <delete>
+      <fileset dir="${taglet.base.dir}" includes="*.class"/>
+    </delete>
+    <delete dir="${taglet.base.dir}/ru"/>
+    <delete dir="${taglet.base.dir}/META-INF"/>    
+  </target>
+  
+  <target name="compile.build.tools" depends="init">
+    <javac srcdir="${tools.build.dir}"
+           destdir="${tools.build.dir}"
+           debug="off"
+           includeAntRuntime="yes">
+    </javac>
+  </target>
+            
+    <target name="run.TrafoTableDocGenerator"
+            depends="compile.build.tools"
+            description="Creates tables with the registered transformers and drawables">
+      <jar destfile="${lib.dir}/buildTools.jar">
+        <fileset dir="${tools.build.dir}" includes="*.class"/>
+      </jar>
+      <delete>
+        <fileset dir="${tools.build.dir}" includes="*.class"/>
+      </delete>
+      <taskdef name="TrafoTableDocGenerator"
+               classname="TrafoTableDocGenerator"
+               classpath="${lib.dir}/buildTools.jar"/>
+      <TrafoTableDocGenerator
+        trafoFiles="${transformer.settings.dir}/transformer.properties.g2d,
+                    ${transformer.settings.dir}/transformer.properties.j3d,
+                    ${transformer.settings.dir}/transformer.properties.noc"/>
+    </target>
+      
+    <target name="do.docs" depends="init">
+      <antcall target="do.apidoc"/>
+      <antcall target="run.TrafoTableDocGenerator"/>
+      <antcall target="tex.docs"/>
+      <antcall target="copy.docs"/>
+    </target>
+
+    <target name="copy.docs" depends="init">
+      <copy todir="${doc.out.dir}">
+        <fileset dir="${doc.src.dir}"
+                 includes="index.html, FAQ.txt, bugs.txt, unicode_math_symbols.html,
+                           mathlet_design_guidelines.txt, AppletDesign_Template.txt,
+                           howto/make_exercises.html"/>
+      </copy>
+      <copy todir="${doc.out.dir}">
+        <fileset dir="."
+                 includes="README.build.de"/>
+      </copy>
+      <copy todir="${doc.out.dir}">
+        <fileset dir="../appfac4japs/doc"
+                 includes="parameter.html"/>
+      </copy>
+    </target>
+
+    <target name="tex.docs" depends="init">
+      <antcall target="tex.tut"/>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}"/>
+        <arg value="JavaDokumentation"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}/howto"/>
+        <arg value="AddingMMObjects"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}/howto"/>
+        <arg value="WriteAnApplet"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}/divers"/>
+        <arg value="todos"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}/divers"/>
+        <arg value="description_appfac"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}/divers"/>
+        <arg value="FunctionPrimer"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="../appfac4japs/doc"/>
+        <arg value="applet_style_guide"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+    </target>
+      
+    <target name="tex.tut" depends="init">
+      <exec executable="${doc.tool.dir}/compileTexFile" spawn="false">
+        <arg value="${doc.src.dir}/tutorial"/>
+        <arg value="tutorial"/>
+        <arg value="${doc.out.dir}"/>
+      </exec>
+    </target>
+
+</project>

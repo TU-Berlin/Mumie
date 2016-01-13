@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Authors: Fritz Lehmann-Grube <lehmannf@math.tu-berlin.de>
+            Tilman Rassy <rassy@math.tu-berlin.de>
+
+   $Id: xsl_section.content.xml,v 1.18 2010/01/12 13:02:27 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!--
+  Main template
+-->
+
+<xsl:template match="/">
+  <xsl:variable name="path" select="/mumie:section/@path"/>
+
+  <html>
+    <head>
+      <title><xsl:value-of select="$i18n-title"/></title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+
+      <!-- Top-bar: -->
+      <xsl:choose>
+        <!-- If root section, make link "db-browser" "checked": -->
+        <xsl:when test="$path='' or $path='/'">
+          <xsl:call-template name="top-bar">
+            <xsl:with-param name="checked">db-browser</xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="top-bar"/>
+        </xsl:otherwise>
+      </xsl:choose>
+
+      <!-- Main: -->
+      <div class="main-bounded-width">
+        <!-- Headline: -->
+        <h1><xsl:value-of select="$i18n-db-browser"/></h1>
+        <!-- Path and link to parent dir: -->
+        <div class="caption-first">
+          <span class="label"><xsl:value-of select="$i18n-path"/></span>
+          <xsl:choose>
+            <!-- Root section: -->
+            <xsl:when test="$path='' or $path='/'">
+              <xsl:text>&#8211; </xsl:text>
+              <xsl:value-of select="$i18n-root-section"/>
+              <xsl:text> &#8211;</xsl:text>
+              <!-- (No parent dir in this case) -->
+            </xsl:when>
+            <!-- Non-root section: -->
+            <xsl:otherwise>
+              <xsl:value-of select="$path"/>
+              <br/>
+              <a>
+                <xsl:attribute name="href">
+                  <xsl:call-template name="xsl.pseudodoc-url">
+                    <xsl:with-param name="type-name" select="'section'"/>
+                    <xsl:with-param name="context" select="'info'"/>
+                    <xsl:with-param name="id" select="/mumie:section/mumie:contained_in/@id"/>
+                  </xsl:call-template>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-to-parent-section"/>
+              </a>
+            </xsl:otherwise>
+          </xsl:choose>
+        </div>
+        <!-- Table of section contents: -->
+        <table class="genuine">
+          <thead>
+            <tr>
+              <td></td>
+              <td><xsl:value-of select="$i18n-pure-name"/></td>
+              <td><xsl:value-of select="$i18n-type"/></td>
+              <td><xsl:value-of select="$i18n-category"/></td>
+              <td><xsl:value-of select="$i18n-id"/></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <xsl:for-each select="/mumie:section/mumie:contains/*">
+              <xsl:sort select="mumie:pure_name"/>
+              <xsl:if test="not( local-name() = 'section' and @id = 0 )">
+                <xsl:choose>
+                  <xsl:when test="mumie:deleted/@value='true'">
+                      <xsl:call-template name="deleted-doc"/>
+                   </xsl:when>
+                      <xsl:otherwise>
+                        <tr>
+                          <xsl:attribute name="id">
+                            <xsl:value-of select="local-name()"/>
+                            <xsl:text>-</xsl:text>
+                            <xsl:value-of select="@id"/>
+                          </xsl:attribute>
+                          <td>
+                            <xsl:call-template name="checkbox"/>
+                          </td>
+                          <td>                                    
+                            <xsl:call-template name="pure-name"/>
+                          </td>
+                          <td>
+                            <xsl:call-template name="type"/>
+                          </td>
+                          <td>
+                            <xsl:call-template name="category"/>
+                          </td>
+                          <td class="number">
+                            <xsl:value-of select="@id"/>
+                          </td>
+                          <td>
+                            <xsl:call-template name="delete-button"/>
+                          </td>
+                          <td>
+                            <xsl:if test="not( local-name(.) = 'section' )">
+                              <xsl:call-template name="details"/>
+                            </xsl:if>
+                          </td>
+                        </tr>
+                      </xsl:otherwise>
+                   </xsl:choose>
+              </xsl:if>
+            </xsl:for-each>
+           
+          </tbody>      
+     
+        </table> 
+      
+        <table class="buttons">
+          <tr>
+            <td><xsl:call-template name="show-deleted-button"/></td>
+            <td><xsl:call-template name="multi-rm-rc-button"/></td>
+          </tr>
+        </table> 
+    </div>
+    <xsl:call-template name="form"/>
+    
+    </body>
+  </html>
+
+</xsl:template>
+
+
+
+<xsl:template name="deleted-doc">
+  <tr style="display:none;"> <!---->
+    <xsl:attribute name="id">
+      <xsl:value-of select="local-name()"/>
+      <xsl:text>-</xsl:text>
+      <xsl:value-of select="@id"/>
+    </xsl:attribute>
+    <td>
+      <xsl:call-template name="checkbox"/>
+    </td>
+    <td>
+      <strike>
+        <xsl:call-template name="pure-name"/>
+      </strike>
+    </td>
+    <td>
+      <xsl:call-template name="type"/>
+    </td>
+    <td>
+      <xsl:call-template name="category"/>
+    </td>
+    <td class="number">
+      <xsl:value-of select="@id"/>
+    </td>
+    <td>
+      <xsl:call-template name="recover-button"/>
+     </td>
+    <td>
+      <xsl:if test="not( local-name(.) = 'section' )">
+        <xsl:call-template name="details"/>
+      </xsl:if>
+    </td>
+  </tr>
+</xsl:template>
+
+
+<!--
+  Outputs the document type name. This template may be changed in the future to output 
+  a name in the user's language.
+ -->
+
+<xsl:template name="type">
+  <xsl:value-of select="local-name()"/>
+</xsl:template>
+
+<!--
+  Outputs the category name. This template may be changed in the future to output a
+  name in the user's language.
+-->
+
+<xsl:template name="category">
+  <xsl:value-of select="mumie:category/@name"/>
+</xsl:template>
+
+<!--
+  Outputs the pure name, as a link to the respective (pseudo-)document.
+-->
+
+<xsl:template name="pure-name">
+  <xsl:variable name="type" select="local-name()"/>
+  <a>
+    <xsl:attribute name="href">
+      <xsl:choose>
+        <xsl:when test="$type = 'section' or
+                        $type = 'user' or
+                        $type = 'user_group' or
+                        $type = 'theme' or
+                        $type = 'language' or
+                        $type = 'class' or
+                        $type = 'tutorial' or
+                        $type = 'semester'">
+          <xsl:call-template name="xsl.pseudodoc-url">
+            <xsl:with-param name="context" select="'info'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:when test="$type = 'applet'">
+          <xsl:call-template name="xsl.document-url">
+            <xsl:with-param name="context" select="'wrap'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="xsl.document-url"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+    <xsl:value-of select="mumie:pure_name"/>
+  </a>
+</xsl:template>
+
+
+<xsl:template name="details">
+  <xsl:variable name="type" select="local-name()"/>
+  <a class="button-inline">
+    <xsl:attribute name="href">
+      <xsl:choose>
+        <xsl:when test="$type = 'section' or
+                        $type = 'user' or
+                        $type = 'user_group' or
+                        $type = 'theme' or
+                        $type = 'language' or
+                        $type = 'class' or
+                        $type = 'tutorial' or
+                        $type = 'semester'">
+          <xsl:call-template name="xsl.pseudodoc-url">
+            <xsl:with-param name="context" select="'info'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="xsl.document-url">
+            <xsl:with-param name="context" select="'info'"/>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-details"/>
+  </a>
+</xsl:template>
+
+<xsl:template name="show-deleted-button">
+  <a class="button-inline" href="javascript:toggleDisplay();" id="display">
+    <xsl:value-of select="$i18n-display-deleted"/>
+  </a>
+</xsl:template>
+
+<xsl:template name="multi-rm-rc-button">
+  <a class="button-inline" href="javascript:toggleRmRc();" id="multi-rm-rc" style="color:#D3D3D3">
+    <xsl:value-of select="$i18n-multi-delete"/>
+  </a>
+</xsl:template>
+
+<xsl:template name="delete-button">
+  <a class="button-inline" href="javascript:deleteDocs('{local-name()}:{@id}', 'confirm', '')" >
+    <xsl:value-of select="$i18n-delete"/>
+  </a>
+</xsl:template>
+
+<xsl:template name="recover-button">
+  <a class="button-inline" href="javascript:deleteDocs('{local-name()}:{@id}', 'confirm', 'undelete')">
+    <xsl:value-of select="$i18n-recover"/>
+  </a>
+</xsl:template>
+
+<xsl:template name="checkbox">
+<input type="checkbox" onclick="javascript:toggleSelected('{local-name()}:{@id}')">
+  <xsl:attribute name="id">
+    <xsl:text>checkbox-</xsl:text>
+    <xsl:value-of select="local-name()"/>
+    <xsl:text>-</xsl:text>
+    <xsl:value-of select="@id"/>
+  </xsl:attribute>
+</input>  
+</xsl:template>
+
+
+<xsl:template name="javascript">
+  
+  var mode = "normal";
+  
+  DeletedDocs = new Array(
+  <xsl:for-each select="/mumie:section/mumie:contains/*[mumie:deleted/@value='true']">
+    <xsl:text>"</xsl:text>
+       <xsl:value-of select="local-name()"/>
+      <xsl:text>-</xsl:text>
+      <xsl:value-of select="@id"/>
+      <xsl:text>"</xsl:text>
+    <xsl:if test="position()!=last()">
+      <xsl:text>,</xsl:text>
+    </xsl:if>
+  </xsl:for-each>
+  );
+  
+  NormalDocs = new Array(
+  <xsl:for-each select="/mumie:section/mumie:contains/*[mumie:deleted/@value='false']">
+    <xsl:text>"</xsl:text>
+    <xsl:value-of select="local-name()"/>
+    <xsl:text>-</xsl:text>
+    <xsl:value-of select="@id"/>
+    <xsl:text>"</xsl:text>
+    <xsl:if test="position()!=last()">
+      <xsl:text>,</xsl:text>
+    </xsl:if>
+  </xsl:for-each>
+  );
+
+  var selectedEntities = new Object();
+  
+  function toggleSelected (key)
+  {
+    if ( key in selectedEntities )
+      delete selectedEntities[key];
+    else
+      selectedEntities[key] = 1;
+  
+    if(getSelectedEntities() == "")
+      document.getElementById("multi-rm-rc").style.color = "#D3D3D3"; 
+    else 
+      document.getElementById("multi-rm-rc").style.color = ""; 
+  }
+  
+  
+  
+  function toggleRmRc()
+  {
+  
+    if (getSelectedEntities() == "") 
+          return;
+          
+    if (mode == "normal")
+      deleteDocs(getSelectedEntities(), "confirm", "");
+    else
+      deleteDocs(getSelectedEntities(), "confirm", "undelete");
+  }
+  
+  
+  function getSelectedEntities()
+  {
+      var msg = "";
+      for (var key in selectedEntities)
+      {
+        if(msg != "")
+          msg += ","+key;
+        else
+        msg += key;
+      }
+      return msg;
+  
+  }
+  
+
+  function deleteDocs(entities, mode, task) {  
+
+   var formInput = document.getElementById("entities");
+    formInput.value = entities;
+
+    formInput = document.getElementById("mode");
+    formInput.value = mode;
+  
+    formInput = document.getElementById("task");
+    formInput.value = task;
+  
+   fenster = window.open("", "delete-popup", "width=600,height=400,status=yes,scrollbars=yes,resizable=yes");
+    fenster.focus();
+    document.getElementById("multi-delete-form").submit();
+    
+  }
+
+
+  
+  function toggleDisplay()
+  {
+
+    if (mode == "normal")
+    {
+
+      mode = "recover";
+      document.getElementById("display").innerHTML= "<xsl:value-of select="$i18n-hide-deleted"/>";
+      document.getElementById("multi-rm-rc").innerHTML= "<xsl:value-of select="$i18n-multi-recover"/>";
+      selectedEntities = new Object();
+      for (var i = 0; i &lt; DeletedDocs.length; ++i)  
+          document.getElementById(DeletedDocs[i]).style.display = "";
+          
+          for (var i = 0; i &lt; NormalDocs.length; ++i){  
+          document.getElementById("checkbox-"+NormalDocs[i]).checked = false;
+          document.getElementById("checkbox-"+NormalDocs[i]).disabled = true;
+          document.getElementById("checkbox-"+NormalDocs[i]).style.visibility = "hidden";
+          }
+          
+          document.getElementById("multi-rm-rc").style.color = "#D3D3D3";  
+
+    } 
+    else
+    {
+
+        mode = "normal";
+        document.getElementById("display").innerHTML= "<xsl:value-of select="$i18n-display-deleted"/>"; 
+        document.getElementById("multi-rm-rc").innerHTML= "<xsl:value-of select="$i18n-multi-delete"/>";
+        
+        selectedEntities = new Object();
+
+        for (var i = 0; i &lt; DeletedDocs.length; ++i)
+        {  
+          document.getElementById(DeletedDocs[i]).style.display = "none";
+          document.getElementById("checkbox-"+DeletedDocs[i]).checked = false;
+         }
+          
+        for (var i = 0; i &lt; NormalDocs.length; ++i) {
+          document.getElementById("checkbox-"+NormalDocs[i]).disabled = false;
+          document.getElementById("checkbox-"+NormalDocs[i]).style.visibility = "visible";
+          }
+ 
+        document.getElementById("multi-rm-rc").style.color = "#D3D3D3";  
+
+    }
+   }
+   
+   
+</xsl:template>
+
+
+<xsl:template name="form">
+  <form action="{$xsl.url-prefix}/protected/delete" target="delete-popup" method="post" id="multi-delete-form">
+    <input id="mode" name="mode" type="hidden"/>
+    <input id="task" name="task" type="hidden"/>
+    <input id="entities" name="entities" type="hidden"/>    
+  </form>
+</xsl:template>
+
+</xsl:stylesheet>

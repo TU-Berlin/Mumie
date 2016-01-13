@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:lf="http://www.mumie.net/xml-namespace/login-form">
+
+  <lf:i18n-defs lang="de">
+    <lf:i18n-def name="headline">MUMIE Anmeldung</lf:i18n-def>
+    <lf:i18n-def name="explanation">
+      Sie haben eine gesch&#252;tzte Seite angefordert, sind aber z.Z. nicht angemeldet.
+      Um die Seite zu sehen, melden Sie sich bitte zuerst mit Ihrem Konto-Namen und
+      Passwort an: 
+    </lf:i18n-def>
+    <lf:i18n-def name="err-headline">Anmeldung fehlgeschlagen</lf:i18n-def>
+    <lf:i18n-def name="err-causes">M&#246;gliche Ursachen:</lf:i18n-def>
+    <lf:i18n-def name="err-no-account">
+      Sie haben kein Konto bei der MUMIE
+    </lf:i18n-def>
+    <lf:i18n-def name="err-misspelled-account">
+      Konto falsch geschrieben
+    </lf:i18n-def>
+    <lf:i18n-def name="err-misspelled-password">
+      Passwort falsch geschrieben.<br/>
+      Bitte beachten Sie Gro&#223;- und Kleinschreibung. Ist
+      vielleicht versehentlich <kbd>Caps-Lock</kbd> aktiviert?
+    </lf:i18n-def>
+    <lf:i18n-def name="err-retry">
+      Bitte versuchen Sie es erneut:
+    </lf:i18n-def>
+    <lf:i18n-def name="account">Konto:</lf:i18n-def>
+    <lf:i18n-def name="password">Passwort:</lf:i18n-def>
+    <lf:i18n-def name="login">Anmelden</lf:i18n-def>
+  </lf:i18n-defs>
+
+  <lf:i18n-defs lang="en">
+    <lf:i18n-def name="headline">MUMIE Login</lf:i18n-def>
+    <lf:i18n-def name="explanation">
+      Please login with your account name and password:
+    </lf:i18n-def>
+    <lf:i18n-def name="err-headline">Login failed</lf:i18n-def>
+    <lf:i18n-def name="err-causes">Possible reasons:</lf:i18n-def>
+    <lf:i18n-def name="err-no-account">
+      You don't have an account at this MUMIE server
+    </lf:i18n-def>
+    <lf:i18n-def name="err-misspelled-account">
+      You misspelled the account name
+    </lf:i18n-def>
+    <lf:i18n-def name="err-misspelled-password">
+      You misspelled the password.<br/>
+      The password is case-sensitive. Is perhaps <kbd>Caps-Lock</kbd> enabled?
+    </lf:i18n-def>
+    <lf:i18n-def name="err-retry">
+      Please try again:
+    </lf:i18n-def>
+    <lf:i18n-def name="account">Account:</lf:i18n-def>
+    <lf:i18n-def name="password">Password:</lf:i18n-def>
+    <lf:i18n-def name="login">Login</lf:i18n-def>
+  </lf:i18n-defs>
+
+  <head>
+    <title><lf:i18n-text ref="headline"/></title>
+    <style type="text/css">
+      html
+        {
+          padding: 0pt 0pt 0pt 0pt;
+          margin: 0pt 0pt 0pt 0pt;
+          font-family: Albany AMT, Verdana, Helvetica, sans-serif;
+          font-size: 10pt;
+        }
+      body
+        {
+          margin: 1em 2em 1em 2em;
+          padding: 0px 0px 0px 0px;
+          max-width: 40em;
+        }
+      h2
+        {
+          font-size: 150%;
+        }
+
+      h1
+        {
+          font-size: 200%;
+        }
+
+      h1, h2
+        {
+          font-weight: bold;
+          margin: 1em 0em 1em 0em;
+        }
+      p
+        {
+          padding: 0pt 0pt 0pt 0pt;
+          margin: 1.5ex 0px 1.5ex 0px;
+          text-align: justify;
+        }
+      div.main-bounded-width
+        {
+          margin: 1em 2em 1em 2em;
+          padding: 0pt 0pt 0pt 0pt;
+          max-width: 55em;
+        }
+      div.error
+        {
+          margin: 0pt 0pt 0pt 0pt;
+          padding: 0pt 0pt 0pt 0pt;
+          color: #ff0000;
+        }
+      table.layout
+        {
+          border-collapse: collapse;
+          border-style: none;
+          margin: 0pt 0pt 0pt 0pt;
+          padding: 0pt 0pt 0pt 0pt;
+        }
+
+      table.layout tr, table.layout td
+        {
+          margin: 0pt 0pt 0pt 0pt;
+          padding: 0pt 0pt 0pt 0pt;
+        }
+      input[type="text"], input[type="password"]
+        {
+          font-family: Courier, monospace;
+          padding: 0.4ex 0.0em 0.4ex 0.2em;
+          border-style: inset;
+          border-color: #949494;
+          border-width: 2px;
+        }
+        
+        input[type="text"].focus, input[type="password"].focus, textarea.focus
+        {
+          border-style: solid;
+          border-color: #000000;
+          border-width: 1px;
+        }
+        
+        input[type="text"][readonly], input[type="text"][disabled]
+        {
+          border-color: #A5A5A5;
+          border-width: 1px;
+          color: inherit;
+          background-color: #F5F5F5;
+        }
+        
+        input[type="text"], input[type="password"], textarea
+        {
+          font-family: Courier, monospace;
+          font-size: 10pt;
+          padding: 0.4ex 0.0em 0.4ex 0.2em;
+          border-style: dotted;
+          border-color: #949494;
+          border-width: 1px;
+        }
+
+      *.label
+        {
+          margin: 0ex 0em 0ex 0em;
+          padding: 0.5ex 0.25em 0.5ex 0.0em;
+        }
+      *.input
+        {
+          margin: 0ex 0em 0ex 0em;
+          padding: 0.5ex 0.0em 0.5ex 0.25em;
+        }
+      button[type="submit"]
+        {
+          font-size: 85%;
+          background-color: #EAEAEA;
+          color: #000000;
+          text-decoration: none;
+          padding: 0.4ex 0.75em 0.5ex 0.75em;
+          border-style: solid;
+          border-color: #949494;
+          border-width: 1px;
+          cursor: pointer;
+        }
+      button[type="submit"]:hover
+        {
+          background-color: #f5f5f5;
+        }
+    </style>
+    <script type="text/javascript">
+      function setInputFocusStyle (id)
+      {
+      document.getElementById(id).setAttribute("class", "focus");
+      }
+      
+      function setInputNormalStyle (id)
+      {
+      document.getElementById(id).setAttribute("class", "normal");
+      }
+    </script>
+  </head>
+
+  <body>
+
+    <h1><lf:i18n-text ref="headline"/></h1>
+    <lf:if-error>
+      <lf:then>
+        <div class="error">
+          <h2><lf:i18n-text ref="err-headline"/></h2>
+          <p>
+            <lf:i18n-text ref="err-causes"/>
+            <ol>
+              <li>
+                <lf:i18n-text ref="err-no-account"/>
+              </li>
+              <li>
+                <lf:i18n-text ref="err-misspelled-account"/>
+              </li>
+              <li>
+                <lf:i18n-text ref="err-misspelled-password"/>
+              </li>
+            </ol>
+            <lf:i18n-text ref="err-retry"/>
+          </p>
+        </div>
+      </lf:then>
+      <lf:else>
+        <p>
+          <lf:i18n-text ref="explanation"/>
+        </p>
+      </lf:else>
+    </lf:if-error>
+
+    <form method="post" action="login">
+      <div class="main-bounded-width">
+        <table class="layout">
+          <tr>
+            <td>
+              <div class="label"><lf:i18n-text ref="account"/></div>
+            </td>
+            <td>
+              <div class="input">
+                <input id="INPUT.login-name" type="text" name="login-name" size="20"                  
+                       onfocus="setInputFocusStyle('INPUT.login-name')"
+                       onblur="setInputNormalStyle('INPUT.login-name')"/>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div class="label"><lf:i18n-text ref="password"/></div>
+            </td>
+            <td>
+              <div class="input">
+                <input id="INPUT.password" type="password" name="password" size="20"   
+                       onfocus="setInputFocusStyle('INPUT.password')"
+                       onblur="setInputNormalStyle('INPUT.password')"/>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <p>
+                <div class="buttons">
+                  <button type="submit"><lf:i18n-text ref="login"/></button>
+                </div>
+              </p>
+            </td>
+          </tr>
+        </table>
+        <input type="hidden" name="resource" value="%{resource}"/>
+      </div>
+    </form>
+
+  </body>
+
+</html>

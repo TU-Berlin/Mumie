@@ -1,0 +1,52 @@
+\documentclass[12pt]{article}
+
+\RequirePackage{../macros/mumie}
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+\texttt{\Huge mumie} \textsf{\Huge Style Guide}
+\bigskip
+
+\styletitle{template}
+\phantom.
+\vspace*{3cm}
+
+\ifx\pdfoutput\undefined
+  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+\else
+  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Maintainer:}& xxx\\
+\textsf{Datum:}& \verb+$Date: 2004/01/28 19:36:53 $+\\                  % Wird vom cvs eingetragen
+\textsf{CVS-Version:}& \verb+$Revision: 1.4 $+\\                % Wird vom cvs eingetragen
+\textsf{CVS-Source:}&\verb+$Source: /net/mumie/cvs/styles/template/main.tex,v $+\\ % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%% 
+
+\tableofcontents
+\eject
+
+\section{Hier geht's los}
+
+\end{document}

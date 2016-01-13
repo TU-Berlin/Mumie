@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_tutorials_for_class_i18n_en.content.xml,v 1.8 2009/11/24 16:06:38 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:variable name="i18n-courses">Courses</xsl:variable>
+<xsl:variable name="i18n-title">MUMIE: Tutorials</xsl:variable>
+<xsl:variable name="i18n-headline">Tutorials</xsl:variable>
+<xsl:variable name="i18n-class">Class</xsl:variable>
+<xsl:variable name="i18n-classes">Classes</xsl:variable>
+<xsl:variable name="i18n-course">Course</xsl:variable>
+<xsl:variable name="i18n-csv-export">CSV export</xsl:variable>
+<xsl:variable name="i18n-edit">edit</xsl:variable>
+<xsl:variable name="i18n-traditional-problem-points">Offline problems</xsl:variable>
+<xsl:variable name="i18n-tutorial">Tutorial</xsl:variable>
+<xsl:variable name="i18n-tutor">Tutor</xsl:variable>
+<xsl:variable name="i18n-id">Id</xsl:variable>
+<xsl:variable name="i18n-grades">Grades</xsl:variable>
+<xsl:variable name="i18n-show">Show</xsl:variable>
+<xsl:variable name="i18n-members">Member</xsl:variable>
+<xsl:variable name="i18n-new-tutorial">New Tutorial</xsl:variable>
+<xsl:variable name="i18n-capacity">Capacity</xsl:variable>
+<xsl:variable name="i18n-occupancy">Occupancy</xsl:variable>
+<xsl:variable name="i18n-no-tutorials">No tutorials have been created for this class yet.</xsl:variable>
+
+</xsl:stylesheet>
+

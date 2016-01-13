@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+
+   $Id: pge_missing_receipt_message_de.meta.xml,v 1.1 2009/10/20 14:29:55 linges Exp $
+-->
+
+<mumie:page xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>Quittung fehlt Fehlerseite</mumie:name>
+  <mumie:description>
+    Wird angezeigt falls die angefordetet Quittung nicht vorhanden ist.
+  </mumie:description>
+  <mumie:copyright>
+    Copyright (C) 2009, integral-learning GmbH
+  </mumie:copyright>
+  <mumie:content_type type="text" subtype="xml"/>
+  <mumie:components>
+    <mumie:js_lib path="system/libraries/jsl_mmajax.meta.xml" lid="jsl-ajax"/>
+  </mumie:components>
+  <mumie:gdim_entries>
+    <mumie:gdim_entry generic_doc_path="system/problem/g_pge_missing_receipt_message.meta.xml"
+                      lang_code="de"/>
+  </mumie:gdim_entries>
+</mumie:page>

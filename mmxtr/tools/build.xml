@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmxtr" default="jar" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property name="mmxtr.install.lib.java.dir" value=""/>
+  <property name="mmxtr.install.doc.mmxtr.dir" value=""/>
+  <property name="mmxtr.verbose" value="no"/>
+  <property name="mmxtr.force" value="no"/>
+  <property name="mmxtr.javac.verbose" value="no"/>
+  <property name="mmxtr.javac.deprecation" value="no"/>
+  <property name="mmxtr.javac.debug" value="yes"/>
+  <property name="mmxtr.jar.file" value="mumie-xtr.jar"/>
+  <property name="mmxtr.vendor" value="Berlin University of Technology"/>
+  <property name="mmxtr.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="mmxtr.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmxtr.internal.force">
+    <istrue value="${mmxtr.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmxtr.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmxtr.verbose}">
+      <fileset dir="${basedir}/lib/java/classes">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) mmxtr.internal.force is set, which is
+     equivalent to mmxtr.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="mmxtr.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     mmxtr.internal.force is set, which is equivalent to mmxtr.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${basedir}/src/java"
+           destdir="${basedir}/lib/java/classes"
+           listfiles="${mmxtr.verbose}"
+           classpathref="classpath"
+           deprecation="${mmxtr.javac.deprecation}"
+           verbose="${mmxtr.javac.verbose}"
+           debug="${mmxtr.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes"
+          depends="classes">
+    <jar destfile="${basedir}/lib/java/${mmxtr.jar.file}"
+         basedir="${basedir}/lib/java/classes"
+         excludes=".KEEP_ME">
+      <manifest>
+        <attribute name="Created" value="${mmxtr.timestamp}"/>
+        <section name="net/mumie/util">
+          <attribute name="Specification-Title" value="Mumie XML Transfomer"/>
+          <attribute name="Specification-Version" value="${mmxtr.version}"/>
+          <attribute name="Specification-Vendor" value="${mmxtr.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.mmxtr"/>
+          <attribute name="Implementation-Version" value="${mmxtr.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmxtr.vendor}"/>
+        </section>
+      </manifest>
+    </jar>  
+ 
+  </target>
+
+</project>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Authors: Marek Grudzinski <grudzin@math.tu-berlin.de>
+   $Id: xsl_document_index.meta.xml,v 1.3 2009/12/14 11:18:32 linges Exp $
+-->
+
+<mumie:xsl_stylesheet xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>XSL Stylesheet f&#252;r eine Dokumenten&#252;bersicht</mumie:name>
+  <mumie:description>
+    Stellt zu einem Dokumentyp eine Liste der Dokumente dar
+  </mumie:description>
+  <mumie:copyright>
+    Copyright (C) 2007, Berlin University of Technology
+  </mumie:copyright>
+  <mumie:components>
+    <mumie:generic_xsl_stylesheet lid="xsl-util" path="system/common/g_xsl_util.meta.xml"/>
+    <mumie:generic_xsl_stylesheet lid="xsl-i18n"
+                                  path="system/admin/g_xsl_document_index_i18n.meta.xml"/>
+    <mumie:generic_css_stylesheet lid="css-base" path="system/common/g_css_base.meta.xml"/>
+  </mumie:components>
+  <mumie:content_type type="text" subtype="xml"/>
+  <mumie:gdim_entries>
+    <mumie:gdim_entry generic_doc_path="system/admin/g_xsl_document_index.meta.xml"
+                      lang_code="zxx"/>
+  </mumie:gdim_entries>
+  <mumie:links>
+    <mumie:generic_page lid="pge-admin-home" path="system/admin/g_pge_admin_home.meta.xml"/>
+    <mumie:generic_page lid="pge-db-content" path="system/admin/g_pge_db_content.meta.xml"/>
+  </mumie:links>
+</mumie:xsl_stylesheet>

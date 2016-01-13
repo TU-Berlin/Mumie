@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy <rassy@math.tu-berlin.de>
+   $Id: xsl_problem_i18n_en.content.xml,v 1.3 2008/09/02 12:53:47 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-account">Account</xsl:param>
+<xsl:param name="i18n-applet-status">Applet-Status</xsl:param>
+<xsl:param name="i18n-applet-not-ready">
+  <xsl:text>The Applet is not ready\n</xsl:text>
+  <xsl:text>Please wait a while and try it over again.</xsl:text>
+</xsl:param>
+<xsl:param name="i18n-assertion">Assertion</xsl:param>
+<xsl:param name="i18n-cancel">Cancel</xsl:param>
+<xsl:param name="i18n-change">Change</xsl:param>
+<xsl:param name="i18n-change-points">Change points</xsl:param>
+<xsl:param name="i18n-change-student">Change student</xsl:param>
+<xsl:param name="i18n-clear-student">Clear student-selection</xsl:param>
+<xsl:param name="i18n-close-window">Close window</xsl:param>
+<xsl:param name="i18n-correct">Correct</xsl:param>
+<xsl:param name="i18n-correction">Correction</xsl:param>
+<xsl:param name="i18n-edit">Edit</xsl:param>
+<xsl:param name="i18n-error">ERROR</xsl:param>
+<xsl:param name="i18n-error-in-student-selection">An error occurred during student selection</xsl:param>
+<xsl:param name="i18n-give-tutor">Schriftliche Abgabe bei Ihrem Tutor</xsl:param>
+<xsl:param name="i18n-hide-explanations">Hide explanations</xsl:param>
+<xsl:param name="i18n-id">Id</xsl:param>
+<xsl:param name="i18n-initializing-applet">Applet-Initializing</xsl:param>
+<xsl:param name="i18n-initializing-applet-descr">
+  Please wait till at the bottom of this page the Applet-Status change to "loaded".
+  It can take at the first time an applet loades and with slow internet connection up
+  to 30 sec.
+</xsl:param>
+<xsl:param name="i18n-last-answer-time">Last answer</xsl:param>
+<xsl:param name="i18n-left-frame">Left Frame</xsl:param>
+<xsl:param name="i18n-marking">Correction</xsl:param>
+<xsl:param name="i18n-new-data">New data</xsl:param>
+<xsl:param name="i18n-new-points">New points</xsl:param>
+<xsl:param name="i18n-new-student">New student</xsl:param>
+<xsl:param name="i18n-no">No</xsl:param>
+<xsl:param name="i18n-no-answers-yet">&#8211; no answers yet &#8211;</xsl:param>
+<xsl:param name="i18n-no-expl-available">&#8211; no explanations available &#8211;</xsl:param>
+<xsl:param name="i18n-no-student-selected">&#8211; no student selected &#8211;</xsl:param>
+<xsl:param name="i18n-points">Points</xsl:param>
+<xsl:param name="i18n-problem">Problem</xsl:param>
+<xsl:param name="i18n-right-choice">Right choice</xsl:param>
+<xsl:param name="i18n-student">Student</xsl:param>
+<xsl:param name="i18n-save">Save</xsl:param>
+<xsl:param name="i18n-show-explanations">Show explanations</xsl:param>
+<xsl:param name="i18n-solution">Solution</xsl:param>
+<xsl:param name="i18n-subtask-number">Part</xsl:param>
+<xsl:param name="i18n-problem-solutions">Problem: Solutions</xsl:param>
+<xsl:param name="i18n-try-again">Please try again</xsl:param>
+<xsl:param name="i18n-yes">Yes</xsl:param>
+<xsl:param name="i18n-your-choice">Your choice</xsl:param>
+<xsl:param name="i18n-back">Back</xsl:param>
+<xsl:param name="i18n-answer">Answer</xsl:param>
+<xsl:param name="i18n-explanation">Explanation</xsl:param>
+
+<!-- Info page link: -->
+<xsl:param name="i18n-info">Metainfos</xsl:param>
+<xsl:param name="i18n-info-expl">Page with metainformations for this document</xsl:param>
+</xsl:stylesheet>

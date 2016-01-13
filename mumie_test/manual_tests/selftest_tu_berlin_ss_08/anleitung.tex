@@ -1,0 +1,221 @@
+\documentclass[lang=de]{generic}
+
+\begin{document}
+
+\title{Testanleitung Selbsteinsch"atzungstests TU Berlin Sommersemester 2008}
+\subtitle{Anleitung für Tester}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: anleitung.tex,v 1.4 2008/07/09 15:35:15 rassy Exp $}
+
+\tableofcontents
+
+\section{Einleitung}
+
+Es sollen sämtlichen Aufgaben und Aufgabenblätter des Selbsteinschätzungstests
+geprüft werden. Der Selbsteinschätzungstest ist als Kurs \emph{Elemententare
+Mathematik} in der Mumie organisiert. Es handelt sich um einen "flachen" Kurs
+mit vier Aufgabenblättern und insgesamt 17 Aufgaben. Die Aufgaben sind
+ausschließlich vom Applet-MC-Typ.
+
+Der Selbsteinschätzungstest funktioniert folgendermassen: Jedes Aufgabenblatt
+hat zwei mögliche Zustände: \emph{work} und \emph{feedback}. Im Zustand
+\emph{work} können die Aufgaben bearbeitet und Antworten auf dem Server
+gespeichert werden. Die Bearbeitung kann wie üblich unterbrochen und später
+fortgesetzt werden. Ist der Benutzer mit allen Aufgaben fertig, begibt er sich
+auf die Übersichtsseite des Aufgabenblatts. Dort befindet sich ein Button
+\emph{Auswertung}. Beim Klick auf diesen Button werden (nach einer
+Bestätigungsabfrage) alle Aufgaben des Aufgabenblatts korrigiert und das
+Aufgabenblatt selbst in den Zustand \emph{feedback} versetzt. In diesem Zustand
+wird auf der Übersichtsseite eine individuelle Bewertung angezeigt. Die
+Aufgaben sind nicht bearbeitbar, dafür kann man sich die Korrekturen anzeigen
+lassen. Auf der Übersichtsseite befindet sich ein Button \emph{Neu}. Wird
+dieser angeklickt, so werden (nach einer Bestätigungsabfrage) die Korrekturen
+und personalisierten Daten von allen Aufgaben des Aufgabenblatts gelöscht und
+das Aufgabenblatt selbst wieder in den Zustand \emph{work} versetzt.
+
+Um am Selbsteinschätzungstest teilzunehmen, ist ein Mumien-Konto erforderlich.
+Ein solches kann mit Hilfe eines Web-Formulars angelegt werden.
+
+\section{Übersicht über die zu testenden Eigenschaften}
+
+Getestet werden soll:
+
+\begin{itemize}
+\item das automatische Anlegen eines Mumie-Kontos,
+\item das Layout der Aufgaben, Aufgabenblätter und Übersichtsseiten,
+\item das technische Funktionieren der Aufgaben,
+\item die inhaltliche Richtigkeit der Aufgaben und der Korrekturen,
+\item das individuelle Feedback,
+\item das Umschalten zwischen den Zuständen \emph{work} und \emph{feedback}.
+\end{itemize}
+
+\section{Durchführung}
+
+Konto anlegen. Dazu die URL
+
+\begin{preformatted}%
+  \link{https://cheetah.math.tu-berlin.de/cocoon/public/auth/create-account-form}{https://cheetah.math.tu-berlin.de/cocoon/public/auth/create-account-form}
+\end{preformatted}
+
+aufrufen und das angezeigte Formular ausfüllen. Bei korrekten Eingaben wird das
+Konto erzeugt; anschließend wird man sofort eingeloggt und gelangt auf die
+Startseite. Für spätere Logins die URL
+
+\begin{preformatted}%
+  \link{https://cheetah.math.tu-berlin.de/cocoon/protected/alias/start}{https://cheetah.math.tu-berlin.de/cocoon/protected/alias/start}
+\end{preformatted}
+
+verwenden.
+
+Auf \emph{Kurse} gehen und den Kurs \emph{Elemententare Mathematik} aufrufen.
+Alle Aufgabenblätter durchgehen. Anfangs befinden sich die Aufgabenblätter im
+Zustand \emph{work}. Für jedes Aufgabenblatt die Zusammenfassung prüfen und auf
+folgende Punkte achten:
+
+\begin{itemize}
+\item Ist das Layout korrekt und gut lesbar?
+\item Das individuelle Feedback darf nicht angezeigt werden. Ist das der Fall?
+\item Ist der Inhalt korrekt und verständlich?
+\end{itemize}
+
+Dann alle Aufgaben des Aufgabenblatts durchgehen und auf folgende Punkte
+achten:
+
+\begin{itemize}
+\item Ist das Layout korrekt und gut lesbar?
+\item Ist der Inhalt korrekt und verständlich?
+\item Wird das Applet angezeigt?
+\item Ist das Applet gut in die Seite eingebettet? (Es dürfen keine Scrollbars
+  um das Applet zu sehen sein)
+\item Funktioniert das Applet? (Lassen sich Antworten ankreuzen?)
+\item Lassen sich Antworten speichern?
+\item Funktioniert der \emph{Zurücksetzen}-Button?
+\end{itemize}
+
+Für spätere Vergleiche Screenshot des Applets anfertigen.
+
+Abmelden, Browser schliessen, Browser wieder öffnen, anmelden, zum
+Aufgabenblatt navigieren, alle Aufgaben erneut durchgehen und folgendes prüfen:
+
+\begin{itemize}
+\item Wird die Aufgabe mit denselben personalisierten Daten angezeigt wie
+  vorher?
+\item Werden die gespeicherten Antworten übernommen?
+\end{itemize}
+
+Zur Zusammenfassung navigieren. Button \emph{Auswertung} klicken und
+Bestätigungsabfrage mit \emph{ok} beantworten. Das Aufgabenblatt befindet sich
+jetzt im Zustand \emph{feedback}. Alle Aufgaben des Aufgabenblatts durchgehen
+und auf folgendes achten:
+
+\begin{itemize}
+\item Die Aufgabe darf nicht bearbeitbar sein. Ist das der Fall?
+\end{itemize}
+
+Button \emph{Korrektur} klicken und folgendes prüfen:
+
+\begin{itemize}
+\item Wird die Korrektur angezeigt?
+\item Ist die Korrektur verständlich?
+\item Ist die Korrektur inhaltlich richtig?
+\end{itemize}
+
+Button \emph{Zurück} klicken und folgendes prüfen:
+
+\begin{itemize}
+\item Ist die Punktzahl korrekt?
+\end{itemize}
+
+Punktzahl für späteren Vergleich notieren.
+
+Wenn alle Aufgaben durchgegangen wurden, zur Übersichtsseite zurückgehen.
+Button \emph{Ergebnisse} klicken und folgendes prüfen:
+
+\begin{itemize}
+\item Sind die Einträge für die einzelnen Aufgaben korrekt?
+\item Ist die Gesamtpunktzahl korrekt?
+\end{itemize}
+
+Erreichte und maximale Gesamtpunktzahl notieren.
+
+Button \emph{Zurück} klicken. Jetzt ist man wieder auf der
+Übersichtsseite. Folgendes prüfen:
+
+\begin{itemize}
+\item Ist das Layout korrekt und gut lesbar?
+\item Wird das individuelle Feedback angezeigt?
+\item Ist der Inhalt korrekt und verständlich?
+\item Ist das individuelle Feedback angesichts der erreichten und maximalen
+  Gesamtpunktzahl angemessen?
+\end{itemize}
+
+Button \emph{Neu} klicken und Bestätigungsabfrage mit \emph{ok} beantworten.
+Das Aufgabenblatt befindet sich wieder im Zustand \emph{work}. Alle Aufgaben
+des Aufgabenblatts erneut durchgehen und auf folgendes achten:
+
+\begin{itemize}
+\item Die alten Antworten sollten nicht mehr angezeigt werden. Ist das der Fall?
+\item Wurden neue personalisierte Daten erzeugt? (Vergleich mit Screenshot s.o.)
+\end{itemize}
+
+
+\section{Organisatorisches}
+
+Alle Fehler sollen in unser Bug-Tracking-System eingetragen werden. URL:
+
+\begin{preformatted}%
+  \link{http://www3.math.tu-berlin.de/rt}{www3.math.tu-berlin.de/rt}
+\end{preformatted}
+
+Dabei bitte folgendes beachten:
+
+\begin{itemize}
+\item Fehler, die bereits gemeldet wurden und noch nicht behoben sind, nicht
+  noch einmal melden. Falls sich durch den Test neue Erkenntnisse ergeben,
+  diese bei dem alten Bug eintragen (als Comment oder Reply).
+\item Korrekte Kategorie (Queue) angeben: Funktioniert das Applet nicht
+  richtig: \emph{mathlet-factory}; Layout-Fehler im Applet:
+  \emph{mathlet-factory}; unpassende Applet-Grösse (Scrollbalken zu sehen):  \emph{content};
+  inhaltliche Fehler: \emph{content}; sonst: \emph{japs}
+\item \emph{Owner} nicht setzen
+\item Immer angeben, in welchem Dokument der Fehler aufgetreten ist. Tritt
+  derselbe Fehler in mehreren Dokumenten auf, ein Beispiel-Dokument
+  angeben. Angabe in folgendem Format:
+  \begin{enumerate}
+  \item Nummer und Name des Aufgabenblatts; Nummer und Name der Aufgabe. Beispiel:
+\begin{preformatted}%
+  Aufgabenblatt 1 "Zahlen, Grundfertigkeiten Rechnen",
+  Aufgabe 2 "Rationale Zahlen"
+\end{preformatted}
+  \end{enumerate}
+\item Für jede Durchführung des Tests ein kurzes Protokoll im Plain-Text-Format
+    anlegen. Das Protokoll soll insbesondere folgende Angaben enthalten:
+
+    \begin{itemize}
+    \item Wer getestet hat
+    \item Beginn und Ende des Tests
+    \item Welche Dokumente getestet wurden
+    \item Welche Bugs gemeldet wurden (RT-Ticket-Ids), und bei welchen Dokumenten
+      sie aufgetreten sind
+    \end{itemize}
+
+    Weitere Beobachtungen und Bemerkungen können angefügt werden. Das fertige
+    Protokoll bitte per Mail an
+\begin{preformatted}%
+  \link{mailto:rassy@math.tu-berlin.de}{rassy@math.tu-berlin.de}
+\end{preformatted}
+    schicken. Als Betreff/Subject bitte
+\begin{preformatted}%
+  \code{Testbericht \var{Name}}
+\end{preformatted}
+    angeben, wobei \var{Name} der Name des Testers ist. Das Protokoll bitte als
+    Attachment schicken.
+\end{itemize}
+
+
+
+\end{document}

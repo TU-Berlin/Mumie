@@ -1,0 +1,395 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Sections}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+\end{authors}
+
+\version{$Id: sections.tex,v 1.9 2006/10/13 13:00:42 rassy Exp $}
+
+Der Japs beinhaltet eine hierarchische Gliederunsstruktur, in der alle
+Dokumente und Pseudo-Dokumente eingeordnet sind. Diese Spezifikation beschreibt
+die Gliederunsstruktur selbst sowie ihre Implementierung.
+
+\tableofcontents
+
+\section{Sections-Konzept}
+
+Für den Japs wird eine abstrakte hierarchische Gliederungsstruktur
+definiert. Diese hat eine Implementation in der Japs-DB einerseits und im
+lokalen Dateisystem des Benutzers andererseits.
+
+Die Gliederungsstruktur wird durch sog. "Sections" gebildet. Es gelten
+folgende Prinzipien:
+
+\begin{enumerate}
+
+\item Sections sind Pseudo-Dokumente.
+  
+\item Jedes Dokument, Pseudo-Dokument und jede Dokumenten-Quelle ist in genau
+  einer Section enthalten.
+  
+\item Damit ist insbesondere jede Section in genau einer Section enthalten.
+  Dadurch entsteht die hierarchische Struktur.
+  
+\item\label{rootsection} Die Struktur hat eine eindeutige Wurzel, die sog. "Rootsection". Die
+  Rootsection ist in sich selbst enthalten. Ansonsten sind Zyklen verboten.
+  
+\item Jede Section darf Dokumente, Pseudo-Dokumente und Dokumenten-Quellen
+  enthalten.
+
+\end{enumerate}
+
+
+\section{Implementation in der DB}
+
+Sections werden durch die Tabelle \dbtable{sections} dargestellt. Diese hat
+mindestens die folgenden Spalten:
+
+\begin{enumerate}
+
+\item \dbcol{id} -- Primärschlüssel
+  
+\item \dbcol{filename}\ref{filename} -- Lokaler Verzeichnisname bei Implemetierung im
+  Dateisystem. 
+  
+\item \dbcol{contained_in}\label{contained_in} -- id der Section, in der diese
+  Section enthalten ist.
+
+\end{enumerate}
+  
+Die Spalten \ref{filename} und \ref{contained_in} (\dbcol{filename}
+bzw. \dbcol{contained_in}) sind auch in den Tabellen der Dokumente, übrigen
+Pseudo-Dokumente und Quellen enthalten. \dbcol{filename} enthält dabei den
+sog. Rumpfnamen, d.h. den Dateinamen ohne Pfad und Endungen
+(s. \ref{rumpfname}).
+
+
+
+\section{Implementation auf dem lokalen Dateisystem}
+
+Die Gliederungsstruktur wird auf eine Verzeichnisstruktur abgebildet. Dabei
+gelten folgende Prinzipien:
+
+\begin{enumerate}
+  
+\item\label{section_verz} Jede Section entspricht genau einem Verzeichnis. Solche Verzeichnisse
+  sollen "Section-Verzeichnisse" genannt werden. Die Master-Datei einer Section
+  liegt in ihrem Section-Verzeichnis.  Die Master-Datei einer Section heisst
+  immer \file{.meta.xml}.
+  
+\item Die "ist-enthalten-in"-Beziehung der Sections wird durch die
+  "ist-Unterverzeichnis-von"-Beziehung der Section-Verzeichnisse dargestellt.
+  
+\item Für alle (Pseudo-)Dokumenttypen \var{typ} ausser \code{section} gilt:
+  Enthält eine Section (Pseudo-)Dokumente des Typs \var{typ}, so enthält das
+  entsprechende Section-Verzeichnis die Master- und ggf. Content-Dateien der
+  entsprechenden (Pseudo-)Dokumente.
+  
+\item Enthält eine Section Text- und/oder Binär-Quellen, so enthält das
+  entsprechende Section-Verzeichnis die entsprechenden Quelldateien.
+  
+\item Der "Rootsection" (siehe \ref{rootsection}) entspricht das sogenannte
+  Checkin- Verzeichnis. Es ist das Wurzelverzeichnis für alle Dokumente und
+  Pseudo-Dokumente in lokalen Dateisystemen.
+
+\item Es sollten im gesamten Checkin-Verzeichnis nur Unterverzeichnisse
+  vorkommen, die Section-Verzeichnisse sind (s. \ref{section_verz}).
+
+\end{enumerate}
+
+
+
+\section{Dateien}
+
+Zu einem nicht-generischen Dokument gehören folgende Dateien:
+
+\begin{enumerate}
+  
+\item \emph{Master-Datei:} XML-Datei mit den Meta-Informationen.
+  
+\item \emph{Content-Datei:} Datei mit dem eigentlichen Inhalt; bei
+  Text-Dokumenten: XML; bei Binär-Dokumenten: entsprechendes Binär-Format.
+  
+\item \emph{(Evtl.:) Quelldatei(en):} Datei(en) mit den Quellen des Dokuments;
+  bei Text-Quellen: entsprechendes Text-Format; bei Binär-Quellen:
+  entsprechendes Binär-Format.
+
+\end{enumerate}
+
+Ein Dokument kann eine, mehrere oder auch gar keine Quelldatei haben.
+
+Master- und Content-Datei gehören eindeutig zu einem Dokument. Quelldateien
+können auch zu mehreren Dokumenten gehören.
+
+Master- und Content-Datei eines Dokuments müssen immer im selben Verzeichnis
+liegen.
+
+Generische Dokumente und Pseudo-Dokumente haben lediglich eine Master-Datei.
+
+
+\section{Dateinamen}
+
+-- Siehe Spezifikation \href{dateinamen.xhtml}{Dateinamen} --
+
+
+
+\section{Standard-Gliederungsstruktur}
+
+Die höheren (Rootsection-nahen) Teile der Gliederungsstruktur unterliegen einem
+Standard, der im folgenden erläutert wird. Die tieferen Teile bleiben von
+diesem Standard unberührt. Für den \file{content}-Zweig (s.u.) können aber an
+anderer Stelle Standards eingeführt werden. Diese sind typischerweise
+fachlich-mathematisch motiviert.
+
+Der Standard definiert folgende Struktur:
+
+\newcommand{\secref}[1]{\href{\##1}{#1}}
+
+\begin{preformatted}%
+   \href{\#ROOT}{ROOT}
+    |-\href{\#system}{system}
+    |  |-\href{\#themes}{themes}
+    |  |-\href{\#languages}{languages}
+    |  |-\href{\#util}{util}
+    |  |-\href{\#system_commom}{commom}
+    |  |-\href{\#misc}{misc}
+    |  |-\href{\#element}{element}
+    |  |-\href{\#problem}{problem}
+    |  |-\href{\#start}{start}
+    |  |-\href{\#admin}{admin}
+    |  .
+    |  .
+    |  .
+    |-\href{\#org}{org}
+    |  |-\href{\#users}{users}
+    |  |-\href{\#user}{user}_\href{\#groups}{groups}
+    |  |-\href{\#uni}{uni}
+    |  |  |-\href{\#semester}{<semester1>}
+    |  |  |  |-\href{\#classes}{classes}
+    |  |  |  |-\href{\#courses}{courses}
+    |  |  |  |-\href{\#tutorials}{tutorials}
+    |  |  |  .
+    |  |  |  .
+    |  |  |  .
+    |  |  |-\href{\#semester}{<semester2>}
+    |  |  |  |-\href{\#classes}{classes}
+    |  |  |  |-\href{\#courses}{courses}
+    |  |  |  |-\href{\#tutorials}{tutorials}
+    |  |  |  .
+    |  |  |  .
+    |  |  |  .
+    |-\href{\#content}{content}
+       .
+       .
+       .
+\end{preformatted}
+
+\subsection{ROOT}\label{ROOT}
+
+Die Rootsection
+
+\subsection{ROOT/system}\label{system}
+
+(Pseudo-)Dokumente technischer Natur (Themes, Sprachen, XSL- und
+CSS-Stylesheets, Grafiken für das Web-Layout usw.) und solche für die Bedienung
+des Systems (Startseite, Admin-Seite usw.).
+
+\subsection{ROOT/system/themes}\label{themes}
+
+Themes.
+
+\subsection{ROOT/system/languages}\label{languages}
+
+Sprachen.
+
+\subsection{ROOT/system/util}\label{util}
+
+Hilfsmittel (z.B. der Japs-Client).
+
+\subsection{ROOT/system/common}\label{system_common}
+
+Gemeinsame Resourcen verschiedener Dokumente (XSL- und CSS-Stylesheets,
+Grafiken usw.)
+
+\subsection{ROOT/system/misc}\label{misc}
+
+Resourcen (XSL- und CSS-Stylesheets, Grafiken usw.) einzelner
+(Pseudo-)Dokument-Typen oder einzelner (Pseudo-)Dokumente.
+
+\subsection{ROOT/system/element}\label{element}
+
+Resourcen für Dokumente der Typen "{}element" und "{}subelement'.
+
+\subsection{ROOT/system/problem}\label{problem}
+
+Resourcen für Dokumente des Typs "{}problem".
+
+\subsection{ROOT/system/start}\label{start}
+
+Resourcen für die Startseite (XSL- und CSS-Stylesheets,
+Grafiken usw., evtl. \val{page}-Dokumente)
+
+\subsection{ROOT/system/admin}\label{admin}
+
+Resourcen für die Administrator-Seite (XSL- und CSS-Stylesheets, Grafiken usw.,
+evtl. \val{page}-Dokumente)
+
+\subsection{ROOT/org}\label{org}
+
+(Pseudo-)Dokumente organisatorischer Natur (Benutzer, Benutzer-Gruppen,
+Lehrveranstaltungen usw.)
+
+\subsection{ROOT/org/users}\label{users}
+
+Benutzer
+
+\subsection{ROOT/org/user_groups}\label{user_groups}
+
+Benutzer-Gruppen
+
+
+\subsection{ROOT/org/uni}\label{uni}
+
+Alles, was mit den Lehrveranstaltungen zu tun hat. Der Name dieser Section kann
+an die Institution, an der die MUMIE eingestezt wird, angeglichen werden,
+z.B. \code{tu-berlin} für \emph{Technische Universität Berlin}. Stellt die
+MUMIE-Instanz Material für mehrere Institutionen bereit, so gibt es für jede
+Instanz eine solche Section.
+
+Enthält für jedes Semester eine Unter-Section, in der die (Pseudo-)Dokumente zu
+diesem Semester liegen. 
+
+\subsection{ROOT/org/uni/<semestes>}\label{semester}
+
+Enthält (Pseudo-)Dokumente zu einem bestimmten Semester. \code{<semester>} ist
+hierbei durch eine Bezeichnung für das Semester zu ersetzten,
+z.B. \code{sesem_06} für Sommersemester 2006.
+
+Enthält insbesondere das Pseudo-Dokument vom Typ \code{semester}, das dieses
+Semester repräsentiert.
+
+\subsection{ROOT/org/uni/<semester>/classes}\label{classes}
+
+Lehrveranstaltungen
+
+\subsection{ROOT/org/uni/<semester>/tutorials}\label{tutorials}
+
+Tutorien
+
+\subsection{ROOT/org/uni/<semester>/courses}\label{courses}
+
+Kurse, auch Kurs-Abschnitte und -Unterabschnitte
+
+\subsection{ROOT/content}\label{content}
+
+Der eigentliche mathematische Inhalt (Elemente, Subelemente, Aufgaben, Applets,
+Bilder usw.). Die entsprechenden Quellen, soweit vorhanden, werden ebenfalls
+hier abgelegt.
+
+%\section{Fachlogische Gliederung des Checkin-Verzeichnisses}
+
+%(Insbesondere) folgende Sections sollten existieren:
+
+%\begin{enumerate}
+
+%\item \file{unsorted} -- Vorübergehender Aufbewahrungsort für Dokumente
+%  (Pseudo-Dokumente, Quellen), die erst noch einsortiert werden müssen.
+
+%\item \file{system} --  Dokumente technischer Natur. Gliederung nach
+%  Verwendungszweck.
+
+%  \begin{enumerate}
+
+%  \item \file{etc} --  Themes, User, Usergruppen usw.
+
+%  \item \file{common} -- Gemeinsame Resourcen verschiedener Dokumente.
+
+%    \begin{enumerate}
+
+%    \item \file{generic} -- Generische Dokumente
+        
+%    \item \file{default} -- Dokumente des Default-Themes
+
+%    \end{enumerate}
+
+%  \item \file{course_viewer} -- Dokumente zur Darstellung von Kursen
+
+%    \begin{enumerate}
+
+%    \item \file{generic} -- Generische Dokumente
+        
+%    \item \file{default} -- Dokumente des Default-Themes
+
+%    \end{enumerate}
+
+%  \item \file{desktop} -- Dokumente zur Darstellung des Desktops
+
+%    \begin{enumerate}
+
+%    \item \file{generic} -- Generische Dokumente
+        
+%    \item \file{default} -- Dokumente des Default-Themes
+
+%    \end{enumerate}
+
+%  \item \file{error_messages} -- Fehlerseiten
+
+%    \begin{enumerate}
+
+%    \item \file{generic} -- Generische Dokumente
+        
+%    \item \file{default} -- Dokumente des Default-Themes
+
+%    \end{enumerate}
+
+%  \item  \file{upload} -- Upload-Seite
+
+%    \begin{enumerate}
+
+%    \item \file{generic} -- Generische Dokumente
+        
+%    \item \file{default} -- Dokumente des Default-Themes
+
+%    \end{enumerate}
+
+%  \end{enumerate}
+
+%\item \file{content} -- Lehrinhalte
+     
+%  \begin{enumerate}
+    
+%  \item \file{common} -- Gemeinsame Resourcen
+
+%    \begin{enumerate}
+
+%    \item \file{generic} -- Generische Dokumente
+        
+%    \item \file{default} -- Dokumente des Default-Themes
+
+%    \end{enumerate}
+
+%  \item \file{lineare_algebra}
+
+%  \item \file{analysis}
+
+%  \item \file{usw.}
+          
+%  \end{enumerate}
+
+%\end{enumerate}
+
+%In der folgenden Abbildung ist dies skizziert:
+
+%\image{sections.png}
+          
+
+-- ENDE DER DATEI --
+
+\end{document}

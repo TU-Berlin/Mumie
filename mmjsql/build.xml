@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmjsql" default="all" basedir=".">
+
+  <!--
+    Properties
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="mmjsql.src.dir" value="src"/>
+  <property name="mmjsql.src.java.dir" value="${mmjsql.src.dir}/java"/>
+  <property name="mmjsql.lib.dir" value="lib"/>
+  <property name="mmjsql.lib.java.dir" value="${mmjsql.lib.dir}/java"/>
+  <property name="mmjsql.lib.java.classes.dir" value="${mmjsql.lib.java.dir}/classes"/>
+  <property name="mmjsql.tmp.dir" value="tmp"/>
+  <property name="mmjsql.test.dir" value="test"/>
+  <property name="mmjsql.doc.dir" value="doc"/>
+  <property name="mmjsql.doc.apidocs.dir" value="${mmjsql.doc.dir}/apidocs"/>
+  <property name="mmjsql.resources.dir" value="resources"/>
+  <property name="mmjsql.resources.apidocs.css.file" value="${mmjsql.resources.dir}/apidocs.css"/>
+  <property name="mmjsql.install.prefix" value="/usr/local"/>
+  <property name="mmjsql.install.lib.java.dir" value="${mmjsql.install.prefix}/lib/java"/>
+  <property name="mmjsql.install.doc.mmjsql.dir"
+            value="${mmjsql.install.prefix}/share/doc/mmjsql"/>
+  <property name="mmjsql.install.doc.mmjsql.apidocs.dir"
+            value="${mmjsql.install.doc.mmjsql.dir}/apidocs"/>
+  <property name="mmjsql.verbose" value="no"/>
+  <property name="mmjsql.force" value="no"/>
+  <property name="mmjsql.javac.verbose" value="no"/>
+  <property name="mmjsql.javac.deprecation" value="no"/>
+  <property name="mmjsql.javac.debug" value="yes"/>
+  <property name="mmjsql.jar.file" value="mumie-sql.jar"/>
+  <property name="mmjsql.jdk.apidocs.url" value=""/>
+  <property name="mmjsql.jar.manifest" value="${mmjsql.tmp.dir}/MANIFEST.MF"/>
+  <property name="mmjsql.vendor" value="Berlin University of Technology"/>
+  <property name="mmjsql.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="mmjsql.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmjsql.internal.force">
+    <istrue value="${mmjsql.force}"/>
+  </condition>
+
+  <!--
+    Classpath (needed for API doc creation)
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <pathelement path="${mmjsql.lib.java.classes.dir}"/>
+      <fileset dir="${mmjsql.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <property name="mmjsql.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmjsql."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmjsql.verbose}">
+      <fileset dir="${mmjsql.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) mmjsql.internal.force is set, which is
+     equivalent to mmjsql.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="mmjsql.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     mmjsql.internal.force is set, which is equivalent to mmjsql.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force">
+    <javac srcdir="${mmjsql.src.java.dir}"
+           destdir="${mmjsql.lib.java.classes.dir}"
+           listfiles="${mmjsql.verbose}"
+           deprecation="${mmjsql.javac.deprecation}"
+           verbose="${mmjsql.javac.verbose}"
+           debug="${mmjsql.javac.debug}"
+           includeAntRuntime="yes"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Creates the Manifest file for the jar.
+  -->
+
+  <target name="manifest">
+    <manifest file="${mmjsql.jar.manifest}">
+      <attribute name="Created" value="${mmjsql.timestamp}"/>
+      <section name="net/mumie/sql">
+        <attribute name="Specification-Title" value="Mumie SQL Utilities"/>
+        <attribute name="Specification-Version" value="${mmjsql.version}"/>
+        <attribute name="Specification-Vendor" value="${mmjsql.vendor}"/>
+        <attribute name="Implementation-Title" value="net.mumie.sql"/>
+        <attribute name="Implementation-Version" value="${mmjsql.version}"/> 
+        <attribute name="Implementation-Vendor" value="${mmjsql.vendor}"/>
+      </section>
+    </manifest>  
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes"
+          depends="manifest">
+    <jar destfile="${mmjsql.lib.java.dir}/${mmjsql.jar.file}"
+         basedir="${mmjsql.lib.java.classes.dir}"
+         excludes=".KEEP_ME"
+         manifest="${mmjsql.jar.manifest}"/> 
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if mmjsql.internal.force is set, which is equivalent to mmjsql.force being 
+     true.
+  -->
+
+  <target name="all"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${mmjsql.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Japs Build Tools API "
+             packagenames="net.mumie.sql.*"
+             sourcepath="${mmjsql.src.java.dir}"
+             destdir="${mmjsql.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmjsql.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmjsql.verbose}">
+      <link href="${mmjsql.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${mmjsql.verbose}"
+            dir="${mmjsql.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    Installs the Jar archive
+  -->
+
+  <target name="install-jar"
+          description="Copies the Jar archive to its installation location">
+    <mkdir dir="${mmjsql.install.lib.java.dir}"/>
+    <copy file="${mmjsql.lib.java.dir}/${mmjsql.jar.file}"
+          todir="${mmjsql.install.lib.java.dir}"
+          overwrite="${mmjsql.force}"
+          verbose="${mmjsql.verbose}"/>
+  </target>
+
+  <!--
+    Uninstalls the Jar archive
+  -->
+
+  <target name="uninstall-jar"
+          description="Deletes the Jar archive from its installation location">
+    <delete file="${mmjsql.install.lib.java.dir}/${mmjsql.jar.file}"
+            quiet="true"
+            verbose="${mmjsql.verbose}"/>
+  </target>
+
+  <!--
+    Installs the API documentation
+  -->
+
+  <target name="install-apidocs"
+          description="Copies the API documentation to their installation location">
+    <mkdir dir="${mmjsql.install.doc.mmjsql.apidocs.dir}"/>
+    <copy todir="${mmjsql.install.doc.mmjsql.apidocs.dir}"
+          overwrite="${mmjsql.force}"
+          verbose="${mmjsql.verbose}">
+      <fileset dir="${mmjsql.doc.apidocs.dir}"/>
+    </copy>
+  </target>
+
+  <!--
+    Uninstalls the API documentation
+  -->
+
+  <target name="uninstall-apidocs"
+          description="Deletes the API documentation from their installation location">
+    <delete dir="${mmjsql.install.doc.mmjsql.apidocs.dir}"
+            quiet="true"
+            verbose="${mmjsql.verbose}"/>
+  </target>
+
+  <!--
+    Installs all
+  -->
+
+  <target name="install"
+          description="Installs all"
+          depends="install-jar"/>
+
+  <!--
+    Unnstalls all
+  -->
+
+  <target name="uninstall"
+          description="Uninstalls all"
+          depends="uninstall-jar"/>
+
+</project>

@@ -1,0 +1,132 @@
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!-- Postgres Datenbank Dokumentation -->
+
+<table db="mdb01">
+  <tname>element_version</tname>
+  <columns>
+    <column type="int" primary="true">
+      <colname>id</colname>
+      <default>
+        <serial seqname="element_versions_id_seq"/>
+      </default>
+      <referenced>
+        <ref table="elem_req_and" column="needing_element"/>
+        <ref table="elem_req_aor" column="needed_element"/>
+        <ref table="subelement_contents" column="contained_in"/>
+        <ref table="element_authors" column="el"/>
+        <ref table="nodes" column="reference"/>
+      </referenced>
+    </column>
+    <column type="int" primary="false" serial="false">
+      <colname>vc_thread</colname>
+      <references>
+        <ref table="el_vc_threads" column="id"/>
+      </references>
+    </column>
+    <column type="int">
+      <colname>version</colname>
+      <default>1</default>
+    </column>
+    <column type="int" null="not null">
+      <colname>category</colname>
+      <references>
+        <ref table="categories" column="id"/>
+      </references>
+    </column>
+    <column type="varchar(24)" null="not null">
+      <colname>name</colname>
+    </column>
+    <column type="text">
+      <colname>description</colname>
+      <default/>
+    </column>
+    <column type="date" null="not null">
+      <colname>created</colname>
+      <default>
+        <function funcname="CURRENT_DATE"/>
+      </default>
+    </column>
+    <column type="date" null="not null">
+      <colname>last_modified</colname>
+      <default>
+        <function funcname="CURRENT_DATE"/>
+      </default>
+    </column>
+    <column type="int">
+      <colname>education_level</colname>
+      <default>5</default>
+      <check self="BETWEEN 1 AND 9"/>
+    </column>
+    <column type="int">
+      <colname>abstraction_level</colname>
+      <default>5</default>
+      <check self="BETWEEN 1 AND 9"/>
+    </column>
+    <column type="text">
+      <colname>requirements</colname>
+      <default/>
+    </column>
+    <column type="int" null="not null">
+      <colname>contained_in</colname>
+      <references>
+        <ref table="sections" column="id"/>
+      </references>
+    </column>
+    <column type="text">
+      <colname>content</colname>
+      <default/>
+    </column>
+    <column type="text">
+      <colname>source</colname>
+      <default/>
+    </column>
+    <column type="int">
+      <colname>status</colname>
+      <default>1</default>
+      <references>
+        <ref table="status" column="id"/>
+      </references>
+    </column>
+  </columns>
+  <constraints>
+    <unique name="PRIMARY KEY" number="1">
+      <uniquecol name="id"/>
+    </unique>
+    <unique number="2">
+      <uniquecol name="vc_thread"/>
+      <uniquecol name="version"/>
+    </unique>
+  </constraints>
+  <indexes/>
+  <comment> generic 
+The table with elements under construction, INCLUDING THE READY-FOR-USE ONES ! ( those with status=0 , see VIEW "elements" ) 
+An instance (row) of this table represents a (mumieXML-)document.
+
+ACHTUNG ! content und source sind (aus Bequemlichkeit) noch DEFAULT NULL. Sollte in der Endversion wohl in NOT NULL geaendert werden.
+  </comment>
+  
+</table>

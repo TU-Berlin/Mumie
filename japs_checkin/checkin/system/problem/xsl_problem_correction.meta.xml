@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   $Id: xsl_problem_correction.meta.xml,v 1.9 2008/09/01 15:16:04 rassy Exp $
+-->
+
+<mumie:xsl_stylesheet xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                      mode="checkin">
+  <mumie:name>L&#246;sungen</mumie:name>
+  <mumie:description>
+    Seite mit Anworten, L&#246;sungen, Erkl&#228;rungen einer Aufgabe
+  </mumie:description>
+  <mumie:copyright>
+    Copyright (C) 2006, Berlin University of Technology 
+  </mumie:copyright>
+  <mumie:components>
+    
+    <mumie:generic_css_stylesheet lid="css-base"
+                                  path="system/common/g_css_base.meta.xml"/>
+    
+    <mumie:generic_css_stylesheet lid="css-problem-correction"
+                                  path="system/problem/g_css_problem_correction.meta.xml"/>
+
+    <mumie:generic_xsl_stylesheet lid="xsl-mmtex-math"
+                                  path="system/common/g_xsl_mmtex_math.meta.xml"/>
+
+    <mumie:generic_xsl_stylesheet lid="xsl-problem-i18n"
+                                  path="system/problem/g_xsl_problem_i18n.meta.xml"/>
+
+  </mumie:components>
+  <mumie:gdim_entries>
+    <mumie:gdim_entry generic_doc_path="system/problem/g_xsl_problem_correction.meta.xml"/>
+  </mumie:gdim_entries>
+  <mumie:content_type type="text" subtype="xml"/>
+</mumie:xsl_stylesheet>

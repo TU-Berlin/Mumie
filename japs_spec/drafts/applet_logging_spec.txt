@@ -1,0 +1,100 @@
+Autor: Markus Gronau
+$Id: applet_logging_spec.txt,v 1.1 2007/03/14 12:36:37 gronau Exp $
+
+            Spezifikation zum Logging Framework der MathletFactory
+           ========================================================
+
+Konzept
+-------
+  Im Gegensatz zu herkömlichen Logging-Mechanismen basiert das MathletFactory Logging
+  Framework nicht auf Leveln, denen jeweils ein numerischer Wert zugewiesen wird, sondern
+  auf Kategorien, die einer Log-Meldung zugeordnet werden und miteinander kombiniert
+  werden können. Auf diese Weise können in einer Klasse unterschiedliche Kategorien mit
+  nur einem Logger debuggt werden.
+  Kategorien besitzen einen Gültigkeitsbereich ("Scope"), der sich auf einzelne Klassen
+  oder ganze Packages (inklusive aller untergeordneten Klassen) erstrecken kann und in dem
+  sie referenziert werden können.
+  Die Aktivierung einer Kategorie für einen Logger erfolgt über eine sogenannte "Logging"-
+  Datei, welcher Kategorien einen oder mehrere Scopes zuweist.
+
+
+1. Inhalt des Logging-Packages
+==============================
+  Ort: net.mumie.mathletfactory.util.logging
+  
+  1.1 MumieLogger
+      -----------
+      Repräsentiert einen Logger im MathletFactory Logging Framework und besitzt Listen
+      über alle "logbaren" und alle zu loggenden Kategorien.
+      Instanzen können über die statische Methode
+         MumieLogger.getLogger(Class)
+      referenziert werden, wobei die Klasse anzugeben ist, für die Log-Meldungen erstellt
+      werden soll.
+      Kategorien können über eine solche Logger-Instanz referenziert werden (siehe nächsten
+      Abschnitt).
+      Log-Meldungen können über geeignete "log()"-Methoden der Logger-Instanz erstellt werden,
+      wobei einzelne oder ganze Sätze von Kategorien übergeben werden müssen:
+         - log(LogCategory category, String text)
+           Erstellt eine Log-Nachricht mit einer einzelnen Kategorie.
+         - log(LogCategoryList categories, String text)
+           Erstellt eine Log-Nachricht mit mehreren Kategorien
+
+  1.2 LogCategory
+      -----------
+      Repräsentiert eine Kategorie im MathletFactory Logging Framework und besitzt einen
+      Namen und einen Gültigkeitsbereich.
+      Instanzen können über die Instanz eines Loggers referenziert werden:
+         logger.getCategory(String name)
+      Intern werden Kategorien oft in gesonderten Listen gehalten ("LogCategoryList"),
+      welche jedoch nicht direkt referenziert werden können.
+      Kategorien können durch die Methode
+         category1.and(category2)[.and(category3)]
+      zusammengefasst werden, wobei eine solche Liste zurückgegeben wird, die die
+      Kategorien enthält. Auf diese Weise können Kategorien beliebig gruppiert werden
+      und Log-Meldungen mehreren Kategorien zugewiesen werden, für die diese angezeigt
+      werden sollen.
+      
+  1.3 LoggingManager
+      --------------
+      Lädt, erstellt und referenziert sowohl Logger als auch Kategorien und agiert dabei
+      komplett im Hintergrund.
+      Instanzen dieser Klasse können nicht direkt erstellt werden.
+      
+2. Verwenden von Loggern zum Debuggen von Klassen
+=================================================
+
+  2.1 Am Beispiel der Klasse MumieExercise
+      ------------------------------------
+      a) Registrieren der Kategorien:
+         In der Datei "development/src/resource/loggable_categories.properties" müssen
+         alle Kategorien sowie deren Gültigkeitsbereiche ("Scopes"= eingetragen werden, damit
+         den Loggern die richtigen Kategorien zugewiesen werden können.
+         Die Datei hat dabei folgendes Format:
+            - 1 Eintrag pro Zeil
+            - "Property-File"-Format
+            - "<Kategorie_Name> = <Scope1>[,<Scope2>[...]]
+         Ein "Scope" kann dabei eine Klasse oder ein Package sein (vollständige Java-Bezeichnung).
+      
+      b) Initialisieren des Loggers und der Kategorien:
+         private final static MumieLogger logger = MumieLogger.getLogger(MumieExercise.class);
+         private final static LogCategory LOAD = m_logger.getCategory("exercise.load");
+         private final static LogCategory SAVE = m_logger.getCategory("exercise.save");
+      
+      c) Erzeugen von Log-Meldungen:
+         logger.log(LOAD, "Loading...");
+         logger.log(LOAD.and(SAVE), "Reading...");
+      
+3. Aktivieren von einzelnen Kategorien
+======================================
+  Kategorien werden über Einträge in der Datei
+     "<USER_HOME>/.mumie-logging.properties"
+  aktiviert. Diese hat dabei folgendes Format:
+    - 1 Eintrag pro Zeil
+    - "Property-File"-Format
+    - "<Scope> = <Kategorie1>[,<Kategorie2>[...]]
+  Alternativ (wenn diese Datei nicht existiert) wird nach einer Datei
+     "logging.properties" im Verzeichnis "development/src" gesucht, die für das
+  Debuggen im Eclipse angedacht ist.
+  
+  Des Weiteren ist ein GUI-Frontend geplant, über welches komfortabel einzelne
+  Kategorien aktiviert werden können.

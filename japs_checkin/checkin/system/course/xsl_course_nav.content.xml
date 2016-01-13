@@ -1,0 +1,942 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Authors:  Tilman Rassy
+             Fritz Lehmann-Grube
+   $Id: xsl_course_nav.content.xml,v 1.44 2009/07/21 13:51:24 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:data="http://www.mumie.net/xml-namespace/data"
+                xmlns:crs="http://www.mumie.net/xml-namespace/document/content/course"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie data crs">
+
+<xsl-ext:import lid="xsl-course-nav-i18n" internal="yes"/>
+<xsl-ext:import lid="xsl-net" internal="yes"/>
+<xsl-ext:import lid="xsl-list" internal="yes"/>
+  
+<xsl:output method="xml" 
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The type of the input document -->
+<xsl:variable name="input-doctype">
+  <xsl:value-of select="local-name(/*)"/>
+</xsl:variable>
+
+<!-- The arrange variant of this document -->
+<xsl:variable name="arrange">
+  <xsl:choose>
+    <xsl:when test="/*/mumie:content/*/crs:list">list</xsl:when>
+    <xsl:when test="/*/mumie:content/*/crs:tree">tree</xsl:when>
+    <xsl:when test="/*/mumie:content/*/crs:net">net</xsl:when>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- The category of the input document -->
+<xsl:variable name="input-category">
+  <xsl:value-of select="/*/mumie:category/@name"/>
+</xsl:variable>
+
+<!-- Whether tutor view is enabled or not -->
+<!-- (Currently unused) -->
+<xsl:param name="tutor-view">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">tutor_view</xsl:with-param>
+    <xsl:with-param name="default">no</xsl:with-param>
+  </xsl:call-template>
+</xsl:param>
+
+<!-- theme id -->
+<xsl:param name="theme">
+	<xsl:call-template name="xsl.get-param-from-dynamic-data">
+		<xsl:with-param name="name">theme</xsl:with-param>
+		<xsl:with-param name="default">0</xsl:with-param>
+	</xsl:call-template>
+</xsl:param>
+
+<!-- class id -->
+<xsl:param name="class">
+    <xsl:choose>
+     <xsl:when test="$input-doctype='course'">
+       <xsl:value-of select="/*/mumie:class/@id"/>
+     </xsl:when>
+     <xsl:otherwise>
+       <xsl:call-template name="xsl.get-param-from-dynamic-data">
+       <xsl:with-param name="name">class</xsl:with-param>
+     </xsl:call-template>
+     </xsl:otherwise>
+    </xsl:choose>
+</xsl:param>
+
+<!-- The user to whom the tutor view refers -->
+<xsl:param name="user">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">user</xsl:with-param>
+  </xsl:call-template>
+</xsl:param>
+
+<!-- The current time, unformatted -->
+<xsl:param name="current-time-raw">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">current_time_raw</xsl:with-param>
+  </xsl:call-template>
+</xsl:param>
+
+<!--  The parent id and doctype (for the UP navigation button) -->
+<xsl:param name="parent-id">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name" select="'parent-id'"/>
+  </xsl:call-template>
+</xsl:param>
+
+<!-- Document type of the parent -->
+<xsl:param name="parent-type-name">course</xsl:param>
+
+<!-- Name of the nav frame -->
+<xsl:param name="nav-frame">nav</xsl:param>
+
+<!-- Name of the main frame -->
+<xsl:param name="main-frame">main</xsl:param>
+
+<!-- The data root element -->
+<xsl:param name="data" xsl-ext:select="self:/xsl:stylesheet/data:data"/>
+
+<!-- Indicates that content is shown in a frame -->
+<!--xsl:variable name="as-frame" select="'true'"/-->
+
+<!-- The resolved generic references -->
+<xsl:variable name="real-docs"
+              select="/*/mumie:dynamic_data/mumie:store/mumie:generic_document_impl/*"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Data                                                                         -->
+<!-- ================================================================================ -->
+
+<!-- Contains all icons needed for the navigation net. Note that the 'ext-xsl:image'
+  elements are replaced by corresponding HTML 'img' elements when this content is
+  transformed by the rootxsl stylesheet. Each such 'img' element is wrapped by a
+  'data:icon' element which assigns a key to it. By this key, the 'img' element can be
+  accessed throughout this document.  -->
+
+<data:data>
+
+  <data:icon key="element_algorithm_hover">
+    <xsl-ext:image lid="icon_element_algorithm_hover"/>
+  </data:icon>
+
+  <data:icon key="element_algorithm_normal">
+    <xsl-ext:image lid="icon_element_algorithm_normal"/>
+  </data:icon>
+
+  <data:icon key="element_algorithm_selected">
+    <xsl-ext:image lid="icon_element_algorithm_selected"/>
+  </data:icon>
+
+  <data:icon key="element_application_hover">
+    <xsl-ext:image lid="icon_element_application_hover"/>
+  </data:icon>
+
+  <data:icon key="element_application_normal">
+    <xsl-ext:image lid="icon_element_application_normal"/>
+  </data:icon>
+
+  <data:icon key="element_application_selected">
+    <xsl-ext:image lid="icon_element_application_selected"/>
+  </data:icon>
+
+  <data:icon key="element_definition_hover">
+    <xsl-ext:image lid="icon_element_definition_hover"/>
+  </data:icon>
+
+  <data:icon key="element_definition_normal">
+    <xsl-ext:image lid="icon_element_definition_normal"/>
+  </data:icon>
+
+  <data:icon key="element_definition_selected">
+    <xsl-ext:image lid="icon_element_definition_selected"/>
+  </data:icon>
+
+  <data:icon key="element_lemma_hover">
+    <xsl-ext:image lid="icon_element_lemma_hover"/>
+  </data:icon>
+
+  <data:icon key="element_lemma_normal">
+    <xsl-ext:image lid="icon_element_lemma_normal"/>
+  </data:icon>
+
+  <data:icon key="element_lemma_selected">
+    <xsl-ext:image lid="icon_element_lemma_selected"/>
+  </data:icon>
+
+  <data:icon key="element_motivation_hover">
+    <xsl-ext:image lid="icon_element_motivation_hover"/>
+  </data:icon>
+
+  <data:icon key="element_motivation_normal">
+    <xsl-ext:image lid="icon_element_motivation_normal"/>
+  </data:icon>
+
+  <data:icon key="element_motivation_selected">
+    <xsl-ext:image lid="icon_element_motivation_selected"/>
+  </data:icon>
+
+  <data:icon key="element_theorem_hover">
+    <xsl-ext:image lid="icon_element_theorem_hover"/>
+  </data:icon>
+
+  <data:icon key="element_theorem_normal">
+    <xsl-ext:image lid="icon_element_theorem_normal"/>
+  </data:icon>
+
+  <data:icon key="element_theorem_selected">
+    <xsl-ext:image lid="icon_element_theorem_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_deduction_hover">
+    <xsl-ext:image lid="icon_subelement_deduction_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_deduction_normal">
+    <xsl-ext:image lid="icon_subelement_deduction_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_deduction_selected">
+    <xsl-ext:image lid="icon_subelement_deduction_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_example_hover">
+    <xsl-ext:image lid="icon_subelement_example_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_example_normal">
+    <xsl-ext:image lid="icon_subelement_example_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_example_selected">
+    <xsl-ext:image lid="icon_subelement_example_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_history_hover">
+    <xsl-ext:image lid="icon_subelement_history_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_history_normal">
+    <xsl-ext:image lid="icon_subelement_history_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_history_selected">
+    <xsl-ext:image lid="icon_subelement_history_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_motivation_hover">
+    <xsl-ext:image lid="icon_subelement_motivation_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_motivation_normal">
+    <xsl-ext:image lid="icon_subelement_motivation_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_motivation_selected">
+    <xsl-ext:image lid="icon_subelement_motivation_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_proof_hover">
+    <xsl-ext:image lid="icon_subelement_proof_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_proof_normal">
+    <xsl-ext:image lid="icon_subelement_proof_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_proof_selected">
+    <xsl-ext:image lid="icon_subelement_proof_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_remark_hover">
+    <xsl-ext:image lid="icon_subelement_remark_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_remark_normal">
+    <xsl-ext:image lid="icon_subelement_remark_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_remark_selected">
+    <xsl-ext:image lid="icon_subelement_remark_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_test_hover">
+    <xsl-ext:image lid="icon_subelement_test_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_test_normal">
+    <xsl-ext:image lid="icon_subelement_test_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_test_selected">
+    <xsl-ext:image lid="icon_subelement_test_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_training_hover">
+    <xsl-ext:image lid="icon_subelement_training_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_training_normal">
+    <xsl-ext:image lid="icon_subelement_training_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_training_selected">
+    <xsl-ext:image lid="icon_subelement_training_selected"/>
+  </data:icon>
+
+  <data:icon key="subelement_visualization_hover">
+    <xsl-ext:image lid="icon_subelement_visualization_hover"/>
+  </data:icon>
+
+  <data:icon key="subelement_visualization_normal">
+    <xsl-ext:image lid="icon_subelement_visualization_normal"/>
+  </data:icon>
+
+  <data:icon key="subelement_visualization_selected">
+    <xsl-ext:image lid="icon_subelement_visualization_selected"/>
+  </data:icon>
+
+  <data:icon key="problem_applet_hover">
+    <xsl-ext:image lid="icon_problem_applet_hover"/>
+  </data:icon>
+
+  <data:icon key="problem_applet_normal">
+    <xsl-ext:image lid="icon_problem_applet_normal"/>
+  </data:icon>
+
+  <data:icon key="problem_applet_selected">
+    <xsl-ext:image lid="icon_problem_applet_selected"/>
+  </data:icon>
+
+  <data:icon key="problem_mchoice_hover">
+    <xsl-ext:image lid="icon_problem_mchoice_hover"/>
+  </data:icon>
+
+  <data:icon key="problem_mchoice_normal">
+    <xsl-ext:image lid="icon_problem_mchoice_normal"/>
+  </data:icon>
+
+  <data:icon key="problem_mchoice_selected">
+    <xsl-ext:image lid="icon_problem_mchoice_selected"/>
+  </data:icon>
+
+  <data:icon key="problem_traditional_hover">
+    <xsl-ext:image lid="icon_problem_traditional_hover"/>
+  </data:icon>
+
+  <data:icon key="problem_traditional_normal">
+    <xsl-ext:image lid="icon_problem_traditional_normal"/>
+  </data:icon>
+
+  <data:icon key="problem_traditional_selected">
+    <xsl-ext:image lid="icon_problem_traditional_selected"/>
+  </data:icon>
+
+  <data:icon key="problem_program_hover">
+    <xsl-ext:image lid="icon_problem_program_hover"/>
+  </data:icon>
+
+  <data:icon key="problem_program_normal">
+    <xsl-ext:image lid="icon_problem_program_normal"/>
+  </data:icon>
+
+  <data:icon key="problem_program_selected">
+    <xsl-ext:image lid="icon_problem_program_selected"/>
+  </data:icon>
+
+  <data:icon key="course_section_normal">
+    <xsl-ext:image lid="icon_course_section_normal"/>
+  </data:icon>
+
+  <data:icon key="course_section_hover">
+    <xsl-ext:image lid="icon_course_section_hover"/>
+  </data:icon>
+
+  <data:icon key="course_section_selected">
+    <xsl-ext:image lid="icon_course_section_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_before_normal">
+    <xsl-ext:image lid="icon_worksheet_homework_before_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_before_hover">
+    <xsl-ext:image lid="icon_worksheet_homework_before_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_before_selected">
+    <xsl-ext:image lid="icon_worksheet_homework_before_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_inside_normal">
+    <xsl-ext:image lid="icon_worksheet_homework_inside_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_inside_hover">
+    <xsl-ext:image lid="icon_worksheet_homework_inside_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_inside_selected">
+    <xsl-ext:image lid="icon_worksheet_homework_inside_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_after_normal">
+    <xsl-ext:image lid="icon_worksheet_homework_after_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_after_hover">
+    <xsl-ext:image lid="icon_worksheet_homework_after_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_homework_after_selected">
+    <xsl-ext:image lid="icon_worksheet_homework_after_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_before_normal">
+    <xsl-ext:image lid="icon_worksheet_homework_before_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_before_hover">
+    <xsl-ext:image lid="icon_worksheet_homework_before_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_before_selected">
+    <xsl-ext:image lid="icon_worksheet_homework_before_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_inside_normal">
+    <xsl-ext:image lid="icon_worksheet_homework_inside_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_inside_hover">
+    <xsl-ext:image lid="icon_worksheet_homework_inside_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_inside_selected">
+    <xsl-ext:image lid="icon_worksheet_homework_inside_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_after_normal">
+    <xsl-ext:image lid="icon_worksheet_homework_after_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_after_hover">
+    <xsl-ext:image lid="icon_worksheet_homework_after_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_prelearn_after_selected">
+    <xsl-ext:image lid="icon_worksheet_homework_after_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_before_normal">
+    <xsl-ext:image lid="icon_worksheet_pretest_before_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_before_hover">
+    <xsl-ext:image lid="icon_worksheet_pretest_before_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_before_selected">
+    <xsl-ext:image lid="icon_worksheet_pretest_before_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_inside_normal">
+    <xsl-ext:image lid="icon_worksheet_pretest_inside_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_inside_hover">
+    <xsl-ext:image lid="icon_worksheet_pretest_inside_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_inside_selected">
+    <xsl-ext:image lid="icon_worksheet_pretest_inside_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_after_normal">
+    <xsl-ext:image lid="icon_worksheet_pretest_after_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_after_hover">
+    <xsl-ext:image lid="icon_worksheet_pretest_after_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_pretest_after_selected">
+    <xsl-ext:image lid="icon_worksheet_pretest_after_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_before_normal">
+    <xsl-ext:image lid="icon_worksheet_selftest_before_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_before_hover">
+    <xsl-ext:image lid="icon_worksheet_selftest_before_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_before_selected">
+    <xsl-ext:image lid="icon_worksheet_selftest_before_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_inside_normal">
+    <xsl-ext:image lid="icon_worksheet_selftest_inside_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_inside_hover">
+    <xsl-ext:image lid="icon_worksheet_selftest_inside_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_inside_selected">
+    <xsl-ext:image lid="icon_worksheet_selftest_inside_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_after_normal">
+    <xsl-ext:image lid="icon_worksheet_selftest_after_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_after_hover">
+    <xsl-ext:image lid="icon_worksheet_selftest_after_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_selftest_after_selected">
+    <xsl-ext:image lid="icon_worksheet_selftest_after_selected"/>
+  </data:icon>
+  
+  <data:icon key="worksheet_training_before_normal">
+    <xsl-ext:image lid="icon_worksheet_training_before_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_before_hover">
+    <xsl-ext:image lid="icon_worksheet_training_before_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_before_selected">
+    <xsl-ext:image lid="icon_worksheet_training_before_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_inside_normal">
+    <xsl-ext:image lid="icon_worksheet_training_inside_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_inside_hover">
+    <xsl-ext:image lid="icon_worksheet_training_inside_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_inside_selected">
+    <xsl-ext:image lid="icon_worksheet_training_inside_selected"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_after_normal">
+    <xsl-ext:image lid="icon_worksheet_training_after_normal"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_after_hover">
+    <xsl-ext:image lid="icon_worksheet_training_after_hover"/>
+  </data:icon>
+
+  <data:icon key="worksheet_training_after_selected">
+    <xsl-ext:image lid="icon_worksheet_training_after_selected"/>
+  </data:icon>
+
+  <data:icon key="branching_point">
+    <xsl-ext:image lid="icon_branching_point"/>
+  </data:icon>
+
+  <data:icon key="branching_point_and">
+    <xsl-ext:image lid="icon_branching_point_and"/>
+  </data:icon>
+
+  <data:icon key="branching_point_or">
+    <xsl-ext:image lid="icon_branching_point_or"/>
+  </data:icon>
+
+  <data:icon key="arrow_left_normal">
+    <xsl-ext:image lid="icon_arrow_left_normal"/>
+  </data:icon>
+
+  <data:icon key="arrow_left_hover">
+    <xsl-ext:image lid="icon_arrow_left_hover"/>
+  </data:icon>
+
+  <data:icon key="arrow_left_disabled">
+    <xsl-ext:image lid="icon_arrow_left_disabled"/>
+  </data:icon>
+
+  <data:icon key="arrow_right_normal">
+    <xsl-ext:image lid="icon_arrow_right_normal"/>
+  </data:icon>
+
+  <data:icon key="arrow_right_hover">
+    <xsl-ext:image lid="icon_arrow_right_hover"/>
+  </data:icon>
+
+  <data:icon key="arrow_right_disabled">
+    <xsl-ext:image lid="icon_arrow_right_disabled"/>
+  </data:icon>
+
+  <data:icon key="arrow_up_normal">
+    <xsl-ext:image lid="icon_arrow_up_normal"/>
+  </data:icon>
+
+  <data:icon key="arrow_up_hover">
+    <xsl-ext:image lid="icon_arrow_up_hover"/>
+  </data:icon>
+
+  <data:icon key="arrow_up_disabled">
+    <xsl-ext:image lid="icon_arrow_up_disabled"/>
+  </data:icon>
+
+  <data:icon key="show_labels_normal">
+    <xsl-ext:image lid="icon_show_labels_normal"/>
+  </data:icon>
+
+  <data:icon key="show_labels_hover">
+    <xsl-ext:image lid="icon_show_labels_hover"/>
+  </data:icon>
+
+  <data:icon key="hide_labels_normal">
+    <xsl-ext:image lid="icon_hide_labels_normal"/>
+  </data:icon>
+
+  <data:icon key="hide_labels_hover">
+    <xsl-ext:image lid="icon_hide_labels_hover"/>
+  </data:icon>
+
+  <data:icon key="close_tooltip">
+    <xsl-ext:image lid="icon_close_tooltip"/>
+  </data:icon>
+
+  <data:icon key="expand_tooltip">
+    <xsl-ext:image lid="icon_expand_tooltip"/>
+  </data:icon>
+
+  <data:icon key="collapse_tooltip">
+    <xsl-ext:image lid="icon_collapse_tooltip"/>
+  </data:icon>
+
+</data:data>
+
+<!-- ================================================================================ -->
+<!-- h1: Auxiliary templates                                                          -->
+<!-- ================================================================================ -->
+
+<xsl:template name="max">
+  <xsl:param name="n1"/>
+  <xsl:param name="n2"/>
+  <xsl:choose>
+    <xsl:when test="$n1 &gt; $n2">
+      <xsl:value-of select="$n1"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$n2"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="min">
+  <xsl:param name="n1"/>
+  <xsl:param name="n2"/>
+  <xsl:choose>
+    <xsl:when test="$n1 &lt; $n2">
+      <xsl:value-of select="$n1"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$n2"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="timeframe-relation">
+  <xsl:param name="component"/>
+  <xsl:variable name="timeframe-start" select="$component/mumie:timeframe_start/@raw"/>
+  <xsl:variable name="timeframe-end" select="$component/mumie:timeframe_end/@raw"/>
+  <xsl:if test="$timeframe-start and $timeframe-start!=''
+                and $current-time-raw and $current-time-raw!=''">
+    <xsl:choose>
+      <xsl:when test="$current-time-raw &lt; $timeframe-start">
+        <xsl:text>before</xsl:text>
+      </xsl:when>
+      <xsl:when test="$current-time-raw &gt;= $timeframe-start and
+                      $current-time-raw &lt;= $timeframe-end">
+        <xsl:text>inside</xsl:text>
+      </xsl:when>
+      <xsl:when test="$current-time-raw &gt; $timeframe-end">
+        <xsl:text>after</xsl:text>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:if>
+</xsl:template>
+
+<!-- "Normalizes" a document type by stripping "generic_" from the beginning. If the
+  document type does not start with "generic_", it is returned unchanged. -->
+
+<xsl:template name="normalize-doctype">
+  <xsl:param name="doctype"/>
+  <xsl:choose>
+    <xsl:when test="starts-with($doctype, 'generic_')">
+      <xsl:value-of select="substring-after($doctype, 'generic_')"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$doctype"/>
+    </xsl:otherwise>
+  </xsl:choose>
+  
+</xsl:template>
+
+<xsl:template name="url">
+  <xsl:param name="lid" select="@lid"/>
+  <!-- The document the URL points to: -->
+  <xsl:variable name="document" select="/*/mumie:components/*[@lid=$lid]"/>
+  <!-- The "normalized" type of that document: -->
+  <xsl:variable name="doctype">
+    <xsl:call-template name="normalize-doctype">
+      <xsl:with-param name="doctype" select="local-name($document)"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <!-- The category of that document: -->
+  <xsl:variable name="category" select="$document/mumie:category/@name"/>
+  <!-- Compose the URL: -->
+  <xsl:call-template name="xsl.resolve-lid">
+    <xsl:with-param name="lid" select="$lid"/>
+    <xsl:with-param name="context">
+      <xsl:choose>
+        <xsl:when test="$doctype='course_section'">view</xsl:when>
+        <xsl:when test="$doctype='element'">view</xsl:when>
+        <xsl:when test="$doctype='subelement'">view</xsl:when>
+        <xsl:when test="$doctype='worksheet'">
+          <xsl:choose>
+            <xsl:when test="$category='selftest'">selftest</xsl:when>
+            <xsl:when test="$category='training'">training</xsl:when>
+            <xsl:otherwise>homework</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:when test="$doctype='problem'">
+          <xsl:choose>
+            <xsl:when test="$input-category='selftest'">selftest</xsl:when>
+            <xsl:when test="$input-category='training'">training</xsl:when>
+            <xsl:otherwise>homework</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>view</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+  </xsl:call-template>
+  <xsl:text>?class=</xsl:text>
+  <xsl:value-of select="$class"/>
+  <xsl:text>&amp;as-frame=true</xsl:text>
+  <xsl:if test="$doctype='problem'">
+    <xsl:text>&amp;ref=</xsl:text>
+    <xsl:value-of select="$document/@ref_id"/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="nav-url">
+  <xsl:param name="lid" select="@lid"/>
+  <!-- The document the URL points to: -->
+  <xsl:variable name="document" select="/*/mumie:components/*[@lid=$lid]"/>
+  <!-- The type of that document: -->
+  <xsl:variable name="doctype" select="local-name($document)"/>
+  <!-- Compose the URL: -->
+  <xsl:call-template name="xsl.resolve-lid">
+    <xsl:with-param name="lid" select="$lid"/>
+    <xsl:with-param name="context">nav</xsl:with-param>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template name="summary-url">
+  <xsl:param name="id" select="/*/@id"/>
+  <!-- The "normalized" type of that document: -->
+  <xsl:variable name="doctype" select="$input-doctype"/>
+  <!-- Compose the URL: -->
+  <xsl:call-template name="xsl.document-url">
+    <xsl:with-param name="id" select="$id"/>
+    <xsl:with-param name="document-type.name" select="$doctype"/>
+    <xsl:with-param name="context">
+      <xsl:choose>
+        <xsl:when test="$doctype='course_section'">view</xsl:when>
+        <xsl:when test="$doctype='course'">homework</xsl:when>
+        <xsl:when test="$doctype='worksheet'">
+          <xsl:choose>
+            <xsl:when test="$input-category='selftest'">selftest</xsl:when>
+            <xsl:otherwise>homework</xsl:otherwise>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:otherwise>view</xsl:otherwise>
+      </xsl:choose>
+    </xsl:with-param>
+  </xsl:call-template>
+
+</xsl:template>
+
+<!-- Returns the key of the icon for a certain document and state. The document
+  is specified by its lid, which defaults to the value of the 'lid' attribute of
+  the current node. The state may be "normal", "hover", or "selected", meaning
+  normal display, display when the mouse is over the icon, and display when the
+  document represented by the icon is loaded in the main frame, respectively. For
+  the concept of icon keys, see section "Data". -->
+
+<xsl:template name="icon-key">
+  <xsl:param name="lid" select="@lid"/>
+  <xsl:param name="state">normal</xsl:param>
+  <xsl:variable name="component" select="/*/mumie:components/*[@lid=$lid]"/>
+  <xsl:variable name="doctype">
+    <xsl:call-template name="normalize-doctype">
+      <xsl:with-param name="doctype" select="local-name($component)"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="category" select="$component/mumie:category/@name"/>
+  <xsl:variable name="timeframe-relation">
+    <xsl:call-template name="timeframe-relation">
+      <xsl:with-param name="component" select="$component"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:value-of select="$doctype"/>
+  <xsl:if test="$category and $category!=''">
+    <xsl:text>_</xsl:text>
+    <xsl:value-of select="$category"/>
+  </xsl:if>
+  <xsl:if test="$timeframe-relation and $timeframe-relation!=''">
+    <xsl:text>_</xsl:text>
+    <xsl:value-of select="$timeframe-relation"/>
+  </xsl:if>
+  <xsl:text>_</xsl:text>
+  <xsl:value-of select="$state"/>
+</xsl:template>
+
+<!-- Creates a suitable prefix for component names. An example for a prefix may be
+  "Prob. 2: ", meaning the problem with the label "2". Generally, the prefix is
+  constructed as follows:
+
+    - An abbreviation which indicates the type and, in some cases, the category
+      of the component
+
+    - A space
+
+    - The label of the component
+
+    - A colon
+
+    - A space
+
+  If the component has no label, the label and the space before are suppressed. -->
+
+<xsl:template name="name-prefix">
+  <xsl:param name="lid" select="@lid"/>
+  <xsl:variable name="component" select="/*/mumie:components/*[@lid=$lid]"/>
+  <xsl:variable name="type" select="local-name($component)"/>
+  <xsl:variable name="category" select="$component/mumie:category/@name"/>
+  <xsl:variable name="label" select="$component/mumie:ref_attribute[@name='label']/@value"/>
+  <xsl:choose>
+    <xsl:when test="$type='problem'">
+      <xsl:value-of select="$i18n-problem-short"/>
+    </xsl:when>
+    <xsl:when test="$type='course_section'">
+      <xsl:value-of select="$i18n-course_section-short"/>
+    </xsl:when>
+    <xsl:when test="$type='worksheet' and $category='homework'">
+      <xsl:value-of select="$i18n-worksheet-homework-short"/>
+    </xsl:when>
+    <xsl:when test="$type='worksheet' and $category='prelearn'">
+      <xsl:value-of select="$i18n-worksheet-prelearn-short"/>
+    </xsl:when>
+    <xsl:when test="$type='worksheet' and $category='pretest'">
+      <xsl:value-of select="$i18n-worksheet-pretest-short"/>
+    </xsl:when>
+  </xsl:choose>
+  <xsl:if test="$label and $label!=''">
+    <xsl:text> </xsl:text>
+    <xsl:value-of select="$label"/>
+  </xsl:if>
+  <xsl:text>: </xsl:text>
+</xsl:template>
+
+<xsl:template name="doc-datum">
+  <xsl:param name="doc" select="/*/mumie:components/*[@lid=current()/@lid]"/>
+  <xsl:param name="name"/>
+  <xsl:variable name="doctype" select="local-name($doc)"/>
+  <xsl:choose>
+    <xsl:when test="starts-with($doctype, 'generic_')">
+      <xsl:variable name="real-doc-type" select="substring-after($doctype, 'generic_')"/>
+      <xsl:variable name="real-doc"
+        select="$real-docs[local-name()=$real-doc-type and ../@id_of_generic=$doc/@id]"/>
+      <xsl:value-of select="$real-doc/*[local-name()=$name]"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$doc/*[local-name()=$name]"/>
+    </xsl:otherwise>
+  </xsl:choose>  
+</xsl:template>
+
+<xsl:template name="doc-name">
+  <xsl:param name="doc" select="/*/mumie:components/*[@lid=current()/@lid]"/>
+  <xsl:call-template name="doc-datum">
+    <xsl:with-param name="doc" select="$doc"/>
+    <xsl:with-param name="name">name</xsl:with-param>    
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template name="doc-description">
+  <xsl:param name="doc" select="/*/mumie:components/*[@lid=current()/@lid]"/>
+  <xsl:call-template name="doc-datum">
+    <xsl:with-param name="doc" select="$doc"/>
+    <xsl:with-param name="name">description</xsl:with-param>    
+  </xsl:call-template>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main structure                                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <xsl:choose>
+    <xsl:when test="$arrange='list'">
+      <xsl:call-template name="list.main"/>
+    </xsl:when>
+    <!-- <xsl:when test="$arrange='tree'">
+      <xsl:call-template name="tree.main"/>
+    </xsl:when> --> 
+    <xsl:when test="$arrange='net'">
+      <xsl:call-template name="net.main"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+</xsl:stylesheet>

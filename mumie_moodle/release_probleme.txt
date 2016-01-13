@@ -1,0 +1,20 @@
+Probleme beim Sprung auf Moodle 1.9 Release:
+
+1. Die im Moodle-Tracker (MDL-9983) beschriebenen Events haben es leider nicht alle in die
+   Release Version geschafft. Es fehlen die folgenden Events:
+   - 'group_created' und 'group_updated'
+    (beide waren urspruenglich in moodle/group/edit.php)
+   Ein entsprechender Request wurde im Moodle-Tracker eroeffnet (MDL-13998). 
+   Ab Moodle 1.9.1 sollten die Aufrufe wieder im Code sein.
+
+2. Nachtraeglich Aenderungen an einem Tutorium werden leider nicht nach MUMIE geschrieben, 
+   weil es noch einen kleinen Bug gibt im entsprechenden Sync-Befehl.
+   Hierzu existiert ein Request im MUMIE-Tracker (#524).
+   Sobald dieser behoben ist und die SQL-Syntax wieder korrekt zusammengestellt wird, 
+   sollte dieser Fehler behoben sein.
+
+3. Prinzipiell fehlen noch Moeglichkeiten, um Tutorien, Lehrveranstaltungen etc. loeschen zu 
+   koennen. Sobald diese in MUMIE implementiert sind, muessen auch entsprechende Events in
+   den Moodle Code eingebaut werden, so dass die entsprechenden Handler aufgerufen werden koennen.
+   Diese existieren bereits als Rohgeruest und muessen nur noch mit Leben gefuellt werden. 
+   

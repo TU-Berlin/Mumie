@@ -1,0 +1,89 @@
+$Id: skript.txt,v 1.2 2007/10/14 01:03:00 rassy Exp $
+
+
+                              KURZEINFÜHRUNG CVS
+
+
+1. Was ist CVS?
+   ============
+
+  o  "CVS" : "Cuncurrent Versions System"
+
+  o  Frühere Versionen einer Datei können rekonstruiert werden
+
+  o  Mehrere Entwickler können gleichzeitig an einer Datei arbeiten
+     (Konflikt-Auflösung, Merging)
+
+  o  "Repository": Zentraler Aufbewahrungsort für alle Dateien eines Projekts
+     unter Versionsverwaltung, einschl. alter Versionen
+
+  o  "Working directory": Lokale Version der Dateien eines Entwicklers
+
+  o  Repository und Working Directory müssen nicht auf demselben Rechner liegen
+     (Client-Server-Architektur)
+
+
+2. Benutzung
+   =========
+
+  o  Aufruf:
+
+       cvs [-d <cvsroot>] <cmd> <params>
+
+     <cvsroot> = Wurzelverzeichnis der Repositories (evtl. mit "Protokoll",
+                 s.u.)
+
+     <cmd>     = CVS-Commando
+
+     <params>  = Parameter für <cmd>
+
+  o  Format von <cvsroot>:
+
+       - Repository auf demselben Rechner: Absoluter Pfad. Beispiel:
+
+           /net/multimedia/JAPS/cvs
+
+       - Repository auf anderem Rechner:
+
+           :ext:<user>@<host>:<absoluter_pfad>
+
+         <user> = Benutzername, <host> = Rechner-Adresse. Beispiel:
+
+           :ext:rassy@teefix.math.tu-berlin.de:/net/multimedia/JAPS/cvs
+
+  o  Umgebungsvariablen:
+
+       - CVSROOT  Default für <cvsroot>
+
+       - CVS_RSH  Muss auf "ssh" gesetzt sein, damit Remote-Zugriff über ssh
+                  erfolgt
+
+
+3. Wichtigste Befehle
+   ==================
+
+  o  cvs checkout <name>
+
+       Checkt das Repository <name> aus
+
+  o  cvs update [<dat1> <dat2> ...]
+
+       Aktualisiert Dateien im Working Directory
+
+  o  cvs commit -m '<logmeldung>' [<dat1> <dat2> ...]
+
+       Überträgt Änderungen vom Working Directory in das Repository
+
+  o  cvs add [<dat1> <dat2> ...]
+
+       Meldet neue Dateien für Versionskontrolle an. Die Datein müssen
+       anschließend mit cvs commit in das repository übertragen werden.
+
+  o  cvs status <dat>
+
+       Gibt den Status einer Datei an
+
+
+  o  cvs log <dat>
+
+       Gibt die Logmeldungen einer datei aus (ergibt eine Art History)

@@ -1,0 +1,144 @@
+package net.mumie.srv.notions;
+
+public class UseMode
+{
+  // --------------------------------------------------------------------------------
+  // Global variables and constants, except autocoded 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The undefined use mode.
+   */
+
+  public static final int UNDEFINED = -1;
+
+  // --------------------------------------------------------------------------------
+  // Auxiliaries 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the array index of the specified use mode code.
+   */
+
+  protected static final int indexOf (int code)
+  {
+    int index = -1;
+    for (int i = 0; i < modes.length && index == -1; i++)
+      {
+        if ( modes[i] == code )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid use mode code: " + code);
+    return index;
+  }
+
+  /**
+   * Returns the array index of the use mode with the specified name.
+   */
+
+  protected static final int indexOf (String name)
+  {
+    int index = -1;
+    for (int i = 0; i < names.length && index == -1; i++)
+      {
+        if ( names[i].equals(name) )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid use mode name: " + name);
+    return index;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting codes for names and vice versa
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the name of the use mode represented by the specified numerical code.
+   */
+
+  public static final String nameFor (int code)
+  {
+    return names[indexOf(code)];
+  }
+
+  /**
+   * Returns the numerical code for the specified use mode name.
+   */
+
+  public static final int codeFor (String name)
+  {
+    return modes[indexOf(name)];
+  }
+
+  // --------------------------------------------------------------------------------
+  // Checking whether a code or name exists as a use mode
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns true if the specified integer exists as a use mode code;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (int code)
+  {
+    for (int i = 0; i < modes.length; i++)
+      {
+        if ( modes[i] == code )
+          return true;
+      }
+    return false;
+  }
+
+  /**
+   * Returns true if the specified string exists as a use mode name;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (String name)
+  {
+    for (int i = 0; i < names.length; i++)
+      {
+        if ( names[i].equals(name) )
+          return true;
+      }
+    return false;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting all modes
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns an array containing all use modes. The array is is not backed by any
+   * variables of this class, so changes to the array do not effect this class. 
+   */
+
+  public static final int[] allModes ()
+  {
+    int[] modesCopy = new int[modes.length];
+    System.arraycopy(modes, 0, modesCopy, 0, modes.length);
+    return modesCopy;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private UseMode ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("UseMode must not be instanciated");
+  }
+}

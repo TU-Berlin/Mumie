@@ -1,0 +1,27 @@
+
+Template für die Konzeption von Applets ("Drehbuch")
+====================================================
+
+
+1) Name des Applets
+
+2) Inhaltliche Kurzbeschreibung
+
+3) Didaktisches Ziel
+    - Beschreibung
+    - Umsetzung durch illustratives oder Übungsapplet
+
+4) Funktionalitäten
+
+5) Layout
+
+6) Startkonfiguration
+
+7) Testszenario
+
+
+Übergeordnete/Transversale Aspekte bei der Konzeption eines Applets:
+
+a) Bezug zu Elementen und/oder anderen Applets
+
+            to be continued....

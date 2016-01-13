@@ -1,0 +1,185 @@
+#!/bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+# $Id: mmlnjava,v 1.6 2007/06/12 16:38:20 lehmannf Exp $
+
+# --------------------------------------------------------------------------------
+# Utility functions
+# --------------------------------------------------------------------------------
+
+# Aborts with an error message
+function error
+  {
+    echo "ERROR: $*"
+    echo
+    exit 1
+  } 
+
+# Checks the exit code of the last command, terminates with an error message if the
+# exit code is not 0
+function check_exit_code
+  {
+    local exit_code=$?
+    [ "$exit_code" -eq 0 ] || error "Last command returned with code $exit_code"
+  }
+
+# Runs a command, checks the exit code, terminates with an error message if the exit
+# code is not 0
+function run_cmd
+  {
+    "$@"
+    check_exit_code
+  }
+
+function message
+  {
+    [ "$quiet" ] || echo "$@"
+  }
+
+# --------------------------------------------------------------------------------
+# Tasks
+# --------------------------------------------------------------------------------
+
+function create_links
+  {
+    # Check if at least one source file is specified:
+    [ "$1" ] || error "No source files specified"
+
+    # Start mmjvmd if nessessary
+    [ "`mmjvmd status`" == 'Jvmd is not running' ] && mmjvmd start
+
+    # Get current dir and checkin root:
+    local dir=`pwd`
+    local checkin_root=`run_cmd mmjvmc mmroot`
+
+    local filename
+    for filename in "$@" ; do
+
+      # Check if $filename is indeed a Java source file:
+      echo $filename | grep '\.java$' > /dev/null || error "Not a Java source file: $filename"
+
+      message "$filename ..."
+
+      # Get section:
+      local section=`run_cmd mmjvmc mmjmtag $filename @mm.section`
+      [ "$section" ] || error "No @mm.section tag found in $filename"
+      [ "`echo $section | wc -w`" -eq 1 ] || error "Multiple @mm.section tags found in $filename"
+
+      # Get link directory:
+      local link_dir=$checkin_root/$section
+
+      # Get link name:
+      local link_name=`basename $filename .java`.src.java
+
+      # Get link target:
+      local link_target=$filename
+
+      # Make link target absolute if it is not already absolute:
+      echo "$link_target" | grep '^/' > /dev/null || link_target="$dir/$link_target"
+
+      # Get link target for the files dir:
+      local files_dir_target=${filename%.java}.files
+
+      # Get link name of the files dir:
+      local files_dir_link_name=`basename $files_dir_target`
+
+      # Make files_dir_target absolute if it is not already absolute:
+      echo "$files_dir_target" | grep '^/' > /dev/null || files_dir_target="$dir/$files_dir_target"
+
+      # Create link directory if necessary:
+      run_cmd mkdir -p $link_dir
+
+      run_cmd cd $link_dir
+
+      # Create link to source:
+      [ -e $link_name ] || run_cmd ln -s $link_target $link_name
+
+      # If the files dir link exists but its target does not, delete link; if
+      # the files dir link does not exist but the target does, create link:
+      if [ -e $files_dir_link_name ] ; then
+        [ -e $files_dir_target ] || run_cmd rm $files_dir_link_name
+      elif [ -e $files_dir_target ] ; then
+        run_cmd ln -s $files_dir_target $files_dir_link_name
+      fi
+      
+      run_cmd cd $dir
+
+    done
+
+    message "done"
+  }
+
+function show_help
+  {
+    cat <<EOF
+Usage:
+  mmlnjava SRC_FILES
+  mmlnjava --help | -h | --version | -v
+Description:
+  Creates the softlinks for the Java source files SRC_FILES. For each file in
+  SRC_FILES, the value of the @mm.section metatag is extracted and a softlink
+  is made in the corresponding section of the checkin tree. The softlink is
+  named PURE_NAME.src.java and points to the file PURE_NAME.java in the
+  development tree. PURE_NAME is the pure name of the document. (See the
+  specification for more details.)
+Options:
+  --help, -h
+      Print this help text and exit.
+  --version, -v
+      Print version information and exit.
+EOF
+  }
+
+function show_version
+  {
+    echo '$Revision'
+  }
+
+# --------------------------------------------------------------------------------
+# Main program
+# --------------------------------------------------------------------------------
+
+task=create_links
+
+# Process command line parameters:
+params=`getopt \
+  --longoptions quiet,help,version \
+  --options q,h,v \
+  -- \
+  "$@"`
+check_exit_code
+eval set -- "$params"
+while true ; do
+  case "$1" in
+    --quiet|-q) quiet=enabled ; shift ;;
+    --help|-h) task=show_help ; shift ;;
+    --version|-v) task=show_version ; shift ;;
+    --) shift ; break ;;
+  esac
+done
+
+$task "$@"
+
+  

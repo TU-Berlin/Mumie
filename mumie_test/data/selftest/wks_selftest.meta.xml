@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<mumie:worksheet xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:status name="pre"/>
+  <mumie:name>Selftest Worksheet</mumie:name>
+  <mumie:description>Selbsteinsch&#228;tzungsaufgabenblatt</mumie:description>
+  <mumie:copyright>(c) 2007 2008, The MUMIE Project, TU Berlin</mumie:copyright>
+  <mumie:generic_summary path="org/tub/ws_07_08/courses/selftest/g_sum_worksheet.meta.xml"/>
+  <mumie:authors/>
+  <mumie:timeframe_start raw="1199142000000" value="2008-01-01 00:00:00"/>
+  <mumie:timeframe_end raw="1230678000000" value="2008-12-31 00:00:00"/>
+  <mumie:category name="selftest"/>
+  <mumie:components>
+    <mumie:generic_problem lid="1" path="content/tub/linear_algebra/problems/1_no_geometric_structure/1_3_multilinear_forms_and_tensors/g_prb_determinante_mc.meta.xml">
+      <mumie:category name="mchoice"/>
+      <mumie:ref_attribute name="label" value="1"/>
+      <mumie:ref_attribute name="points" value="6"/>
+    </mumie:generic_problem>
+    <mumie:generic_problem lid="2" path="content/tub/linear_algebra/problems/1_no_geometric_structure/1_3_multilinear_forms_and_tensors/g_prb_determinante_geometrie.meta.xml">
+      <mumie:category name="applet"/>
+      <mumie:ref_attribute name="label" value="2"/>
+      <mumie:ref_attribute name="points" value="6"/>
+    </mumie:generic_problem>
+  </mumie:components>
+  <mumie:content_type subtype="xml" type="text"/>
+</mumie:worksheet>

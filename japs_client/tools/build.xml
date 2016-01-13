@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy
+  
+  $Id: build.xml,v 1.5 2009/07/17 12:56:27 linges Exp $
+-->
+
+<project name="japs-cl" default="all" basedir="..">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property environment="env"/>
+  <property name="japs-cl.src.dir" value="src"/>
+  <property name="japs-cl.src.java.dir" value="${japs-cl.src.dir}/java"/>
+  <property name="japs-cl.lib.dir" value="lib"/>
+  <property name="japs-cl.lib.java.dir" value="${japs-cl.lib.dir}/java"/>
+  <property name="japs-cl.lib.java.classes.dir" value="${japs-cl.lib.java.dir}/classes"/>
+  <property name="japs-cl.test.dir" value="test"/>
+  <property name="japs-cl.doc.dir" value="doc"/>
+  <property name="japs-cl.doc.apidocs.dir" value="${japs-cl.doc.dir}/apidocs"/>
+  <property name="japs-cl.resources.dir" value="resources"/>
+  <property name="japs-cl.resources.apidocs.css.file"
+            value="${japs-cl.resources.dir}/apidocs.css"/>
+  <property name="japs-cl.verbose" value="no"/>
+  <property name="japs-cl.force" value="no"/>
+  <property name="japs-cl.javac.verbose" value="no"/>
+  <property name="japs-cl.javac.deprecation" value="no"/>
+  <property name="japs-cl.javac.debug" value="yes"/>
+  <property name="japs-cl.jar.file" value="mumie-japs-client.jar"/>
+  <property name="japs-cl.jar.for-applets.file" value="mumie-japs-client-for-applets.jar"/>
+  <property name="japs-cl.jdk.apidocs.url" value=""/>
+  <property name="japs-cl.jar.manifest" value="${japs-cl.lib.java.dir}/META-INF/MANIFEST.MF"/>
+  <property name="japs-cl.signjar.alias" value="NO_ALIAS_GIVEN" />
+  <property name="japs-cl.signjar.storepass" value="NO_PASSWORD_GIVEN" />
+  <property name="japs-cl.signjar.keystore" value="-NONE-"/>
+  <property name="japs-cl.java.include.dir" value="${java.home}/../include"/>
+  <property name="japs-cl.vendor" value="Berlin University of Technology"/>
+  <property name="japs-cl.version" value="-NONE-"/>
+  <property name="japs-cl.master.file" value="japs_client.meta.xml"/>
+  <property name="japs-cl.content.file" value="japs_client.content"/>
+  <property name="japs-cl.checkin.dir" value="${basedir}/checkin"/>
+  <property name="japs-cl.checkin.japs-client.dir"
+            value="${japs-cl.checkin.dir}/japs_client"/>
+  <property name="japs-cl.checkin.japs-client.document.dir"
+            value="${japs-cl.checkin.japs-client.dir}/document"/>
+  <property name="japs-cl.checkin.japs-client.document.jar.dir"
+            value="${japs-cl.checkin.japs-client.document.dir}/jar"/>
+
+  <!--
+    ================================================================================
+    Auto-set properties
+    ================================================================================
+  -->
+
+  <tstamp>
+    <format property="japs-cl.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="japs-cl.internal.force">
+    <istrue value="${japs-cl.force}"/>
+  </condition>
+
+  <condition property="japs-cl.javac.exclude" value="">
+    <istrue value="${japs-cl.with-console}"/>
+  </condition>
+
+  <condition property="japs-cl.javac.exclude" value="**/Console*.java">
+    <isfalse value="${japs-cl.with-console}"/>
+  </condition>
+
+  <!--
+    ================================================================================
+    Path for compiling
+    ================================================================================
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <pathelement path="${japs-cl.lib.java.classes.dir}"/>
+      <fileset dir="${japs-cl.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <property name="japs-cl.classpath" refid="classpath" />
+  </target>
+
+  <!--
+    ================================================================================
+    Printing properties
+    ================================================================================
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="japs-cl."/>
+  </target>
+
+  <!--
+    ================================================================================
+    Java classes
+    ================================================================================
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$japs-cl.verbose}">
+      <fileset dir="${japs-cl.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clear-classes.iff-force" if="japs-cl.internal.force">
+    <!-- Deletes the compiled classes if (and only if) japs-cl.internal.force
+         is set, which is equivalent to japs-cl.force being true. -->
+    <antcall target="clear-classes"/>
+  </target>
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="classpath">
+    <javac srcdir="${japs-cl.src.java.dir}"
+           destdir="${japs-cl.lib.java.classes.dir}"
+           listfiles="${japs-cl.verbose}"
+           deprecation="${japs-cl.javac.deprecation}"
+           verbose="${japs-cl.javac.verbose}"
+           debug="${japs-cl.javac.debug}"
+           includeAntRuntime="yes"
+           failonerror="yes">
+      <classpath refid="classpath"/>
+      <exclude name="${japs-cl.javac.exclude}"/>
+    </javac>
+  </target>
+
+  <!--
+    ================================================================================
+    Jars
+    ================================================================================
+  -->
+
+  <target name="manifest">
+    <manifest file="${japs-cl.jar.manifest}">
+      <attribute name="Created" value="${japs-cl.timestamp}"/>
+      <section name="net/mumie/japs/client">
+        <attribute name="Specification-Title" value="Mumie Japs Client"/>
+        <attribute name="Specification-Version" value="${japs-cl.version}"/>
+        <attribute name="Specification-Vendor" value="${japs-cl.vendor}"/>
+        <attribute name="Implementation-Title" value="net.mumie.japs.client"/>
+        <attribute name="Implementation-Version" value="${japs-cl.version}"/> 
+        <attribute name="Implementation-Vendor" value="${japs-cl.vendor}"/>
+      </section>
+    </manifest>  
+  </target>
+
+  <target name="jar" 
+          description="Creates a jar with all classes"
+          depends="manifest">
+    <jar destfile="${japs-cl.lib.java.dir}/${japs-cl.jar.file}"
+         basedir="${japs-cl.lib.java.classes.dir}"
+         excludes=".KEEP_ME"
+         manifest="${japs-cl.jar.manifest}"/> 
+  </target>
+
+  <target name="jar-for-applets" 
+          description="Creates a special jar for applets"
+          depends="manifest">
+    <jar destfile="${japs-cl.lib.java.dir}/${japs-cl.jar.for-applets.file}"
+         basedir="${japs-cl.lib.java.classes.dir}"
+         manifest="${japs-cl.jar.manifest}"> 
+      <exclude name=".KEEP_ME"/>
+      <exclude name="net/mumie/japs/client/test"/>
+      <exclude name="net/mumie/japs/client/test/**"/>
+      <exclude name="net/mumie/japs/client/CookieEnabledJapsClient.class"/>
+      <exclude name="net/mumie/japs/client/ConsoleJapsClient.class"/>
+      <exclude name="net/mumie/japs/client/ConsoleLoginDialog.class"/>
+      <exclude name="net/mumie/japs/client/LoggingCookieEnabledJapsClient.class"/>
+      <exclude name="net/mumie/japs/client/NonInteractiveJapsClient.class"/>
+    </jar>
+  </target>
+
+  <target name="sign-jars"
+          depends="jar,jar-for-applets"
+          description="Signs the jars">
+    <signjar alias="${japs-cl.signjar.alias}"
+             storepass="${japs-cl.signjar.storepass}"
+             keystore="${japs-cl.signjar.keystore}">
+      <fileset dir="${japs-cl.lib.java.dir}">
+        <include name="${japs-cl.jar.file}"/>
+        <include name="${japs-cl.jar.for-applets.file}"/>
+      </fileset>
+    </signjar>
+  </target>
+
+  <target name="clear-jars"
+          description="Deletes the jar archives">
+    <delete verbose="{$japs-cl.verbose}">
+      <fileset dir="${japs-cl.lib.java.dir}">
+        <include name="${japs-cl.jar.file}"/>
+        <include name="${japs-cl.jar.for-applets.file}"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+    ================================================================================
+    API docs
+    ================================================================================
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${japs-cl.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Japs Client API "
+             packagenames="net.mumie.japs.client.*"
+             sourcepath="${japs-cl.src.java.dir}"
+             destdir="${japs-cl.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${japs-cl.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${japs-cl.verbose}">
+      <link href="${japs-cl.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${japs-cl.verbose}"
+            dir="${japs-cl.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Main target - creates all
+    ================================================================================
+  -->
+
+  <target name="all"
+          description="Creates all"
+          depends="clear-classes.iff-force,
+                   classes,
+                   jar,
+                   jar-for-applets,
+                   sign-jars">
+  </target>
+
+  <!--
+    ================================================================================
+    Clears all
+    ================================================================================
+  -->
+
+  <target name="clear"
+          description="Deletes all generated files"
+          depends="clear-classes,
+                   clear-jars,
+                   clear-apidocs">
+  </target>
+    
+</project>

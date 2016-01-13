@@ -1,0 +1,847 @@
+#!/usr/bin/perl -w
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+use Env qw(HOME PATH MMTEX_HOME MMTEXRC);
+use lib "$MMTEX_HOME/lib/perl";
+use Mumie::Debug_Logger;
+use Mumie::XML::Characters;
+
+
+# -------------------------------------------------------------
+#1 Initialize the basic variables
+# -------------------------------------------------------------
+my $root = create_node('root');
+   $root->{Twin} = 'true';
+
+my $current_node = $root;
+my $current_line = 1;
+
+my $last_twin;
+my $last_math_node;
+
+my @twins = ();
+my @twins_info = ();
+my @rg = ();
+
+my $stylesheet = "$MMTEX_HOME/styles/xsl/pretty_log.xsl";
+
+my $input_logfile = $ARGV[0];
+my $output_filename   = $input_logfile . ".xml";
+
+
+
+
+# -------------------------------------------------------------
+#1 Processing instructions (set of regexp)
+# -------------------------------------------------------------
+
+my $filter_blank_lines = {
+			  tester    => '^([\s\W]+)$',
+			  handler   => \&handle_blank,
+			 };
+
+my $indented_lines     = {
+			  tester    => '^[\s]+',
+			  handler   => \&handle_child,
+			 };
+
+my $test_package_line  = {
+			  tester    => '(\w+)(::)(\w+)',
+			  handler   => \&handle_package_line,
+			 };
+
+my $handle_twin_line   = {
+			  tester    => '([\w\W]*)([1-9])\/([1-9])',
+			  handler   => \&handle_twin,
+			 };
+
+
+my $handle_normal_line  = {
+			   tester    => '\w+',
+			   handler   => \&handle_normal,
+			  };
+
+my $handle_unknown     = {
+			  tester    => '[\w\W]*',
+			  handler   => \&handle_unknown,
+			 };
+
+my $skip_remaining     = {
+			  tester    => '[\w\W]*',
+			  handler   => sub{},
+			 };
+
+
+
+
+# -------------------------------------------------------------
+#1 Special tokens
+# -------------------------------------------------------------
+
+
+my $token_value_collector = {
+			     tester    => '[\w\W]*',
+			     handler   => \&handle_multiline_tokens,
+			    };
+
+# -------------------------------------------------------------
+#1 Math Tokens
+# -------------------------------------------------------------
+
+
+my $start_math_data   = {
+			  tester    => '(^[-]+$)',
+			  handler   => \&start_math_data,
+			};
+
+my $close_math_data   = {
+			  tester    => '^[-]+$',
+			  handler   => \&close_math_data,
+			};
+
+my $write_math_data   = {
+			  tester    => '\w+',
+			  handler   => \&write_math_data,
+			};
+
+my $test_math_data     = {
+			  tester    => '^Math data:$',
+			  handler   => sub
+			                  { @tokens = ( $start_math_data,
+							$close_math_data,
+							$skip_remaining,
+						      );
+					  },
+			 };
+
+
+
+
+my @default_tokens = (
+		        $test_math_data,
+ 		        $filter_blank_lines,
+		        $indented_lines,
+		        $test_package_line,
+		        $handle_twin_line,
+		        $handle_normal_line,
+		        $handle_unknown,
+		     );
+
+@tokens = @default_tokens;
+
+
+
+
+
+# -------------------------------------------------------------
+#1 Math handler
+# -------------------------------------------------------------
+
+sub close_math_data
+  {
+    @tokens = @default_tokens;
+    $current_node = $last_math_node;
+  }
+
+
+sub start_math_data
+  {
+    @tokens = ($write_math_data, $close_math_data);
+    my $math_node = create_node("Math-Data");
+       $math_node->{indent} = -1;
+
+    $last_math_node = $math_node;
+    $current_node = add_dynamic($math_node);
+  }
+
+sub write_math_data
+  {
+    my ($line) = @_;
+
+    if ($line =~ m/(.{30})  # Name
+		   (.{20})  # HASH
+		   (.{10})  # Pos
+		   (.{03})  # L
+		   (.{03})  # R
+		   (.{03})  # UO
+		   (.{12})* # Value
+		   /x)
+      {
+	my $name   = $1;
+	my $pos    = $3;
+	my $left   = $4;
+	my $right  = $5;
+	my $UO     = $6;
+	my $value  = $7;
+	my $indent = 0;
+
+	$pos =~ s/(^\s+)|(\s+$)//;
+	$left =~ s/(^\s+)|(\s+$)//;
+	$right =~ s/(^\s+)|(\s+$)//;
+	$UO =~ s/(^\s+)|(\s+$)//;
+
+	if ($name =~ m/(^[\s]+)/)
+	  {
+	    $indent = length($1);
+	  }
+
+
+	my $new_node = create_node($name, undef, { position => $pos,
+						   left     => $left,
+						   right    => $right,
+						   UO       => $UO,
+						 },
+				   $value);
+
+	$new_node->{indent} = $indent;
+
+	if ($indent == $current_node->{indent})
+	  {
+	    $current_node = add_brother($current_node, $new_node);
+	  }
+	elsif ($indent > $current_node->{indent})
+	  {
+	    $current_node = add_child($current_node, $new_node);
+	  }
+	elsif ($indent < $current_node->{indent})
+	  {
+	    $current_node = add_brother($current_node->{Father}, $new_node);
+	  }
+
+      }
+  }
+
+
+
+# -------------------------------------------------------------
+#1 Default handler
+# -------------------------------------------------------------
+
+
+sub handle_blank
+  {
+  }
+
+sub handle_unknown
+  {
+    my $line = shift;
+    warning_message("Don't know what to do with the following line, no regexp matched",
+		    $line);
+  }
+
+
+sub handle_child
+  #
+  # Will create a new child for the current_node
+  # by parsing the indented line
+  {
+    my $line = shift;
+    my $remember;
+
+
+    # Needed after splice of too large logs to ignore the first orphans
+    #--------------------------------------------------
+    return if ($ignore_children);
+
+
+    # Workaround for orphans to find their parents,
+    # if the last available parent was a closing twin
+    #------------------------------------------------
+    if ($last_twin)
+      {
+	$remember = $current_node;
+	$current_node = $last_twin;
+      }
+    #------------------------------------------------
+	
+
+    # Special case, the only multiline log message
+    # Token value : --> value <--
+    #------------------------------------------------
+    if ($line =~ m/(Token value|Value)(\s*:\s*-->)([\w\W]+)/)
+      {
+
+	my $match = $3;
+	my $header = $1;
+
+	if ($match =~  m/([\w\W]*?)(<--\s*|\[\.\.\.\]\s*)/g)
+	  {
+	    my $key_value_node = create_value_node($header, $1);
+	    add_child($current_node, $key_value_node);
+	  }
+
+	# <-- Missing, so next lines are value too..
+	#-------------------------------------------
+	else
+	  {
+	    my $key_value_node = create_value_node($header, $match);
+	    add_child($current_node, $key_value_node);
+	    @tokens = ($token_value_collector, @tokens);
+	  }
+      }
+
+    # All other log lines
+    #------------------------------------------------
+    elsif ($line =~ m/([^:=]+)(:|=)([\w\W]+)/)
+      {
+	my $key_value_node = create_value_node($1, $3);
+	add_child($current_node, $key_value_node);
+      }
+    else
+      {
+	add_child($current_node, create_node('Unknown-Line', undef, undef, $line));
+      }
+
+    #---------------------------------
+    $current_node = $remember if ($last_twin);
+    #---------------------------------
+  }
+
+
+
+sub handle_normal
+  {
+    my $line = shift;
+    my $new_node;
+    $last_twin = '';
+    $ignore_children = '';
+
+    if ($line =~ m/(\w+)(\s+)(\w+)/)
+      {
+	$new_node = create_node('Status-Information',undef,undef,$line);
+      }
+    elsif ($line =~ m/(\w+)/)
+      {
+	$new_node = create_node($1);
+      }
+    else
+      {
+	$new_node = create_node('Unknown-Line', undef, undef, $line);
+      }
+
+    add_dynamic($new_node);
+  }
+
+
+
+
+
+
+sub handle_package_line
+  {
+    my $line = shift;
+    my $package = '';
+
+    if ($line =~ s/([\w(]+)(::[\w]+)(::[\w]+)*(::[\w]+)*(::[)\w]+)$//)
+      {
+	$package .= $1 if defined $1;
+	$package .= $2 if defined $2;
+	$package .= $3 if defined $3;
+	$package .= $4 if defined $4;
+	$package .= $5 if defined $5;
+      }
+
+    $current_line--;
+    process_line($line);
+    set_attrib($current_node, "package", $package);
+  }
+
+
+
+
+
+
+sub handle_twin
+  {
+    my $line = shift;
+    my $name = pretty_name($rg[1]);
+
+    #---------------------
+    # Add to stack
+    #---------------------
+    if ($rg[2] == 1)
+      {
+	my $new_node = create_node($name);
+ 	   $new_node->{Twin} = 'true';
+
+	push @twins, $name;
+	push @twins_info, $current_line;
+
+	add_dynamic($new_node);
+      }
+    #---------------------
+    # Remove from stack
+    #---------------------
+    elsif ($rg[2] == $rg[3])
+      {
+	my $twin = pop @twins;
+	my $old_line = pop @twins_info;
+
+
+	# No Stack available error (lost second twin)
+	#---------------------------------------------------------------
+	if (not defined $twin)
+	  {
+	    my $lost_twin = create_node("$name",undef,{class=>'lost-twin'});
+	    add_dynamic($lost_twin);
+	    return;
+	  }
+
+
+	# Last opening expression ne to closing expr.
+	#---------------------------------------------------------------
+	if ($twin ne $name)
+	  {
+#	    warning_message("Trying to close $name ($rg[2]/$rg[3])",
+#			    "Failure, other twin doesn't match: $twin",
+#			    "Maybe nesting problem, list of remaing twins:",
+#			    "-----------------------------------------------",
+#			    @twins);
+	  }
+
+
+	# If current node is not twin (brother_mode) go up to twin
+	#---------------------------------------------------------------
+	if (($current_node->{Name} ne $twin) || (not defined $current_node->{Twin}))
+	  {
+	    $current_node = $current_node->{Father};
+	  }
+	
+	# If still not the right twin warn
+	#---------------------------------------------------------------
+	if ($current_node->{Name} ne $twin)
+	  {
+	    print "Nesting problem\n";
+	    print "Want to close ($old_line): " .$current_node->{Name} . "\n";
+	    print "With node     ($current_line): $twin \n";
+	  }
+
+	$last_twin = $current_node;
+	$current_node = $current_node->{Father};
+      }
+  }
+
+
+
+
+
+
+
+
+# This will append the current line content to the last child, because
+# this token is only enabled if a multiline 'Token value : --> foobar.. <--
+# was found. The until the line contains a <-- the handler adds it to the last
+# child which surely is 'Token value'
+
+sub handle_multiline_tokens
+  {
+    my $line = shift;
+
+    if ($line =~ m/([\w\W]*?)(<--\s*|\[\.\.\.\]\s*)/g)
+      {
+	shift @tokens;
+	append_to_last_child($current_node , $1);
+      }
+    else
+      {
+	append_to_last_child($current_node , $line);
+      }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------
+#1 Read the file and process every line
+# -------------------------------------------------------------
+$file = read_file($input_logfile);
+my @lines = @{$file};
+while (@lines)
+  {
+    my $line = pop @lines;
+    process_line($line);
+  }
+
+
+
+
+
+
+output_xml($root);
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------
+#1 The tester and handler function
+# -------------------------------------------------------------
+sub process_line
+  {
+    my $line = shift;
+    $current_line++;
+    foreach $token (@tokens)
+      {
+	my $regexp  = $token->{tester};
+	my $handler = $token->{handler};
+
+	if ($line =~ m/$regexp/)
+	  {
+	    @rg = get_rg();
+	    &{$handler}($line);
+	    last;
+	  }
+      }
+  }
+
+
+
+
+
+
+# -------------------------------------------------------------
+#1 Auxiliaries
+# -------------------------------------------------------------
+
+
+sub  pretty_name
+  {
+    my $text = shift;
+
+
+    $text =~ s/[^\s\w-]+//g; # Remove all non-word and non-underscore chars
+    $text =~ s/[\s]+$//;   # Remove whitespaces at the end
+    $text =~ s/^[\s]+//;   # Remove whitespaces at the beginning
+    $text =~ s/[\s]+/_/g;  # Replace all whitspaces with underscores
+
+
+    return $text;
+  }
+
+
+sub get_rg
+  {
+    my @reg_exp = ('');
+    push @reg_exp, $1  if  (defined $1);
+    push @reg_exp, $2  if  (defined $2);
+    push @reg_exp, $3  if  (defined $3);
+    push @reg_exp, $4  if  (defined $4);
+    push @reg_exp, $5  if  (defined $5);
+    return @reg_exp;
+  }
+
+
+sub warning_message
+  {
+    my @message = @_;
+    print "\n\n";
+    print "-" x 30 . "  WARNING  " . ("-" x 30) .  "\n";
+    print join "\n", @message;
+    print "\n" . "-" x 71;
+    print "\n\n";
+  }
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------
+#1 XML Output functions
+# -------------------------------------------------------------
+
+sub output_xml
+  {
+    my ($content) = @_;
+    open DEST, ">$output_filename" or die("Can't write to $output_filename");
+
+    print DEST '<?xml version="1.0" encoding="ISO-8859-1"?>'."\n";
+    print DEST '<?xml-stylesheet type="text/xsl" href="'.$stylesheet.'"?>'."\n\n";
+
+    parse_node($content);
+    close DEST;
+    print "\n" . "-" x 40 . "\n";
+    print "Done, wrote file to $output_filename.\n";
+    print "May be viewed with any browser supporting direct XSLT conversion.\n";
+    print "For your personal view, please see mmtex/styles/xsl/pretty_log.xsl for details.\n";
+    print  "-" x 40 . "\n\n";
+  }
+
+sub parse_node
+  {
+    my ($node) = @_;
+
+
+    if ((not @{$node->{Children}}) && (not $node->{Value}))
+      {
+	write_empty_xml_element($node);
+      }
+    else
+      {
+	start_xml_element($node->{Name},
+			  $node->{Attribs});
+
+	write_value($node) if $node->{Value};
+	write_children($node) if $node->{Children};
+	close_xml_element ($node->{Name});
+      }
+  }
+
+sub write_empty_xml_element
+  {
+    my ($node) = @_;
+    $indent++;
+    print DEST "  " x $indent;
+    print DEST "<" . $node->{Name} . "/>\n";
+    $indent--;
+  }
+
+
+sub write_children
+  {
+    my ($node) = @_;
+
+    foreach my $sub_node (@{$node->{Children}})
+      {
+	parse_node($sub_node);
+      }
+  }
+
+sub write_value
+  {
+    my ($node) = @_;
+    $indent++;
+    print DEST "  " x $indent;
+    print DEST $node->{Value};
+    print DEST "\n";
+    $indent--;
+  }
+
+sub close_xml_element
+  {
+    my ($name) = @_;
+    print DEST "  " x $indent;
+    print DEST "</$name>\n";
+    $indent--;
+  }
+
+sub start_xml_element
+  {
+    my ($name, $attr) = @_;
+    $indent++;
+    print DEST "  " x $indent;
+    print DEST "<$name";
+
+    if ($attr)
+      {
+	foreach my $key (keys %{$attr})
+	  {
+	    my $value = $attr->{$key};
+	    print DEST " $key='$value'";
+	  }
+      }
+    print DEST ">\n";
+  }
+
+
+
+
+
+
+
+
+
+
+# -------------------------------------------------------------
+#1 Node functions
+# -------------------------------------------------------------
+# The XML Format used in this script:
+#
+# $node = { Name     => 'Qname'    ,
+#           Children => $array_ref ,
+#           Attribs  => $hash_ref,
+#           Value    => 'String',
+#           Twin     => 'true|0'
+#           Father   => $node
+#         }
+#
+#                    $array_ref = [$child, $child, $child];
+#                    $hash_ref = {name  => 'value',
+#                                 name2 => 'value'};
+
+
+
+
+sub create_node
+  {
+    my ($name, $childs, $attr, $value) = @_;
+
+    $childs = [] if (ref $childs ne "ARRAY");
+    $attr   = {} if (ref $attr   ne "HASH");
+
+    $name = pretty_name($name);
+
+    my $result =  { Name     => $name,
+		    Children => $childs,
+		    Attribs  => $attr,
+		    Value    => '',
+		  };
+
+    set_value($result, $value) if $value;
+
+    return $result;
+}
+
+
+
+sub create_value_node
+  {
+    my ($key, $value) = @_;
+
+    my $node =  create_node('Key-Value',undef,{class => "Key-Value-Node"});
+    $key  =  create_node('Key',undef, undef, $key);
+    $value  =  create_node('Value',undef, undef, $value);
+
+    add_child($node, $key);
+    add_child($node, $value);
+
+    return $node;
+}
+
+
+sub add_dynamic
+  {
+    my ($new_node) = @_;
+    if ($current_node->{Twin})
+      {
+	$current_node = add_child($current_node, $new_node);
+      }
+    else
+      {
+	$current_node = add_brother($current_node, $new_node);
+      }
+  }
+
+
+
+sub add_child
+  {
+    my ($node, $child) = @_;
+    $child->{Father} = $node;
+    push @{$node->{Children}}, $child;
+    return $child;
+}
+
+
+sub add_brother
+  {
+    my ($node, $brother) = @_;
+    my $father = $node->{Father};
+    $brother->{Father} = $father;
+    push @{$father->{Children}}, $brother;
+    return $brother;
+}
+
+
+sub set_value
+  {
+    my ($node, $value) = @_;
+    chomp($value);
+    $value =  Mumie::XML::Characters::chars_to_entities($value);
+    $value =  Mumie::XML::Characters::entities_to_numcodes($value);
+
+    $node->{Value} = $value;
+    return $node;
+  }
+
+sub set_attrib
+  {
+    my ($node, $attrib, $value) = @_;
+    $node->{Attribs}->{$attrib} = $value;
+    return $node;
+  }
+
+
+sub append_to_last_child
+  {
+    my ($node, $value) = @_;
+    my $last_index = $#{$node->{Children}};
+    my $child = $node->{Children}->[$last_index];
+
+    # Key-Value-Node  Value-N
+    my $new_value =   $child->{Children}->[1]->{Value} . " $value";
+    set_value($child->{Children}->[1], $new_value);
+
+}
+
+
+
+
+
+
+
+
+
+
+# -----------------------------------------------------------
+#1 File functions
+# -----------------------------------------------------------
+
+sub read_file
+{
+  open SOURCE, $_[0] or die("Can't open ". $_[0]);
+  my @content = <SOURCE>;
+  my $line_count = $#content;
+
+  if ($#content > 10000)
+    {
+      warning_message("The log file seems to be longer than 10.000 lines.",
+		      "This script will process only the last 10.000 lines,",
+		      "if you want to see all $line_count lines please use the",
+		      "--all_lines option.");
+      @content = splice(@content, -10000);
+#      $splice_mode = 'true';                  # Ignore lonely close expr. like (2/2)
+      $ignore_children = 'true';              # Ignore orphans untill first parent found
+    }
+
+  my  @result = reverse @content;
+  return \@result;
+}

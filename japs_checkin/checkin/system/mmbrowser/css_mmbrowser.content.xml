@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!-- ================================================================================ -->
+<!-- h1: Definitions                                                                  -->
+<!-- ================================================================================ -->
+
+<css:def id="no-space" value="0px 0px 0px 0px"/>
+<css:def id="default-space" value="1em 1em 1em 1em"/>
+<css:def id="stroke-color" value="#949494"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Header                                                                       -->
+<!-- ================================================================================ -->
+
+<css:rule selector='p.section-name'>
+  <css:property name="font-weight" value="bold"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Toc                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.mmbrowser-toc'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' value='1em 0em 1em 0em'/>
+</css:rule>
+
+<css:rule selector='table.mmbrowser-toc td.thumbnail'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' value='0.25em 0em 0.25em 0em'/>
+</css:rule>
+
+<css:rule selector='table.mmbrowser-toc td.thumbnail img'>
+  <css:property name='border-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.mmbrowser-toc td.name'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' value='0.25em 0em 0.25em 1.0em'/>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<css:rule selector='table.mmbrowser-toc td.description'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' value='0.25em 0em 0em 1.0em'/>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Part list                                                                    -->
+<!-- ================================================================================ -->
+
+<css:rule selector='div.part-list em.checked'>
+  <css:property name='font-style' value='normal'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+</css:style>

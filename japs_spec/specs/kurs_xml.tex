@@ -1,0 +1,470 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Kurs-XML}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+\version{$Id: kurs_xml.tex,v 1.3 2006/08/11 16:18:22 rassy Exp $}
+
+Diese Spezifikation beschreibt das XML von \emph{Kursen},
+\emph{Kursabschnitten} und \emph{Kurs-Unterabschnitten}. Sie steht in engem
+Zusammenhang mit der Spezifikation \href{kurs_als_netz.xhtml}{Kurs als Netz}.
+
+\tableofcontents
+
+\section{Namensraum}
+
+Der Namensraum des Course-XML lautet:\\
+\val{http://www.mumie.net/xml-namespace/document/content/course}
+
+Der übliche Prefix ist: \val{crs}.
+
+\section{Grundsätzliche Struktur}
+
+Das Root-Element des Problem-XMLs hängt vom Dokumenttyp ab. Der Name des
+Root-Elements ist mit dem Namen des Dokumenttyps identisch, lautet also
+\element{course}, \element{course_section},  \element{course_subsection} für
+die Dokumenttypen \val{course} bzw. \val{course_section} bzw.
+\val{course_subsection}.
+
+Das Root-Element enthält folgende Kindelemente:
+
+\begin{enumerate}
+\item Ein optionales Element \element{abstract}; enthält eine Zusammenfassung
+  des Kurses
+\item Ein Element \element{net}; beschreibt die Netzstruktur des Kurses
+\item Ein Element \element{thread}; beschreibt den "roten Faden" des Kurses
+\end{enumerate}
+
+\section{Das ''abstract''-Element}
+  
+Das \element{abstract}-Element enthält genau ein Kindelement. Dieses hat
+ebenfalls den Namen \element{abstract}, aber den Namensraum\\
+\val{http://www.mumie.net/xml-namespace/document/content/course/abstract}
+
+\section{Das ''net''-Element}
+
+Das \element{net}-Element enthält genau zwei Kindelemente: \element{nodes} und
+\element{arcs}. Ersteres beschreibt die Knoten, letzteres die Kanten des Netzes
+(vgl. \href{kurs_als_netz.xhtml}{Kurs als Netz}).
+
+\subsection{Knoten}
+
+Das \element{nodes}-Element enthält beliebig viele der folgenden Elemente:
+  
+\begin{enumerate}
+\item\label{elem_knoten} \element{element} -- Repräsentiert einen
+  Element-Knoten
+\item\label{aufg_knoten} \element{problem} -- Repräsentiert einen einen
+  Aufgaben-Knoten [gilt zumindest für die beiden derzeit einzigen
+  Kurs-Unterabschnitt-Kategorien \val{homework} und \val{pretest}]
+\item\label{kursabschn_knoten} \element{course_section} -- Repräsentiert einen
+  Kursabschnitts-Knoten
+\item \element{and}\label{and_knoten} -- Repräsentiert einen ''Und''-Knoten
+\item \element{or} -- Repräsentiert einen ''Oder''-Knoten
+\item \element{branch} -- Repräsentiert einen neutraler Verzweigungsknoten
+\item\label{aux_knoten} \element{aux} -- Repräsentiert einen Stützknoten
+\end{enumerate}
+
+Im folgenden sollen diese XML-Elemente mit den entsprechenden Knoten des Netzes
+identifiziert werden.
+
+Nach \href{kurs_als_netz.xhtml\#einschr_dokumentknoten}{Kurs als Netz} sind
+\ref{elem_knoten}, \ref{aufg_knoten} und \ref{kursabschn_knoten}
+\emph{Dokument-Knoten}. Für ihr Auftreten gelten daher folgende Einschränkungen:
+
+\begin{enumerate}
+  \setcounter{enumi}{7}
+  \item \element{element} gibt es nur bei Kursabschnitten,
+  \item  \element{problem} gibt es nur bei Kurse-Unterabschnitten [gilt
+    zumindest für die beiden derzeit einzigen Kurs-Unterabschnitt-Kategorien
+    \val{homework} und \val{pretest}],
+  \item \element{course_section} gibt es nur bei Kursen.
+\end{enumerate}
+
+Jedes der XML-Elemente \ref{elem_knoten} - \ref{aux_knoten} hat folgende Attribute:
+
+\begin{enumerate}
+\item \attrib{nid} -- Knoten-Id (node id); ein String, der den Knoten im Netz
+  eindeutig identifiziert.
+\item \attrib{posx} -- X-Koordinate des entsprechenden Icons in der grafischen
+  Darstellung. 
+\item \attrib{posy} -- Y-Koordinate des entsprechenden Icons in der grafischen
+  Darstellung.
+\end{enumerate}
+
+Bei Element-Knoten gibt es noch ein weiteres Attribut:
+
+\begin{enumerate}
+  \setcounter{enumi}{3}
+  \item \attrib{lid} -- Binnen-ID des Dokuments
+\end{enumerate}
+
+Nicht-Dokument-Knoten (also \ref{and_knoten}- \ref{aux_knoten}) sind immer
+leer. Dokument-Knoten können wie folgt Kindelemente enthalten:
+
+\begin{enumerate}
+  \item Element-Knoten: beliebig viele \element{subelement}-Elemente,
+  \item Aufgaben-Knoten: beliebig viele \element{subelement}-Elemente,
+  \item Kursabschnitts-Knoten: beliebig viele \element{course_subsection}-Elemente.
+\end{enumerate}
+
+Jedes Kindelement stellt ein an den Dokument-Knoten ''angehängtes'' Dokument
+dar. Die Typen der angehängten Dokumente ergeben sich aus den Namen der
+XML-Elemente; diese sind nämlich mit den Typ-Namen identisch.
+
+Die Kindelemente haben folgende Attribute:
+
+\begin{enumerate}
+\item \attrib{lid} -- Binnen-ID des angehängten Dokuments.
+\item \attrib{align}\label{align} -- Gibt an, an welcher Ecke des
+  Dokument-Knoten-Icons das Icon des angehängten Dokuments positioniert werden
+  soll. Mögliche Werte (selbsterklärend): \val{topleft}, \val{topright},
+  \val{bottomleft}, \val{bottomright}
+\item \attrib{count}\label{count} -- Gibt an, an wievielter Stelle das
+  angehängten Dokument in der entsprechenden Ecke erscheint. Zählung von innen
+  nach aussen, bei 1 beginnend.
+\end{enumerate}
+
+Beispiel:
+
+\image{course\_darstellung.png}
+
+Die Kindelemente sind immer leer.
+
+\subsection{Kanten}
+
+Das \element{arcs}-Element enthält beliebig viele
+\element{arc}-Kindelemente. Jedes \element{arc}-Elemente repräsentiert eine
+Kante. Es hat folgende Attribute:
+
+\begin{enumerate}
+\item \attrib{from} -- Knoten-Id des Startknotens
+\item \attrib{to} -- Knoten-Id des Endknotens
+\end{enumerate}
+
+Um Zwischenpunkte anzugeben, kann das \element{arc}-Element beliebig viele
+(einschliesslich 0) \element{point}-Kindelemente haben. Jedes
+\element{point}-Element entspricht einem Zwischenpunkt, und zwar das erste dem
+ersten, das zweite dem zweiten usw. Jedes \element{point}-Element hat folgende
+Attribute:
+
+\begin{enumerate}
+\setcounter{enumi}{4}
+\item \attrib{posx} -- Die X-Koordinate des Zwischenpunkts
+\item \attrib{posy} -- Die Y-Koordinate des Zwischenpunkts
+\end{enumerate}
+
+
+\section{Das ''thread''-Element}
+
+Das \element{thread}-Element hat den gleichen Aufbau wie das
+\element{arcs}-Element.
+
+ 
+\section{Verzeichnis aller XML-Elemente}
+
+Alle Elemente des Kurs-XMLs in alphabetischer Reihenfolge:
+
+\subsection{crs:abstract}\label{and_element}
+
+Enthält die Zusammenfassung. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:abstract>
+    <!-- Content: cabs:abstract -->
+  <crs:abstract>
+\end{preformatted}
+
+
+\subsection{crs:and}\label{and_element}
+
+Repräsentiert einen ''Und''-Knoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:and nid="\var{nid}"
+           posx="\var{posx}"
+           posy="\var{posy}"/>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons und \var{posy} die Y-Koordinate seines Icons.
+
+
+\subsection{crs:arc}\label{arc_element}
+
+Repräsentiert eine Kante des Netzes. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:arc from="\var{nid1}"
+           to="\var{nid2}">
+    <!-- Content: \href{\#point_element}{crs:point}* -->
+  </crs:arc>
+\end{preformatted}
+
+Hierbei sind \var{nid1} und \var{nid2} die Knoten-Ids des Start bzw. Endknotens.
+
+
+\subsection{crs:arcs}\label{arcs_element}
+
+Enthält die Kanten des Netzes. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:arcs>
+    <!-- Content: \href{\#arc_element}{crs:arc}* -->
+  </crs:arcs>
+\end{preformatted}
+
+
+\subsection{crs:aux}\label{aux_element}
+
+Repräsentiert einen Stützknoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:aux nid="\var{nid}"
+           posx="\var{posx}"
+           posy="\var{posy}"/>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons und \var{posy} die Y-Koordinate seines Icons.
+
+
+\subsection{crs:branch}\label{branch_element}
+
+Repräsentiert einen neutralen Verzweigungsknoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:branch nid="\var{nid}"
+              posx="\var{posx}"
+              posy="\var{posy}"/>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons und \var{posy} die Y-Koordinate seines Icons.
+
+
+\subsection{crs:course}\label{course_element}
+
+Wurzel-Element im Fall eines Kurses. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:course>
+    <!-- Content: \href{\#abstract_element}{crs:abstract} \href{\#net_element}{crs:net} \href{\#thread_element}{crs:thread} -->
+  </crs:course>
+\end{preformatted}
+
+
+\subsection{crs:course_section (als Wurzelelement)}\label{course_section__root_element}
+
+Wurzel-Element im Fall eines Kursabschnitts. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:course_section>
+    <!-- Content: \href{\#abstract_element}{crs:abstract} \href{\#net_element}{crs:net} \href{\#thread_element}{crs:thread} -->
+  </crs:course_section>>
+\end{preformatted}
+
+
+\subsection{crs:course_section}\label{course_section_element}
+
+Repräsentiert einen Kursabschnitts-Knoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:course_section nid="\var{nid}"
+                      posx="\var{posx}"
+                      posy="\var{posy}"
+                      lid="\var{lid}">
+    <!-- Content: \href{\#course_subsection_element}{crs:course_subsection}* -->
+  </crs:course_section>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons, \var{posy} die Y-Koordinate seines Icons und \var{lid} die
+Binnen-Id des Dokuments.
+
+
+\subsection{crs:course_subsection (als Wurzelelement)}\label{course_subsection__root_element}
+
+Wurzel-Element im Fall eines Kurs-Unterabschnitts. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:course_subsection>
+    <!-- Content: \href{\#abstract_element}{crs:abstract} \href{\#net_element}{crs:net} \href{\#thread_element}{crs:thread} -->
+  </crs:course_subsection>>
+\end{preformatted}
+
+
+\subsection{crs:course_subsection}\label{course_subsection_element}
+
+Repräsentiert ein einen Kurs-Unterabschnitt, der an einen Kursabschnitts-Knoten
+angehängt ist. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:course_subsection align="\var{align}"
+                         count="\var{count}"
+                         lid="\var{lid}"/>
+\end{preformatted}
+
+\var{align} ist ein Schlüsselwort, das festlegt, an welcher Ecke des
+Kursabschnitts-Knoten-Icons das Icon des Kurs-Unterabschnitts positioniert
+wird. Mögliche Werte (selbsterklärend): \val{topleft}, \val{topright},
+\val{bottomleft}, \val{bottomright}. S. auch \ref{align}.
+
+\var{count} ist eine positive ganze Zahl. Sie gibt an, an wievielter Stelle das
+Icon des Kurs-Unterabschnitts in der entsprechenden Ecke erscheint. Zählung von
+innen nach aussen, bei 1 beginnend. S. auch \ref{count}.
+
+\var{lid} ist die Binnen-Id des Dokuments.
+
+
+\subsection{crs:element}\label{element_element}
+
+Repräsentiert einen Element-Knoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:element nid="\var{nid}"
+               posx="\var{posx}"
+               posy="\var{posy}"
+               lid="\var{lid}">
+    <!-- Content: \href{\#subelement_element}{crs:subelement}* -->
+  </crs:element>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons, \var{posy} die Y-Koordinate seines Icons und \var{lid} die
+Binnen-Id des Dokuments.
+
+
+\subsection{crs:net}\label{net_element}
+
+Enthält die Beschreibung des Netzes. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:net>
+    <!-- Content: \href{\#nodes_element}{crs:nodes} \href{\#arcs_element}{crs:arcs} -->
+  </crs:net>
+\end{preformatted}
+
+
+\subsection{crs:nodes}\label{nodes_element}
+
+Enthält die Knoten des Netzes. Prototyp bei \emph{Kursen}:
+
+\begin{preformatted}[code]%
+  <crs:nodes>
+    <!-- Content: \meta{(}\href{\#and_element}{crs:and}\meta{|}\href{\#or_element}{crs:or}\meta{|}\href{\#branch_element}{crs:branch}\meta{|}\href{\#aux_element}{crs:aux}\meta{|}
+                   \href{\#course_section_element}{crs:course_section}\meta{)}* -->
+  </crs:nodes>
+\end{preformatted}
+
+Prototyp bei \emph{Kursabschnitten}:
+
+\begin{preformatted}[code]%
+  <crs:nodes>
+    <!-- Content: \meta{(}\href{\#and_element}{crs:and}\meta{|}\href{\#or_element}{crs:or}\meta{|}\href{\#branch_element}{crs:branch}\meta{|}\href{\#aux_element}{crs:aux}\meta{|}
+                   \href{\#element_element}{crs:element}\meta{)}* -->
+  </crs:nodes>
+\end{preformatted}
+
+Prototyp bei \emph{Kurs-Unterabschnitten}:
+
+\begin{preformatted}[code]%
+  <crs:nodes>
+    <!-- Content: \meta{(}\href{\#and_element}{crs:and}\meta{|}\href{\#or_element}{crs:or}\meta{|}\href{\#branch_element}{crs:branch}\meta{|}\href{\#aux_element}{crs:aux}\meta{|}
+                   \href{\#problem_element}{crs:problem}\meta{)}* -->
+  </crs:nodes>
+\end{preformatted}
+
+
+\subsection{crs:or}\label{or_element}
+
+Repräsentiert einen ''Oder''-Knoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:or nid="\var{nid}"
+          posx="\var{posx}"
+          posy="\var{posy}"/>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons und \var{posy} die Y-Koordinate seines Icons.
+
+
+\subsection{crs:point}\label{point_element}
+
+Repräsentiert einen Zwischenpunkt einer Kante. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:point posx="\var{posx}"
+             posy="\var{posy}"/>
+\end{preformatted}
+
+Hierbei sind \var{posx} die X-Koordinate und \var{posy} die Y-Koordinate des
+Zwischenpunkts.
+
+
+\subsection{crs:problem}\label{problem_element}
+
+Repräsentiert einen Aufgaben-Knoten. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:problem nid="\var{nid}"
+               posx="\var{posx}"
+               posy="\var{posy}"
+               lid="\var{lid}">
+    <!-- Content: \href{\#subelement_element}{crs:subelement}* -->
+  </crs:problem>
+\end{preformatted}
+
+Hierbei sind \var{nid} die Knoten-Id des Knotens, \var{posx} die X-Koordinate
+seines Icons, \var{posy} die Y-Koordinate seines Icons und \var{lid} die
+Binnen-Id des Dokuments.
+
+
+\subsection{crs:subelement}\label{subelement_element}
+
+Repräsentiert ein Subelement, das an einen Element-Knoten angehängt ist.
+Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:subelement align="\var{align}"
+                  count="\var{count}"
+                  lid="\var{lid}"/>
+\end{preformatted}
+
+\var{align} ist ein Schlüsselwort, das festlegt, an welcher Ecke des
+Element-Knoten-Icons das Icon des Subelements positioniert wird. Mögliche
+Werte (selbsterklärend): \val{topleft}, \val{topright}, \val{bottomleft},
+\val{bottomright}. S. auch \ref{align}.
+
+\var{count} ist eine positive ganze Zahl. Sie gibt an, an wievielter Stelle das
+Icon des Subelements in der entsprechenden Ecke erscheint. Zählung von innen
+nach aussen, bei 1 beginnend. S. auch \ref{count}.
+
+\var{lid} ist die Binnen-Id des Dokuments.
+
+
+\subsection{crs:thread}\label{arcs_element}
+
+Enthält die Kanten des ''Roten Fadens''. Prototyp:
+
+\begin{preformatted}[code]%
+  <crs:thread>
+    <!-- Content: \href{\#arc_element}{crs:arc}* -->
+  </crs:thread>
+\end{preformatted}
+
+
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

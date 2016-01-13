@@ -1,0 +1,1259 @@
+\documentclass[12pt]{article}
+
+\RequirePackage{../macros/mumie}
+
+% defs für dieses dokument:
+\def\xml{\texttt{mumie}XML}
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+\texttt{\Huge mumie} \textsf{\Huge Style Guide}
+\bigskip
+
+\styletitle{\texttt{mumie}XML}
+\phantom.
+\vspace*{3cm}
+\begin{center}
+Dominik Eberlein, Andreas Hoffmann, Sabina Jeschke, Lutz Lenzen,
+Tilman Rassy
+\end{center}
+
+\ifx\pdfoutput\undefined
+  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+\else
+  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Maintainer:}& Dominik Eberlein \\
+\textsf{Datum:}& 
+   \verb+$Date: 2002/01/17 12:43:17 $+\\ % Wird vom cvs eingetragen
+\textsf{CVS-Version:}& 
+   \verb+$Revision: 1.1 $+\\            % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%% 
+
+\tableofcontents
+\eject
+
+\section{Einführung}
+Dieser Style spezifiziert das \texttt{mumieXML}. Es wird die
+Funktionalität und im groben das Layout der durch das XML bestimmten
+Objekte festgelegt.
+
+Zur Terminologie: Wir betrachten \texttt{<para>Das ist ein
+Text-Knoten.</para>}. Dann heißt~\texttt{<para> </para>} Knoten und
+der davon umschlossene Text ist der aktuelle Text-Knoten oder kurz der
+Text-Knoten.
+
+Es erfolgt eine Prioritätseinstufung der einzelnen Knoten durch
+Zuordnung zu einem Level 1, 2 oder~3. Teilweise hängt die Einstufung
+auch noch von den Attributen ab.
+
+\section{Knoten-Kategorien}
+Es gibt folgende Kategorien von Knoten im \texttt{mumie}XML:
+
+\begin{center}
+\ifx\pdfoutput\undefined
+  \epsfig{file=pics/kapseln.eps,angle=0}
+\else
+  \includegraphics[angle=0]{pics/kapseln.pdf}
+\fi
+\end{center}
+
+\begin{description}
+\item[K0 \normalfont Mathematische Struktur-Knoten:] Knoten zur
+Definition strukturgebender mathematischer Objekte wie (Sub-)Elemente
+im Sinne der \texttt{mumie}Spezifikation, etwa ``Definition'' oder
+``Theorem''.
+\item[KM0 \normalfont Meta-Knoten:]
+Knoten zur Spezifizierung von Meta-Elementen.
+\item[KM1${}_{\text{Ge}}$ \normalfont Allgemeines-Knoten:] Knoten mit
+allgemeinen Metainformationen.
+\item[KM1${}_{\text{Cr}}$ \normalfont Entstehungs-Knoten:] Knoten mit
+Metainformationen "uber die Entstehung des Dokuments.
+\item[KM1${}_{\text{Co}}$ \normalfont Beziehungen-Knoten:] Knoten mit
+Metainformationen "uber die fachlichen Beziehungen des Dokuments.
+\item[KM1${}_{\text{Di}}$ \normalfont Didaktik-Knoten:] Knoten mit
+didaktischen Metainformationen.
+\item[KC0 \normalfont Content-Knoten:]
+Knoten, der die Struktur-Knoten der Inhalte des (Sub-)Elements aufnimmt.
+\item[KC1${}_{\text{T}}$ \normalfont Titel-Knoten:] Knoten, der den
+Titel des Dokuments enth"alt.
+\item[KC1 \normalfont Hauptteil-Knoten:] Knoten, der strukturell die
+Hauptteile (bei einem Theorem etwa: ``einfache'' Voraussetzung,
+Implikation 1, Implikation 2) des (Sub-)Elements wiedergibt und als
+Kinder die Unterteile hat.
+\item[KC2 \normalfont Unterteil-Knoten:] Knoten, der die Unterteile
+(bei einer Implikation etwa Voraussetzung und Aussage) wiedergibt.
+\item[KC3${}_{\text{IO}}$ \normalfont Interaktions-Objekt-Knoten:]
+Knoten, die Interaktions-Objekte wie Bilder und JavaApplets
+einbetten.
+\item[KC3${}_{\text{IB}}$ \normalfont Interaktions-Button-Knoten und Events:]
+Knoten zur Steuerung von Interaktions-Objekten, also etwa
+ein Button, der bei Klick eine Bildsequenz oder Methode eines
+JavaApplets startet (Interaktions-Objekt).
+\item[KC3${}_{\text{LM}}$ \normalfont Logische MarkUp-Knoten:]
+Logische MarkUp-Knoten, die sich auf einzelne Textstücke beziehen.
+\end{description}
+
+\section{\textbf{K0} Mathematische Struktur-Knoten}
+
+\subsection{(Sub-)Elemente}
+
+\emph{Knoten-Name:} \texttt{<atom> ... </atom>}
+
+\emph{Attribute:} 
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{tool}&\texttt{teach}\\
+\texttt{type}&\texttt{element|subelement}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Hiermit wird ein \mumie-(Sub-)Element angegeben.
+%Der (Sub-)Elementtyp wird durch die Metainformationen spezifiziert.
+
+\emph{Kinder:} Genau ein Meta-Knoten und ein Content-Knoten.
+
+\emph{Priorität:} Level 1
+
+
+\section{\textbf{KM0} Meta-Knoten}
+
+\emph{Knoten-Name:} \texttt{<metainfo> ... </metainfo>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Wurzel-Knoten für die Metainformationen.
+
+\emph{Kinder:} Genau ein \texttt{general}- \texttt{creation}-,
+\texttt{context}- und \texttt{didactical}-Knoten.
+
+\emph{Priorität:} Level 1
+
+
+\subsection{KM1${}_{\text{Ge}}$ Allgemeines}
+
+\emph{Knoten-Name:} \texttt{<general> ... </general>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container f"ur Knoten mit allgemeinen Informationen.
+
+\emph{Kinder:} Genau ein \texttt{id}-, \texttt{type}-,
+\texttt{subtype}-, \texttt{name}-, und \texttt{description}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Id}
+
+\emph{Knoten-Name:} \texttt{<id> ... </id>}
+
+\emph{Attribute:} 
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{scope}&\texttt{database|local}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Container f"ur die \texttt{dbtable}- und
+\texttt{dbkey}-Knoten.
+
+\emph{Kinder:} Genau ein \texttt{dbtable}- und und ein \texttt{dbkey}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{DB-Tabelle}
+
+\emph{Knoten-Name:} \texttt{<dbtable> ... </dbtable>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Ent"ahlt den Namen der Datenbank-Tabelle.
+
+\emph{Kinder:} Textknoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{DB-Prim"arschl"ussel}
+
+\emph{Knoten-Name:} \texttt{<dbkey> ... </dbkey>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Ent"ahlt den Prim"arschl"ussel.
+
+\emph{Kinder:} Textknoten.
+
+\emph{Priorität:} Level 3
+
+
+%\subsubsection{Typ}
+
+%\emph{Knoten-Name:} \texttt{<type> ... </type>}
+
+%\emph{Attribute:} -
+
+%\emph{Beschreibung:} Angabe ob Element oder Subelement.
+
+%\emph{Kinder:} Textknoten, Wert: \texttt{element|subelement}.
+
+
+\subsubsection{Spezieller Typ}
+
+\emph{Knoten-Name:} \texttt{<subtype> ... </subtype>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Angabe des speziellen Typs, im Fall eines
+Elements also die Angabe, ob \texttt{definition}, \texttt{theorem},
+\ldots.
+
+\emph{Kinder:} Textknoten, Wert: Bezeichnung des speziellen Typs.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Name}
+
+\emph{Knoten-Name:} \texttt{<name> ... </name>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Name des Dokuments.
+
+\emph{Kinder:} Textknoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Beschreibung}
+
+\emph{Knoten-Name:} \texttt{<description> ... </description>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Kurze Beschreibung des Dokuments.
+
+\emph{Kinder:} Textknoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsection{KM1${}_{\text{Cr}}$ Dokumententstehung}
+
+\emph{Knoten-Name:} \texttt{<creation> ... </creation>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container f"ur Knoten mit Informationen "uber die
+Entstehung des Dokuments.
+
+\emph{Kinder:} Genau ein \texttt{authors}-, \texttt{created}-, und
+\texttt{last\_modified}-Knoten.
+
+\emph{Priorität:} Level 3
+
+\subsubsection{Autorenliste}
+
+\emph{Knoten-Name:} \texttt{<authors> ... </authors>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Liste der Autoren, angegeben als Id's.
+
+\emph{Kinder:} Beliebig viele \texttt{id}-Knoten, mindestens einer.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Beginn der Arbeit am Dokument}
+
+\emph{Knoten-Name:} \texttt{<created> ... </created>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Wann mit der Arbeit am Dokument begonnen wurde (Datum).
+
+\emph{Kinder:} Genau ein \texttt{year}-, \texttt{month}-, und
+\texttt{day}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Letzte "Anderung}
+
+\emph{Knoten-Name:} \texttt{<last\_modified> ... </last\_modified>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Wann das Dokument zuletzt ge"andert wurde wurde (Datum).
+
+\emph{Kinder:} Genau ein \texttt{year}-, \texttt{month}-, und
+\texttt{day}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Jahr}
+
+\emph{Knoten-Name:} \texttt{<year> ... </year>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Jahreszahl.
+
+\emph{Kinder:} Textelement.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Monat}
+
+\emph{Knoten-Name:} \texttt{<month> ... </month>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Monat (als Zahl).
+
+\emph{Kinder:} Textelement.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Tag}
+
+\emph{Knoten-Name:} \texttt{<day> ... </day>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Tag (der wievielte im Monat).
+
+\emph{Kinder:} Textelement.
+
+\emph{Priorität:} Level 3
+
+
+\subsection{KM1${}_{\text{Co}}$ Beziehungen}
+
+\emph{Knoten-Name:} \texttt{<context> ... </context>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container f"ur Knoten mit Informationen "uber die
+fachlichen Beziehungen des Dokuments.
+
+\emph{Kinder:} Genau ein \texttt{requirements}- und ein
+\texttt{keywords}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Voraussetzungen (nur bei Elementen)}
+
+\emph{Knoten-Name:} \texttt{<requirements> ... </requirements>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{operation}&\texttt{and|or}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Voraussetzungen f"ur dieses Dokument. Angabe von
+anderen Dokumenten als Id's, verkn"upft mit logischem \glqq und\grqq\
+oder \glqq oder\grqq, Verschachtelung m"oglich.
+
+\emph{Kinder:} Beliebig viele \texttt{id}- und/oder
+\texttt{requirements}-Knoten, mindestens einer.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Eingliederung}
+
+\emph{Knoten-Name:} \texttt{<contained\_in> ... </contained\_in>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Bei Elementen: In welchen Gliederungseinheiten
+((Sub)${}^{\text{n}}$modulen) dieses Dokument enthalten ist; bei
+Subelementen: an welche Elemente dieses Dokument \glqq
+angeh"angt\grqq\/ werden kann. Angabe von Gliederungseinheiten bzw.\
+Elementen als Id's.
+
+\emph{Kinder:} Beliebig viele \texttt{id}-Knoten, mindestens einer.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Stichwort-Liste}
+
+\emph{Knoten-Name:} \texttt{<keywords> ... </keywords>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Stichworte.
+
+\emph{Kinder:} Beliebig viele (auch Null) \texttt{keyword}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Stichwort}
+
+\emph{Knoten-Name:} \texttt{<keyword> ... </keyword>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Einzelnes Stichwort.
+
+\emph{Kinder:} Textknoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsection{KM1${}_{\text{Di}}$ Didaktisches}
+
+\emph{Knoten-Name:} \texttt{<didactical> ... </didactical>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Container f"ur Knoten mit didaktischen Informationen.
+
+\emph{Kinder:} Genau ein \texttt{education\_level}- und ein
+\texttt{abstraction\_level}-Knoten.
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Ausbildungsstand}
+
+\emph{Knoten-Name:} \texttt{<education\_level> ... </education\_level>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Welchem Ausbildungsstand der Stoff in etwa
+entspricht. Einordnung auf einer Skala von 1 bis 9. \glqq
+Kalibrierung\grqq\ wie folgt: 1 -- 3 $\leftrightarrow$ Sekundarstufe
+II, 4 -- 6 $\leftrightarrow$ Vordiplom Mathematikstudium, 7 -- 9
+$\leftrightarrow$ Diplom Mathematikstudium.
+
+\emph{Kinder:} Textknoten, Zahl zwischen 1 und 9 (einschliesslich).
+
+\emph{Priorität:} Level 3
+
+
+\subsubsection{Abstraktionsgrad}
+
+\emph{Knoten-Name:} \texttt{<abstraction\_level> ... </abstraction\_level>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Wie abstrakt der Stoff dargestellt wird, auf
+einer Skala von 1 bis 9.
+
+\emph{Kinder:} Textknoten, Zahl zwischen 1 und 9 (einschliesslich).
+
+\emph{Priorität:} Level 3
+
+
+\section{\textbf{KC0} Content-Knoten}
+
+\emph{Knoten-Name:} \texttt{<content> ... </content>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} 
+
+\emph{Kinder:} Titel und Hauptteile.
+
+\emph{Priorität:} Level 1
+
+
+\section{\textbf{KC1${}_{\text{T}}$} Titel-Knoten}
+
+\emph{Knoten-Name:} \texttt{<title> ... </title>}
+
+\emph{Attribute:} --
+
+\emph{Beschreibung:} Titel des Dokuments.
+
+\emph{Kinder:} Textknoten, \texttt{emph}- und\texttt{code}-Knoten,
+\texttt{comment}-Knoten.
+
+\emph{Priorität:} Level 1
+
+
+\section{\textbf{KC1} Hauptteile}
+
+\emph{Knoten-Name:} \texttt{<part> ... </part>}
+
+\emph{Attribute bei Element ``Motivation'' und Element ``Anwendung'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Element ``Definition'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+
+\begin{minipage}[t]{75mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{main}\\
+\texttt{layout}&\texttt{side-by-side|top-bottom}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+\begin{minipage}[t]{55mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\end{center}
+
+\emph{Attribute bei Element ``Theorem'' und Element ``Lemma'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+
+\begin{minipage}[t]{75mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{implication|equivalence}\\
+\texttt{layout}&\texttt{side-by-side|top-bottom}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+\begin{minipage}[t]{55mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\end{center}
+
+\emph{Attribute bei Element ``Algorithmus'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{main}\\
+\texttt{layout}&\texttt{side-by-side|top-bottom}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Elementen ``Beweis'' und ``Herleitung''`:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{proofstep}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Elementen ``Motivation zu ...'',
+``Visualisierung'', ``Beispiel'', ``Tabelle'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Element ``Bemerkungen'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{sloppy|alarm|reflection|associative}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Element ``Historisches'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{person|mathfield|singleresult}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Beispiel für alle Elemente und Subelemente
+
+\emph{Kinder:} Nur Unterteile.
+
+\emph{Priorität:} Level 1
+
+Umsetzung der einzelnen Elementtypen:
+
+\begin{center}
+\begin{tabular}{l|l|l}
+(Sub-)Element&subtype von (Sub-)Element&Level\\
+\hline
+Motivation u. Anwendung         &freeenv                        &2\\
+Definition                      &requirement                    &1\\
+Definition                      &main                           &1\\
+Definition                      &freeenv                        &1\\
+Theorem u. Lemma                &requirement                    &1\\
+Theorem u. Lemma                &implication u. equivalence     &1\\
+Theorem u. Lemma                &freeenv                        &1\\
+Algorithmus                     &requirement                    &2\\
+Algorithmus                     &main                           &2\\
+Beweis u. Herleitung            &requirement                    &1\\
+Beweis u. Herleitung            &proofstep                      &1\\
+Motivation zu... u. Beispiel    &freeenv                        &2\\
+Visualisierung u. Tabelle       &freeenv                        &2\\
+Bemerkungen                     &-- alle subtypes --            &2\\
+Historisches                    &person                         &2\\
+Historisches                    &mathfield                      &2\\
+Historisches                    &singleresult                   &2\\
+\end{tabular}
+\end{center}
+
+
+\section{\textbf{KC2} Unterteile}
+
+\emph{Knoten-Name:} \texttt{<subpart> ... </subpart>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\ \hline \texttt{subtype}&\texttt{single|multi}\\
+\texttt{maxnumber}&\textit{Zahl zwischen 1 und $n$, $n \in
+\mathbb{N}\setminus\{0\}$}\\ \texttt{positionnumber}&\textit{Zahl
+zwischen 1 und $n$}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Beispiel für alle Elemente und Subelemente;\\
+der subtype gibt an, ob der "ubergeordnete Part einen (\texttt{single})
+oder mehrere (\texttt{multi}) Subparts hat.
+
+\emph{Erl"auterung:} 
+Deklinationstabelle f"ur die Anzahl der Subparts zu einen Part,\\
+abgeleitet aus dem Inhalt-Style:
+
+\begin{center}
+\begin{tabular}{l|l|l}
+(Sub-)Element&subtype von (Sub-)Element&Wert maxnumber\\
+\hline
+Motivation u. Anwendung         &freeenv                        &1\\
+Definition                      &requirement                    &1\\
+Definition                      &main                           &2\\
+Definition                      &freeenv                        &1\\
+Theorem u. Lemma                &requirement                    &1\\
+Theorem u. Lemma                &implication u. equivalence     &2\\
+Theorem u. Lemma                &freeenv                        &1\\
+Algorithmus                     &requirement                    &1\\
+Algorithmus                     &main                           &2\\
+Beweis u. Herleitung            &requirement                    &1\\
+Beweis u. Herleitung            &proofstep                      &2\\
+Motivation zu... u. Beispiel    &freeenv                        &1\\
+Visualisierung u. Tabelle       &freeenv                        &1\\
+Bemerkungen                     &-- alle subtypes --            &1\\
+Historisches                    &person                         &5\\
+Historisches                    &mathfield                      &3\\
+Historisches                    &singleresult                   &1\\
+
+\end{tabular}
+\end{center}
+
+\emph{Kinder:} Text-Knoten, \texttt{<emph />}, \texttt{<code />},
+\texttt{<balloon />}, \texttt{<list />}, \texttt{<table />},
+\texttt{<notion />}, \texttt{<keyb />}, \texttt{<links />},
+\texttt{<comment />}.
+
+\emph{Priorität:} Level 1
+
+\section{\textbf{KC3${}_{\text{IO}}$} Interaktions-Objekt-Knoten}
+
+\subsection{Interaktions-Objekt}
+\emph{Knoten-Name:} \texttt{<iaobject> ... </iaobject>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{image|javaapplet|xmlactive|mboy|audio}\\
+\texttt{id}&\texttt{ID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+Einbettung eines Interaktions-Objekts in die Seite. Wesentlich
+ist die Unterscheidung in die Typen \texttt{type}:
+\begin{description}
+\item[\texttt{image}] Das Objekt ist ein Bild.
+\item[\texttt{javaapplet}] Im wesentlichen Einbinden des Applets.
+\item[\texttt{xmlactive}] Angabe der möglichen XML-Stücke.
+%DE: muß noch konkretisiert werden.
+\item[\texttt{mboy}] Evtl.~Mumie (Hauptfigur) und Skarabäus (Begleiter).
+%DE: muß noch konkretisiert werden.
+\item[\texttt{audio}] Audio-Sequenz, die nicht direkt den angezeigten
+Text wiedergibt. Wird erstmal zurückgestellt.
+\end{description}
+
+\texttt{ID} ist die Objekt-ID.
+
+\emph{Kinder:} \texttt{<view />}, \texttt{<controls />},
+\texttt{<action />}
+
+\emph{Priorität:} Level 1
+
+Umsetzung der Attribute: \texttt{image}: Level 1, \texttt{xmlactive}:
+Level 2, Rest: Level 3
+
+
+\subsection{View}
+
+\emph{Knoten-Name:} \texttt{<view />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{src}&\texttt{REF}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+Bettet das eigentliche Interaktions-Objekt ein. Mit \texttt{src} kann
+eine Quelle für das Objekt angegeben werden (z.B.~für
+\texttt{type="{}image"} das Startbild, für~\texttt{type="{}javaapplet"}
+das Applet).
+
+\emph{Kinder:} -
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Steuerungselemente}
+
+\emph{Knoten-Name:} \texttt{<controls> ... </controls>}
+
+\emph{Attribute:}
+-
+
+\emph{Beschreibung:} Ist ein Container für die
+Steuerungselemente. Diese werden über \texttt{<ctrlbutton>}
+spezifiziert.
+
+\emph{Kinder:}
+\texttt{<ctrlbutton />}
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Kontroll-Buttons}
+
+\emph{Knoten-Name:} \texttt{<ctrlbutton> ... </ctrlbutton>}
+
+\emph{Attribute:}
+
+für Interaktions-Objekt vom Typ \texttt{image}:
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{flip|show\_all|start|stop|next|previous}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Im Unterschied zu \texttt{<iabutton>} tritt
+\texttt{<ctrlbutton>} nicht im laufenden Text, sondern nur direkt beim
+Interaktions-Objekt auf. 
+
+Der Typ wird durch \texttt{<type>} angegeben. Je nach Typ können auch
+Parameter übergeben werden. Die beim Klick auf den Button auszulösende
+Aktion wird durch \texttt{<call\_action />} spezifiziert.
+
+\emph{Kinder:}  Parameter und \texttt{<call\_action />}
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Aktionen}
+
+\emph{Knoten-Name:} \texttt{<action> ... </action>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\texttt{ID}\\
+\texttt{method}&\texttt{STRING}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Eine Aktion kann durch \texttt{<call\_action />}
+aufgerufen werden und ruft dann ihrerseits die Methode
+\texttt{method} mit den Parametern \texttt{<params />} auf. Die
+möglichen Methoden hängen vom Typ des Interaktions-Objekts ab:
+
+\begin{description}
+\item[\texttt{image}:]
+\begin{description}
+\item[\texttt{method="{}flip"}:] Bei genau~$n=2$ Bildern: Austausch
+beider Bilder. Parameter sind die beiden Bilder.
+\item[\texttt{method="{}start"}:] Bei~$n>2$ Bildern: Start der
+Animation.  Als Parameter müssen die Bilder (\texttt{img}) übergeben
+werden und kann  \texttt{loop} (Endlosschleife ja/nein) übergeben werden.
+\end{description}
+\item[\texttt{javaapplet}:] Übergabe der JavaApplet-Methode und deren
+Parameter. Ansteuerung durch LiveConnect.
+\item[\texttt{xmlactive}:] Schrittweises Aufbauen von Text/Formeln;
+Austauschen von Text/Formeln.
+%DE muß noch ausformuliert werden.
+\item[\texttt{mboy}:] Was sagt sie? Wohin bewegt sie sich (Position)?
+Wie bewegt sie sich (etwa springen)? Welcher (Hauptfigur/Begleiter)?
+%DE muß noch ausformuliert werden.
+\item[\texttt{audio}:] Wird zurückgestellt.
+\end{description}
+
+\emph{Kinder: } Parameter, über diese werden dann auch die Inhalte
+(für Bildsequenzen die einzelnen Bilder, für XML-Bausteine die
+einzelnen XML-Stücke) angegeben.
+
+\emph{Priorität:} Level 1 einzelner Methoden
+
+
+\subsection{Parameterliste}
+
+\emph{Knoten-Name:} \texttt{<params> ... </params>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Nimmt die einzelnen Parameter auf.
+
+\emph{Kinder:} \texttt{<param />}
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Parameter}
+
+\emph{Knoten-Name:} \texttt{<param> ... </param>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{name}&\texttt{STRING}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+Der Wert des Parameters ist der Inhalt des Text-Knotens.
+
+\emph{Kinder:} Text-Knoten
+
+\emph{Priorität:} Level 1
+
+
+\section{\textbf{KC3${}_{\text{IB}}$} Interaktions-Button-Knoten und Events}
+
+\subsection{Interaktions-Button}
+
+\emph{Knoten-Name:} \texttt{<iabutton> ... </iabutton>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{onestep|animation}\\
+\texttt{target}&\texttt{REFID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Hiermit wird eine Instanz von Interaktions-Button
+erzeugt. Es gibt zwei Typen:
+\begin{description}
+\item[onestep] Wird für Aktionen verwendet, die wie ein einzelner
+Schritt erscheinen (keine für den Benutzer erkennbare zeitliche
+Dauer). Beispiele: Auswechseln zweier Bilder, Öffnen eines Fensters,
+Schlagartiges (ohne Bewegung) Einstellen einer bestimmten Position
+eines Objektes in einem JavaApplet.
+
+Bei nochmaligen Klick auf diesen Button wird die Aktion in der Regel
+zurückgenommen.
+
+\item[animation] Wird für Animationssequenzen und zusammengesetzte,
+komplexe oder automatische Abläufe verwendet (für den Benutzer ist
+eine zeitliche Dauer erkennbar). Beispiele: Film, Bildfolge,
+Schrittweises automatisches Lösen eines linearen
+Gleichungssystems. Wird während des Abspielens der Animation erneut
+der Button geklickt, so wird auch die entsprechende Aktion ein
+weiteres Mal aufgerufen. Das entsprechende Event-Handling (etwa
+Start/Pause/Weiter der Bildsequenz) muß dann von der Aktion bearbeitet
+werden.
+\end{description}
+
+Anmerkung zu den XSLTs: Beide Arten tragen noch ein Merkmal, das dem
+Benutzer anzeigt, ob die Aktion im aktuellen Fenster oder einem
+externen Fenster stattfindet.  In den XSLs muß also eine Abfrage
+einbaut werden, ob das Ziel im aktuellen Fenster ist oder nicht.
+
+\emph{Kinder:} \texttt{<text />}, \texttt{<call\_action />}
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Events}
+
+\emph{Knoten-Name:} \texttt{<onevent> ... </onevent>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{sleeping|load\_page|close\_page|quit\_browser|error|warning}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Ordnet dem jeweiligen Event eine oder mehrer
+Aktionen zu.
+
+\emph{Kinder:} \texttt{<call\_action />} zum Aufruf der entsprechenden 
+Aktionen bei Eintritt des angebenen Ereignisses.
+
+\emph{Priorität:} Level 3
+
+
+\subsection{Verweistext}
+
+\emph{Knoten-Name:} \texttt{<text> ... </text>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Enthält den Text (vor dem Button), der als Verweis
+unterlegt sein soll. 
+
+\emph{Kinder:} -
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Aktionenaufruf}
+
+\emph{Knoten-Name:} \texttt{<call\_action />}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{id}&\texttt{REFID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Ruft die über \texttt{id} angegebene Aktion
+auf.
+
+\emph{Kinder:} -
+
+\emph{Priorität:} Level 1
+
+
+\section{\textbf{KC3${}_{\text{LM}}$} Logische MarkUp-Knoten}
+\subsection{Hervorhebung}
+
+\emph{Knoten-Name:} \texttt{<emph> ... </emph>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird hervorgehoben.
+
+\emph{Kinder:}   Text-Knoten, \texttt{<comment />}.
+
+\emph{Priorität:} Level 1
+
+
+\subsection{Fachbegriffe, Definitionsbegriffe}
+
+\emph{Knoten-Name:} \texttt{<notion> ... </notion>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird hervorgehoben.
+
+\emph{Kinder:} nur Text-Knoten, \texttt{<comment />}.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Code-Knoten}
+
+\emph{Knoten-Name:} \texttt{<code> ... </code>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird als Programm-Code (Stil)
+ausgegeben.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<balloon />}, \texttt{<comment />}.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Tastatur-Eingabe}
+
+\emph{Knoten-Name:} \texttt{<keyb> ... </keyb>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird als Tastatur-Eingabe (Stil)
+ausgegeben.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<balloon />}, \texttt{<comment />}.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Ballon}
+
+\emph{Knoten-Name:} \texttt{<balloon> ... </balloon>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{text}&\texttt{STRING}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Ist der Mauszeiger über dem Textknoten, so wird
+der durch das Attribut \texttt{text} angegebene Text in einem kleinen
+Fenster (etwa ähnlich wie der Windows-Hilfe zu Icons) angezeigt.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<code />}.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{List-Knoten}
+
+\emph{Knoten-Name:} \texttt{<list> ... </list>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{ordered|unordered}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Listenknoten; das Attribut \texttt{ordered} gibt
+an, ob es sich um eine geordnete Liste (HTML: \texttt{<ol />}) oder 
+eine ungeordnete Liste (HTML: \texttt{<ul />}) handelt.
+
+\emph{Kinder:} Nur \texttt{<li />}-Knoten.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Listeneintrag-Knoten}
+
+\emph{Knoten-Name:} \texttt{<li> ... </li>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} ListItem, wie in HTML.
+
+\emph{Kinder:} Text-Knoten, \texttt{<list />}, \texttt{<emph />},
+\texttt{<code />}, \texttt{<balloon />}, \texttt{<iaobject />},
+\texttt{<iabutton />}, \texttt{<notion />}, \texttt{<links />},
+\texttt{<comment />}.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Tabelle}
+
+\emph{Knoten-Name:} \texttt{<table> ... </table>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{...}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Tabelle wie in HTML
+
+\emph{Kinder:} analog wie in HTML (noch auszuführen)
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Links}
+
+\emph{Knoten-Name:} \texttt{<links> ... </links>}
+
+\emph{Attribute:} 
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{internal|external}\\
+\texttt{target}&\texttt{reference}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Der Text-Knoten wird mit ``reference'' verlinkt.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<code />}.
+
+\emph{Priorität:} Level 2
+
+
+\subsection{Kommentare}
+
+\emph{Knoten-Name:} \texttt{<comment> ... </comment>}
+
+\emph{Attribute:} 
+
+\emph{Beschreibung:} F"ur Autorenkommentare (inhaltlicher Natur): Der
+Knoten ist im Ergebnis unsichtbar. ( \texttt{<comment />} ist nicht
+zul"assig in ``technischen'' Umgebungen.)
+
+\emph{Kinder:} -
+
+\emph{Priorität:} Level 2
+
+
+\end{document}
+
+
+
+%template 
+\subsection{XXX-Knoten}
+
+\emph{Knoten-Name:} \texttt{<xxx> ... </xxx>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{}&\texttt{}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+
+\emph{Kinder:}
+
+\emph{Priorität:} Level ?

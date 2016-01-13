@@ -1,0 +1,22 @@
+Please use in this way:
+
+1) cd to the root of mmtex
+cd ..
+cd ..
+
+2) use find to run the script for every file in the dir
+
+find -name '*.p[ml]' -exec perl utils/create_sub_overview/sub_crush.pl '{}' ';' 
+
+This will create two files named 
+
+sub_navi.html
+sub_content.html
+
+Then run 
+
+perl utils/create_sub_overview/concat.pl
+
+This will concat the files into one named ready.html and delete the old ones
+
+Have fun....

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmsv" default="mmsrv-lib" basedir="../..">
+
+  <!-- Properties -->
+
+  <property name="mmsrv.src.dir" value="src"/>
+  <property name="mmsrv.src.java.dir" value="${mmsrv.src.dir}/java"/>
+  <property name="mmsrv.lib.dir" value="lib"/>
+  <property name="mmsrv.lib.java.dir" value="${mmsrv.lib.dir}/java"/>
+  <property name="mmsrv.lib.java.classes.dir" value="${mmsrv.lib.java.dir}/classes"/>
+  <property name="mmsrv.install.prefix" value="/usr/local"/>
+  <property name="mmsrv.install.lib.java.dir" value="${mmsrv.install.prefix}/lib/java"/>
+  <property name="mmsrv.doc.dir" value="doc"/>
+  <property name="mmsrv.doc.apidocs.dir" value="${mmsrv.doc.dir}/apidocs"/>
+  <property name="mmsrv.resources.dir" value="resources"/>
+  <property name="mmsrv.resources.apidocs.css.file"
+            value="${mmsrv.resources.dir}/apidocs.css"/>
+  <property name="mmsrv.verbose" value="no"/>
+  <property name="mmsrv.force" value="no"/>
+  <property name="mmsrv.javac.verbose" value="no"/>
+  <property name="mmsrv.javac.deprecation" value="no"/>
+  <property name="mmsrv.javac.debug" value="yes"/>
+  <property name="mmsrv.jar.file" value="mumie-srv.jar"/>
+  <property name="mmsrv.jdk.apidocs.url" value=""/>
+  <property name="mmsrv.vendor" value="Berlin University of Technology"/>
+  <property name="mmsrv.version" value="-NONE-"/>
+  <property name="mmsrv.jar.file" value="mumie-srv.jar"/>
+  <property name="mmsrv.for-mmcdk.jar.file" value="mumie-srv-for-mmcdk.jar"/>
+  <property name="mmsrv.java.package.path" value="net/mumie/srv"/>
+  <property name="mmsrv.build-tools.java.package.path" value="net/mumie/srv/build"/>
+  <property name="mmsrv.offline-tools.java.package.path" value="net/mumie/srv/offline"/>
+
+  <!-- Auto-set properties -->
+
+  <tstamp>
+    <format property="mmsrv.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmsrv.internal.force">
+    <istrue value="${mmsrv.force}"/>
+  </condition>
+
+  <!-- Classpath -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmsrv.lib.java.dir}">
+        <include name="**/*.jar"/>
+      </fileset>
+      <fileset dir="${mmsrv.install.lib.java.dir}">
+        <include name="mumie-sql.jar"/>
+        <include name="mumie-datasheet.jar"/>
+      </fileset>
+    </path>
+    <property name="mmsrv.classpath" refid="classpath"/>
+  </target>
+
+  <!-- Dumping the settings of the global properties to stdout -->
+
+  <target name="print-props"
+          depends="classpath"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmsrv."/>
+  </target>
+
+  <!-- Deletes the compiled classes -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmsrv.verbose}">
+      <fileset dir="${mmsrv.lib.java.classes.dir}">
+        <include name="${mmsrv.java.package.path}/**/*.class"/>
+        <exclude name="${mmsrv.build-tools.java.package.path}/**/*.class"/>
+        <exclude name="${mmsrv.offline-tools.java.package.path}/**/*.class"/>
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!-- Deletes the compiled classes if (and only if) mmsrv.internal.force is set,
+    which is equivalent to mmsrv.force being true. -->
+
+  <target name="clear-classes.iff-force" if="mmsrv.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!-- Compiles the classes. Previously compiled classes are deleted before if
+    mmsrv.internal.force is set, which is equivalent to mmsrv.force being true. -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${mmsrv.src.java.dir}"
+           destdir="${mmsrv.lib.java.classes.dir}"
+           classpathref="classpath"
+           listfiles="${mmsrv.verbose}"
+           deprecation="${mmsrv.javac.deprecation}"
+           verbose="${mmsrv.javac.verbose}"
+           debug="${mmsrv.javac.debug}"
+           failonerror="yes">
+      <include name="${mmsrv.java.package.path}/**/*.java"/>
+      <exclude name="${mmsrv.build-tools.java.package.path}/**/*.java"/>
+      <exclude name="${mmsrv.offline-tools.java.package.path}/**/*.java"/>
+    </javac>
+  </target>
+
+  <!-- Jars the compiled classes -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${mmsrv.lib.java.dir}/${mmsrv.jar.file}"> 
+      <manifest>
+        <attribute name="Created" value="${mmsrv.timestamp}"/>
+        <section name="${mmsrv.java.package.path}">
+          <attribute name="Specification-Title" value="Mumie Server"/>
+          <attribute name="Specification-Version" value="${mmsrv.version}"/>
+          <attribute name="Specification-Vendor" value="${mmsrv.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.mmsrv.build"/>
+          <attribute name="Implementation-Version" value="${mmsrv.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmsrv.vendor}"/>
+        </section>
+      </manifest>
+      <fileset dir="${mmsrv.lib.java.classes.dir}">
+        <include name="${mmsrv.java.package.path}/**/*.class"/>
+        <exclude name="${mmsrv.build-tools.java.package.path}/**/*.class"/>
+        <exclude name="${mmsrv.offline-tools.java.package.path}/**/*.class"/>
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </jar>
+  </target>
+
+  <target name="jar-for-mmcdk" 
+          description="Jars the classes needed by mmcdk">
+<!--     <jar destfile="${mmsrv.lib.java.dir}/${mmsrv.for-mmcdk.jar.file}"> 
+      <manifest>
+        <attribute name="Created" value="${mmsrv.timestamp}"/>
+        <section name="${mmsrv.java.package.path}">
+          <attribute name="Specification-Title" value="Mumie Server"/>
+          <attribute name="Specification-Version" value="${mmsrv.version}"/>
+          <attribute name="Specification-Vendor" value="${mmsrv.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.mmsrv.build"/>
+          <attribute name="Implementation-Version" value="${mmsrv.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmsrv.vendor}"/>
+        </section>
+      </manifest>
+      <fileset dir="${mmsrv.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+        <include name="net/mumie/cocoon/notions/*.class"/>
+        <include name="net/mumie/cocoon/checkin/CheckinException.class"/>
+        <include name="net/mumie/cocoon/checkin/Content.class"/>
+        <include name="net/mumie/cocoon/checkin/DOMGDIMEntry.class"/>
+        <include name="net/mumie/cocoon/checkin/DOMMaster.class"/>
+        <include name="net/mumie/cocoon/checkin/GDIMEntry.class"/>
+        <include name="net/mumie/cocoon/checkin/Master.class"/>
+        <include name="net/mumie/cocoon/checkin/MasterException.class"/>
+        <include name="net/mumie/cocoon/checkin/MasterUtil.class"/>
+        <include name="net/mumie/cocoon/checkin/StreamContent.class"/>
+        <include name="net/mumie/cocoon/util/Identifyable.class"/>
+        <include name="net/mumie/cocoon/util/PathTokenizer.class"/>
+        <include name="net/mumie/cocoon/util/CocoonEnabledDataSheet.class"/>
+        <include name="net/mumie/cocoon/util/DefaultCocoonEnabledDataSheet.class"/>
+        <include name="net/mumie/cocoon/util/PPDHelper.class"/>
+        <include name="net/mumie/cocoon/util/PPDException.class"/> 
+        <include name="net/mumie/cocoon/util/DefaultPPDHelper.class"/>
+        <include name="net/mumie/cocoon/util/ProblemCorrectionException.class"/>
+        <include name="net/mumie/cocoon/util/PasswordEncryptor.class"/>
+        <include name="net/mumie/cocoon/util/PasswordEncryptionException.class"/>
+        <include name="net/mumie/cocoon/util/MD5PasswordEncryptor.class"/>
+        <include name="net/mumie/cocoon/util/ProblemCorrector.class"/>
+        <include name="net/mumie/cocoon/service/LookupNotifyable.class"/>
+        <include name="net/mumie/cocoon/service/ServiceStatus.class"/>
+        <include name="net/mumie/cocoon/service/ServiceInstanceStatus.class"/>
+      </fileset>
+    </jar>
+ -->  </target>
+
+  <!-- Compiles the sources, and jars the compiled classes. Previously compiled classes are
+    deleted before if mmsrv.internal.force is set, which is equivalent to mmsrv.force being 
+    true. -->
+
+  <target name="mmsrv-lib"
+          description="Compiles and jars the classes"
+          depends="classes, jar, jar-for-mmcdk">
+  </target>
+
+</project>
+

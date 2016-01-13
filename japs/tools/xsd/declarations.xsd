@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:dc="http://www.mumie.net/xml-namespace/declarations"
+            targetNamespace="http://www.mumie.net/xml-namespace/declarations"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+  <!-- ====================================================================== -->
+  <!-- h1: General types                                                       -->
+  <!-- ====================================================================== -->
+
+  <xsd:simpleType name="YesOrNo">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A variant of the boolean type. Can only take the values "yes" or "no".
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="yes"/>
+      <xsd:enumeration value="no"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ItemKey">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A string suitable as a key for a configuration item (a document type, an
+        XML element name, etc.). Keys are also used as Java names for the constants
+        representing the configuration item. They must contain only upper case
+        letters, digits, and underscores, and must start with an upper case letter.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z][A-Z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Format">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A content format specifier ("text" or "binary").
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="text"/>
+      <xsd:enumeration value="binary"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="DataEntityTypeName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Name of a data entity type.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][a-z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="DataEntityTypeNameList">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        List of data entity type names.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([a-z][a-z0-9_]*\s*,?\s*)*[a-z][a-z0-9_]*|\*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="DbName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Name of a database table or column
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][a-z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MediaTypeName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Name of a media type or subtype
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][a-z0-9-]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Name">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Name of something
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][a-z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="JavaShortClassName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An unqualified class name in the Java programming language. Must meet
+        the convention that class names start with an upper case letter. Names
+        includiong a '$' character (i.e., inner class names) are not allowed.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z][A-Za-z_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:complexType name="Description" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Description, given in a subelement
+      </xsd:documentation>
+    </xsd:annotation>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Type for root element                                              -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="Declarations">
+
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The root element.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+
+      <xsd:element name="data-entity-types"
+                   type="dc:DataEntityTypes"
+                   minOccurs="1"
+                   maxOccurs="1">
+        <xsd:unique name="data-entity-type-code">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@code"/>
+        </xsd:unique>
+        <xsd:unique name="data-entity-type-name">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@name"/>
+        </xsd:unique>
+      </xsd:element>
+
+      <xsd:element name="refs-config"
+                   type="dc:RefsConfig"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+
+      <xsd:element name="db-tables"
+                   type="dc:DbTables"
+                   minOccurs="1"
+                   maxOccurs="1"/>
+
+      <xsd:element name="db-columns"
+                   type="dc:DbColumns"
+                   minOccurs="1"
+                   maxOccurs="1"/>
+
+      <xsd:element name="categories"
+                   type="dc:Categories"
+                   minOccurs="1"
+                   maxOccurs="1">
+        <xsd:unique name="category-code">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@code"/>
+        </xsd:unique>
+        <xsd:unique name="category-name">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@name"/>
+        </xsd:unique>
+      </xsd:element>
+
+      <xsd:element name="media-types"
+                   type="dc:MediaTypes"
+                   minOccurs="1"
+                   maxOccurs="1">
+        <xsd:unique name="media-type-code">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@code"/>
+        </xsd:unique>
+      </xsd:element>
+
+      <xsd:element name="reference-types"
+                   type="dc:ReferenceTypes"
+                   minOccurs="1"
+                   maxOccurs="1">
+        <xsd:unique name="reference-type-code">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@code"/>
+        </xsd:unique>
+        <xsd:unique name="reference-type-name">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@name"/>
+        </xsd:unique>
+      </xsd:element>
+
+      <xsd:element name="problem-data-types"
+                   type="dc:ProblemDataTypes"
+                   minOccurs="1"
+                   maxOccurs="1">
+        <xsd:unique name="problem-data-type-code">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@code"/>
+        </xsd:unique>
+        <xsd:unique name="problem-data-type-name">
+          <xsd:selector xpath="./*"/>
+          <xsd:field xpath="@name"/>
+        </xsd:unique>
+      </xsd:element>
+
+    </xsd:sequence>
+
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for data-entity-types                                        -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="DataEntityTypes">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the data entity type declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="document-type"
+                   type="dc:DocumentType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+      <xsd:element name="pseudo-document-type"
+                   type="dc:PseudoDocumentType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DocumentType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a document type.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:DataEntityTypeName" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="code" type="xsd:positiveInteger" use="required"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+    <xsd:attribute name="format" type="dc:Format" use="optional"/>
+    <xsd:attribute name="java-class" type="dc:JavaShortClassName" use="optional"/>
+    <xsd:attribute name="is-generic-of" type="dc:DataEntityTypeName" use="optional"/>
+    <xsd:attribute name="has-category" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-source" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-width-and-height" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-timeframe" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-duration" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-qualified-name" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-corrector" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-summary" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-class" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-members" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="is-recursive-component" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="refs-to" type="dc:DataEntityTypeNameList" use="optional"/>
+    <xsd:attribute name="no-refs-to" type="dc:DataEntityTypeNameList" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="PseudoDocumentType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a pseudo-document type.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:DataEntityTypeName" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="code" type="xsd:positiveInteger" use="required"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+    <xsd:attribute name="java-class" type="dc:JavaShortClassName" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for refs-config                                              -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="RefsConfig">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for additional configuration of document references.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="ref-config"
+                   type="dc:RefConfig"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="RefConfig">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Additional configuration of a document reference
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="origin" type="dc:DataEntityTypeName" use="required"/>
+    <xsd:attribute name="target" type="dc:DataEntityTypeName" use="required"/>
+    <xsd:attribute name="has-points" type="dc:YesOrNo" use="optional"/>
+    <xsd:attribute name="has-label" type="dc:YesOrNo" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for db-tables                                                -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="DbTables">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the db table name declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="db-table"
+                   type="dc:DbTable"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DbTable">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a database table name.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:DbName" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for db-columns                                                -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="DbColumns">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the db column name declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="db-column"
+                   type="dc:DbColumn"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="DbColumn">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a database column name.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:DbName" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for categories                                               -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="Categories">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the category declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="category"
+                   type="dc:Category"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Category">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a category
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:Name" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="code" type="xsd:positiveInteger" use="required"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for media-types                                              -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="MediaTypes">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the media type declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="media-type"
+                   type="dc:MediaType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="MediaType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a media tpe
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="type" type="dc:MediaTypeName" use="required"/>
+    <xsd:attribute name="subtype" type="dc:MediaTypeName" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="code" type="xsd:positiveInteger" use="required"/>
+    <xsd:attribute name="suffix" type="xsd:string" use="optional"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for reference-types                                          -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="ReferenceTypes">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the reference type declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="reference-type"
+                   type="dc:ReferenceType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ReferenceType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a reference type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:Name" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="code" type="xsd:positiveInteger" use="required"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Types for problem-data-types                                       -->
+  <!-- ====================================================================== -->
+
+  <xsd:complexType name="ProblemDataTypes">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Container for the reference type declarations.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="problem-data-type"
+                   type="dc:ProblemDataType"
+                   minOccurs="0"
+                   maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ProblemDataType">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Declares a reference type
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="description"
+                   type="dc:Description"
+                   minOccurs="0"
+                   maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dc:Name" use="required"/>
+    <xsd:attribute name="key" type="dc:ItemKey" use="optional"/>
+    <xsd:attribute name="code" type="xsd:positiveInteger" use="required"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Root element                                                       -->
+  <!-- ====================================================================== -->
+
+  <xsd:element name="declarations" type="dc:Declarations"/>
+
+</xsd:schema>

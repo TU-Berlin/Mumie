@@ -1,0 +1,321 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Course-Section-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+\version{$Id: course_section_xml.tex,v 1.4 2006/08/11 16:18:22 rassy Exp $}
+
+\begin{block}[remark]
+Diese Spezifikation ist identisch mit \href{course_xml.xhtml}{Course-XML} abgesehen vom
+Namensraum und den Ersetzungen course -> course_section, course_section ->
+element, course_subsection -> subelement.
+\end{block}
+
+\tableofcontents
+
+\section{Grundsätzliche Struktur}
+
+\begin{enumerate}
+  
+\item Namespace:
+  \val{http://www.mumie.net/xml-namespace/document/content/course_section}
+
+  Üblicher Prefix: \val{csec}
+  
+\item Root-Element: \element{course_section}
+  
+\item Darin:
+
+  \begin{enumerate}
+  
+  \item Ein optionales Element \element{abstract}; enthält eine Zusammenfassung
+    der Course-Section
+  
+  \item Ein Element \element{structure}; beschreibt die Netzstruktur der Course-Section
+  
+  \item Ein Element \element{thread}; beschreibt den "roten Faden" der Course-Section
+
+  \end{enumerate}
+
+\end{enumerate}
+
+
+
+\section{Das abstract-Element}
+  
+Das \element{abstract}-Element darf Text mit den üblichen Formatierungen
+(Absätze, Listen, Tabellen usw.) und mathematische Formeln enthalten, jedoch
+vorerst keine Multimedia-Objekte (Bilder usw.). Die genaue Spezifikation
+steht noch aus.
+
+
+
+\section{Das structure-Element}
+  
+\begin{enumerate}
+    
+\item Das \element{structure}-Element selbst enthält beliebig viele
+  \element{element}- und/oder \element{branches}-Elemente.
+    
+\item Jedes \element{branches}-Element enthält zwei oder mehr
+  \element{branch}-Elemente.
+    
+\item Jedes \element{branch}-Element enthält beliebig viele
+  \element{element}- und/oder \element{branches}-Elemente.
+    
+\item Jedes \element{element}-Element entspricht einem in der Course-Section
+  enthaltenen Dokument vom Typ \code{element}. Es hat die folgenden Attribute:
+
+  \begin{enumerate}
+    
+  \item \attrib{lid} -- Binnen-ID des Element-Dokuments
+    
+  \item \attrib{posx}, \attrib{posy} -- X- und Y-Koordinate des Element-Dokuments
+    in der grafischen Darstellung.
+
+  \end{enumerate}
+    
+\item Jedes \element{element}-Element kann beliebig viele
+  (einschliesslich 0) \element{subelement}-Kindelemente haben. Diese
+  entsprechen den an das Element-Dokument "angehängten" Subelementen.
+  
+\item Jedes \element{subelement}-Element ist leer, hat aber folgende
+  Attribute:
+
+  \begin{enumerate}
+    
+  \item \attrib{lid} -- Binnen-ID des Subelements
+    
+  \item \attrib{align} -- Gibt an, an welcher Ecke des Element-Dokuments das
+    Subelement anghängt ist. Mögliche Werte (selbsterklärend): \val{topleft}, \val{topright},
+    \val{bottomleft}, \val{bottomright}
+    
+  \item \attrib{count} -- Gibt an, das wievielte Subelement das betreffende
+    Subelement in der entsprechenden Ecke ist. Zählung von innen nach
+    aussen, bei 1 beginnend.
+
+    Beispiel:
+
+    \image{course\_darstellung.png}
+
+%    \begin{preformatted}%
+
+%      +--------+
+%      |        | <-- align="topleft" count="1"
+%      |        |
+%      |    +--------+
+%      |    |        | <-- align="topleft" count="0"
+%      +----|        |
+%           |    +-------------+
+%           |    |             |
+%           + ---|             |
+%                |             |
+%                |             |
+%                |             |
+%                |             |----+
+%                |             |    |
+%                +-------------+    | <-- align="bottomright"
+%                          |        |     count="0"
+%                          |        |
+%                          +--------+
+%    \end{preformatted}
+
+  \end{enumerate}
+  
+\item Jedes \element{branches}-Element entspricht einer Verzweigung im Netz;
+  jedes \element{branch}-Kindelement entspricht dabei einem neuen Zweig. Das
+  \element{branches}-Element hat die folgenden Attribute:
+
+  \begin{enumerate}
+    
+  \item \attrib{type} -- Typ der Verzweigung. Entweder \val{and} oder \val{or}.
+    
+  \item \attrib{startposx}, \attrib{startposy} -- X- bzw. Y-Koordinate des
+    öffnenden (also oberen) Verzweigungpunkts.
+    
+  \item \attrib{endposx}, \attrib{endposy} X- bzw. Y-Koordinate des
+    schließenden (also unteren) Verzweigungpunkts.
+
+    \image{course\_verzweigungspunkte.png}
+
+%    \begin{preformatted}%
+%                    .
+%                    .   
+%                    . öffnender Verzweigungspunkt
+%                    |/
+%                +---o---+
+%                |       |
+%                .       .
+%                .       .
+%                .       .
+%                |       |
+%                +---o---+
+%                    |\verb'\'
+%                    . schließender Verzweigungspunkt
+%                    .
+%                    .
+%    \end{preformatted}
+
+  \item \attrib{has\_end} -- zeigt an, ob es sich um eine "offene"
+  Verzweigung (i.e. eine Verzweigung ohne Endpunkt) handelt oder nicht.
+
+  \end{enumerate}
+  
+  Das Attribut \attrib{endposx} \emph{muß} vorhanden sein, wenn das
+  Attribut \attrib{has\_end} auf \val{true} gesetzt ist; es \emph{darf
+    nicht} vorhanden sein, wenn das Attribut \attrib{has\_end} auf
+  \val{false} gesetzt ist.
+  
+\item Auch das \element{branch}-Element, kennt das Attribut
+  \attrib{has\_end}; allerdings ist es hier, im Gegensatz zum
+  \element{branches}-Element, optional. Hat dieses Attribut den Wert
+  \val{false}, dann repräsentiert das \element{branch}-Element einen
+  Zweig, der \emph{nicht} in einem schließenden Verzweigungspunkt endet.
+  Anderenfalls -- insbesondere, wenn dieses Attribut fehlt -- endet
+  dieser Zweig in einem schließenden Verzweigungspunkt.
+
+\end{enumerate}
+
+
+\section{Das thread-Element}
+
+\begin{enumerate}
+    
+\item Das \element{thread}-Element darf beliebig viele
+  \element{element}- Kindelemente haben. Diese definieren, in der
+  Reihenfolge ihres Auftretens, den roten Faden.
+    
+\item Jedes \element{element}-Kindelement ist leer, hat aber ein
+  Attribut, nämlich \attrib{lid}, die Binnen-ID des Element-Dokuments.
+
+\end{enumerate}
+
+
+\section{XML-Elemente}
+
+\begin{preformatted}%
+<course_section>
+  <!-- Content: abstract? structure thread -->
+</course_section>
+\end{preformatted}
+
+\begin{preformatted}%
+<abstract>
+  <!-- Content: ABSTRACT_MISC -->
+</abstract>
+\end{preformatted}
+
+
+\begin{preformatted}%
+<structure>
+  <!-- Content: element* branches* -->
+</structure>
+\end{preformatted}
+
+
+\begin{preformatted}%
+<thread>
+  <!-- Content: element* -->
+</thread>
+\end{preformatted}
+
+Als Nachfahre von \element{structure}:
+\begin{preformatted}%
+<element
+  lid="LID"
+  posx="NUMBER"
+  posy="NUMBER">
+  <!-- Content: subelement* -->
+</element>
+\end{preformatted}
+
+Als Nachfahre von \element{thread}:
+\begin{preformatted}%
+<element
+  lid="LID"/>
+\end{preformatted}
+
+\begin{preformatted}%
+<subelement
+  lid="LID"
+  align="topleft|topright|bottomleft|bottomright"
+  count="NUMBER"/>
+\end{preformatted}
+
+\begin{preformatted}%
+<branches
+  type="and|or"
+  has_end="true|false"
+  startposx="NUMBER"
+  startposy="NUMBER"
+  endposx="NUMBER"
+  endposy="NUMBER">
+  <!-- Content: branch+ -->
+</branches>
+\end{preformatted}
+
+\begin{preformatted}%
+<branch
+  has_end="true|false">
+  <!-- Content: element+ -->
+</branch>
+\end{preformatted}
+
+Abkürzungen/Platzhalter:
+
+\begin{description}[code-doc]
+  
+\item[ABSTRACT_MISC] Text mit den üblichen Formatierungen (Absätze, Listen,
+  Tabellen usw.), mathematische Formeln, vorerst keine Multimedia-Objekte
+  (Bilder usw.). Genaue Spezifikation steht noch aus.
+  
+\item[LID] Binnen-Id
+  
+\item[NUMBER] Ganze Zahl
+
+\end{description}
+
+\section{Beispiel}
+
+\begin{preformatted}[code]%
+<csec:course_section
+  xmlns:csec="http://www.mumie.net/xml-namespace/document/content/course_section">
+  <csec:abstract>
+    <!-- Abstract -->
+  </csec:abstract>
+  <csec:structure>
+    <csec:element lid="1" posx="72" posy="32"/>
+    <csec:branches type="or" startposx="72" startposy="62" endx="72" endy="152">
+      <csec:branch>
+        <csec:element lid="3" posx="112" posy="102">
+          <csec:subelement lid="5" align="bottomleft" count="0"/>
+          <csec:subelement lid="6" align="bottomleft" count="1"/>
+          <csec:subelement lid="7" align="bottomright" count="0"/>
+        </csec:element>
+      </csec:branch>
+      <csec:branch>
+        <csec:element lid="2" posx="32" posy="102">
+          <csec:subelement lid="8" align="topleft" count="0"/>
+        </csec:element>
+      </csec:branch>
+    </csec:branches>
+    <csec:element lid="4" posx="72" posy="202"/>
+  </csec:structure>
+  <csec:thread>
+    <csec:element lid="1"/>
+    <csec:element lid="2"/>
+    <csec:element lid="4"/>
+  </csec:thread>
+</csec:course_section>
+\end{preformatted}
+
+
+-- ENDE DER DATEI --
+
+\end{document}

@@ -1,0 +1,67 @@
+Autor: Markus Gronau <gronau@math.tu-berlin.de>
+$Id: applet_compliance_level.txt,v 1.1 2008/01/23 09:34:22 gronau Exp $
+
+   Spezifikation der Compliance-Architektur der MathletFactory-Bibliothek
+  ========================================================================
+
+I. Einleitung
+=============
+
+   1.1 Motivation
+   --------------
+   Änderungen in der Bibliothek können das Aussehen bzw. die Funktion von bestehenden Applets
+   beeinflussen, so dass diese angepaßt werden müssten, um ihr ursprüngliches Aussehen bzw.
+   ihre Funktion wieder herzustellen. Dies kann unter Umständen einen sehr großen Aufwand bedeuten,
+   da es bereits eine sehr große Anzahl an Applets gibt. Im Gegensatz dazu kann der Aufwand für
+   die Umstellung in der Bibliothek relativ klein ausfallen.
+   Bei Umstellungen, die eine stärkere Standardisierung der Applets zum Ziel haben sollen, kann
+   der individuelle Aufwand in den Applets schnell den Nutzen der eigentlichen Umstellung übersteigen.
+   Um die Abwärtskompatibilität dieser Applets zu gewährleisten, müssten die Bibliotheksklassen jenes
+   Verhalten aufweisen, das sie zur Entwicklungszeit des Applets hatten. Dazu wurden die 
+   "Compliance Level" eingeführt, wobei jedes Applet genau einem Level zugeordnet wird und welche sich 
+   auf die Version der MathletFactory-Bibliothek beziehen, mit der das Applet hergestellt worden ist.
+
+   
+II. Architektur
+===============
+
+   2.1 Comliance Level
+   -------------------
+   Jedes Level bezieht sich auf eine Version der MathletFactory-Bibliothek, wobei das von den Mathlets
+   benutzte Versionsformat benutzt wird. Damit ergeben sich folgende Level-Typen für Änderungen:
+     - Architektur: X.X
+     - Meilensteine: X.X.X
+     - Built-Version: X.X.X-bXX
+   Als Vorgabe wird "2.0" verwendet, d.h. alle Applets müssen mindestens kompatibel zum Branch 2.0 sein.
+   Neuere Level müssen explizit im Applet angegeben werden, wobei während der Entwicklung des Applets
+   das jeweils neueste Compliance Level benutzt werden sollte.
+   Ein Compliance Level umfasst einen Satz von Einstellungen ("Properties").
+   
+   <TODO: Applet-Methoden zum Setzen des Levels>
+   
+   
+   2.2 Compliance Properties
+   -------------------------
+   Compliance Properties können im einfachsten Fall eine reguläre Einstellung überschreiben, um ein
+   spezielles Verhalten auszulösen. Sie können aber auch als Flag dienen, um größere Anpassungen zu
+   erlauben. Auch ein generisches Laden von Java-Klassen oder Teilen davon ist denkbar.
+   Sie können Einfluss auf folgende Properties haben, die sowohl "global" (1) als auch "lokal" (d.h. 
+   Klassen-spezifisch)(2) sein können:
+     - Runtime Properties (1)
+     - Display Properties (1) & (2)
+     - Rendering Hints (2)
+     - Theme Properties (1) & (2)
+   Die zum Applet-Compliance-Level zugehörigen Properties werden von der Mathlet-Runtime zur Start-Zeit 
+   eingelesen und an die jeweiligen Manager-Klassen weitergereicht, die dann die Verteilung der
+   lokalen Properties vornehmen.
+   
+   <TODO: Ort und Name der Compliance-Properties-Datei>
+   
+   
+III. Beispiele
+==============
+
+   In der MathletFactory-Bibliothek werden Comliance Level für folgende Änderungen eingerichtet:
+     - Darstellung der generischen Labels in einzelnen MM-Panels
+     - Hervorheben ("Highlighten") von MM-Panels
+   

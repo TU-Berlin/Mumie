@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<Layout>  
+  <Color key="bgcol" value="#FFFFFF"/>
+  <Color key="selcol" value="#C1FFC1"/>
+  <Color key="seltextcol" value="#0000C0"/>
+  <Arrow type="section" expanded="1" filename="arr_down_red.png"/>
+  <Arrow type="section" expanded="0" filename="arr_right_green.png"/>
+  <Icon type="element" category="definition" filename="edefinition_002.preview.png"/>
+  <Icon type="element" category="theorem" filename="etheorem_002.preview.png"/>
+  <Icon type="element" category="lemma" filename="elemma_002.preview.png"/>
+  <Icon type="element" category="application" filename="eapplication_002.preview.png"/>
+  <Icon type="element" category="motivation" filename="emotivation_002.preview.png"/>
+  <Icon type="element" category="algorithm" filename="ealgorithm_002.preview.png"/>
+  <Icon type="element" category="problem" filename="eproblem_001.preview.png"/>
+  <Icon type="element" category="applet" filename="eproblem_001.preview.png"/>
+  <Icon type="element" category="mchoice" filename="eproblem_001.preview.png"/>
+  <Icon type="subelement" category="motivation" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="proof" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="visualization" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="deduction" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="remark" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="history" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="example" filename="snongeneric_001.preview.png"/>
+  <Icon type="subelement" category="test" filename="snongeneric_001.preview.png"/>
+  <Icon type="course_section" category="course_section" filename="ecourse_section_001.preview.png"/>
+  <Icon type="worksheet" category="homework" filename="eworksheet_001.preview.png"/>
+  <Icon type="worksheet" category="prelearn" filename="eworksheet_001.preview.png"/>
+  <Icon type="course" category="course" filename="ecourse_001.preview.png"/>
+  <Icon type="summary" category="summary" filename="esummary_002.preview.png"/>
+  <Icon type="generic_summary" category="generic_summary" filename="egeneric_summary_001.preview.png"/>
+  <Icon type="generic_element" category="definition" filename="edefinition_001.preview.png"/>
+  <Icon type="generic_element" category="theorem" filename="etheorem_001.preview.png"/>
+  <Icon type="generic_element" category="lemma" filename="elemma_001.preview.png"/>
+  <Icon type="generic_element" category="application" filename="eapplication_001.preview.png"/>
+  <Icon type="generic_element" category="motivation" filename="emotivation_001.preview.png"/>
+  <Icon type="generic_element" category="algorithm" filename="ealgorithm_001.preview.png"/>
+  <Icon type="generic_problem" category="traditional" filename="eproblem_001.preview.png"/>
+  <Icon type="generic_problem" category="applet" filename="eproblem_001.preview.png"/>
+  <Icon type="generic_problem" category="mchoice" filename="eproblem_001.preview.png"/>
+  <Icon type="generic_subelement" category="motivation" filename="smotivation_000.preview.png"/>
+  <Icon type="generic_subelement" category="proof" filename="sproof_001.preview.png"/>
+  <Icon type="generic_subelement" category="visualization" filename="svisualization_001.preview.png"/>
+  <Icon type="generic_subelement" category="deduction" filename="sdeduction_001.preview.png"/>
+  <Icon type="generic_subelement" category="remark" filename="sremark_001.preview.png"/>
+  <Icon type="generic_subelement" category="history" filename="shistory_001.preview.png"/>
+  <Icon type="generic_subelement" category="example" filename="sexample_001.preview.png"/>
+  <Icon type="generic_subelement" category="test" filename="stest_001.preview.png"/>
+</Layout>

@@ -1,0 +1,49 @@
+ethz_teaching
+        |
+        |---checkin
+                |
+                |------org
+                        |
+                        |-----ethz
+                                |
+                                |---hs_07
+                                      |
+                                      |---classes
+                                      |
+                                      |---courses
+                                      |     |
+                                      |     |---lineare_algebra_knoerrer
+                                      |               |
+                                      |               |--<file1>
+                                      |               |--<file2>
+                                      |               |-- ...
+                                      |
+                                      |---tutorials
+
+                                
+                
+tub_teaching
+        |
+        |---checkin
+                |
+                |------org
+                        |
+                        |------tub 
+                                |
+                                |---ws_07_08
+                                      |
+                                      |
+                                      |---classes
+                                      |     |
+                                      |     |---cls_lineare_algebra_fuer_ingenieure.meta.xml
+                                      |
+                                      |---courses
+                                      |     |
+                                      |     |---lineare_algebra_seiler
+                                      |               |
+                                      |               |--<file1>
+                                      |               |--<file2>
+                                      |               |-- ...
+                                      |
+                                      |---tutorials
+

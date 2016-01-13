@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy <rassy@math.tu-berlin.de>
+   $Id: xsl_util_i18n_en.content.xml,v 1.9 2009/11/19 11:50:22 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-top-bar-title">MUMIE - Multi-Media Math Education</xsl:param>
+<xsl:param name="i18n-top-bar-subtitle">Berlin University of Technology - Department of Mathematics</xsl:param>
+<xsl:param name="i18n-start-page">Home</xsl:param>
+<xsl:param name="i18n-start-page-descr">To the Home</xsl:param>
+<xsl:param name="i18n-classes">Classes</xsl:param>
+<xsl:param name="i18n-courses">Courses</xsl:param>
+<xsl:param name="i18n-courses-descr">To the Courseselection</xsl:param>
+<xsl:param name="i18n-db-browser">DB-Browser</xsl:param>
+<xsl:param name="i18n-db-browser-descr">Go to the database browser</xsl:param>
+<xsl:param name="i18n-admin">Admin</xsl:param>
+<xsl:param name="i18n-admin-descr">To the Administrator-Page</xsl:param>
+<xsl:param name="i18n-account">Account</xsl:param>
+<xsl:param name="i18n-account-descr">To the Account-Options</xsl:param>
+<xsl:param name="i18n-logged-in-as">Logged&#160;in&#160;as</xsl:param>
+<xsl:param name="i18n-info">Metainfos</xsl:param>
+<xsl:param name="i18n-info-expl">Page with metainformations for this document</xsl:param>
+<xsl:param name="i18n-logout">Logout</xsl:param>
+<xsl:param name="i18n-logout-descr">Leave secure area</xsl:param>
+<xsl:param name="i18n-minimize">Minimize</xsl:param>
+<xsl:param name="i18n-maximize">Maximize</xsl:param>
+<xsl:param name="i18n-minimize-top-bar">Minimize top-bar</xsl:param>
+<xsl:param name="i18n-maximize-top-bar">Maximize top-bar</xsl:param>
+<xsl:param name="i18n-mm-browser">MM-Browser</xsl:param>
+<xsl:param name="i18n-mm-browser-descr">Go to multimedia browser</xsl:param>
+<xsl:param name="i18n-toggle-top-bar">Fold/expand top bar</xsl:param>
+<xsl:param name="i18n-toggle-nav-frame">Fold/expand navigation frame</xsl:param>
+<xsl:param name="i18n-powered-by">Powered by</xsl:param>
+
+</xsl:stylesheet>

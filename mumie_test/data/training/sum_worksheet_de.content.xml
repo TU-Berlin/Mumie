@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<sum:summary arrange="free"
+             xmlns:sum="http://www.mumie.net/xml-namespace/document/summary"
+             xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex">
+  <sum:ifstate state="work">
+    <mtx:par>
+      Zustand des Arbeitsblatts = work
+    </mtx:par>
+  </sum:ifstate>
+  <sum:ifstate state="feedback">
+    <mtx:par>
+      Zustand des Arbeitsblatts = feedback
+    </mtx:par>
+    <sum:ifpoints min="0" max="6">
+      <mtx:par>
+        (A) Punktzahl zwischen 0 und 6
+      </mtx:par>
+    </sum:ifpoints>
+    <sum:ifpoints min="6.1" max="10">
+      <mtx:par>
+        (A) Punktzahl zwischen 6.1 und 10
+      </mtx:par>
+    </sum:ifpoints>
+    <sum:ifpoints min="10.1" max="max">
+      <mtx:par>
+        (A) Punktzahl zwischen 10.1 und maximaler Punktzahl
+      </mtx:par>
+    </sum:ifpoints>
+    <sum:ifpoints min="0" max="6">
+      <mtx:par>
+        (B) Punktzahl zwischen 0 und 6
+      </mtx:par>
+    </sum:ifpoints>
+    <sum:ifpoints min="6.1" max="10">
+      <mtx:par>
+        (B) Punktzahl zwischen 6.1 und 10
+      </mtx:par>
+    </sum:ifpoints>
+    <sum:ifpoints min="10.1" max="max">
+      <mtx:par>
+        (B) Punktzahl zwischen 10.1 und maximaler Punktzahl
+      </mtx:par>
+    </sum:ifpoints>
+  </sum:ifstate>
+  <sum:iftimeframe relation="inside">
+    <mtx:par>
+      W&#228;hrend des Bearbeitungszeitraums
+    </mtx:par>
+  </sum:iftimeframe>
+  <sum:iftimeframe relation="after">
+    <mtx:par>
+      Nach dem Bearbeitungszeitraum
+    </mtx:par>
+  </sum:iftimeframe>
+</sum:summary>

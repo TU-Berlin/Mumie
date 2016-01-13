@@ -1,0 +1,128 @@
+-*- text -*-
+Author: Tilman Rassy <rasy@math.tu-berlin.de>
+$Id: README,v 1.5 2008/05/15 11:30:40 rassy Exp $
+
+
+                                    README
+
+                       The japs_datasheet/test directory
+
+
+
+This directory contains classes to test and demonstrate the japs datasheet
+library.
+
+
+
+1. Files
+   =====
+
+  SampleRead.java       Example for reading a data sheet and retrieving its
+                        data 
+
+  SampleRead.xml        The data sheet source for the example above
+
+  SampleWrite.java      Example for creating a new data sheet from existing
+                        data 
+
+  SampleExtract.java    Example for extracting data from another XML document
+                        and adding it to a data sheet 
+
+  SampleExtract.xml     The XML document for the example above
+
+  SampleMerge.java      Example for merging two data sheets.
+
+  SampleMerge1.xml,     
+  SampleMerge2.xml      The XML documents for the example above
+
+  SampleMatching.java   Example for selecting paths per wildcards
+
+  SampleMatching.xml    The XML document for the example above
+
+  SampleRemove.java     Example for removing data and units
+
+  SampleRemove.xml      The XML document for the example above
+
+  SampleReadCocoon.java
+                        As SampleRead.java, but using CocoonEnabledDataSheet
+                        (special data sheet class suited to run in Cocoon)
+                        instead of DataSheet
+
+  SampleWriteCocoon.java 
+                        As SampleWrite.java, but using CocoonEnabledDataSheet
+                        instead of DataSheet
+
+  SampleExtractCocoon.java
+                        As SampleExtract.java, but using CocoonEnabledDataSheet
+                        instead of DataSheet
+
+  SampleMergeCocoon.java
+                        As SampleMerge.java, but using CocoonEnabledDataSheet
+                        instead of DataSheet
+
+  SampleToSAXCocoon.java
+                        Example for the toSAX method of CocoonEnabledDataSheet
+
+  DOMParserFactory.java
+                        Auxiliary class to create a DOMParser; needed in the
+                        SampleXxxxCocoon.java classes
+
+  SAXDumper             Auxiliary class to dump SAX events to stdout, used in
+                        SampleToSAXCocoon.java
+
+
+
+2. Compiling
+   =========
+
+To compile SampleRead.java, SampleWrite.java, and SampleExtract.java, make
+shure that the data sheet jar (japs/datasheet/lib/japs-datasheet.jar) and the
+current working direktory are in the classpath and type
+
+  javac SOURCE
+
+where SOURCE is one of the source files.
+
+To compile the SampleXxxxCocoon.java classes, make shure that the data sheet
+jar, the current working direktory and the following archives are in the
+classpath:
+
+  cocoon-2.1.3.jar
+  avalon-framework-4.1.4.jar
+  excalibur-pool-1.2.jar
+  excalibur-xmlutil-1.0-dev.jar
+
+(the latter come with the Cocoon 2.1.3 distribution). Then, type
+
+  javac SOURCE
+
+where SOURCE is one of the source files.
+
+
+
+2. Running
+   =======
+
+To run the samples, type
+
+  java CLASS
+
+where CLASS is one of SampleXxxx or SampleXxxxCocoon. The classpath must
+contain the same entries as for compiling the corresponding source.
+
+The SampleXxxxCocoon classes (i.e., their main methods) except a command line
+parameter. It must be "jaxp" or "xerces" and chooses either the Jaxp or Xerces
+parser. Default is the Jaxp parser. Currently, the Xerces parser does not work.
+
+SampleMergeCocoon excepts a second command line parameter. It specifies the
+mode of the merge and must be "replace", "protect", or "append" (case does not
+matter). Default is "replace". E.g.,
+
+  java SampleMergeCocoon jaxp append
+
+would merge the two data sheets with mode "append".
+
+
+
+
+-- END Of FILE --

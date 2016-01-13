@@ -1,0 +1,113 @@
+\documentclass[a4paper,12pt]{article}
+%
+%$Id: applet_style_guide.tex,v 1.2 2004/08/25 18:45:53 vieritz Exp $
+%
+
+\usepackage{ngerman}
+\usepackage{graphicx}
+
+\parindent0em
+\parskip0.75\baselineskip
+
+\title{Applet-Styleguide \\ -- Vorschlag --}
+\author{Frank Klich, Ester Manya Ndjeka, Helmut Vieritz}
+\date{August 2004}
+\DeclareSymbolFont{AMSb}{U}{msb}{m}{n}
+\DeclareMathSymbol{\R}{\mathbin}{AMSb}{"52}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Grundidee}
+Der Applet-Styleguide soll formale Aspekte festlegen, die eine einheitliche
+Darstellung der Applets erm"oglichen sollen. Zus"atzlich soll der Redaktionsprozess f"ur
+Applets vereinfacht werden, indem sichergestellt wird, dass Applets mit dem Status
+"`devel ok"' den Richtlinien dieses Standards entsprechen.
+
+\section{Einzelheiten}
+\subsection{Allgemeines}
+\begin{itemize}
+\item \textit{Mehrsprachigkeit} - F"ur die Appletprogrammierung und den internen Gebrauch
+  ist Englisch die Referenzsprache. F"ur alle Metainformationen und Bezeichnungen, die f"ur
+  die Pr"asentation der Applets relevant sind, ist Deutsch die Referenzsprache. In diesem
+  Fall sollten jeweils eine deutsche und eine englische Version vorliegen, sodass das Applet
+  je nach Einstellung das Parameters "`lang"' komplett deutsch oder englisch erscheint. In
+  diesem Styleguide wird "ublicherweise der deutsche Bezeichner gebraucht.
+
+Ausnahme!? Die inhaltliche Hilfe wird in deutsch geschrieben und sp"ater extern "ubersetzt. 
+
+\end{itemize}
+
+\subsection{Funktionalit"aten}
+\begin{itemize}
+\item \textit{Animationen} - Animationen bleiben am Ende stehen und springen nicht zur"uck.
+  Sie k"onnen editiert werden und zeigen die resultierenden Ver"anderungen sofort
+  entsprechend dem in der Animation visualisierten Modell.
+\end{itemize}
+\subsection{Layout}
+
+\subsection{Metainformationen}
+\begin{itemize}
+\item \textit{title} -- Der Titel ("Uberschrift) des Applets soll kurz und konkret sein, das
+  hei"st da"s ein Spezialfall eines allgemeinen Begriffs mit enthalten ist. Ebenso wird die
+  Kategorie benannt, z.B. Visualisierung eines Vektorraums - Pfeile im $\R^2$. Der Titel
+  enth"alt keine Formeln.
+\item \textit{description} -- Beschreibt das Applet so, dass man sich an das Applet wieder
+  erinnern kann, wenn man es schon einmal gesehen hat. Enthalten sein sollte die Kategorie
+  z.B. Visualisierung, "Ubung, Beispiel. "Ublicherweise ist sie eine Zeile lang (max .zwei
+  Zeilen).
+\item \textit{file name} -- (nur englisch) Entspricht dem \verb|title|, gegebenenfalls mit
+  Abk"urzungen. Es gilt die Java-Konvention f"ur Klassennamen, also erster Buchstabe gro"s,
+  keine Unterstriche als Worttrenner und neue W"orter werden mit einem Gro"sbuchstaben
+  eingeleitet.
+\end{itemize}
+\subsection{Hilfeseite}
+Die Hilfeseite besteht aus drei Komponenten und wird mit \verb|mmtex| erzeugt, d.h. sie wird
+als LaTeX-Datei geschrieben und mit \verb|mmcdk| "ubersetzt und eingebunden. Die
+Komponenten sind:
+\begin{itemize}
+\item \textit{Bedienungsteil}
+\item \textit{technischer Teil}
+\item \textit{inhaltlicher Teil} -- Hier soll die didaktische Idee, das Lehrziel, kurz
+  erl"autert werden. Zus"atzlich wird auf Spezialf"alle und "`Pathologien"' zum Ausprobieren
+  hingewiesen - es muss nat"urlich sichergestellt sein, dass das Applet damit auch
+  zurechtkommt.
+\end{itemize}
+\subsection{Default-Einstellungen}
+Die Default-Einstellungen betreffen den Aufruf des Applets ohne weitere Parameter.
+\begin{itemize}
+\item \textit{Button oder Canvas} -- Per Default erscheint das Applet als Canvas etc. also
+  nicht als Button.
+\item \textit{Gr"o"se des Applets} -- Das Applet bringt in den Metainformationen auf sich
+  selbst passend zugeschnittene Gr"o"senangaben mit. Diese gehen nach dem Prinzip "`Sowenig
+  wie m"oglich - soviel wie n"otig"'. N"otig ist eine Gr"o"se, bei der man im Default-Applet
+  nicht scrollen muss, um alle Elemente zu sehen oder zu erreichen. Zus"atzlich soll eine
+  User-Interaktion mit dem Applet im begrenzten Rahmen bequem m"oglich sein. Richtwert ist
+  hier: Ausgangsabmessung + 50\%, das hei"st z.B. in einer 2D-Canvas: wenn die dargestellten
+  Pfeile in der H"ohe 200 Pixel einnehmen, wird die H"ohe der Canvas mit 300 Pixeln
+  eingestellt.
+\item \textit{Hilfe-Button} -- Der Hilfe-Button ist immer vorhanden und befindet sich links
+  unten.
+\item \textit{Reset-Button} -- Der Reset-Button ist immer vorhanden und befindet sich rechts
+  unten.
+\item \textit{Start Animation-Button} -- Insofern eine einf"uhrende Animation angeboten wird,
+  ist ein "`Start Animation"'-Button vorhanden, der sich wo??? befindet. Er ist nur einfach
+  konfiguriert, d.h. es muss lediglich noch zwischen automatischer und manueller
+  Schrittsteuerung der Animation ausgew"ahlt werden.
+\item \textit{Toolbar} - Das ist eine offene Frage!!! Toolsbars sind momentan mal vorhanden
+  und mal nicht. 
+1. Die Toolbar ist immer vorhanden und bietet einfach ihre Funktionalit"aten an.
+2. Die Toolbar ist nicht vorhanden und kann per Button aktiviert werden. Dafuer spricht,
+dass Toolbars sehr verschieden sein koennen und 
+\end{itemize}
+\subsection{Applet-Parameter}
+Autoren stehen bestimmte Parameter bei jedem Applet zur Verf"ugung, mit denen sie allgemeine
+Aspekte steuern k"onnen. Diese sind im \verb|mmtex|-Styleguide aufgelistet.
+\begin{itemize}
+\item \textit{lang - de/en/auto} -- Steuert die Spracheinstellung des Applets. "`auto"'
+  bedeutet, dass die Systemeinstellungen des Users ausgelesen werden und das Applet in
+  Abh"angigkeit von der verwendeten Sprache erscheint.
+\end{itemize}
+\end{document}

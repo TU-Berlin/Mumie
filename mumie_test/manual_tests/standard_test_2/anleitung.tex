@@ -1,0 +1,168 @@
+\documentclass[lang=de]{generic}
+
+\begin{document}
+
+\title{Standard-Test 2}
+\subtitle{Anleitung für Tester}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: anleitung.tex,v 1.2 2008/01/16 11:17:45 rassy Exp $}
+
+\tableofcontents
+
+\section{Allgemeines}
+
+Bei diesem Test werden \emph{Punkteanzeige} und \emph{Bulk-Correction} geprüft. Der
+Test sollte nach jeder nicht-trivialen Änderung an Codestellen durchgeführt
+werden, die diese Funktionalitäten betreffen.
+
+Für den Test wird ein bestimmter Kurs ausgewählt, im folgenden \emph{Test-Kurs}
+genannt. Der Test erfolgt stichprobenhaft an (mindestens) einem Tutorium, im
+folgenden \emph{Test-Tutorium} genannt. Das Test-Tutorium sollte mindestens
+fünf Studenten haben, im folgenden \emph{Student 1} bis \emph{Student 5}
+genannt. Neben diesen Studenten werden folgende Benutzer gebraucht:
+
+\begin{itemize}
+\item Benutzer 1: Dozent des Test-Kurses
+\item Benutzer 2: Dozent, aber nicht des Test-Kurses
+\item Benutzer 3: Student und Mitglied des Test-Kurses
+\end{itemize}
+
+Es werden (mindestens) zwei Aufgabenblätter gebraucht, im folgenden \emph{Blatt
+  1} und \emph{Blatt 2} genannt. Jedes Blatt sollte mindestens drei
+elektronische und eine schriftliche Aufgabe haben.
+
+\section{Vorbereitung: Erzeugung der Antworten}
+
+Um den Test durchführen zu können, müssen Studenten-Antworten in hinreichender
+Menge vorhanden sein. Wurden bereits bei einem früheren Test Studenten-Antworten
+erzeugt, können diese mit einem speziellen Skript in den Server eingespielt
+werden. Falls nicht, oder falls neue Daten gewünscht sind, wie folgt
+vorgehen:
+
+Bearbeitungszeiträume von Blatt 1 und 2 so
+einstellen, dass beide Blätter bearbeitbar sind, und als Student 1 bis Student
+5 des Test-Tutoriums Aufgaben bearbeiten. Am Ende sollten für mindestens die
+Hälfte aller Studenten/Aufgaben-Paare Lösungen gespeichert sein; die
+schriftlichen Aufgaben nicht mitgerechnet. Umgekehrt sollte es mindestens eine
+nicht bearbeitete Aufgabe geben, damit auch dieser Fall beim Test erfasst wird.
+
+\section{Als Dozent des Test-Kurses}
+
+\subsection{Punkteanzeige}
+
+Auf \emph{Kurse} und dann unter dem Test-Kurs auf \emph{Tutorien: Anzeigen}
+gehen. Für das Test-Tutorium \emph{Punktestand} anklicken. Es wird die
+Punktetabelle angezeigt.
+
+Stichprobenhaft prüfen, ob die Tabelle die richtigen Werte anzeigt,
+insbesondere:
+
+\begin{itemize}
+\item Einzel-Punktzahlen (erreichte und erreichbare)
+\item Gesamtpunktzahlen (erreichte und erreichbare)
+\item Kennzeichnung von nicht bearbeiteten und nicht korrigierten Aufgaben
+\end{itemize}
+
+Falls noch nicht genügend Korrekturen vorliegen, diesen
+Punkt auf nach der Bulk-Correction verschieben.
+
+Layout prüfen, insbesondere:
+
+\begin{itemize}
+\item Ist die Darstellung korrekt und gut lesbar?
+\item Werden alle Zeichen richtig dargstellt?
+\item Ist die Formatierung passend? (Links-, Rechtsbündigkeit, Blocksatz)
+\item Sind Abstände und Ränder passend?
+\item Ist die Schriftgrösse passend?
+\item Ist die Platzaufteilung gut?
+\end{itemize}
+
+\subsection{Bulk-Correction}
+
+Sicherstellen, dass die Bearbeitungszeiträume für Blatt 1 und 2 abgelaufen
+sind. In der Punkteanzeige für beide Blätter den \emph{Korrigieren}-Button
+klicken. Prüfen, ob die dadurch ausgelöste Bulk-Correction funktioniert,
+insbesondere:
+
+\begin{itemize}
+\item Wurden die Aufgaben tatsächlich korrigiert? (S. Anmerkungen unten)
+\item Ist die Wartezeit akzeptabel?
+\end{itemize}
+
+Anmerkungen: (1) Es ist möglich, dass eine Aufgabe nicht korrigiert werden
+konnte, weil der Korrektor nicht funktioniert. Man erkennt das daran, dass im
+Antwort-Fenster \emph{"Nicht alle Aufgaben von Aufgabenblatt X konnten
+  korrigiert werden"} angezeigt wird (wobei X das Label des Aufgabenblatts
+ist).  Das ist kein Fehler der Bulk-Correction (sondern des Korrektors), sollte
+aber trotzdem gemeldet werden.
+
+(2) Möglicherweise muss erst der Browser-Cache gelöscht werden, bevor die neuen
+Punktzahlen angezeigt werden. Ist dies der Fall, sollte das als Bug gemeldet
+werden.
+
+\section{Als anderer Dozent}
+
+Als Benutzer 2 (Dozent, aber nicht des Test-Kurses) auf \emph{Kurse} und dann
+unter dem Test-Kurs auf \emph{Tutorien: Anzeigen} gehen. Es sollte die Meldung
+\emph{"Zugriff verweigert"} erscheinen.
+
+\section{Als Student}
+
+Als Benutzer 3 (Student und Mitglied des Test-Kurses) auf \emph{Kurse} und dann
+unter dem Test-Kurs auf \emph{Tutorien: Anzeigen} gehen. Es sollte die Meldung
+\emph{"Zugriff verweigert"} erscheinen.
+
+\section{Organisatorisches}
+
+Alle Fehler sollen in unser Bug-Tracking-System eingetragen werden. URL:
+
+\begin{preformatted}%
+  \link{http://www3.math.tu-berlin.de/rt}{www3.math.tu-berlin.de/rt}
+\end{preformatted}
+
+Dabei bitte folgendes beachten:
+
+\begin{itemize}
+\item Fehler, die bereits gemeldet wurden und noch nicht behoben sind, nicht
+  noch einmal melden. Falls sich durch diesem Test neue Erkenntnisse ergeben,
+  diese bei dem alten Bug eintragen (als Comment oder Reply).
+\item Korrekte Kategorie (Queue) angeben. Bei diesem Test ist die Katorie
+  normalerweise \emph{japs}.
+\item \emph{Owner} nicht setzen
+\item Für jede Durchführung des Tests ein kurzes Protokoll
+    anlegen und ins CVS einchecken, im selben Verzeichnis, in dem sich diese
+    Anleitung befindet. Vorschlag für den Dateinamen:
+\begin{preformatted}%
+  protokoll\_\var{datum}.txt
+\end{preformatted}
+wobei \var{datum} das Datum des Tests im Format \var{YYYY-MM-dd} ist. Erstreckt
+sich der Test über mehrere Tage, das Startdatum nehmen. Beginnen mehrere Tests
+am selben Tag, Dateinamen in
+\begin{preformatted}%
+  protokoll\_\var{datum}_\var{n}.txt
+\end{preformatted}
+    abändern, wobei \var{n} die Tests durchnumeriert, mit 1 beginnend.
+
+    Das Protokol soll insbesondere folgende Angaben enthalten:
+
+    \begin{itemize}
+    \item Wer getestet hat
+    \item Beginn und Ende des Tests
+    \item Grund des Tests (z.B. die Änderungen im Mumie-Code).
+    \item Welche (Pseudo-)Dokumente zum Test herangezogen wurden (Kurs,
+      Tutorium, Aufgabenblätter, Benutzer)
+    \item Welche Bugs gemeldet wurden (RT-Ticket-Ids), und bei welchen (Pseudo-)Dokumenten
+      sie aufgetreten sind
+    \end{itemize}
+
+    Ein festes Format für das Protokoll gibt es nicht. Ausser den obigen
+    Angaben kann das Protokoll weitere Beobachtungen und Bemerkungen
+    enthalten.
+
+\end{itemize}
+
+\end{document}

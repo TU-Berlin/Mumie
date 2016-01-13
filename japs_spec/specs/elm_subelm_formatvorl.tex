@@ -1,0 +1,1195 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\newcommand{\b}{\backslash}
+\newcommand{\c}[1]{\backslash#1}
+\newcommand{\altvar}[1]{\var[alt]{#1}}
+
+\begin{document}
+
+\title{Formatvorlagen}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: elm_subelm_formatvorl.tex,v 1.3 2006/09/12 15:35:45 rassy Exp $}
+
+Diese Spezifikation listet alle Formatvorlagen für Elemente und Subelemente auf und gibt
+für jede Formatvorlage eine Skizze, ein XML-Fragment und ein TeX-Fragment an.
+
+\tableofcontents
+
+\section{Definition}
+
+\subsection{Free}
+
+Skizze:
+
+\image{def\_free.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}[free]\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \altvar{Freier Text}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  \altvar{Freier Text}
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Simple}
+
+Skizze:
+
+\image{def\_simple.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{statement\}
+    \altvar{Text der Definition}
+  \c{end}\{statement\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:statement>
+    \altvar{Text der Definition}
+  </elm:statement>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+
+\subsection{Side-by-side}
+
+Skizze:
+
+\image{def\_side\_by\_side.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{defequivalence\}
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:defequivalence arrange="{}side-by-side">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+
+\subsection{Top-bottom}
+
+Skizze:
+
+\image{def\_top\_bottom.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{defequivalence\}[top-bottom]
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:defequivalence arrange="{}top-bottom">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+
+\subsection{Mehrfach, side-by-side}
+
+Skizze:
+
+\image{def\_mehrf\_side\_by\_side.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{defequivalence\}
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{defequivalence\}
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:defequivalence arrange="{}side-by-side">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:defequivalence arrange="{}side-by-side">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+
+\subsection{Mehrfach, top-bottom}
+
+Skizze:
+
+\image{def\_mehrf\_top\_bottom.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{defequivalence\}[top-bottom]
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{defequivalence\}[top-bottom]
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:defequivalence arrange="{}top-bottom">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:defequivalence arrange="{}top-bottom">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+
+
+\subsection{Mehrfach, gemischt}
+
+Skizze:
+
+\image{def\_mehrf\_gem.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.definition\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{defnotion}\{\altvar{Begriff(e)}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{defequivalence\}
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{defequivalence\}[top-bottom]
+    \altvar{Definiertes Subjekt}
+    \c{isdefinedas}
+    \altvar{Definierender Text}
+  \c{end}\{defequivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="definition">
+
+  <elm:defnotions>
+    \altvar{Begriff(e)}
+  </elm:defnotions>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:defequivalence arrange="{}side-by-side">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:defequivalence arrange="{}top-bottom">
+    <elm:statement>
+      \altvar{Definiertes Subjekt}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Definierender Text}
+    </elm:statement>
+  </elm:defequivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+\section{Theorem}
+
+
+\subsection{Free}
+
+Skizze:
+
+\image{thm\_free.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}[free]\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \altvar{Freier Text}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>
+
+  \altvar{Freier Text}
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Simple}
+
+Skizze:
+
+\image{thm\_simple.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{statement\}
+    \altvar{Text des Theorems}
+  \c{end}\{statement\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:statement>
+    \altvar{Text des Theorems}
+  </elm:statement>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Implikation, side-by-side}
+
+Skizze:
+
+\image{thm\_impl\_side\_by\_side.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{implication\}
+    \altvar{Aussage A}
+    \c{implies}
+    \altvar{Aussage B}
+  \c{end}\{implication\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:implication arrange="{}side-by-side">
+    <elm:statement>
+      \altvar{Aussage A}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Aussage B}
+    </elm:statement>
+  </elm:implication>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Implikation, top-bottom}
+
+Skizze:
+
+\image{thm\_impl\_side\_by\_side.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{implication\}[top-bottom]
+    \altvar{Aussage A}
+    \c{implies}
+    \altvar{Aussage B}
+  \c{end}\{implication\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:implication arrange="{}top-bottom">
+    <elm:statement>
+      \altvar{Aussage A}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Aussage B}
+    </elm:statement>
+  </elm:implication>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Äquivalenz, side-by-side}
+
+Skizze:
+
+\image{thm\_equiv\_side\_by\_side.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{equivalence\}
+    \altvar{Aussage A}
+    \c{isequivalentto}
+    \altvar{Aussage B}
+  \c{end}\{equivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:equivalence arrange="{}side-by-side">
+    <elm:statement>
+      \altvar{Aussage A}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Aussage B}
+    </elm:statement>
+  </elm:equivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Äquivalenz, top-bottom}
+
+Skizze:
+
+\image{thm\_equiv\_side\_by\_side.png}
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{equivalence\}[top-bottom]
+    \altvar{Aussage A}
+    \c{isequivalentto}
+    \altvar{Aussage B}
+  \c{end}\{equivalence\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:equivalence arrange="{}top-bottom">
+    <elm:statement>
+      \altvar{Aussage A}
+    </elm:statement>
+    <elm:statement>
+      \altvar{Aussage B}
+    </elm:statement>
+  </elm:equivalence>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Mehrfach}
+
+- Analog zu Definitionen -
+
+
+\subsection{Liste von Aussagen}
+
+Skizze:
+
+\image{thm\_prop\_list.png}
+
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{propositionlist\}
+    \c{proposition} \altvar{Aussage A}
+    \c{proposition} \altvar{Aussage B}
+    \c{proposition} \altvar{Aussage C}
+  \c{end}\{propositionlist\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:propositionlist>
+    <elm:proposition>
+      \altvar{Aussage A}
+    </elm:proposition>
+    <elm:proposition>
+      \altvar{Aussage B}
+    </elm:proposition>
+    <elm:proposition>
+      \altvar{Aussage C}
+    </elm:proposition>
+  </elm:propositionlist>>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+
+\subsection{Liste von äquivalenten Aussagen}
+
+Skizze:
+
+\image{thm\_equiv\_prop\_list.png}
+
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.theorem\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{suppositions\}
+    \altvar{Voraussetzungen}
+  \c{end}\{suppositions\}
+
+  \c{begin}\{propositionlist\}[equivalent]
+    \c{proposition} \altvar{Aussage A}
+    \c{proposition} \altvar{Aussage B}
+    \c{proposition} \altvar{Aussage C}
+  \c{end}\{propositionlist\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:suppositions>
+    \altvar{Voraussetzungen}
+  </elm:suppositions>
+
+  <elm:propositionlist variant="equivalent">
+    <elm:proposition>
+      \altvar{Aussage A}
+    </elm:proposition>
+    <elm:proposition>
+      \altvar{Aussage B}
+    </elm:proposition>
+    <elm:proposition>
+      \altvar{Aussage C}
+    </elm:proposition>
+  </elm:propositionlist>>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+\section{Lemma}
+
+- Wie Theorem -
+
+\section{Algorithmus}
+
+\subsection{Side-by-side}
+
+Skizze:
+
+\image{alg\_side\_by\_side.png}
+
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.algorithm\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{background\}
+    \altvar{Hintergrund}
+  \c{end}\{background\}
+
+  \c{begin}\{input\}
+    \altvar{Input}
+  \c{end}\{input\}
+
+  \c{begin}\{output\}
+    \altvar{Output}
+  \c{end}\{output\}
+
+  \c{begin}\{algsteps\}[side-by-side]
+    \c{algstep} \altvar{Erster Schritt}
+    \c{algstep} \altvar{Zweiter Schritt}
+    \c{algstep} \altvar{Dritter Schritt}
+  \c{end}\{algsteps\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:background>
+    \altvar{Hintergrund}
+  </elm:background>
+
+  <elm:input>
+    \altvar{Input}
+  </elm:input>
+
+  <elm:output>
+    \altvar{Output}
+  </elm:output>
+
+  <elm:algsteps arrange="side-by-side">
+    <elm:algstep>
+      \altvar{Erster Schritt}
+    </elm:algstep>
+    <elm:algstep>
+      \altvar{Zweiter Schritt}
+    </elm:algstep>
+    <elm:algstep>
+      \altvar{Dritter Schritt}
+    </elm:algstep>
+  </elm:algsteps>>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+\subsection{Top-bottom}
+
+Skizze:
+
+\image{alg\_top\_bottom.png}
+
+
+TeX-Fragment:
+
+\begin{preformatted}[code]%
+\c{documentclass}\{japs.element.algorithm\}
+
+\c{begin}\{metainfo\}
+  \altvar{Meta-Informationen}
+\c{end}\{metainfo\}
+
+\c{begin}\{content\}
+
+  \c{title}\{\altvar{Titel}\}
+
+  \c{begin}\{background\}
+    \altvar{Hintergrund}
+  \c{end}\{background\}
+
+  \c{begin}\{input\}
+    \altvar{Input}
+  \c{end}\{input\}
+
+  \c{begin}\{output\}
+    \altvar{Output}
+  \c{end}\{output\}
+
+  \c{begin}\{algsteps\}
+    \c{algstep} \altvar{Erster Schritt}
+    \c{algstep} \altvar{Zweiter Schritt}
+    \c{algstep} \altvar{Dritter Schritt}
+  \c{end}\{algsteps\}
+
+  \c{begin}\{remarks\}
+    \altvar{Bemerkungen}
+  \c{end}\{remarks\}
+
+\c{end}\{content\}
+\end{preformatted}
+
+
+XML-Fragment:
+
+\begin{preformatted}[code]%
+<elm:element category="theorem">
+
+  <elm:title>
+    \altvar{Titel}
+  </elm:title>>
+
+  <elm:background>
+    \altvar{Hintergrund}
+  </elm:background>
+
+  <elm:input>
+    \altvar{Input}
+  </elm:input>
+
+  <elm:output>
+    \altvar{Output}
+  </elm:output>
+
+  <elm:algsteps arrange="top-bottom">
+    <elm:algstep>
+      \altvar{Erster Schritt}
+    </elm:algstep>
+    <elm:algstep>
+      \altvar{Zweiter Schritt}
+    </elm:algstep>
+    <elm:algstep>
+      \altvar{Dritter Schritt}
+    </elm:algstep>
+  </elm:algsteps>>
+
+  <elm:remarks>
+    \altvar{Bemerkungen}
+  </elm:remarks>
+
+</elm:element>
+\end{preformatted}
+
+-- ENDE DER DATEI --
+
+\end{document}

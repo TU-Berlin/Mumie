@@ -1,0 +1,127 @@
+#! /bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+vboxmanage=/usr/bin/VBoxManage
+vboxheadless=/usr/bin/VBoxHeadless
+log_dir=$HOME/vbox/log
+
+function error
+  {
+    echo "ERROR: $*" 1>&2
+    exit 1
+  }
+
+function match
+  {
+    echo "$1" | egrep "$2" > /dev/null 2>&1
+  }
+
+function list_all_vms_names
+  {
+    $vboxmanage list vms | sed -n 's/^"\(.*\)".*$/\1/p'
+  }
+
+function get_vm_name
+  {
+    local name="$1"
+    match "$name" '^[0-9]+$' && name="vbox-$name"
+    if match "$name" '^vbox-[0-9]+$' ; then
+      name=`list_all_vms_names | egrep "^$name"`
+      local count=`echo "$name" | wc -w`
+      if [ $count -eq 0 ] ; then
+        error "No vm found for \"$1\""
+      elif [ $count -gt 1 ] ; then
+        error "Multiple vms found for \"$1\""
+      fi
+    fi
+    echo "$name"
+  }
+
+function start_vm
+  {
+    local cmd
+    if [ "$headless" ] ; then
+      cmd="$vboxheadless --startvm"
+    else
+      cmd="$vboxmanage startvm"
+    fi
+
+    local stdout_file="$log_dir/${vm_name}.out"
+    local stderr_file="$log_dir/${vm_name}.err"
+
+    mkdir -p "$log_dir"
+
+    rm -f "$stdout_file" "stderr_file"
+
+    local name=`get_vm_name "$vm_name"`
+
+    mmdaemon --stdout="$stdout_file"  --stderr="$stderr_file" $cmd "$name"
+  }
+
+function show_help
+  {
+    cat <<EOF
+Usage:
+  startvm [--headless|-H] VM_NAME
+Description:
+  VirtualBox help script. Stars a virtual machine and runs it as a daemon
+  process. The virtual machine is specified by its name (VM_NAME in the
+  usage above). If the name has the form "vbox-NUM-*", where NUM is a number,
+  the name may be abbreviated by "vbox-NUM" or simply "NUM".
+    The script calls either VBoxManage or VBoxHeadless to start the virtual
+  machine. The output of these programs to stdout and stderr are redirected
+  to the files ~/vbox/log/VM_NAME.out and ~/vbox/log/VM_NAME.err, respectively.
+Options:
+  --headless, -H
+      Runs the virtual machine headless
+  --help, -h
+      Show this message and exit
+EOF
+  }
+
+task=start_vm
+
+# Process command line parameters:
+params=`getopt \
+  --longoptions headless,help \
+  --options H,h,v \
+  -- \
+  "$@"`
+if [ $? -ne 0 ] ; then exit 1 ; fi
+eval set -- "$params"
+while true ; do
+  case "$1" in
+    --headless|-H) headless=enabled ; shift ;;
+    --help|-h) task=show_help ; shift ;;
+    --) shift ; break ;;
+  esac
+done
+vm_name="$1"
+shift
+[ "$1" ] && error "Extra parameters: $*"
+
+$task
+
+
+

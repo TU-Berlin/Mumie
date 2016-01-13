@@ -1,0 +1,269 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: xml_interface_mathletfactory.txt,v 1.2 2005/09/09 12:56:49 gronau Exp $
+
+
+                   XML-INTERFACE MATHLETFACTORY -- SKIZZE
+
+
+1. Grundsätzliches
+   ===============
+
+  1.1. Unter den Klassen der MathletFactory, welche mathematische Begriffe wie
+       Vektor, Matrix usw. darstellen, sollen die für die Lineare Algebra
+       wichtigsten in der Lage sein, Instanzen nach vorgegebenen
+       XML-Beschreibungen zu bilden.
+
+  1.2. Dazu soll jede dieser Klassen (s.u.) mit einem Konstruktor ausgestattet
+       werden, der ein Argument vom Typ org.w3c.dom.Node hat.
+
+  1.3. Als XML wird zunächst MathML Presentation Markup implementiert. Später
+       könnten MathML Content Markup und OpenMath folgen.
+
+
+
+2. Liste der Klassen
+   =================
+
+  2.1. Zahlen:
+
+         net.mumie.mathletfactory.math.number.MComplex
+         net.mumie.mathletfactory.math.number.MDouble
+         net.mumie.mathletfactory.math.number.MInteger
+         net.mumie.mathletfactory.math.number.MNatural
+         net.mumie.mathletfactory.math.number.MRational
+         net.mumie.mathletfactory.math.number.MRealNumber
+
+  2.2. Begriffe der Linearen Algebra:
+
+         net.mumie.mathletfactory.math.algebra.linalg.NumberMatrix
+         net.mumie.mathletfactory.math.algebra.linalg.NumberTuple
+
+
+
+3. MathML-Darstellung der MathletFactory-Zahlen-Objekte
+   ====================================================
+
+  3.1. MNatural:
+
+    3.1.1. Durch das 'mn'-Element:
+
+             <mn>12</mn>
+
+  3.2. MInteger:
+
+    3.2.1. Durch das 'mn'-Element:
+
+             <mn>12</mn>
+
+             <mn>-4</mn>
+
+  3.3. MRational:
+
+    3.3.1. Durch das 'mn'-Element, mit Dezimalzahl (Komma und Punkt zugelassen):
+
+             <mn>12<mn>
+
+             <mn>-142,003<mn>
+
+             <mn>0.876<mn>
+
+    3.3.2. Durch das 'mfrac'-Element (für Brüche):
+
+             <mfrac>
+              <mn>7</mn>
+              <mn>11</mn>
+            </mfrac>
+
+           Die Werte in den 'mn's sollen ganzzahlig sein.
+
+    3.3.3. Durch ein Element-Tripel 'mn', 'mo, 'mn', wobei die beiden 'mn's
+           ganze Zahlen und 'mo' ein "/"-Zeichen darstellt:
+
+             <mn>7</mn>
+             <mo>/</mo>
+             <mn>11</mn>
+
+           (Entspricht der Schreibweise "7/11".) Kann auch von einem 'mrow'
+           umschlossen sein:
+
+             <mrow>
+               <mn>7</mn>
+               <mo>/</mo>
+               <mn>11</mn>
+             </mrow>
+
+  3.4. MRealNumber, MDouble:
+
+    3.4.1. Wie 3.3.1
+
+    3.4.2. Wie 3.3.2
+
+    3.4.3. Wie 3.3.3
+
+  3.5. MComplex:
+
+    3.5.1. Durch das Nicht-Standard-MathML-Element cnum:
+
+             <cnum xmlns="http://www.mumie.net/xml-namespace/mathml-ext">
+               <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+                 <mn>7</mn>
+                 <mo>/</mo>
+                 <mn>11</mn>
+               </mrow>
+               <mn>2</mn>
+             </cnum>
+
+  3.6. Mögliche weitere Features:
+
+    3.6.1. Angabe als Vielfaches von Pi (nur für MRealNumber, MDouble):
+
+             <mn>2</mn>
+             <mi>&#960;</mi>
+
+    3.6.2. Angabe als Wurzel (nur für MRealNumber, MDouble):
+
+            <msqrt>
+              <mn>2</mn>
+            </msqrt>
+
+    3.6.1 Angabe durch kompliziertere Ausdrücke wie z.B.:
+
+                 1
+            10 + -
+                 2
+                  _
+            1 + \/2
+
+                   _
+            2 - 2\/3
+            --------
+               5
+
+              2
+            pi
+            ---
+             4
+
+
+
+4. MathML-Darstellung von Lineare-Algebra-Objekten
+   ===============================================
+
+  4.1. NumberTuple:
+
+         Durch das 'mrow'-Element mit class="column-vector" oder
+         class="row-vector".
+
+         Beispiele:
+                                                     _   _
+           <mrow class="row-vector">                | -1  |
+             <mn>-1</mn>                            |     |
+             <mn>3</mn>           entspricht        |  3  |
+             <mn>0</mn>                             |     |
+           </mrow>                                  |_ 0 _|
+
+           <mrow class="row-vector">
+             <mn>-1</mn>                             _   _
+             <mrow>                                 | -1  |
+               <mn>3</mn>                           |     |
+               <mo>/</mo>         entspricht        | 2/3 |
+               <mn>2</mn>                           |     |
+             </mrow>                                |_ 0 _|
+             <mn>0</mn>                             
+           </mrow>
+
+           <mrow class="row-vector">                 _   _ 
+             <mn>-1</mn>                            | -1  |
+             <mfrac>                                |     |
+               <mn>3</mn>                           |  3  |
+               <mn>2</mn>         entspricht        |  -  |
+             </mfrac>                               |  2  |
+             <mn>0</mn>                             |     |
+           </mrow>                                  |_ 0 _|
+
+  4.2. NumberMatrix
+
+         Durch das 'mtable'-Element mit class="NAME-matrix" oder
+         class="Xmatrix", wobei NAME ein string und X ein einzelnes Zeichen
+         ist.
+
+         'mtable'-Element ohne class-Attribut dürfen auch als Matrizen
+         aufgefasst werden, wenn im jeweiligen Context eine Matriz erwartet
+         werden kann.
+
+         Beispiele:
+
+           <mtable>
+             <mtr>
+               <mtd>
+                 <mn>3</mn>
+               </mtd>
+               <mtd>
+                 <mn>1</mn>
+               </mtd>
+               <mtd>
+                 <mn>2</mn>
+               </mtd>
+             </mtr>
+             <mtr>
+               <mtd>                                 _           _
+                 <mn>4</mn>                         |             |
+               </mtd>                               |  3   1   2  |
+               <mtd>                                |             |
+                 <mn>5</mn>       entspricht        |  4   5   6  |
+               </mtd>                               |             |
+               <mtd>                                |  8   3   0  |
+                 <mn>6</mn>                         |_           _|
+               </mtd>
+             </mtr>
+             <mtr>
+               <mtd>
+                 <mn>8</mn>
+               </mtd>
+               <mtd>
+                 <mn>3</mn>
+               </mtd>
+               <mtd>
+                 <mn>0</mn>
+               </mtd>
+             </mtr>
+           </mtable>
+
+  4.3 Operationen
+
+       Symbolische Ausdruecke muessen innerhalb eines <mrow>-Elements stehen.
+         
+       Beispiele:
+       - quadratische Funktion
+         <mrow>
+           <msup>
+             <mrow>
+               <mn>2</mn>
+               <mi>x</mi>
+             </mrow>
+             <mn>2</mn>
+           </msup>
+           <mo>+</mo>
+           <mn>2</mn>
+           <mi>x</mi>
+           <mo>-</mo>
+           <mn>1</mn>
+         </mrow>
+         
+         entspricht  2x^2+2x-1
+         
+         
+       - Vordefinierte math. Funktionen und Klammern werden durch ein <mo> eingeleitet:
+         <mrow>
+           <mo>exp</mo>
+           <mo>(</mo>
+           <mi>PI</mi>
+           <mo>*</mo>
+           <mi>x</mi>
+           <mo>)</mo>
+         </mrow>
+         
+         entspricht  e^(PI*x)
+         
+
+-- ENDE DER DATEI --

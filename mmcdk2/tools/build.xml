@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy
+  
+  $Id: build.xml,v 1.9 2008/09/04 14:11:53 rassy Exp $
+-->
+
+<project name="mmcdk" default="all" basedir="..">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property name="mmcdk.install.lib.java.dir" value=""/>
+  <property name="mmcdk.src.dir" value="src"/>
+  <property name="mmcdk.src.java.dir" value="${mmcdk.src.dir}/java"/>
+  <property name="mmcdk.lib.dir" value="lib"/>
+  <property name="mmcdk.lib.java.dir" value="${mmcdk.lib.dir}/java"/>
+  <property name="mmcdk.lib.java.classes.dir" value="${mmcdk.lib.java.dir}/classes"/>
+  <property name="mmcdk.doc.dir" value="doc"/>
+  <property name="mmcdk.doc.apidocs.dir" value="${mmcdk.doc.dir}/apidocs"/>
+  <property name="mmcdk.resources.dir" value="resources"/>
+  <property name="mmcdk.resources.apidocs.css.file"
+            value="${mmcdk.resources.dir}/apidocs.css"/>
+  <property name="mmcdk.verbose" value="no"/>
+  <property name="mmcdk.force" value="no"/>
+  <property name="mmcdk.javac.verbose" value="no"/>
+  <property name="mmcdk.javac.deprecation" value="no"/>
+  <property name="mmcdk.javac.debug" value="yes"/>
+  <property name="mmcdk.jar.file" value="mumie-cdk.jar"/>
+  <property name="mmcdk.jdk.apidocs.url" value=""/>
+  <property name="mmcdk.japs.apidocs.url" value=""/>
+  <property name="mmcdk.vendor" value="Berlin University of Technology"/>
+  <property name="mmcdk.version" value="-NONE-"/>
+
+  <!--
+    ================================================================================
+    Auto-set properties
+    ================================================================================
+  -->
+
+  <tstamp>
+    <format property="mmcdk.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmcdk.internal.force">
+    <istrue value="${mmcdk.force}"/>
+  </condition>
+
+  <!--
+    ================================================================================
+    Classpath for compiling
+    ================================================================================
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmcdk.lib.java.dir}">
+        <include name="mumie-japs-for-mmcdk.jar"/>
+        <include name="avalon-framework-api-4.3.jar"/>
+        <include name="avalon-framework-impl-4.3.jar"/>
+        <include name="excalibur-pool-api-2.1.jar"/>
+        <include name="excalibur-pool-impl-2.1.jar"/>
+        <include name="excalibur-xmlutil-2.1.jar"/>
+      </fileset>
+      <fileset dir="${mmcdk.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+        <include name="mumie-jvmd.jar"/>
+        <include name="mumie-japs-client.jar"/>
+        <include name="mumie-japs-datasheet.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+  <!--
+    ================================================================================
+    Printing properties
+    ================================================================================
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <property name="mmcdk.classpath" refid="classpath"/>
+    <echoproperties prefix="mmcdk."/>
+  </target>
+
+  <!--
+    ================================================================================
+    Java classes
+    ================================================================================
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmcdk.verbose}">
+      <fileset dir="${mmcdk.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clear-classes.iff-force" if="mmcdk.internal.force">
+    <!-- Deletes the compiled classes if (and only if) mmcdk.internal.force
+         is set, which is equivalent to mmcdk.force being true. -->
+    <antcall target="clear-classes"/>
+  </target>
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="classpath">
+    <javac srcdir="${mmcdk.src.java.dir}"
+           destdir="${mmcdk.lib.java.classes.dir}"
+           listfiles="${mmcdk.verbose}"
+           deprecation="${mmcdk.javac.deprecation}"
+           verbose="${mmcdk.javac.verbose}"
+           debug="${mmcdk.javac.debug}"
+           includeAntRuntime="yes"
+           failonerror="yes"
+           excludes="net/mumie/cdk/util/editor/**"> <!-- Provisionally -->
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!--
+    ================================================================================
+    Jars
+    ================================================================================
+  -->
+
+  <target name="jar" 
+          description="Creates a jar with all classes">
+    <jar destfile="${mmcdk.lib.java.dir}/${mmcdk.jar.file}"
+         basedir="${mmcdk.lib.java.classes.dir}"
+         excludes=".KEEP_ME"> 
+      <manifest>
+        <attribute name="Created" value="${mmcdk.timestamp}"/>
+        <section name="net/mumie/cdk">
+          <attribute name="Specification-Title" value="Mumie CDK"/>
+          <attribute name="Specification-Version" value="${mmcdk.version}"/>
+          <attribute name="Specification-Vendor" value="${mmcdk.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.cdk"/>
+          <attribute name="Implementation-Version" value="${mmcdk.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmcdk.vendor}"/>
+        </section>
+      </manifest>  
+    </jar>
+  </target>
+
+  <target name="clear-jar"
+          description="Deletes the jar archive">
+    <delete verbose="{$mmcdk.verbose}">
+      <fileset dir="${mmcdk.lib.java.dir}">
+        <include name="${mmcdk.jar.file}"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+    ================================================================================
+    API docs
+    ================================================================================
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${mmcdk.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie CDK API "
+             packagenames="net.mumie.cdk.*"
+             sourcepath="${mmcdk.src.java.dir}"
+             destdir="${mmcdk.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmcdk.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmcdk.verbose}">
+      <link href="${mmcdk.jdk.apidocs.url}"/> 
+      <link href="${mmcdk.japs.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${mmcdk.verbose}"
+            dir="${mmcdk.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Main target - creates all
+    ================================================================================
+  -->
+
+  <target name="all"
+          description="Creates all"
+          depends="clear-classes.iff-force,
+                   classes,
+                   jar">
+  </target>
+
+  <!--
+    ================================================================================
+    Clears all
+    ================================================================================
+  -->
+
+  <target name="clear"
+          description="Deletes all generated files"
+          depends="clear-classes,
+                   clear-jar,
+                   clear-apidocs">
+  </target>
+    
+</project>

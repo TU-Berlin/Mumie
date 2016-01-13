@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_course_nav.meta.xml,v 1.10 2009/07/21 13:51:18 linges Exp $
+-->
+
+<mumie:xsl_stylesheet xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                      mode="checkin">
+  <mumie:name>Course navigation net</mumie:name>
+  <mumie:description>
+    XSL transformation for the course navigation net
+  </mumie:description>
+  <mumie:copyright>
+    Copyright (C) 2005 - 2006, Berlin University of Technology
+  </mumie:copyright>
+  <mumie:components>
+    <mumie:xsl_stylesheet lid="xsl-net" path="system/course/xsl_course_nav_net.meta.xml"/>
+    <mumie:xsl_stylesheet lid="xsl-list" path="system/course/xsl_course_nav_list.meta.xml"/>
+    <mumie:generic_xsl_stylesheet lid="xsl-course-nav-i18n"
+                                  path="system/course/g_xsl_course_nav_i18n.meta.xml"/>
+    <mumie:generic_image lid="icon_element_algorithm_hover"
+                         path="system/course/icons/g_img_element_algorithm_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_element_algorithm_normal"
+                         path="system/course/icons/g_img_element_algorithm_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_element_algorithm_selected"
+                         path="system/course/icons/g_img_element_algorithm_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_element_application_hover"
+                         path="system/course/icons/g_img_element_application_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_element_application_normal"
+                         path="system/course/icons/g_img_element_application_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_element_application_selected"
+                         path="system/course/icons/g_img_element_application_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_element_definition_hover"
+                         path="system/course/icons/g_img_element_definition_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_element_definition_normal"
+                         path="system/course/icons/g_img_element_definition_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_element_definition_selected"
+                         path="system/course/icons/g_img_element_definition_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_element_lemma_hover"
+                         path="system/course/icons/g_img_element_lemma_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_element_lemma_normal"
+                         path="system/course/icons/g_img_element_lemma_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_element_lemma_selected"
+                         path="system/course/icons/g_img_element_lemma_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_element_motivation_hover"
+                         path="system/course/icons/g_img_element_motivation_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_element_motivation_normal"
+                         path="system/course/icons/g_img_element_motivation_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_element_motivation_selected"
+                         path="system/course/icons/g_img_element_motivation_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_element_theorem_hover"
+                         path="system/course/icons/g_img_element_theorem_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_element_theorem_normal"
+                         path="system/course/icons/g_img_element_theorem_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_element_theorem_selected"
+                         path="system/course/icons/g_img_element_theorem_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_deduction_hover"
+                         path="system/course/icons/g_img_subelement_deduction_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_deduction_normal"
+                         path="system/course/icons/g_img_subelement_deduction_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_deduction_selected"
+                         path="system/course/icons/g_img_subelement_deduction_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_example_hover"
+                         path="system/course/icons/g_img_subelement_example_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_example_normal"
+                         path="system/course/icons/g_img_subelement_example_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_example_selected"
+                         path="system/course/icons/g_img_subelement_example_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_history_hover"
+                         path="system/course/icons/g_img_subelement_history_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_history_normal"
+                         path="system/course/icons/g_img_subelement_history_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_history_selected"
+                         path="system/course/icons/g_img_subelement_history_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_motivation_hover"
+                         path="system/course/icons/g_img_subelement_motivation_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_motivation_normal"
+                         path="system/course/icons/g_img_subelement_motivation_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_motivation_selected"
+                         path="system/course/icons/g_img_subelement_motivation_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_proof_hover"
+                         path="system/course/icons/g_img_subelement_proof_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_proof_normal"
+                         path="system/course/icons/g_img_subelement_proof_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_proof_selected"
+                         path="system/course/icons/g_img_subelement_proof_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_remark_hover"
+                         path="system/course/icons/g_img_subelement_remark_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_remark_normal"
+                         path="system/course/icons/g_img_subelement_remark_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_remark_selected"
+                         path="system/course/icons/g_img_subelement_remark_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_test_hover"
+                         path="system/course/icons/g_img_subelement_test_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_test_normal"
+                         path="system/course/icons/g_img_subelement_test_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_test_selected"
+                         path="system/course/icons/g_img_subelement_test_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_training_hover"
+                         path="system/course/icons/g_img_subelement_training_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_training_normal"
+                         path="system/course/icons/g_img_subelement_training_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_training_selected"
+                         path="system/course/icons/g_img_subelement_training_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_subelement_visualization_hover"
+                         path="system/course/icons/g_img_subelement_visualization_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_visualization_normal"
+                         path="system/course/icons/g_img_subelement_visualization_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_subelement_visualization_selected"
+                         path="system/course/icons/g_img_subelement_visualization_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_problem_applet_hover"
+                         path="system/course/icons/g_img_problem_applet_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_applet_normal"
+                         path="system/course/icons/g_img_problem_applet_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_applet_selected"
+                         path="system/course/icons/g_img_problem_applet_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_problem_mchoice_hover"
+                         path="system/course/icons/g_img_problem_mchoice_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_mchoice_normal"
+                         path="system/course/icons/g_img_problem_mchoice_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_mchoice_selected"
+                         path="system/course/icons/g_img_problem_mchoice_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_problem_traditional_hover"
+                         path="system/course/icons/g_img_problem_mchoice_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_traditional_normal"
+                         path="system/course/icons/g_img_problem_mchoice_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_traditional_selected"
+                         path="system/course/icons/g_img_problem_mchoice_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_problem_program_hover"
+                         path="system/course/icons/g_img_problem_mchoice_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_program_normal"
+                         path="system/course/icons/g_img_problem_mchoice_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_problem_program_selected"
+                         path="system/course/icons/g_img_problem_mchoice_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_course_section_normal"
+                         path="system/course/icons/g_img_course_section_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_course_section_hover"
+                         path="system/course/icons/g_img_course_section_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_course_section_selected"
+                         path="system/course/icons/g_img_course_section_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_homework_before_normal"
+                         path="system/course/icons/g_img_worksheet_homework_before_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_homework_before_hover"
+                         path="system/course/icons/g_img_worksheet_homework_before_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_homework_before_selected"
+                         path="system/course/icons/g_img_worksheet_homework_before_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_homework_inside_normal"
+                         path="system/course/icons/g_img_worksheet_homework_inside_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_homework_inside_hover"
+                         path="system/course/icons/g_img_worksheet_homework_inside_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_homework_inside_selected"
+                         path="system/course/icons/g_img_worksheet_homework_inside_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_homework_after_normal"
+                         path="system/course/icons/g_img_worksheet_homework_after_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_homework_after_hover"
+                         path="system/course/icons/g_img_worksheet_homework_after_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_homework_after_selected"
+                         path="system/course/icons/g_img_worksheet_homework_after_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_pretest_before_normal"
+                         path="system/course/icons/g_img_worksheet_homework_before_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_pretest_before_hover"
+                         path="system/course/icons/g_img_worksheet_homework_before_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_pretest_before_selected"
+                         path="system/course/icons/g_img_worksheet_homework_before_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_pretest_inside_normal"
+                         path="system/course/icons/g_img_worksheet_homework_inside_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_pretest_inside_hover"
+                         path="system/course/icons/g_img_worksheet_homework_inside_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_pretest_inside_selected"
+                         path="system/course/icons/g_img_worksheet_homework_inside_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_pretest_after_normal"
+                         path="system/course/icons/g_img_worksheet_homework_after_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_pretest_after_hover"
+                         path="system/course/icons/g_img_worksheet_homework_after_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_pretest_after_selected"
+                         path="system/course/icons/g_img_worksheet_homework_after_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_selftest_before_normal"
+                         path="system/course/icons/g_img_worksheet_homework_before_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_selftest_before_hover"
+                         path="system/course/icons/g_img_worksheet_homework_before_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_selftest_before_selected"
+                         path="system/course/icons/g_img_worksheet_homework_before_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_selftest_inside_normal"
+                         path="system/course/icons/g_img_worksheet_homework_inside_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_selftest_inside_hover"
+                         path="system/course/icons/g_img_worksheet_homework_inside_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_selftest_inside_selected"
+                         path="system/course/icons/g_img_worksheet_homework_inside_selected.meta.xml"/>
+
+    <mumie:generic_image lid="icon_worksheet_selftest_after_normal"
+                         path="system/course/icons/g_img_worksheet_homework_after_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_selftest_after_hover"
+                         path="system/course/icons/g_img_worksheet_homework_after_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_selftest_after_selected"
+                         path="system/course/icons/g_img_worksheet_homework_after_selected.meta.xml"/>
+            
+    <mumie:generic_image lid="icon_worksheet_training_before_normal"
+                         path="system/course/icons/g_img_worksheet_homework_before_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_training_before_hover"
+                         path="system/course/icons/g_img_worksheet_homework_before_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_training_before_selected"
+                         path="system/course/icons/g_img_worksheet_homework_before_selected.meta.xml"/>
+    
+    <mumie:generic_image lid="icon_worksheet_training_inside_normal"
+                         path="system/course/icons/g_img_worksheet_homework_inside_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_training_inside_hover"
+                         path="system/course/icons/g_img_worksheet_homework_inside_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_training_inside_selected"
+                         path="system/course/icons/g_img_worksheet_homework_inside_selected.meta.xml"/>
+    
+    <mumie:generic_image lid="icon_worksheet_training_after_normal"
+                         path="system/course/icons/g_img_worksheet_homework_after_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_training_after_hover"
+                         path="system/course/icons/g_img_worksheet_homework_after_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_worksheet_training_after_selected"
+                         path="system/course/icons/g_img_worksheet_homework_after_selected.meta.xml"/> 
+
+    <mumie:generic_image lid="icon_branching_point"
+                         path="system/course/icons/g_img_branching_point.meta.xml"/>
+    <mumie:generic_image lid="icon_branching_point_and"
+                         path="system/course/icons/g_img_branching_point_and.meta.xml"/>
+    <mumie:generic_image lid="icon_branching_point_or"
+                         path="system/course/icons/g_img_branching_point_or.meta.xml"/>
+
+    <mumie:generic_image lid="icon_arrow_left_normal"
+                         path="system/course/icons/g_img_arrow_left_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_arrow_left_hover"
+                         path="system/course/icons/g_img_arrow_left_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_arrow_left_disabled"
+                         path="system/course/icons/g_img_arrow_left_disabled.meta.xml"/>
+
+    <mumie:generic_image lid="icon_arrow_right_normal"
+                         path="system/course/icons/g_img_arrow_right_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_arrow_right_hover"
+                         path="system/course/icons/g_img_arrow_right_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_arrow_right_disabled"
+                         path="system/course/icons/g_img_arrow_right_disabled.meta.xml"/>
+
+    <mumie:generic_image lid="icon_arrow_up_normal"
+                         path="system/course/icons/g_img_arrow_up_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_arrow_up_hover"
+                         path="system/course/icons/g_img_arrow_up_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_arrow_up_disabled"
+                         path="system/course/icons/g_img_arrow_up_disabled.meta.xml"/>
+
+    <mumie:generic_image lid="icon_show_labels_normal"
+                         path="system/course/icons/g_img_show_labels_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_show_labels_hover"
+                         path="system/course/icons/g_img_show_labels_hover.meta.xml"/>
+    <mumie:generic_image lid="icon_hide_labels_normal"
+                         path="system/course/icons/g_img_hide_labels_normal.meta.xml"/>
+    <mumie:generic_image lid="icon_hide_labels_hover"
+                         path="system/course/icons/g_img_hide_labels_hover.meta.xml"/>
+
+    <mumie:generic_image lid="icon_close_tooltip"
+                         path="system/course/icons/g_img_close_tooltip.meta.xml"/>
+
+    <mumie:generic_image lid="icon_expand_tooltip"
+                         path="system/course/icons/g_img_expand_tooltip.meta.xml"/>
+
+    <mumie:generic_image lid="icon_collapse_tooltip"
+                         path="system/course/icons/g_img_collapse_tooltip.meta.xml"/>
+  </mumie:components>
+  <mumie:links>
+    <mumie:generic_page lid="frameset"
+                        path="system/course/g_pge_frameset.meta.xml"/>
+  </mumie:links>
+  <mumie:gdim_entries>
+    <mumie:gdim_entry generic_doc_path="system/course/g_xsl_course_nav.meta.xml" lang_code="zxx"/>
+  </mumie:gdim_entries>
+  <mumie:content_type type="text" subtype="xml"/>
+</mumie:xsl_stylesheet>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_tutorial_members_i18n_de.meta.xml,v 1.1 2007/10/31 12:56:32 grudzin Exp $
+-->
+
+<mumie:xsl_stylesheet xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>Deutsche Texte f&#252;r xsl_tutorial_members</mumie:name>
+  <mumie:description>
+    Sprachspezifische Texte f&#252;r das Stylesheet zur Generierung einer Liste mit allen
+    Teilnehmern eines Tutoriums; deutsch
+  </mumie:description>
+  <mumie:copyright>
+    Copyright (C) 2007, Berlin University of Technology
+  </mumie:copyright>
+  <mumie:content_type type="text" subtype="xml"/>
+  <mumie:gdim_entries>
+    <mumie:gdim_entry generic_doc_path="system/misc/g_xsl_tutorial_members_i18n.meta.xml"/>
+  </mumie:gdim_entries>
+</mumie:xsl_stylesheet>

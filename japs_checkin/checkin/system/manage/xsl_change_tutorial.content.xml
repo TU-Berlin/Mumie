@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_change_tutorial.content.xml,v 1.1 2009/04/09 15:24:27 rassy Exp $
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The form stage: -->
+<xsl:variable name="form-stage">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">form-stage</xsl:with-param>
+    <xsl:with-param name="default">0</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The tutorials the edited user is currently a member of: -->
+<xsl:variable name="current-tutorials" select="/mumie:user/mumie:tutorials/mumie:tutorial"/>
+
+<!-- The class: -->
+<xsl:variable name="class" select="//mumie:dynamic_data/mumie:store/mumie:class"/>
+
+<!-- All tutorials of the class: -->
+<xsl:variable name="all-tutorials" select="$class/mumie:tutorials/mumie:tutorial"/>
+
+<!-- Current tutorial: -->
+<xsl:variable name="current-tutorial"
+           select="$current-tutorials[mumie:class/@id = $class/@id]"/>
+
+<!-- Id of the old tutorial: -->
+<xsl:variable name="old-tutorial-id">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">old-tutorial</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: Form                                                                         -->
+<!-- ================================================================================ -->
+
+<xsl:template name="form-body">
+  <table class="grid">
+    <!-- User (read-only): -->
+    <tr>
+      <td><xsl:value-of select="$i18n-user"/>:</td>
+      <td>
+        <xsl:value-of select="/mumie:user/mumie:surname"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="/mumie:user/mumie:first_name"/>
+        <xsl:text> (Id:  </xsl:text>
+        <xsl:value-of select="/mumie:user/@id"/>
+        <xsl:text>)</xsl:text>
+        <input type="hidden" name="user" value="{/mumie:user/@id}"/>
+      </td>
+    </tr>
+    <!-- Class (read-only): -->
+    <tr>
+      <td><xsl:value-of select="$i18n-class"/>:</td>
+      <td><xsl:value-of select="$class/mumie:name"/></td>
+      <input type="hidden" name="class" value="{$class/@id}"/>
+    </tr>
+    <!-- Old tutorial: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-old-tutorial"/>:</td>
+      <td><xsl:value-of select="$current-tutorial/mumie:name"/></td>
+      <input type="hidden" name="old-tutorial" value="{$current-tutorial/@id}"/>
+    </tr>
+    <!-- New tutorial: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-new-tutorial"/>:</td>
+      <td>
+        <select name="new-tutorial">
+          <xsl:for-each select="$all-tutorials">
+            <xsl:sort select="mumie:name"/>
+            <xsl:variable name="occupancy" select="mumie:occupancy/@value"/>
+            <xsl:variable name="capacity" select="mumie:capacity/@value"/>
+            <xsl:variable name="status">
+              <xsl:choose>
+                <xsl:when test="$capacity and ( $occupancy &gt;= $capacity )">warn</xsl:when>
+                <xsl:otherwise>ok</xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
+            <option value="{@id}">
+              <xsl:if test="@id = $current-tutorial/@id">
+                <xsl:attribute name="selected">selected</xsl:attribute>
+              </xsl:if>
+              <xsl:value-of select="mumie:name"/>
+              <xsl:text> </xsl:text>
+              <span class="{$status}">
+                <xsl:text>(</xsl:text>
+                <xsl:value-of select="$occupancy"/>
+                <xsl:if test="$capacity">
+                  <xsl:text>/</xsl:text>
+                  <xsl:value-of select="$capacity"/>
+                </xsl:if>
+                <xsl:text>)</xsl:text>
+              </span>
+            </option>
+          </xsl:for-each>
+        </select>
+      </td>
+    </tr>
+  </table>
+  <input type="hidden" name="form-stage" value="1"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Button area                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template name="button-area">
+  <div class="buttons">
+    <button type="submit" name="submit" value="submit">
+      <xsl:value-of select="$i18n-submit"/>
+    </button>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Feedback                                                                     -->
+<!-- ================================================================================ -->
+
+<xsl:template name="fb-body">
+  <table class="grid">
+    <!-- User: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-user"/>:</td>
+      <td>
+        <xsl:value-of select="/mumie:user/mumie:surname"/>
+        <xsl:text>, </xsl:text>
+        <xsl:value-of select="/mumie:user/mumie:first_name"/>
+        <xsl:text> (Id:  </xsl:text>
+        <xsl:value-of select="/mumie:user/@id"/>
+        <xsl:text>)</xsl:text>
+      </td>
+    </tr>
+    <!-- Class: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-class"/>:</td>
+      <td><xsl:value-of select="$class/mumie:name"/></td>
+      <input type="hidden" name="class" value="{$class/@id}"/>
+    </tr>
+    <!-- Old tutorial: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-old-tutorial"/>:</td>
+      <td><xsl:value-of select="$all-tutorials[@id = $old-tutorial-id]/mumie:name"/></td>
+    </tr>
+    <!-- New tutorial: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-new-tutorial"/>:</td>
+      <td><xsl:value-of select="$current-tutorial/mumie:name"/></td>
+      <input type="hidden" name="old-tutorial" value="{$current-tutorial/@id}"/>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template name="fb-button-area">
+  <div class="buttons">
+    <a class="button"
+       href='{$xsl.url-prefix}/protected/manage/change-tutorial?class={$class/@id}&amp;user={/mumie:user/@id}'>
+      <xsl:value-of select="$i18n-change"/>
+    </a>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main template                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="$i18n-title"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute> 
+      </link>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-indented">
+
+        <div class="h1-container">
+          
+          <div class="breadcrumb">
+            <a href="{$xsl.url-prefix}/protected/view/classes-and-courses-index">
+              <xsl:value-of select="$i18n-courses"/>
+            </a> &gt;
+            <a href="{$xsl.url-prefix}/protected/view/tutorials-for-class?class={$class/@id}">
+              <xsl:value-of select="$i18n-tutorials"/>
+            </a> &gt;
+            <a href="{$xsl.url-prefix}/protected/view/tutorial-members?class={$class/@id}&amp;tutorial={$current-tutorial/@id}">
+              <xsl:value-of select="$i18n-tutorial-members"/>
+            </a> &gt;
+          </div>
+          
+          <h1><xsl:value-of select="$i18n-title"/></h1>
+        </div>
+
+        <xsl:choose>
+          <xsl:when test="$form-stage = 0">
+            <p><xsl:value-of select="$i18n-hints"/></p>
+            <form action="{$xsl.url-prefix}/protected/manage/change-tutorial"
+                  enctype="multipart/form-data"
+                  method="post">
+              <xsl:call-template name="form-body"/>
+              <xsl:call-template name="button-area"/>
+            </form>
+          </xsl:when>
+          <xsl:when test="$form-stage = 1">
+            <p><xsl:value-of select="$i18n-fb-message"/></p>
+            <xsl:call-template name="fb-body"/>
+            <xsl:call-template name="fb-button-area"/>
+          </xsl:when>
+        </xsl:choose>
+
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

@@ -1,0 +1,177 @@
+
+\section{Code: TriangleAltitude-Applet}
+\begin{footnotesize}
+\begin{verbatim}
+<...> // some imports omitted
+
+public class TriangleAltitude extends SingleG2DCanvasApplet{
+  
+  private MMAffine2DPoint A, B, C;
+  private MMAffine2DLineSegment AB, BC, CA;
+  private MMAffine2DLineSegment aFootC, bFootA, cFootB, bFootC, cFootA, aFootB;
+  private MMAffine2DLineSegment altitude_AB, altitude_BC, altitude_CA;
+  
+  private PointDisplayProperties pp;
+  private LineDisplayProperties ll, kk, mm;
+  
+  private Affine2DKeyboardTranslateHandler akth;
+  private Affine2DMouseTranslateHandler amth;
+  
+  public void init() {
+    setTitle("Triangle Altitude Test");
+    createObjects();
+    initializeObjects();
+    createDependencies();
+
+    getCanvas().addObject(aFootC);
+    getCanvas().addObject(bFootC);
+    getCanvas().addObject(bFootA);
+    getCanvas().addObject(cFootA);
+    getCanvas().addObject(cFootB);
+    getCanvas().addObject(aFootB);
+    getCanvas().addObject(altitude_AB);
+    getCanvas().addObject(altitude_BC);
+    getCanvas().addObject(altitude_CA);
+    getCanvas().addObject(AB);
+    getCanvas().addObject(BC);
+    getCanvas().addObject(CA);
+    getCanvas().addObject(A);
+    getCanvas().addObject(B);
+    getCanvas().addObject(C);
+    
+    addResetButton();
+    addScreenShotButton();
+  }
+  
+  private void createObjects() {
+    amth = new Affine2DMouseTranslateHandler(getCanvas());
+    akth = new Affine2DKeyboardTranslateHandler(getCanvas());
+    pp = new PointDisplayProperties();
+    ll = new LineDisplayProperties();
+    mm = new LineDisplayProperties();
+    kk = new LineDisplayProperties();
+    
+    A = new MMAffine2DPoint(MDouble.class, -0.3, 0.3);
+    A.addHandler(akth);
+    A.addHandler(amth);
+    B = new MMAffine2DPoint(MDouble.class, 0.25, 0.25);
+    B.addHandler(akth);
+    B.addHandler(amth);
+    C = new MMAffine2DPoint(MDouble.class, -0.25, -0.25);
+    C.addHandler(akth);
+    C.addHandler(amth);
+    
+    AB = new MMAffine2DLineSegment(A, B);
+    BC = new MMAffine2DLineSegment(B, C);
+    CA = new MMAffine2DLineSegment(C, A);
+    
+    aFootC = new MMAffine2DLineSegment(A, getPerpendicularFoot(A, B, C));
+    bFootC = new MMAffine2DLineSegment(B, getPerpendicularFoot(A, B, C));
+    bFootA = new MMAffine2DLineSegment(B, getPerpendicularFoot(B,C, A));
+    cFootA = new MMAffine2DLineSegment(C, getPerpendicularFoot(B,C, A));
+    cFootB = new MMAffine2DLineSegment(C, getPerpendicularFoot(C,A, B));
+    aFootB = new MMAffine2DLineSegment(A, getPerpendicularFoot(C,A, B));
+    
+    altitude_AB = new MMAffine2DLineSegment(C, getPerpendicularFoot(A,B, C));
+    altitude_BC = new MMAffine2DLineSegment(A, getPerpendicularFoot(B,C, A));
+    altitude_CA = new MMAffine2DLineSegment(B, getPerpendicularFoot(C,A, B));
+  }
+  
+  protected void initializeObjects(){
+    amth.setDrawDuringAction(true);
+    amth.setUpdateDuringAction(true);
+    
+    pp.setObjectColor(Color.blue);
+    ll.setObjectColor(Color.red);
+    mm.setObjectColor(Color.red);
+    mm.setFilled(false);
+    kk.setObjectColor(Color.yellow);
+    
+    A.setDisplayProperties(pp);
+    B.setDisplayProperties(pp);
+    C.setDisplayProperties(pp);
+    
+    AB.setDisplayProperties(ll);
+    BC.setDisplayProperties(ll);
+    CA.setDisplayProperties(ll);
+    
+    aFootC.setDisplayProperties(mm);
+    bFootC.setDisplayProperties(mm);
+    bFootA.setDisplayProperties(mm);
+    cFootA.setDisplayProperties(mm);
+    cFootB.setDisplayProperties(mm);
+    aFootB.setDisplayProperties(mm);
+    
+    altitude_AB.setDisplayProperties(kk);
+    altitude_BC.setDisplayProperties(kk);
+    altitude_CA.setDisplayProperties(kk);
+    
+    A.setFromXY(-0.3, 0.3);
+    B.setFromXY(0.25, 0.25);
+    C.setFromXY(-0.25, -0.25);    
+  }
+
+  public void createDependencies();
+    DependencyAdapter DPA = new DependencyAdapter() {
+      public void doUpdate(MMObjectIF dependant, MMObjectIF[] free) {
+        MMAffine2DLineSegment line = (MMAffine2DLineSegment) dependant;
+        line.setInitialPoint((MMAffine2DPoint)free[0]);
+        line.setEndPoint((MMAffine2DPoint)free[1]);
+      }
+    };
+    AB.dependsOn(new MMObjectIF[]{A, B}, DPA);
+    BC.dependsOn(new MMObjectIF[]{B, C}, DPA);
+    CA.dependsOn(new MMObjectIF[]{C, A}, DPA);
+    
+    DPA = new DependencyAdapter() {
+      public void doUpdate(MMObjectIF dependant, MMObjectIF[] free) {
+        MMAffine2DLineSegment line = (MMAffine2DLineSegment) dependant;
+        line.setInitialPoint((MMAffine2DPoint)free[2]);
+        line.setEndPoint(getPerpendicularFoot((MMAffine2DPoint)free[0],
+                                                (MMAffine2DPoint)free[1],
+                                                (MMAffine2DPoint)free[2]));
+      }
+    };
+    altitude_AB.dependsOn(new MMObjectIF[]{A, B, C}, DPA);
+    altitude_BC.dependsOn(new MMObjectIF[]{B, C, A}, DPA);
+    altitude_CA.dependsOn(new MMObjectIF[]{C, A, B}, DPA);
+    
+    DPA = new DependencyAdapter() {
+      public void doUpdate(MMObjectIF dependant, MMObjectIF[] free) {
+        MMAffine2DLineSegment line = (MMAffine2DLineSegment) dependant;
+        line.setInitialPoint((MMAffine2DPoint)free[0]);
+        line.setEndPoint(getPerpendicularFoot((MMAffine2DPoint)free[1],
+                                                (MMAffine2DPoint)free[2],
+                                                (MMAffine2DPoint)free[3]));
+      }
+    };
+    aFootC.dependsOn(new MMObjectIF[]{A, A, B, C}, DPA);
+    bFootC.dependsOn(new MMObjectIF[]{B, A, B, C}, DPA);
+    bFootA.dependsOn(new MMObjectIF[]{B, B, C, A}, DPA);
+    cFootA.dependsOn(new MMObjectIF[]{C, B, C, A}, DPA);
+    cFootB.dependsOn(new MMObjectIF[]{C, C, A, B}, DPA);
+    aFootB.dependsOn(new MMObjectIF[]{A, C, A, B}, DPA);
+  }
+  
+  public void reset(){
+    initializeObjects();
+    getCanvas().renderScene();
+    getCanvas().repaint();
+  }
+  
+  private MMAffine2DPoint getPerpendicularFoot(MMAffine2DPoint A,
+                                               MMAffine2DPoint B,
+                                               MMAffine2DPoint C){
+  <...>
+  }
+  
+  public static void main(String[] args){
+    TriangleAltitude myApplet = new TriangleAltitude();
+    myApplet.init();
+    BasicApplicationFrame f = new BasicApplicationFrame(myApplet, 500);
+    f.pack();
+    f.setVisible(true);
+  }
+}
+  \end{verbatim}
+  \end{footnotesize}

@@ -1,0 +1,392 @@
+<?xml version="1.0"  encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE xsl-stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_frame_resize.content.xml,v 1.8 2008/07/16 12:20:03 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-frame-resize-i18n" internal="yes"/>
+
+<!--
+  ================================================================================
+  Global parameters and variables
+  ================================================================================
+-->
+
+<!-- The HTML id of the "div" element comprising all contents; needed for 
+  mouse-dragging-based frame resizing -->
+<xsl:param name="frs-all-html-id">_ALL</xsl:param>
+
+<!-- The HTML id of the "div" element representing the outline in
+   mouse-dragging-based frame resizing -->
+<xsl:param name="frs-outline-html-id">_FRS_OUTLINE</xsl:param>
+
+<!-- The HTML id of the "frameset" element -->
+<xsl:param name="frs-frameset-html-id">frameset</xsl:param>
+
+<!-- The HTML id of the left "frame" element -->
+<xsl:param name="frs-left-frame-html-id">nav</xsl:param>
+
+<!-- The HTML id of the right "frame" element -->
+<xsl:param name="frs-right-frame-html-id">main</xsl:param>
+
+<!-- The HTML id of the "table" element representing the frame resize menu-->
+<xsl:param name="frs-menu-html-id">_FRS_MENU</xsl:param>
+
+<!-- The HTML id of the "td" element representing the "(un)fold" button (which
+  may be an item in the frame resize menu-->
+<xsl:param name="frs-fold-html-id">_FRS_FOLD</xsl:param>
+
+<!-- Number of pixels by which the left frame size is increased if "enlarge"
+  is clicked: -->
+<xsl:param name="frs-increase-step">20</xsl:param>
+
+<!-- Number of pixels by which the left frame size is increased if "fast enlarge"
+  is clicked: -->
+<xsl:param name="frs-fast-increase-step">60</xsl:param>
+
+<!--
+  ================================================================================
+  JavaScript for changing frame by dragging the mouse
+  ================================================================================
+-->
+
+<xsl:template name="frs-mouse-dragg-javascript">
+  <xsl:param name="frame"/>
+
+  <!-- Global variables needed -->
+  var frs_all;
+  var frs_outline;
+  var frs_offset;
+  <xsl:if test="$frame='left'">var frs_maxX;</xsl:if>
+
+  <!-- Called when the user presses the mouse button over the outline. Starts the
+    dragging od the outline. -->
+  <xsl:choose>
+  <xsl:when test="$frame='left'">
+  function frs_startOutlineMove (e)
+  {
+    frs_maxX = document.documentElement.clientWidth;
+    frs_offset = frs_maxX - e.clientX;
+    frs_all.onmousemove = frs_updateOutlineMove;
+    frs_all.onmouseout = frs_updateOutlineMove;
+    frs_all.onmouseup = frs_perform;
+    frs_all.style.cursor = "w-resize";
+  }
+  </xsl:when>
+  <xsl:when test="$frame='right'">
+  function frs_startOutlineMove (e)
+  {
+    frs_offset = e.clientX;
+    frs_all.onmousemove = frs_updateOutlineMove;
+    frs_all.onmouseout = frs_updateOutlineMove;
+    frs_all.onmouseup = frs_perform;
+    frs_all.style.cursor = "e-resize";
+  }
+  </xsl:when>
+  </xsl:choose>
+
+  <!-- Called from 'frs_perform'. Ends the dragging of the outline. -->
+  function frs_endOutlineMove ()
+  {
+    frs_all.onmousemove = null;
+    frs_all.onmouseout = null;
+    frs_all.onmouseup = null;
+    frs_all.style.cursor = "auto";
+  }
+
+  <!-- Called when the user releases the mouse button during dragging. Stops dragging
+    and resizes the frames. -->
+  <xsl:choose>
+  <xsl:when test="$frame='left'">
+  function frs_perform (e)
+  {
+    frs_endOutlineMove();
+    var newFrameSize = e.clientX + frs_offset;
+    parent.document.getElementById("<xsl:value-of select="$frs-frameset-html-id"/>").cols =
+      newFrameSize + ",*";
+    frs_outline.style.right = "0px";
+    frs_offset = 0;
+  }
+  </xsl:when>
+  <xsl:when test="$frame='right'">
+  function frs_perform (e)
+  {
+    frs_endOutlineMove();
+    var newFrameSize = document.documentElement.clientWidth - e.clientX + frs_offset;
+    parent.document.getElementById("<xsl:value-of select="$frs-frameset-html-id"/>").cols =
+      "*," + newFrameSize;
+    frs_outline.style.left = "0px";
+    frs_offset = 0;
+  }
+  </xsl:when>
+  </xsl:choose>
+
+  <!-- Called during dragging to update the outline accoring to the mouse position -->
+  <xsl:choose>
+  <xsl:when test="$frame='left'">
+  function frs_updateOutlineMove (e)
+  {
+    var newPos = frs_maxX - e.clientX - frs_offset;
+    if ( newPos &lt; 0 ) newPos = 0;
+    frs_outline.style.right = newPos + "px";
+    if ( e.clientX &gt;= frs_maxX ) frs_endOutlineMove();
+  }
+  </xsl:when>
+  <xsl:when test="$frame='right'">
+  function frs_updateOutlineMove (e)
+  {
+    var newPos = e.clientX - frs_offset;
+    if ( newPos &lt; 0 ) newPos = 0;
+    frs_outline.style.left = newPos + "px";
+    if ( e.clientX &lt;= 0 ) frs_endOutlineMove();
+  }
+  </xsl:when>
+  </xsl:choose>
+
+  <!-- Initializes frame resizing via mouse dragging. SAhoild be called by the 'onload'
+    handler of the 'body' element. -->
+  function frs_init ()
+  {
+    frs_all = document.getElementById("<xsl:value-of select="$frs-all-html-id"/>");
+    frs_outline = document.getElementById("<xsl:value-of select="$frs-outline-html-id"/>");
+    frs_offset = 0;
+    frs_outline.onmousedown = frs_startOutlineMove;
+  }
+
+</xsl:template>
+
+<!--
+  ================================================================================
+  CSS for changing frame by dragging the mouse
+  ================================================================================
+-->
+
+<xsl:template name="frs-mouse-dragg-styles">
+  <xsl:param name="frame"/>
+
+  div#<xsl:value-of select="$frs-all-html-id"/>
+  {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+  }
+
+  <xsl:choose>
+  <xsl:when test="$frame='left'">
+  div#<xsl:value-of select="$frs-outline-html-id"/>
+  {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    width: 5px;
+    height: 100%;
+    background-color: #E6E6E6;
+    border-right-style: dotted;
+    border-right-width: 1px;
+  }
+
+  div#<xsl:value-of select="$frs-outline-html-id"/>:hover
+  {
+    cursor: w-resize;
+  }
+  </xsl:when>
+  <xsl:when test="$frame='right'">
+  div#<xsl:value-of select="$frs-outline-html-id"/>
+  {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 5px;
+    height: 100%;
+    background-color: #E6E6E6;
+    border-left-style: dotted;
+    border-left-width: 1px;
+  }
+
+  div#<xsl:value-of select="$frs-outline-html-id"/>:hover
+  {
+    cursor: e-resize;
+  }
+  </xsl:when>
+  </xsl:choose>
+
+</xsl:template>
+
+<!--
+  ================================================================================
+  JavaScript for changing frame size via buttons
+  ================================================================================
+-->
+
+<xsl:template name="frs-button-javascript">
+
+    <!-- Constants representing the two stats of the "(un)fold" button -->
+    const FOLD = 0;
+    const UNFOLD = 1;
+
+    <!-- Stores the last left frame size if that frame is folded -->
+    var frs_lastSize = -1;
+
+    <!-- Returns the frameset element -->
+    function frs_getFrameset ()
+    {
+      return parent.document.getElementById("<xsl:value-of select="$frs-frameset-html-id"/>");
+    }
+
+    <!-- Sets the label and oncklick handler of the "(un)fold button according to the
+      specified mode flag. mode may be FOLD or UNFOLD -->
+    function frs_setFoldButton (mode)
+    {
+      var item = document.getElementById("<xsl:value-of select="$frs-fold-html-id"/>");
+      if ( mode == FOLD )
+        {
+          item.onclick = frs_fold;
+          item.firstChild.nodeValue = "<xsl:value-of select="$i18n-fold"/>";
+        }
+      else if ( mode == UNFOLD )
+        {
+          item.onclick = frs_unfold;
+          item.firstChild.nodeValue = "<xsl:value-of select="$i18n-unfold"/>";
+        }
+    }
+
+    <!-- Returns the size of the left frame -->
+    function frs_getSize ()
+    {
+      var size = (/(.*),.*/.exec(frs_getFrameset().cols))[1];
+      if ( size == "*" )
+        size = parent.frames<!-- 
+        -->["<xsl:value-of select="$frs-left-frame-html-id"/>"]<!-- 
+        -->.document.documentElement.clientWidth;
+      return Number(size);
+    }
+
+    <!-- Increases the size of the left frame by the specified value. If the value is
+      negative, the size is decreased. -->
+    function frs_increase (value)
+    {
+      newSize = frs_getSize() + Number(value);
+      if ( newSize &lt; 0 ) newSize = 0;
+      frs_getFrameset().cols = newSize + ",*";
+      frs_lastSize = -1;
+    }
+
+    <!-- Folds the left frame. If the frame is already folded, does nothing. -->
+    function frs_fold ()
+    {
+      size = frs_getSize();
+      if ( size == 0 ) return;
+      frs_lastSize = size;
+      frs_getFrameset().cols = "0,*";
+      frs_setFoldButton(UNFOLD);
+    }
+
+    <!-- Unfolds the left frame. If the frame is not folded, does nothing. -->
+    function frs_unfold ()
+    {
+      if ( frs_lastSize == -1 ) return;
+      frs_getFrameset().cols = frs_lastSize + ",*";
+      frs_setFoldButton(FOLD);
+    }
+</xsl:template>
+
+<!--
+  ================================================================================
+  Fold/unfold button
+  ================================================================================
+-->
+
+<xsl:template name="frs-fold-button">
+  <a id="{$frs-fold-html-id}" class="button" onclick="javascript:frs_fold()">
+    <xsl:value-of select="$i18n-fold"/>
+  </a>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Menu
+  ================================================================================
+-->
+
+<xsl:template name="frs-menu">
+  <table id="{$frs-menu-html-id}" class="menu">
+    <tr>
+      <th class="sep-after"><xsl:value-of select="$i18n-left-frame"/></th>
+    </tr>
+    <tr>
+      <td onclick="javascript:frs_increase({$frs-increase-step})">
+        <xsl:value-of select="$i18n-enlarge"/>
+      </td>
+    </tr>
+    <tr>
+      <td onclick="javascript:frs_increase({$frs-fast-increase-step})" class="sep-after">
+        <xsl:value-of select="$i18n-fast-enlarge"/>
+      </td>
+    </tr>
+    <tr>
+      <td onclick="javascript:frs_increase(-{$frs-increase-step})">
+        <xsl:value-of select="$i18n-diminish"/>
+      </td>
+    </tr>
+    <tr>
+      <td onclick="javascript:frs_increase({-$frs-fast-increase-step})" class="sep-after">
+        <xsl:value-of select="$i18n-fast-diminish"/>
+      </td>
+    </tr>
+    <tr>
+      <td id="{$frs-fold-html-id}" onclick="javascript:frs_fold()">
+        <xsl:value-of select="$i18n-fold"/>
+      </td>
+    </tr>
+    <tr>
+      <td onclick="javascript:closeWindow('{$frs-menu-html-id}')">
+        <xsl:value-of select="$i18n-close-menu"/>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+</xsl:stylesheet>

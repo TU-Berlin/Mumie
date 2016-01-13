@@ -1,0 +1,11 @@
+#! /bin/sh
+
+# 
+if test $# -eq 0 ; then
+  echo "  Script for compiling tex files"
+  echo "  Usage: compileTexFile <input_dir> <tex_file_wo_extension> <output_dir>"
+  exit 0
+fi
+(cd $1;/usr/site-local/teTeX/bin/latex $2.tex;/usr/site-local/teTeX/bin/latex $2.tex;/usr/site-local/bin/dvipdf $2.dvi)
+cp $1/$2.pdf $3
+(cd $1; rm $2.aux $2.toc $2.dvi $2.pdf $2.log)

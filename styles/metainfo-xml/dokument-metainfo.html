@@ -1,0 +1,771 @@
+<!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="GENERATOR"
+ content="Mozilla/4.77 [en] (X11; U; Linux 2.4.4-4GB i686) [Netscape]">
+</head>
+<body>
+<h3> Metainformationen von Dokumenten</h3>
+Es gibt 11 Dokumenttypen: <br>
+element, subelement, course_section, image, sound, movie, applet,
+js_lib, js_function, page und extlink <br>
+Es gibt (im wesentlichen) 23 Metainfotypen: <br>
+&nbsp;id, name, description, copyright, created, last_modified,
+content, content_length, vc_thread, version, status, <br>
+authors, custom_metainfo, manual, content_type, alt_image, print_image,
+width, height, duration, category und components
+<table border="1" width="100%" nosave="">
+  <tbody>
+    <tr align="left" nosave="">
+      <td nosave=""><br>
+      </td>
+      <td>
+      <center>id</center>
+      </td>
+      <td>
+      <center>name</center>
+      </td>
+      <td>
+      <center>description</center>
+      </td>
+      <td>
+      <center>copyright</center>
+      </td>
+      <td>
+      <center>created</center>
+      </td>
+      <td>
+      <center>last_mod.</center>
+      </td>
+      <td>
+      <center>content</center>
+      </td>
+      <td>
+      <center>content <br>
+_length</center>
+      </td>
+      <td>
+      <center>vc_thread</center>
+      </td>
+      <td>
+      <center>version</center>
+      </td>
+      <td>
+      <center>status</center>
+      </td>
+      <td>
+      <center>authors</center>
+      </td>
+      <td>
+      <center>custom_ <br>
+metainfo</center>
+      </td>
+      <td>
+      <center>manual</center>
+      </td>
+      <td>
+      <center>content_type</center>
+      </td>
+      <td>
+      <center>alt_ <br>
+image</center>
+      </td>
+      <td>
+      <center>print_ <br>
+image</center>
+      </td>
+      <td>
+      <center>width</center>
+      </td>
+      <td>
+      <center>height</center>
+      </td>
+      <td>
+      <center>duration</center>
+      </td>
+      <td>
+      <center>category</center>
+      </td>
+      <td>
+      <center>EXTRA</center>
+      </td>
+    </tr>
+    <tr>
+      <td>Format in DB</td>
+      <td>int</td>
+      <td>varchar <br>
+&nbsp;(80)</td>
+      <td>text</td>
+      <td>text</td>
+      <td>time- <br>
+stamp</td>
+      <td>time- <br>
+stamp</td>
+      <td>text(xml) oder oid</td>
+      <td>int</td>
+      <td>int <br>
+Referenz</td>
+      <td>int <br>
+Referenz</td>
+      <td>int <br>
+Referenz</td>
+      <td>junction <br>
+&nbsp;"authors"</td>
+      <td>text(xml)</td>
+      <td>int <br>
+Referenz</td>
+      <td>int <br>
+Referenz</td>
+      <td>int <br>
+Referenz</td>
+      <td>int <br>
+Referenz</td>
+      <td>int</td>
+      <td>int</td>
+      <td>int</td>
+      <td>int <br>
+Referenz</td>
+      <td><br>
+      </td>
+    </tr>
+    <tr align="left" nosave="">
+      <td nosave="">
+      <center>element</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>contained_in</td>
+    </tr>
+    <tr>
+      <td>
+      <center>subelement</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;.._in_element</td>
+    </tr>
+    <tr>
+      <td>
+      <center>course_section</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;final, type</td>
+    </tr>
+    <tr>
+      <td>
+      <center>image</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+      <center>sound</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+      <center>movie</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+      <center>applet</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+      <center>js_lib</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td style="text-align: center;">&nbsp;x</td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+      <center>page</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td style="text-align: center;">&nbsp;x</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td>
+      <center>js_function</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>
+      <center><br>
+      </center>
+      </td>
+      <td>
+      <center><br>
+      </center>
+      </td>
+      <td>
+      <center><br>
+      </center>
+      </td>
+      <td>
+      <center><br>
+      </center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>lib Referenz</td>
+    </tr>
+    <tr>
+      <td>
+      <center>extlink</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>
+      <center>x</center>
+      </td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;url</td>
+    </tr>
+  </tbody><caption align="bottom">&nbsp; <br>
+&nbsp;<br>
+  <br>
+  <br>
+  </caption>
+</table>
+Man sieht, dass sich die Metas bezueglich ihrer Anwendung auf Dokumente
+in Gruppen aufteilen lassen: <br>
+1. Was alle Dokumente haben: <br>
+&nbsp; - id <br>
+&nbsp; - name <br>
+&nbsp; - description <br>
+2. Versionskontrolle. Alle Dokumente ausser page, js_function und
+extlink haben <br>
+&nbsp; - vc_thread <br>
+&nbsp; - version <br>
+&nbsp; - status <br>
+&nbsp; - author <br>
+&nbsp; - custom_metainfo<br>
+3. Entstehung und Inhalt. Alle Dokumente ausser js_functions und
+extlinks haben <br>
+&nbsp; - copyright <br>
+&nbsp; - created <br>
+&nbsp; - last_modified <br>
+&nbsp; - content <br>
+&nbsp; - content_length <br>
+4. sound, movie und applet haben <br>
+&nbsp; - alt_image <br>
+&nbsp; - print_image <br>
+5. image und applet haben <br>
+&nbsp; - width <br>
+&nbsp; - height
+<p>Die uebrigen Metas custom_metainfo, manual, content_type, duration,
+category <br>
+habe alle unterschiedliche Mengen von Dokumenten, zu denen sie
+gehoeren. <br>
+Sie sind aber immer noch jeweils gleich strukturiert, <br>
+d.h. z.B. "manual" ist immer eine Referenz auf page, ist immer optional
+und kann <br>
+immer bei gewissen use-modi vorkommen oder nicht, egal (!) ob es nun <br>
+ein manual zu einem applet oder zu einem movie ist. <br>
+Letzteres gilt fuer alle Metainfos ausser fuer content und components. <br>
+Es bietet sich daher an, sie (auch in der xml-Spezifikation !) nach
+Metainfos, statt nach Dokumenten, gruppiert zu spezifizieren. </p>
+<p>Die Metainfo "components" ist nicht so einfach zu beschreiben. Dazu
+braucht es wieder <br>
+eine eigene Matrix darueber, welche Dokumente in welchen "vorkommen"
+koennen. <br>
+&nbsp; <br>
+&nbsp; </p>
+</body>
+</html>

@@ -1,0 +1,385 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy <rassy@math.tu-berlin.de>
+  $Id: css_element.content.xml,v 1.15 2008/07/16 14:21:45 rassy Exp $
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!--
+  ================================================================================
+  Definitions
+  ================================================================================
+-->
+
+<!-- Font sizes, relative: -->
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<!-- Colors: -->
+<css:def id="box-fill-color" value="#FBFBFB"/>
+<css:def id="box-border-color" value="#949494"/>
+
+<!-- Values for margin or padding: -->
+<css:def id="no-space" value="0px 0px 0px 0px"/>
+<css:def id="default-space" value="1em 1em 1em 1em"/>
+
+<!-- Width of the entire element or subelement: -->
+<css:def id="width" value="45em"/>
+
+<!--
+  ================================================================================
+  Root structure
+  ================================================================================
+-->
+
+<css:rule selector="table.root">
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name="width" ref="width"/>
+  <css:property name="border-style" value="none"/>
+</css:rule>
+
+<css:rule selector="table.root &gt; tr, table.root &gt; tr &gt; td">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Modifications of styles in css_mmtex_stdlayout
+  ================================================================================
+-->
+
+<css:rule selector="p">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<css:rule selector="p + p, table.list + p">
+  <css:property name="margin-top" value="1.0ex"/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td &gt; p'>
+  <css:property name="margin-top" value="1.0ex"/>
+  <css:property name="margin-bottom" value="0ex"/>
+</css:rule>
+
+<css:rule selector="div.remarks p:first-child, div.remarks-headline + p">
+  <css:property name="margin-top" value="1.5ex"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Margins of replaced elements
+  ================================================================================
+-->
+
+<css:rule selector="p + applet, p + object, p + img">
+  <css:property name="margin-top" value="1.0ex"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Header (category and title resp. defined notions)
+  ================================================================================
+-->
+
+<css:rule selector="table.header">
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="width" value="100%"/>
+</css:rule>
+
+<css:rule selector="table.header &gt; tr">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="vertical-align" value="top"/>
+</css:rule>
+
+<css:rule selector="table.header &gt; tr &gt; td">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="vertical-align" value="top"/>
+</css:rule>
+
+<css:rule selector="div.category, div.doctype">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0px 0.5em 0px 0px"/>
+  <css:property name="text-align" value="left"/>
+  <css:property name="font-weight" value="bold"/>
+  <css:property name="font-size" ref="Large-rel"/>
+</css:rule>
+
+<css:rule selector="div.title">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0px 0px 0px 0.5em"/>
+  <css:property name="text-align" value="right"/>
+  <css:property name="font-weight" value="bold"/>
+  <css:property name="font-size" ref="Large-rel"/>
+</css:rule>
+
+<css:rule selector="div.defnotions">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0px 0px 0px 0.5em"/>
+  <css:property name="text-align" value="right"/>
+  <css:property name="font-weight" value="bold"/>
+  <css:property name="font-size" ref="large-rel"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Button area
+  ================================================================================
+-->
+
+<css:rule selector="div.buttons">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="text-align" value="center"/>
+</css:rule>
+
+<css:rule selector="div.buttons a + a">
+  <css:property name="margin-left" value="1em"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Free block
+  ================================================================================
+-->
+
+<css:rule selector="div.free">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="default-space"/>
+  <css:property name="border-style" value="none"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Boxes with borders (for suppositions, statements, etc.)
+  ================================================================================
+-->
+
+<css:rule selector="div.box">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="default-space"/>
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" ref="box-border-color"/>
+  <css:property name="background-color" ref="box-fill-color"/>
+</css:rule>
+
+<css:rule selector="table.boxes">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="default-space"/>
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="width" value="100%"/>
+</css:rule>
+
+<css:rule selector="table.boxes tr">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.boxes td">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="default-space"/>
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" ref="box-border-color"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Boxes without borders
+  ================================================================================
+-->
+
+<css:rule selector="div.plain">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="default-space"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Table for compound constructs (e.g., statement1 => statement2)
+  ================================================================================
+-->
+
+<css:rule selector="table.pair-of-statements">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="width" value="100%"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Container for logical symbols (e.g., "=>", "<=>", ":<=>")
+  ================================================================================
+-->
+
+<css:rule selector="div.symbol-side-by-side, div.symbol-top-bottom">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="font-size" ref="LARGE-rel"/>
+  <css:property name="text-align" value="center"/>
+</css:rule>
+
+<css:rule selector="div.symbol-top-bottom">
+  <css:property name="margin-right" value="1em"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Numbering
+  ================================================================================
+-->
+
+<css:rule selector="td.number, td.proplist-number, td.algstep-number">
+  <css:property name="text-align" value="left"/>
+  <css:property name="vertical-align" value="top"/>
+  <css:property name="width" value="2em"/>
+</css:rule>
+
+<css:rule selector="div.number">
+  <css:property name="margin" value="1em 0em 1em 1em"/>
+  <css:property name="padding" value="1em 0em 1em 1em"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Proposition lists
+  ================================================================================
+-->
+
+<css:rule selector="table.propositionlist">
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.propositionlist tr">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.propositionlist td">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0.5em 0.5em 0.5em 0.5em"/>
+</css:rule>
+
+<css:rule selector="table.propositionlist &gt; tr &gt; td &gt; p &gt; img.strut">
+  <css:property name='width' value='0em'/>
+  <css:property name='height' value='2em'/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='table.propositionlist &gt; tr &gt; td &gt; p:first-child'>
+  <css:property name="margin-top" value="0ex"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Algorithm input and output
+  ================================================================================
+-->
+
+<css:rule selector="td.alg-io-left">
+  <css:property name="text-align" value="left"/>
+  <css:property name="width" value="4em"/>
+</css:rule>
+
+<css:rule selector="td.alg-io-right">
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Algorithm steps
+  ================================================================================
+-->
+
+<css:rule selector="table.algsteps">
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.algsteps tr">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.algsteps &gt; tr &gt; td &gt; p &gt; img.strut">
+  <css:property name='width' value='0em'/>
+  <css:property name='height' value='2em'/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='table.algsteps &gt; tr &gt; td &gt; p:first-child'>
+  <css:property name="margin-top" value="0ex"/>
+</css:rule>
+
+<css:rule selector="table.algsteps td">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0.5em 0.5em 0.5em 0.5em"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Remarks
+  ================================================================================
+-->
+
+<css:rule selector="div.remarks">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+</css:rule>
+
+<css:rule selector="div.remarks-headline">
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="text-align" value="left"/>
+  <css:property name="font-weight" value="bold"/>
+</css:rule>
+
+</css:style>

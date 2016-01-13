@@ -1,0 +1,144 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: marking_spec.txt,v 1.2 2006/02/01 10:58:06 lehmannf Exp $
+
+
+                     SPEZIFIKATION: AUFGABEN-KORREKTUR-XML
+
+
+1. Grundsätzliche Struktur
+   =======================
+
+  1.1. Namespace: http://www.mumie.net/xml-namespace/marking
+
+       Üblicherweise keine Prefixes
+
+  1.2. Root-Element: 'marking'. Darunter:
+
+  1.3. Falls die Aufgabe nicht in Teilaufgaben unterteilt ist:
+
+    1.3.1. Genau ein 'answer'- und ein 'solution'-Element und ein optionales
+           'explanation'-Element.
+
+    1.3.2. Das 'answer'-Element enthält die vom Studenten gegebene Antwort. Es
+           hat ein Attribut: 'score'; Zahl zwischen 0 und 1; gibt an, zu
+           welchem Grad der Student die Aufgabe gelöst hat; 0 und 1 entsprechen
+           den Extrema "vollkommen falsch" und "vollkommen richtig".
+
+           Der Inhalt des 'answer'-Elements ist Text mit zulässigen
+           Formatierungen (s.u.).
+
+    1.3.3. Das 'solution'-Element enthält die Musterlösung(en). Der Inhalt ist
+           Text mit zulässigen Formatierungen.
+
+    1.3.4. Das 'explanation'-Element, falls vorhanden, enthält eine zusätzliche
+           ausführliche Begründung der Musterlösung. Der Inhalt ist Text mit
+           zulässigen Formatierungen (s.u.).
+
+  1.4. Falls die Aufgabe in Teilaufgaben unterteilt ist:
+
+    1.4.1. Genau ein 'subtasks'-Element und ein optionales
+           'commonexpl'-Element.
+
+    1.4.2. Das 'subtasks'-Element enthält für jede Teilaufgabe ein
+           'subtask'-Element. Dieses hat dieselbe Struktur wie unter 1.3.1 -
+           1.3.4 beschrieben.
+
+    1.4.3. Das 'commonexpl'-Element, falls vorhanden, enthält eine gemeinsame
+           ausführliche Begründung zu den Musterlösungen.
+
+  1.5. Textformatierungen
+
+    1.5.1. Der Inhalt der Elemente 'answer', 'solution', 'explanation' und
+           'commonexpl' kann durch folgende Elemente formatiert werden. Der
+           Zusatz "top-level" bedeuted, dass das Element nur direkt unter
+           'answer' usw. vorkommen dkann.
+
+    1.5.2. 'par'. Nur top-level. Definiert einen Absatz. Darf Text und gewisse
+           Elemente (s.u.) enthalten. 
+
+    1.5.3. 'list'. Nur top-level. Definiert eine Liste. Enthält beliebig viele 
+           'item'-Kindelemente. Jedes 'item'-Element definiert einen
+           Listeneintrag. Das 'item'-Element enthält entweder 'par'-Elemente
+           oder verhält sich selbst wie ein 'par'-Element.
+
+    1.5.4. 'math' aus dem MathML-Namespace.
+	   TODO: auch e.g. <cnum> aus dem erweiterten Namespace 
+	   http://www.mumie.net/xml-namespace/mathml-ext wie in ./xml_interface_mathletfactory.txt
+	    Als top-level- oder
+           nicht-top-level-Element erlaubt. Definiert eine mathematische
+           Formel. Innerhalb von Absätzen zulässig, dann linline.
+
+    1.5.5. 'mark'. Top-level oder nicht-top-level, nur in 'answer'. Definiert
+           eine "Anmerkung des Korrektors". Wird entsprechend gerendert,
+           z.B. rot. Innerhalb von Absätzen erlaubt.
+
+    1.5.6. 'emph'. Hervorhebung einer Textstelle. Innerhalb von Absätzen
+           erlaubt.
+
+
+
+2. XML-Elemente
+   ============
+
+ -- TODO --
+
+
+
+3. Beispiel
+   ========
+
+<marking xmlns="http://www.mumie.net/xml-namespace/marking">
+  <subtasks>
+    <subtask>
+      <answer score="0.67">
+        <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
+          <mrow class="column-vector">
+            <mn>1</mn>
+            <mn>-2
+            <mark xmlns:="http://www.mumie.net/xml-namespace/marking">
+              Falsches Vorzeichen!
+            </mark>
+            </mn>
+            <mn>5</mn>
+          </mrow>
+        </math>
+        <mark>
+          Minus mal Minus gibt Plus!
+        </mark>
+      </answer>
+      <solution>
+        <math xmlns="http://www.w3.org/1998/Math/MathML" mode="display">
+          <mrow class="column-vector">
+            <mn>1</mn>
+            <mn>2</mn>
+            <mn>5</mn>
+          </mrow>
+        </math>
+      </solution>
+      <explanation>
+        <par>
+          <!-- Erster Absatz -->
+        </par>
+        <par>
+          <!-- Zweiter Absatz -->
+        </par>
+      </explanation>
+    </subtask>
+  </subtasks>
+</marking>
+
+
+
+4. Einbau ins Data-Sheet
+   =====================
+
+Das 'marking'-XML-Dokument soll in das Data-Sheet eingebaut werden, das sas
+Applet an den Server zurückschickt, und zwar unter dem Pfad
+
+
+  user/marking
+
+
+
+
+-- WIRD FORTGESETZT --

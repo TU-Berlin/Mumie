@@ -1,0 +1,163 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{XSL-Stylesheet-System}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: xsl_stylesheet_system.tex,v 1.4 2006/10/13 13:00:42 rassy Exp $}
+
+Diese Spezifikation beschreibt das XSL-Stylesheet-System des Japs. Sie erklärt
+das sogenannte \emph{Root-Stylesheet} und gibt eine Übersicht über die sogenannten
+\emph{Standard-XSL-Stylesheets}.
+
+\tableofcontents
+
+\section{Allgemeines}
+
+"Reale" (d.h. nicht-generische) XSL-Stylesheets werden im Japs durch den
+Dokument-Typ \val{xsl_stylesheet} dargestellt, generische durch den
+Dokument-Typ \val{generic_xsl_stylesheet}. Der Content von realen
+XSL-Stylesheets kann Mumie-spezifische \emph{XSL-Erweiterungselemente}
+enthalten. Diese werden im Rahmen der dynamischen Seitenerzeugung "{}on-the-fly" in
+normales XSL umgewandelt. Letzteres wird vom Root-Stylesheet erledigt (s.
+\ref{root_stylesheet}).
+
+\section{Das Root-Stylesheet}\label{root_stylesheet}
+
+Das Root-Stylesheet transformiert den Content von XSL-Stylesheets in normales
+XSL, indem es die Mumie-spezifischen Erweiterungselemente umwandelt.
+Insbesondere fügt es die sogenannte \href{japs_xsl_bibliothek.xhtml}{Japs-XSL-Bibliothek}
+ein, sofern das transformierte Stylesheet dies verlangt.
+
+Das Root-Stylesheet ist kein Dokument im Japs-Sinn. Es wird als Datei in das
+Jar-Archiv \file{mumie-japs.jar} eingebunden, und zwar unter dem Pfad:
+
+\begin{preformatted}[code]%
+  net/mumie/cocoon/transformes/rootxsl.xsl
+\end{preformatted}
+
+Diese technische Sonderrolle ist notwendig, da es sonst bei der
+"{}on-the-fly"-Generierung von XSL-Stylesheets zu unendlichen Schleifen kommen
+würde.
+
+\section{Standard-XSL-Stylesheets}
+
+\emph{Standard-XSL-Stylesheets} sind solche, die auf jeden Fall voranden sein
+müssen, damit der Japs funktioniert. Ihre Dateinamen folgen der entsprechenden
+\href{dateinamen.xhtml}{Spezifikation}. Dateinamen von generischen
+XSL-Stylesheets beginnen immer mit \file{g_xsl}, solche von von "realen" immer
+mit \file{xsl}. Die meisten Standard-XSL-Stylesheets befinden sich in der Section
+\file{system/common}. 
+
+Im folgenden werden alle Standard-XSL-Stylesheets, nach Kategorien geordnet,
+aufgelistet und kurz beschrieben. 
+
+
+
+\subsection{Hilfsfunktionalitäten}
+
+Stylesheets, die nützliche Hilfsfunktionalitäten bereitsstellen. Nicht
+top-level verwendbar, müssen von anderen Stylesheets importiert oder inkludiert
+werden.
+
+\begin{table}
+  \head
+    Name & Beschreibung & Section
+  \body
+    \file{g_xsl_util} & Verschiedenes & \file{system/common} \\
+    \file{xsl_util} & Default-Implementierung von \file{g_xsl_util} & \file{system/common} \\
+    \file{xsl_math_signfix} & Korrektur von mathematischen Vorzeichen. Ersetzt
+    z.B $4x^2--2x+-6$ durch $4x^2+2x-6$. & \file{system/common}
+\end{table}
+
+\subsection{Verarbeitung von MmTeX-Output}
+
+Stylesheets, die MmTeX-Output verarbeiten und von anderen Stylesheets
+importiert oder inkludiert werden.
+
+\begin{table}
+  \head
+    Name & Beschreibung & Section
+  \body
+    \file{g_xsl_mmtex_stdlayout} &  Absätze, Listen, Tabellen, Inline-Markup
+    (z.B. Hervorhebungen) & \file{system/common}\\
+    \file{g_xsl_mmtex_media} & Bilder, Applets usw. & \file{system/common}\\
+    \file{g_xsl_mmtex_math} & Mathematische Formeln & \file{system/common} \\
+    \file{xsl_mmtex_stdlayout} & Default-Implementierung von
+      \file{g_xsl_mmtex_stdlayout} & \file{system/common} \\
+    \file{xsl_mmtex_media} & Default-Implementierung von
+      \file{g_xsl_mmtex_media} & \file{system/common} \\
+    \file{xsl_mmtex_math} & Default-Implementierung von
+      \file{g_xsl_mmtex_math} & \file{system/common} \\
+\end{table}
+
+\subsection{Transformation von Dokumenten}
+
+Stylesheets, die den Content von Dokumenten bestimmter Typen
+transformieren. Alle "top-level".
+
+\begin{table}
+  \head
+    Name & Beschreibung & Section
+  \body
+    \file{xsl_text}
+    & Transformation XML-kodierter Plain-Text-Dokumente (z.B. JavaScript)
+    & \file{system/misc}
+    \\ 
+    \file{xsl_css}
+    & Transformation von XML-kodierten CSS-Stylesheets
+    & \file{system/misc}
+    \\
+    \file{g_xsl_page}
+    & Transformation von Dokumenten vom Typ \val{page}
+    & \file{system/misc}
+    \\
+    \file{g_xsl_element}
+    & Transformation von Dokumenten vom Typ \val{element} oder \val{subelement}
+    & \file{system/element}
+    \\
+    \file{g_xsl_problem}
+    & Transformation von Dokumenten vom Typ \val{problem}
+    & \file{system/problem}
+    \\
+    \file{g_xsl_course_overview}
+    & Transformation von Dokumenten vom Typ \val{course}, \val{course_section}
+      oder \val{worksheet} zu einer Übersichtsseite
+    & \file{system/course}
+    \\
+    \file{g_xsl_course_nav}
+    & Transformation von Dokumenten vom Typ \val{course}, \val{course_section}
+      oder \val{worksheet} zu einem Navigationsnetz
+    & \file{system/course}
+    \\
+    \file{xsl_page}
+    & Default-Implementierung von \file{g_xsl_page}
+    & \file{system/misc}
+    \\
+    \file{xsl_element}
+    & Default-Implementierung von \file{g_xsl_element}
+    & \file{system/element}
+    \\
+    \file{xsl_problem}
+    & Default-Implementierung von \file{g_xsl_problem}
+    & \file{system/problem}
+    \\
+    \file{xsl_course_overview}
+    & Default-Implementierung von \file{g_xsl_course_overview}
+    & \file{system/course}
+    \\ 
+    \file{xsl_course_nav}
+    & Default-Implementierung von \file{g_xsl_course_nav}
+    & \file{system/course}
+    \\ 
+\end{table}
+
+-- ENDE DER DATEI --
+
+\end{document}

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="japs-la" default="japs-la" basedir=".">
+
+  <!--
+    Properties
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="japs-la.src.dir" value="src"/>
+  <property name="japs-la.src.java.dir" value="${japs-la.src.dir}/java"/>
+  <property name="japs-la.lib.dir" value="lib"/>
+  <property name="japs-la.lib.java.dir" value="${japs-la.lib.dir}/java"/>
+  <property name="japs-la.lib.java.classes.dir" value="${japs-la.lib.java.dir}/classes"/>
+  <property name="japs-la.test.dir" value="test"/>
+  <property name="japs-la.doc.dir" value="doc"/>
+  <property name="japs-la.doc.apidocs.dir" value="${japs-la.doc.dir}/apidocs"/>
+  <property name="japs-la.resources.dir" value="resources"/>
+  <property name="japs-la.resources.apidocs.css.file" value="${japs-la.resources.dir}/apidocs.css"/>
+  <property name="japs-la.etc.dir" value="etc"/>
+  <property name="japs-la.bin.dir" value="bin"/>
+  <property name="japs-la.wrapper-script.file" value="${japs-la.bin.dir}/mmlogan"/>
+  <property name="japs-la.verbose" value="no"/>
+  <property name="japs-la.force" value="no"/>
+  <property name="japs-la.javac.verbose" value="no"/>
+  <property name="japs-la.javac.deprecation" value="no"/>
+  <property name="japs-la.javac.debug" value="yes"/>
+  <property name="japs-la.jar.file" value="mumie-japs-log-analyser.jar"/>
+  <property name="japs-la.jdk.apidocs.url" value=""/>
+  <property name="japs-la.jar.manifest" value="${japs-la.lib.java.dir}/META-INF/MANIFEST.MF"/>
+  <property name="japs-la.vendor" value="Berlin University of Technology"/>
+  <property name="japs-la.version" value="-NONE-"/>
+  <property name="japs-la.cvs.tag" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="japs-la.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="japs-la.internal.force">
+    <istrue value="${japs-la.force}"/>
+  </condition>
+
+  <condition property="japs-la.internal.cvs.tag.necessary">
+    <not>
+      <equals arg1="${japs-la.cvs.tag}" arg2="-NONE-" casesensitive="no"/>
+    </not>
+  </condition>
+
+  <!--
+    Path for compiling
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <pathelement path="${japs-la.lib.java.classes.dir}"/>
+      <fileset dir="${japs-la.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <property name="japs-la.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="properties.print"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="japs-la."/>
+  </target>
+
+  <!--
+     Text filters
+  -->
+
+  <target name="filters.define">
+    <filter token="basedir" value="${basedir}"/>
+    <filter token="lib.java.dir" value="${japs-la.lib.java.dir}"/>
+    <filter token="etc.dir" value="${japs-la.etc.dir}"/>
+    <filter token="jar.file" value="${japs-la.jar.file}"/>
+  </target>
+
+  <target name="filters.apply" depends="filters.define" description="Applies filters">
+    <copy todir="${basedir}" filtering="yes" overwrite="yes">
+      <fileset dir="${basedir}" >
+        <include name="**/*.tpl"/>
+      </fileset>
+      <filterset>
+        <filter token="Template" value="Automatically created from the following cvs resource:"/>
+      </filterset>
+      <mapper type="glob" from="*.tpl" to="*"/>
+    </copy>
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deletet before if japs-la.internal.force is set, which is equivalent to japs-la.force being 
+     true.
+  -->
+
+  <target name="japs-la" depends="classes.delete.iff-force,classes,jar,wrapper"
+          description="Compiles the classes">
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="classes.delete"
+          description="Deletes the classes">
+    <delete verbose="{$japs-la.verbose}">
+      <fileset dir="${japs-la.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) japs-la.internal.force is set, which is
+     equivalent to japs-la.force being true.
+  -->
+
+  <target name="classes.delete.iff-force" if="japs-la.internal.force">
+    <antcall target="classes.delete"/>
+  </target>
+
+  <!--
+     Compiles the classes
+  -->
+
+  <target name="classes" depends="classpath, filters.apply">
+    <javac srcdir="${japs-la.src.java.dir}"
+           destdir="${japs-la.lib.java.classes.dir}"
+           listfiles="${japs-la.verbose}"
+           deprecation="${japs-la.javac.deprecation}"
+           verbose="${japs-la.javac.verbose}"
+           debug="${japs-la.javac.debug}"
+           includeAntRuntime="yes"
+           failonerror="yes">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!--
+     Creates the Manifest file for the jar.
+  -->
+
+  <target name="manifest">
+    <manifest file="${japs-la.jar.manifest}">
+      <attribute name="Created" value="${japs-la.timestamp}"/>
+      <attribute name="CVS-Tag" value="${japs-la.cvs.tag}"/>
+      <section name="net/mumie/japs/log/analize">
+        <attribute name="Specification-Title" value="Mumie Japs Log Output Analizer"/>
+        <attribute name="Specification-Version" value="${japs-la.version}"/>
+        <attribute name="Specification-Vendor" value="${japs-la.vendor}"/>
+        <attribute name="Implementation-Title" value="net.mumie.japs.log.analize"/>
+        <attribute name="Implementation-Version" value="${japs-la.version}"/> 
+        <attribute name="Implementation-Vendor" value="${japs-la.vendor}"/>
+      </section>
+    </manifest>  
+  </target>
+
+  <!--
+    Sets a cvs tag if necessary.
+  -->
+
+  <target name="cvs.tag"
+          description="Sets a cvs tag if necessary"
+          if="japs-la.internal.cvs.tag.necessary">
+    <exec executable="cvs" failonerror="true">
+      <arg value="tag"/>
+      <arg value="${japs-la.cvs.tag}"/>
+    </exec>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          depends="manifest,cvs.tag">
+    <jar destfile="${japs-la.lib.java.dir}/${japs-la.jar.file}"
+         basedir="${japs-la.lib.java.classes.dir}"
+         excludes=".KEEP_ME"
+         manifest="${japs-la.jar.manifest}"/> 
+  </target>
+
+  <!--
+     Creates the wrapper script
+  -->
+
+  <target name="wrapper" depends="filters.apply"
+          description="Creates the mmlogan wrapper script">
+    <chmod file="${japs-la.wrapper-script.file}" perm="u+x"/>
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs" depends="apidocs.delete"
+          description="Creates the API docs">
+    <mkdir dir= "${japs-la.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Japs Log Analyser API "
+             packagenames="net.mumie.japs.log.analyse.*"
+             sourcepath="${japs-la.src.java.dir}"
+             destdir="${japs-la.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${japs-la.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${japs-la.verbose}">
+      <link href="${japs-la.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="apidocs.delete">
+    <delete verbose="${japs-la.verbose}"
+            dir="${japs-la.doc.apidocs.dir}"/>
+  </target>
+
+</project>

@@ -1,0 +1,344 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: INSTALL,v 1.21 2009/09/03 17:59:17 seiler Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                        MMCDK INSTALLATION INSTRUCTIONS
+
+
+1.Requirements
+  ============
+
+  1.1. Java 6 JDK with Xalan updated to version 2.7.0 or better. See appendix
+       A.1 for the last point
+
+  1.2. Ant 1.6.2. Other (but not too old) versions probably work, too.
+
+  1.3. Mmjutil (another Mumie software package)
+
+  1.4. Mmjvmd (another Mumie software package)
+
+  1.5. Japs Client (another Mumie software package)
+
+  1.6. Japs Datasheet (another Mumie software package)
+
+  1.7. If you want to use the mmdatasheet command, the Mathletfactory library
+       (another Mumie software package) must be installed.
+
+  1.8. If you want to convert TeX files (you probably want that), Mmtex is
+       needed (this is another Mumie software package). Note that Mmtex
+       requires further packages. See the Mmtex installation instructions. 
+
+  1.9. If you want to create and view previews (you probably want that), Japs
+       Checkin is needed (this is another Mumie software package). Cf. section
+       6. 
+
+
+2. Installation location
+   =====================
+
+All files are installed under a directory <prefix> which defaults to
+/usr/local. If you want to change the default, you have two options:
+
+  2.1. Set the environment variable MM_BUILD_PREFIX, and give it the value
+       <my-prefix>, where <my-prefix> is the directory where you want the files
+       to be installed. This option has the advantage that MM_BUILD_PREFIX is
+       recognized by other build scripts of the MUMIE project, too.
+
+  2.2. Change to the root directory of the Japs Client distribution (the
+       directory this file is in), create a file named build.conf and add 
+       the following line to it: 
+
+         prefix=<my-prefix>
+
+       Remark: The build and installation are done by a Bash script which reads
+       the file build.conf by means of the 'source' command. Thus, you can use
+       shell substitution in build.conf. E.g.,
+
+         prefix=$HOME
+
+       would set the installation location to your home directory.
+
+If <prefix> is set both in build.conf and by the environment variable
+MM_BUILD_PREFIX, the setting in build.conf takes precedence.
+
+
+3. Checkin file location
+   =====================
+
+The files Mmcdk works with are expected under a certain directory
+
+  <checkin-root>
+
+which is the root directory of the global checkin tree. It defaults to
+$HOME/mumie/checkin, where $HOME is your home directory. If you want to change
+this, you have two options, similar as with the installation location:
+
+  3.1. Set the environment variable MM_CHECKIN_ROOT, and give it the value
+       <my-checkin-root>, where the latter is the directory where you want the
+       checkin files to be placed. This option has the advantage that
+       MM_CHECKIN_ROOT is recognized by other build scripts of the MUMIE
+       project, too.
+
+  3.2. Add the following line to the file build.conf (cf. 2.2.):
+
+         checkin_root=<my-checkin-root>
+
+If <checkin-root> is set both in build.conf and by the environment variable
+MM_CHECKIN_ROOTq, the setting in build.conf takes precedence.
+
+
+4. Keys for jar signing
+   ====================
+
+The mmjava command signs applets if necessary. To this end, a key pair must
+exist in the Java keystore. If you do not have a key pair yet, create one with
+Java's 'keytool' program. The build process must know the corresponding alias
+and password. To achieve this, add the following lines to your build.conf file
+(cf. 2.2.):
+
+  signjar_alias=<alias>
+  signjar_storepass=<password>
+
+<alias> is the alias of the key pair. <password> is the password of the
+keystore. - PLEASE NOTE: The key pair can have a separate password distinct
+from that of the keystore; but currently Mmcdk assumes that this option is
+not used.
+
+
+5. Build and Installation
+   ======================
+
+  5.1. Change to the root directory of the Mmcdk distribution (the
+       directory this file is in).   
+
+  5.2. Type
+
+         $ ./build.sh
+
+       This builds Mmcdk. 
+
+  5.4. Make sure you have write permission in <prefix>. Switch user to root if
+       necessary.
+
+  5.5. Type
+
+         $ ./build.sh install
+
+       This installs Mmcdk.
+
+Remark: build.sh is Mmcdk's build script. To get more information about it,
+type
+
+  $ ./build.sh -h
+
+
+6. Post-installation setup
+   =======================
+
+The executables are installed in <prefix>/bin. Make sure this is in your PATH
+environment variable if you want to be able to start the executables without
+specifying the path.
+
+To be able to create and view previews of elements, subelements, and some other
+document types, the previews of several XSL and CSS stylesheets must be
+created first. The latter stylesheets are contained in the package
+japs_checkin, which also contains build targets to create the previews. Change
+into the root directory of the japs_checkin package. If not done before, check
+the instructions in the README file and add the contributions of the package to
+the global checkin tree by typing:
+
+  $ ./build.sh mount-checkin
+
+Then, create the previews by typing
+
+  $ ./build.sh previews-xsl
+
+and
+
+  $ ./build.sh previews-css
+
+
+7. Configuration files
+   ===================
+
+Below is a list of files controlling the Mmcdk configuration. They are read in
+the specified order when the Mmjvmd daemon starts. All files contain Bash code.
+Files with the suffix ".conf" are read before, those with the suffix ".init"
+after the Java virtual machine starts and the daemon is ready to accept
+connections. Thus, the former are the right place to extend the classpath or to
+do other things affecting the JVM at startup, whereas the latter may contain
+Mmjvmd or Mmcdk commands.
+
+  7.1. <prefix>/etc/mmcdk/mmcdk.conf
+
+         The global configuration file. Settings made here affect all users
+         working with this Mmcdk installation. This file is part of the Mmcdk
+         package and should not be edited. Put your modifications in one of the
+         two following files, instead.
+
+  7.2. <prefix>/etc/mmcdk/local_mmcdk.conf
+
+         The site-local configuration file. Settings made here affect all users
+         working with this Mmcdk installation.
+
+  7.3. ~/.mmcdk/mmcdk.conf
+
+         The user-specific configuration file. "~" represents the home
+         directory of a user. Settings made in this file affect only that user.
+
+  7.4. <prefix>/etc/mmcdk/mmcdk.init
+
+         The global initialization file. Settings made here affect all users
+         working with this Mmcdk installation. This file is part of the Mmcdk
+         package and should not be edited. Put your modifications in one of the
+         two following files, instead.
+
+  7.5. <prefix>/etc/mmcdk/local_mmcdk.init
+
+         The site-local initialization file. Settings made here affect all
+         users working with this Mmcdk installation.
+
+  7.6. ~/.mmcdk/mmcdk.init
+
+         The user-specific initialization file. "~" represents the home
+         directory of a user. Settings made in this file affect only that user.
+
+The effect of the files 7.2 and 7.3 is only different for a multi-user
+installation. In a single-user installation, the files are equivalent. The same
+is true for 7.5 and 7.6.
+
+
+8. Specifying a Mumie server
+   =========================
+
+For each Mumie server account you want to use from within Mmcdk, put a line of
+the following form in the site-local or user-specific initialization file
+(7.5 or 7.6):
+
+  mmalias <alias> <url_prefix> <account>
+
+<url_prefix> is the URL prefix of the server, <account> the login name of a
+user on that server, and <alias> a keyword by which these two values can be
+referenced from the mmsrv and mmckin commands.
+
+
+9. Enabling the mmcd command
+   =========================
+
+Each user who wants to use the mmcd command must carry out the following steps:
+
+  9.1. Type
+
+         $ <prefix>/etc/mmcdk/mmcd_setup.sh
+
+       (where <prefix> has to be replaced by the actual path). This makes
+       additions to your ~/.bashrc and ~/.cshrc which provide mmcd as a bash
+       function and a C-shell alias, respectively.
+
+  9.2. If necessary, set the environment variable MMCD_START_PATH in your
+       ~/.bashrc or ~/.cshrc. This variable defines the point in the checkin
+       tree where mmcd starts to search for the directory to change into.
+       e.g. if you want to work in the linear algebra course of the tub you
+       set MMCD_START_PATH=content/tub/linear_algebra
+       
+  9.3. Restart the shell.
+
+These steps have to be done only once.
+
+
+A.1. Updating the Xalan libraries used by Java 6
+     ===========================================
+
+You obtain Xalan from http://xml.apache.org/xalan-j/index.html. Download
+xalan-j_2_7_0-bin.tar.gz or xalan-j_2_7_0-bin.zip and extract the archive in a
+directory <xalan_extract_dir> of your choice. A new subdirectory xalan-j_2_7_0
+will be created. Now you have two options: (1) Installing the Xalan libraries
+directly in the Java RE; or (2) installing the Xalan libraries outside the Java
+RE and tell Mmcdk where to use them. With the first option, the new Xalan
+libraries take effect on every Java application; with the second only on
+Mmcdk.
+
+For option 1, proceed al follows:
+
+  A.1.2. Change into <java_home>/jre/lib. Create a subdirectory 'endorsed' if
+         not existing.
+
+  A.1.3. Copy the following files from <xalan_extract_dir>/xalan-j_2_7_0 to
+         <java_home>/jre/lib/endorsed:
+
+           serializer.jar, xalan.jar, xercesImpl.jar, xml-apis.jar
+
+         Instead of copying, you can make softlinks, too.
+
+IMPORTANT: The files in <java_home>/jre/lib/endorsed must be readable for
+anybody who uses Java. The directory <java_home>/jre/lib/endorsed must be
+readable and accessible ('r' and 'x' flag) for anybody who uses Java.
+
+For option 2, proceed as follows:
+
+  A.1.3. Create a directory <prefix>/lib/java/endorsed.
+
+  A.1.4. Copy the following files from <xalan_extract_dir>/xalan-j_2_7_0 to
+         <prefix>/lib/java/endorsed:
+
+           serializer.jar, xalan.jar, xercesImpl.jar, xml-apis.jar
+
+         Instead of copying, you can make softlinks, too.
+
+  A.1.5. Put the following line in the site-local or user-specific
+         configuration file (7.2 or 7.3):
+
+           endorsed_dirs=<prefix>/lib/java/endorsed
+
+         (where <prefix> has to be replaced by the actual value, of course).
+
+IMPORTANT: The files in <prefix>/lib/java/endorsed must be readable for the
+user who runs Mmcdk. The directory <prefix>/lib/java/endorsed must be
+readable and accessible ('r' and 'x' flag) for the user who runs Mmcdk.
+
+
+A.2. Using Mmcdk with Https
+     ======================
+
+If you want to contact to a Mumie server via Https, you have to take care that
+Java knows and trusts the certicate of the server. To achieve this, proceed as
+follows:
+
+  A.2.1. Copy the server certificate file into the directory ~/.mmcdk (create it
+         if necessary). Give the copy the name
+
+           <server_name>.crt
+
+         Choose for <server_name> a string that identifies the server.
+
+  A.2.2. Change into the directory ~/.mmcdk and import the server certificate
+         into a newly created keystore named "trusted_certs" by typing:
+
+           $ keytool -import -keystore trusted_certs -alias <server_name> -file <server_name>.crt
+
+         You will be asked for a password for the new keystore. Type a
+         password of your choice (and make sure you can remember it later).
+
+         keytool is a program that comes with the Java SDK. See the Java SDK
+         documentation for more information about that program.
+
+         Make sure the keystore is readable and writable only for you and for
+         nobody else.
+
+         NOTE: You can import more server certificates the same way, into the
+         same keystore.
+
+  A.2.3. Put the following line into the file ~/.mmcdk/mmcdk.init (create the
+         file if necessary):
+
+           mmjvmc setprop javax.net.ssl.trustStore=$HOME/.mmcdk/trusted_certs
+
+REMARK: In a multi-user installation, it is possible to hold a single keystore
+for all users. A suitable place is <prefix>/etc/mmcdk. In this case, the
+keystore should be writable for the system administrator only, but readable for
+all users using the mmcdk installation. 
+
+
+-- END OF FILE --

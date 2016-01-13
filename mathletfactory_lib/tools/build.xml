@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="MathletFactory" default="init" basedir="../">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property environment="env"/>
+  <property name="lib.jar.file" value="mumie_mathlet_factory.jar"/>
+  <property file="tools/build.properties"/>
+  <property name="jdk.home.dir" value="env.JAVA_HOME"/>
+  <property name="online.java.apidoc" value="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+
+  <!--
+    ================================================================================
+    Class paths
+    ================================================================================
+  -->
+
+  <path id="compile.classpath">
+    <fileset dir="${util.lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="test.compile.classpath">
+    <path refid="compile.classpath"/>
+    <pathelement location="${lib.dir}/${lib.jar.file}"/>
+    <pathelement location="${util.lib.dir}/junit.jar"/>
+  </path>
+
+  <path id="java.tool.classpath">
+    <pathelement location="${jdk.home.dir}/lib/tools.jar"/>
+  </path>
+	
+  <!--
+    ================================================================================
+    Import build files
+    ================================================================================
+  -->
+
+	<import file="build_base.xml"/>
+
+	<import file="build_g2d.xml"/>
+
+	<import file="build_j3d.xml"/>
+
+	<import file="build_jr3d.xml"/>
+
+	<import file="build_docs.xml"/>
+
+  <!--
+    ================================================================================
+    Initialize directory structure
+    ================================================================================
+  -->
+
+  <target name="init"
+          description="Creates the output directories">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${lib.dir}"/>
+    <mkdir dir="${class.dir}"/>
+    <mkdir dir="${apidoc.dir}"/>
+  </target>
+	
+  <!--
+    ================================================================================
+    Main build target
+    ================================================================================
+  -->
+
+	<target name="build.all"
+	        depends="build.base, build.graphics2d, build.java3d, build.jreality"/>
+
+  <!--
+    ================================================================================
+    Cleaning
+    ================================================================================
+  -->
+
+  <target name="rm.class" description="Deletes all *.class files from the output directory">
+    <delete>
+      <fileset dir="${build.dir}" includes="**/*.class"/>
+    </delete>
+  </target>
+
+  <target name="rm.jar" description="Deletes all *.jar files from the output directory">
+    <delete>
+      <fileset dir="${build.dir}" includes="**/*.jar"/>
+    </delete>
+  </target>
+
+  <target name="scratch"
+          depends="rm.class, rm.jar"
+          description="clean up, remove reconstructable directories" >
+    <delete dir="${build.dir}"/>
+    <delete dir="${class.dir}"/>
+    <delete dir="${lib.dir}"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Run tests automatically
+    ================================================================================
+  -->
+    
+    
+    <target name="compile.tests" depends="build.all">
+      <mkdir dir="${test.dir}"/>
+      <javac srcdir="${src.dir}"
+             sourcepath=""
+             destdir="${test.dir}"
+             debug="off"
+             includeAntRuntime="yes"
+             source="1.4">
+        <classpath refid="test.compile.classpath"/>
+        <include name="**/test/*Test.java"/>
+      </javac>
+    </target>
+    
+    <target name="run.tests" depends="compile.tests">
+      <java classname="net.mumie.mathletfactory.test.AllMathletfactoryTest">
+        <classpath>
+          <pathelement path="${test.dir}"/>
+          <path refid="test.compile.classpath"/>
+        </classpath>
+      </java>
+    </target>
+    
+</project>

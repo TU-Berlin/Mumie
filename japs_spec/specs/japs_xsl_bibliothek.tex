@@ -1,0 +1,306 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Japs-XSL-Bibliothek}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: japs_xsl_bibliothek.tex,v 1.8 2006/08/11 16:18:22 rassy Exp $}
+
+\tableofcontents
+
+Die \emph{Japs-XSL-Bibliothek} enthält XSL-Templates, -Parameter und
+-Variablen, die von beinahe allen XSL-Stylesheets gebraucht werden. Die
+bereitgestellten Funktionalitäten betreffen vorwiegend das Auflösen von
+Binnen-Ids (LIDs) und die Konstruktion von URLs.
+
+\section{Einbindung}
+
+Soll die Japs-XSL-Bibliothek in einem Stylesheet verwendet werden, so muss in
+dessen Content das Element
+\begin{preformatted}%
+  <mumie:insert-japs-xsl-lib/>
+\end{preformatted}
+stehen. Dieses Element wird beim Übersetzen des Stylesheets (Transformation
+XSL+Mumie-Ergänzungs-Elemente $\longrightarrow$ XSL durch \file{xsl_online.xsl}
+bzw. \file{xsl_mmcdk.xsl}) durch die Templates, Parameter und Variablen der
+Japs-XSL-Bibliothek ersetzt.
+
+\section{Parameter}
+
+\subsection{xsl.url-prefix}\label{xsl_url_prefix}
+
+Der Prefix für alle Japs-URLs. Hat normalerweise die Form
+\begin{preformatted}%
+  http://\var{host}\optional{:\var{port}}/cocoon
+\end{preformatted}
+Der Wert wird zur Build-Zeit festgelegt und kann mit einer Ant-Property
+eingestellt werden.
+
+\subsection{xsl.url-prefix.cocoon-internal}
+
+Der Prefix des Cocoon-Pseudoprotokolls für URLs relativ zum
+Cocoon-Basisverzeichnis. Der Wert ist
+\begin{preformatted}%
+  cocoon:
+\end{preformatted}
+Er wird in \file{xsl_online.src.xsl} gesetzt.
+
+\section{Templates}
+
+\subsection{xsl.document-url}
+
+Erzeugt die URL eines Dokuments. Parameter:
+\begin{description}[code-doc]
+  \item[id] Die ID des Dokuments. Default ist das \attrib{id}-Attribut des
+    aktuellen Elements.
+  \item[qualified-name] Der Qualified Name des Dokuments. Default ist das
+    \attrib{qualified-name}-Attribut des aktuellen Elements. \emph{Deprecated:
+      Qualified Names identifizieren Dokumente nicht notwendigerweise
+      eindeutig. Dieser Parameter wird daher in Zukunft abgeschafft.}
+  \item[document-type.name] Der Typ des Dokuments, als Name. Default ist der
+    Local Name des aktuellen Elements.
+  \item[context] Der Kontext (vgl. \href{url_design.txt}{url_design}). Default ist das
+    \attrib{context}-Attribut des aktuellen Elements, falls ein solches Attribut
+    existiert, sonst \val{"view"}.
+  \item[internal] Falls \val{"yes"}, beginnt die URL mit dem
+    \code{cocoon:}-Pseudoprotokoll anstatt mit
+    \href{\#xsl_url_prefix}{xsl.url-prefix}. Default ist das
+    \attrib{internal}-Attribut des aktuellen Elements, oder \val{"no"} wenn
+    dieses Attribut nicht existiert.
+\end{description}
+
+\subsection{xsl.error}
+
+Beendet die Transformation mit einer Fehlermeldung. Parameter:
+\begin{description}[code-doc]
+  \item[message] Der Wortlaut der Fehlermeldung. 
+\end{description}
+
+\subsection{xsl.get-param-from-dynamic-data}
+
+Sucht einen Parameter im \element{mumie:dynamic_data}-Abschnitt und gibt dessen
+Wert zurück. Wird der Parameter nicht gefunden, ist der Rückgabewert
+leer.
+
+Parameter (des Templates):
+
+\begin{description}[code-doc]
+  \item[name] Der Name des zu suchenden Parameters.
+  \item[default] Ein Default-Wert, falls der Parameter nicht gefunden wird.
+\end{description}
+
+\subsection{xsl.resolve-lid}\label{xsl_resolve_lid}
+
+Löst eine Binnen-ID (LID) auf und gibt die URL des entsprechenden Dokuments
+zurück. Parameter:
+\begin{description}[code-doc]
+  \item[lid] Die Binnen-ID. Default ist das \attrib{lid}-Attribut des aktuellen
+    Elements.
+  \item[context] Der Kontext (vgl \href{url_design.txt}{url_design}). Default ist das
+    \attrib{context}-Attribut des aktuellen Elements, falls ein solches Attribut
+    existiert, sonst \val{"view"}.
+  \item[internal] Falls \val{"yes"}, beginnt die URL mit dem
+    \code{cocoon:}-Pseudoprotokoll anstatt mit
+    \href{\#xsl_url_prefix}{xsl.url-prefix}. Default ist das
+    \attrib{internal}-Attribut des aktuellen Elements, oder \val{"no"} wenn
+    dieses Attribut nicht existiert.
+  \item[parameters] Request-Parameter, als String in URL-Syntax, also:
+    \val{?\var{KEY1}=\var{VALUE1}\&\var{KEY2}=\var{VALUE2}...} Per Default leer.
+\end{description}
+
+\subsection{xsl.set-applet-object-src-attributes}
+
+Spezielles Template zum Einbinden von Applets mit dem
+(X)HTML-\element{object}-Element. Setzt die Attribute \attrib{type},
+\attrib{classid}, \attrib{archive}, \attrib{width} und \attrib{height}.
+Parameter:
+
+\begin{description}[code-doc]
+  \item[lid] Die Binnen-ID (LID) des Applets (Dokumenttyp:
+    \code{applet}). Default: \attrib{lid}-Attribut des aktuellen Elements.
+\end{description}
+
+Die Werte der Attribute werden im Element mit dem XPath
+\begin{preformatted}%
+  /*/mumie:components/mumie:applet[@lid=\$lid]
+\end{preformatted}
+nachgeschlagen (es sollte nur ein solches Element geben). Derzeit bekommt das
+\attrib{type}-Attribut den Wert
+\begin{preformatted}%
+  application/x-java-applet
+\end{preformatted}
+und das \attrib{classid}-Attribut den Wert
+\begin{preformatted}%
+  java:\var{qualified_name}
+\end{preformatted}
+wobei \var{qualified_name} für den Fully Qualified Name der Applet-Klasse
+steht. Das ist insbesondere für den Mozilla geeignet.
+
+\subsection{xsl.set-applet-src-attributes}
+
+Spezielles Templates für (X)HTML-\element{applet}-Elemente. Setzt die
+Attribute \attrib{code}, \attrib{codebase}, \attrib{archive}, \attrib{width} und
+\attrib{height}. Parameter:
+
+\begin{description}[code-doc]
+  \item[lid] Die Binnen-ID (LID) des Applets (Dokumenttyp:
+    \code{applet}). Default: \attrib{lid}-Attribut des aktuellen Elements.
+\end{description}
+
+Die Werte der Attribute werden im Element mit dem XPath
+\begin{preformatted}%
+  /*/mumie:components/mumie:applet[@lid=\$lid]
+\end{preformatted}
+nachgeschlagen (es sollte nur ein solches Element geben).
+
+\subsection{xsl.set-image-src-attributes}
+
+Spezielles Template für (X)HTML-\element{img}-Elemente (u.ä.). Setzt die
+Attribute \attrib{src}, \attrib{width}, und \attrib{height}. Parameter:
+
+\begin{description}[code-doc]
+  \item[request-param-element-name] Local Name der Kindelemente des aktuellen Elements, die
+    Request-Parameter angeben (s.u.). Default: \element{request_param}
+\end{description}
+
+Die Werte der drei Attribute werden wie folgt ermittelt:
+Hat das aktuelle Element ein \attrib{lid}-Attribut, so wird für \attrib{src} das Template
+\link{\#xsl_resolve_lid}{xsl.resolve-lid} aufgerufen und \attrib{width} und
+\attrib{height} werden im Element mit dem XPath
+\begin{preformatted}%
+  /*/mumie:components/mumie:image[@lid=current()/@lid]
+\end{preformatted}
+nachgeschlagen (es sollte höchstens ein solches Element geben). Hat das
+aktuelle Element ein \attrib{params_prefix}-Attribut, so wird für \attrib{src} das Template
+\link{\#xsl_url_from_params}{xsl.url-from-params} aufgerufen  und \attrib{width} und
+\attrib{height} werden aus den Parametern 
+\begin{preformatted}%
+  \var{params_prefix}.width  \box{bzw.}  \var{params_prefix}.height
+\end{preformatted}
+ausgelesen, dabei ist \var{params_prefix} der Wert von \attrib{params_prefix}.
+
+Der Wert des \attrib{src}-Attributs kann mit Request-Parametern versehen
+werden. Dazu wird das Template
+\link{\#xsl_set_request_param}{xsl.set-request-param} auf alle diejenigen
+Kindelemente des aktuellen Elements angewandt, deren Local Name gleich dem Wert
+von \code{request-param-element-name} ist.
+
+Lässt sich der Werte von \attrib{width} bzw. \attrib{height} nicht
+ermitteln, wird das Atribut nicht gesetzt.
+
+
+\subsection{xsl.set-ref-attribute}
+
+Setzt ein Hyperlink-Attribut. Parameter:
+
+\begin{description}[code-doc]
+  \item[name] Name des Attributs. Default: \attrib{href}.
+  \item[default] Default-Wert.
+  \item[request-param-element-name] Local Name der Kindelemente des aktuellen Elements, die
+    Request-Parameter angeben (s.u.). Default: \element{request_param}
+  \item[use-params-if-no-lid] Falls \val{yes}, wird die URL beim Fehlen eines
+    \attrib{lid}-Attributs aus Dokument-Parametern gebildet, sofern ein
+    \attrib{params_prefix}-Attribut existiert (s.u.). Default: \val{no}.
+\end{description}
+
+Der Wert des Attributs ergibt sich wie folgt:
+\begin{itemize}
+\item Hat das aktuelle Element ein \attrib{lid}-Attribut, so ist der Wert die
+  URL des Dokuments, das dieser Binnen-Id entspricht. Konstruiert wird dieser
+  Wert durch das Template \link{\#xsl_resolve_lid}{xsl.resolve-lid}.
+\item Hat das aktuelle Element kein \attrib{lid}-Attribut, aber ein
+  \attrib{params_prefix}-Attribut und ist \code{use-params-if-no-lid} gleich
+  \val{yes}, so wird der Wert aus Parametern des Dynamic-Data-Abschnitts
+  gebildet. Dazu wird das Template
+  \link{\#xsl_url_from_params}{xsl.url-from-params} aufgerufen.
+\item Andernfalls wird der Default-Wert eingesetzt.
+\end{itemize}
+
+In allen Fällen wird anschließend das Template
+\link{\#xsl_set_request_param}{xsl.set-request-param} auf alle diejenigen
+Kindelemente des aktuellen Elements angewandt, deren Local Name gleich dem Wert
+von \code{request-param-element-name} ist. Dies ergibt den String der
+Request-Parameter.
+
+
+\subsection{xsl.set-request-param}\label{xsl_set_request_param}
+
+Konstruiert einen String, der einen Request-Parameter in einer URL
+setzt. Parameter:
+
+\begin{description}[code-doc]
+  \item[name] Name des Request-Parameters. Default: \attrib{name}-Attribut des
+    aktuellen Elements.
+  \item[value] Wert des Request-Parameters. Der Default ergibt sich wie folgt:
+
+    Hat das aktuelle Element ein \attrib{value}-Attribut, so ist der
+    Default der Wert dieses Attributs.
+      
+    Hat das aktuelle Element ein \attrib{value_of_param}-Attribut, so
+    ist der Default der Wert desjenigen Parameters im
+    \element{mumie:dynamic_data}-Abschnitt, dessen Name gleich dem Wert des
+    \attrib{value_of_param}-Attributs ist.
+    
+    Hat das aktuelle Element ein \attrib{value_of_lid}-Attribut, so wird das
+    \link{\#xsl_resolve_lid}{xsl.resolve-lid}-Template aufgerufen, wobei dessen
+    \code{lid}-Parameter gleich dem Wert des \attrib{value_of_lid}-Attributs
+    gesetzt wird. Der Rückgabewert ist der Default.
+
+    Sind mehrere dieser Attribute vorhanden, so werden diese mit den
+    Prioritäten \attrib{value} > \attrib{value_of_param} >
+    \attrib{value_of_lid} ausgewertet.
+
+  \item[separator]
+    Das Zeichen, mit dem dieser Request-Parameter von seinem Vorgänger bzw. dem
+    Teil der URL vor den Request-Parametern getrennt werden soll. Default:
+    \code{?}, wenn die XPath-Funktion \code{position()} 1 ergibt, sonst
+    \code{\&}.
+\end{description}
+
+\subsection{xsl.url-from-params}\label{xsl_url_from_params}
+
+Erzeugt eine Dokument-URL aus Parametern aus dem
+\element{mumie:dynamic_data}-Abschnitt. Parameter (des Templates):
+\begin{description}[code-doc]
+  \item[prefix] Der Prefix der Parameter, die zur Erzeugung der URL
+    herangezogen werden.
+\end{description}
+Die Daten für die URL bezieht das Template aus folgenden Parametern des
+\element{mumie:dynamic_data}-Abschnitts:
+
+\begin{table}
+  \head
+    Name & Beschreibung & Zwingend \\
+  \body
+    \var{prefix}\code{.id} & Die Id des Dokuments & Ja \\
+    \var{prefix}\code{.type-name} & Der Dokumenttyp, als Name & Ja \\
+    \var{prefix}\code{.context} & Der Kontext der URL & Nein. Default ist
+      \val{"view"} \\
+    \var{prefix}\code{.internal} & Falls \val{"yes"}, beginnt die URL mit dem
+      \code{cocoon:}-Pseudoprotokoll anstatt mit
+      \href{\#xsl_url_prefix}{xsl.url-prefix} & Nein. Default ist \val{"no"}
+\end{table}
+
+\subsection{xsl.url-of-self}
+
+Gibt die URL des gerade transformierten Dokuments zurück. Parameter:
+\begin{description}[code-doc]
+  \item[context] Der Kontext (vgl \href{url_design.txt}{url_design}). Default ist das
+    \attrib{context}-Attribut des aktuellen Elements, falls ein solches Attribut
+    existiert, sonst \val{"view"}.
+  \item[internal] Falls \val{"yes"}, beginnt die URL mit dem
+    \code{cocoon:}-Pseudoprotokoll anstatt mit
+    \href{\#xsl_url_prefix}{xsl.url-prefix}. Default ist das
+    \attrib{internal}-Attribut des aktuellen Elements, oder \val{"no"} wenn
+    dieses Attribut nicht existiert.
+\end{description}
+
+-- ENDE DER DATEI --
+
+\end{document}

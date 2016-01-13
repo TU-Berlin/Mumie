@@ -1,0 +1,52 @@
+#!/bin/sh
+
+if test $JAVA_HOME
+	then
+		JAVA_HOME=$JAVA_HOME
+	else
+		if test $1=aachen
+			then
+				JAVA_HOME=/usr/mumie/java/current
+		else
+			JAVA_HOME=/net/multimedia/Java/jdk/current
+	    fi
+fi
+	
+if  test $JAVA_LIB_HOME
+	then
+		LIB_HOME=$JAVA_LIB_HOME
+	else
+		if test $1=aachen
+			then
+				LIB_HOME=$JAVA_HOME/jre/lib/ext
+			else
+				LIB_HOME=/net/multimedia/Java/
+			fi
+fi
+
+
+JAVAC=$JAVA_HOME/bin/javac
+JAVADOC=$JAVA_HOME/bin/javadoc
+JAVA_DOC_URL=$JAVA_HOME/docs/api
+
+cd ../../
+ant do.apidoc
+cd -
+
+#cd taglet
+#$JAVAC -classpath $JAVA_HOME/lib/tools.jar TodoTaglet.java
+#cd ..
+
+#$JAVADOC \
+#  -taglet ru.k2s.sam.gdk.taglet.ExampleTaglet \
+#  -tag mm.sideeffects:m:"Side effects:"\
+#  -tag mm.docstatus:a:"Status:"\
+#  -taglet TodoTaglet \
+#  -tagletpath taglet:taglet/example_taglet.jar \
+#  -classpath $LIB_HOME/log4j/log4j.jar:$LIB_HOME/junit/junit.jar:$LIB_HOME/layout/layout.jar \
+#  -d ../apidoc \
+#  -link $JAVA_DOC_URL \
+#  -sourcepath ../../src \
+#  -stylesheetfile stylesheet.css \
+#  -subpackages net.mumie \
+#  1> doc.log  2> error.log

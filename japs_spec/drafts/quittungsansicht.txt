@@ -1,0 +1,105 @@
+Autor: Markus Gronau (gronau@math.tu-berlin.de)
+$Id: quittungsansicht.txt,v 1.3 2007/11/15 10:35:35 gronau Exp $
+
+                    Mumie Quittungsansicht
+                  ==========================
+
+I. Vorüberlegungen
+==================
+
+	1.1 Ziele
+	---------
+	 - Menschen-lesbare Darstellung von Quittungen
+	 - Überprüfung der gerade gespeicherten Werte im Applet
+	 - Überprüfung von vorher gespeicherten Quittungen
+	
+	1.2 Einsatzszenarios
+	--------------------
+	 - eigentständige Applikation: Laden von gespeicherten Quittungen vom Home-Account
+	 - Hausaufgaben-Modus in Übungsaufgaben: Ansicht der erhaltenen Quittung vom Server
+	 - Anzeige der Anworten im Debug-Modus (Corrector-Debugger)
+	
+	1.3 Betriebsmodi
+	----------------
+	Um dem leicht unterschiedlichen Anforderungen für den Applikations-
+	bzw. Applet-Betrieb Rechnung zu tragen, werden 3 verschieden Betriebsmodi
+	definiert:
+	 - Applikations-Modus
+	   (erlaubt das Laden mehrerer Quittungen in Unter-Fenstern)
+	 - Applet-Modus (Built-In-Modus)
+	   (erlaubt nur das Betrachten der erhaltenen Quittung)
+	 - Panel-Modus
+	   (Quittungsviewer kann direkt in GUI-Container eingebettet werden)
+	
+	1.4 Laden von Anworten
+	--------------------------
+	Alle DATA-Knoten unterhalb des Pfades "user/answer/subtask_X" werden angzeigt, es sei denn,
+	bei den enthaltenen Anworten wurde explizit das "hidden"-Attribut auf "true" gesetzt.
+	Auch in Unter-Units verschachtelte Data-Elemente werden ausgelesen.
+	Data-Elemente, die aus einem String bestehen und der einen gültigen Pfad innerhalb
+	des Datasheets beschreibt, werden stattdessen vom generischen Antwort-Block 
+	(d.h. "user/answer/generic/subtask_X/selected_Y" bzw. "user/answer/generic/subtask_X/<name>")
+	geladen.
+	Die Antworten des zuletzt gespeicherten Subtasks werden gesondert hervorgehoben, wobei der
+	Index unter "user/answer/generic/currentSubtask" gespeichert wird.
+	   
+
+II. Ansicht
+===========
+
+	Die Quittungsansicht ist in 2 Teile gegliedert:
+	 - Header-Bereich
+	 - Anwort-Bereich
+	 
+	2.1 Header-Bereich
+	------------------
+	Folgende Informationen werden angezeigt:
+	 - Name und Vorname des Studenten
+	 - Name des Kurses, des Arbeitsblattes und der Aufgabe
+	 - Uhrzeit
+	
+	Folgende Informationen werden in Tooltips angezeigt (?):
+	 - ID des Studenten
+	 - IDs des Kurses, des Arbeitsblattes und der Aufgabe
+	 - ID "worksheet-problem-ref-id" (?)
+	
+	Der Header-Bereich kann ausgeblendet werden (Debug-Modus).
+
+	2.2 Antwort-Bereich
+	-------------------
+	Die aktuellen Anworten stehen in der Sektion "Zuletzt gespeicherte Antworten".
+	Die Antworten der anderen Subtasks stehen in der Sektion "Zuvor gespeicherte Antworten".
+	Die visuelle Zuordnung einer Antwort zu einem Subtask wird durch den
+	folgenden vorangestellten Ausdruck bewerkstelligt:
+	"Antwort zur Teilaufgabe X)", wobei "X" für das Kürzel der Unteraufgabe
+	steht ("a", "b", etc.).
+	Mehrere Anworten zu einem Subtask werden entweder nebeneinander oder untereinander
+	angeordnet, wobei sich das Layout dynamisch an die Fenstergröße anpassen sollte.
+	
+	2.3 GUI
+	-------
+	Die Quittungsansicht wird in einem eigenständigen Fenster angezeigt, welches
+	ein Menü und eine Toolbar (Applikation) aufweist.
+	Im Applikationsmodus werden die einzelnen Quittungen in internen Frames angezeigt, wobei
+	ein Schließen der letzten offenen Quittung nicht zum Beenden des Programms führt.
+	Im Applet-Modus wird die einzelne Quittung direkt im Hauptfenster dargestellt; ein Schließen
+	der Quittung ist gleichbedeutend mit dem Schließen des Hauptfensters.
+
+
+III. Verteilung
+===============
+	3.1 Als Applikation
+	-------------------
+	Hierfür bietet sich ein Start über WebStart an, da dies z.B. durch einen HTML-Link
+	auf die "jnlp"-Datei bewerkstelligt werden kann. Alle benötigten Bibliotheken werden
+	dabei automatisch geladen.
+	
+	3.2 Als Applet
+	--------------
+	Im Hausaufgaben-Modus kann die Quittungsansicht über einen Button im "Quittung erhalten"-Fenster
+  direkt aus dem Applet gestartet werden.
+  Es ist jedoch auch eine Verwendung als eigenständiges Applet denkbar, welches als Button
+  in der HTML-Seite liegt und durch Drücken dieses das Hauptfenster öffnet. Dabei ist jedoch 
+  zu beachten, dass das Applet signiert ist.
+  
+FIN

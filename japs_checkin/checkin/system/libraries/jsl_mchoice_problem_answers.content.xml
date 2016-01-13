@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+
+function MchoiceProblemAnswers (_problemRef, _problemId, _worksheetId, _courseId, _worksheetCategory)
+{
+
+  /**
+   * Inherit from ProblemAnswers
+   */
+
+   ProblemAnswers.call(this,_problemRef, _problemId, _worksheetId, _courseId, _worksheetCategory);
+
+  // --------------------------------------------------------------------------------
+  // h1: Global variables and constants
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Common prefix of all request parameters that represent a multiple choice answer
+   */
+
+  const PREFIX = "answer";
+
+  /**
+   * Keyword for the "unique" answer type
+   */
+
+  const UNIQUE = "unique";
+
+  /**
+   * Keyword for the "multiple" answer type
+   */
+
+  const MULTIPLE = "multiple";
+
+  /**
+   * Keyword for the "yesno" answer type
+   */
+
+  const YESNO = "yesno";
+
+  /**
+   * Value of request parameters corresponding to a "yesno" question with a positive answer
+   */
+
+  const YES = "yes";
+
+  /**
+   * Value of request parameters corresponding to a "yesno" question with a negative answer
+   */
+
+  const NO = "no";
+
+  /**
+   * Value of request parameters corresponding to a selected "multiple" question
+   */
+
+  const SELECTED = "selected";
+
+  /**
+   * Value of a positive entry in the datasheet
+   */
+
+  const TRUE = "true";
+
+  /**
+   * Value of a negative entry in the datasheet
+   */
+
+  const FALSE = "false";
+
+  /**
+   * The map (associative array) that represents the from data.
+   */
+
+  var _form = new Object();
+
+  /**
+   * Pattern to parse the names of form controls that represent multiple choice answers.
+   */
+
+  var _formCtrlNamePattern = new RegExp
+    (PREFIX
+     + "\\.(" + UNIQUE + "|" + MULTIPLE + "|" + YESNO + ")"
+     + "\\.([0-9]+)(?:\\.([0-9]+))?");
+
+  /**
+   * Pattern to check the values of form controls that represent type="unique" questions.
+   */
+
+  var _uniqueValuePattern = new RegExp("[0-9]+");
+
+  /**
+   * Pattern to parse datasheet paths corresponding to multiple choice answers.
+   */
+
+  var _choicePathPattern = new RegExp
+    ("^user/answer/choices-([0-9]+)/choice-([0-9]+)$");
+
+  /**
+   * A reference to this object.
+   */
+
+  const _problemAnswers = this;
+
+  // --------------------------------------------------------------------------------
+  // h1: Inner classes
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Auxiliary class representing a single answer. Needed in
+   * {@link #toDataSheet toDataSheet} and {@link #parseForm parseForm}. Comprises the type
+   * of the answer and the selected choices.
+   */
+
+  var _Answer = function ()
+    {
+      /**
+       * The type.
+       */
+
+       this.type = null;
+
+       /**
+        * The selected choices (associative array).
+        */
+
+       this.selectedChoices = new Object();
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Auxiliaries
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Throws an exception with the specified message. The string
+   * "MchoiceProblemAnswers: " is prepended to the message.
+   */
+
+  var _error = function (msg)
+    {
+      throw "MchoiceProblemAnswers: " + msg;
+    }
+
+
+
+  // --------------------------------------------------------------------------------
+  // h1: Controlling form data
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Sets the value of the form control with the specified name to the specified value. If
+   * the control has already a value, the old value is overwritten.
+   *
+   * @param name the form control name
+   * @param value the form control value
+   */
+
+  this.setControl = function (name, value)
+    {
+      _form[name] = value;
+    };
+
+  /**
+   * Unsets the value of the form control with the specified name. It is not an error if the
+   * control has no value (is already unset). In that case, the method does nothing.
+   * 
+   * @param name the form control name
+   */
+
+  this.unsetControl = function (name)
+    {
+      delete(_form[name]);
+    };
+
+  /**
+   * Toggles the form control with the specified name and value. That means the following:
+   * If the control is set and has the specified value, the control is unset. Otherwise, the
+   * control is set to the specifed value.
+   *
+   * @param name the form control name
+   * @param value the form control value
+   */
+
+  this.toggleControl = function (name, value)
+    {
+      if ( _form[name] == value )
+        delete(_form[name]);
+      else
+        _form[name] = value;
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Converting the form data to a datasheet
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Reads the answers from the specified form and stores them in the specified datasheet.
+   */
+
+  this.toDataSheet = function (dataSheet)
+    {
+      if ( !dataSheet ) dataSheet = new DataSheet();
+      var answers = _parseForm();
+      for (var choicesKey in answers)
+        {
+          var answer = answers[choicesKey];
+          for (var choiceKey in answer.selectedChoices)
+            {
+              var value = answer.selectedChoices[choiceKey];
+              var path = "user/answer/choices-" + choicesKey + "/choice-" + choiceKey;
+              dataSheet.put(path, value);
+            }
+        }
+      return dataSheet;
+    };
+
+  /**
+   * Reads the answers from the specified form.
+   */
+
+  var _parseForm = function ()
+    {
+      var answers = new Array();
+
+      for (var ctrlName in _form)
+        {
+          // Skip this control if its name doesn't start with PREFIX + ".":
+          if ( ctrlName.indexOf(PREFIX + ".") != 0 ) continue;
+
+          // Control value:
+          var ctrlValue = _form[ctrlName];
+
+          // Parsing the control name:
+          var ctrlNameParts = _formCtrlNamePattern.exec(ctrlName);
+
+          // Retrieving type, choices and choice key:
+          var type = ctrlNameParts[1];
+          var choicesKey = ctrlNameParts[2];
+          var choiceKey = null;
+          var value = null;
+          if ( type == UNIQUE )
+            {
+              if ( ctrlNameParts[3] != null )
+                _error("Malformed form control name: " + ctrlName + " (No part 3 allowed)");
+              if ( !_uniqueValuePattern.test(ctrlValue) )
+                _error("Illegal form control value with a type=\"unique\" question: " + ctrlValue);
+              choiceKey = ctrlValue;
+              value = TRUE;
+            }
+          else if ( type == MULTIPLE )
+            {
+              if ( ctrlValue != SELECTED )
+                _error("Illegal form control value with a type=\"multiple\" question: " + ctrlValue);
+              choiceKey = ctrlNameParts[3];
+              value = TRUE;
+            }
+          else if ( type == YESNO )
+            {
+              // TODO: Use either yes|no or true|false
+              if ( ctrlValue == YES )
+                value = TRUE;
+              else if ( ctrlValue == NO )
+                value = FALSE;
+              else
+                _error("Illegal form control value with a type=\"yesno\" question: " + ctrlValue);
+              choiceKey = ctrlNameParts[3];
+            }
+          else
+            _error("BUG: Unexpected question type: " + type);
+
+          // Answer object:
+          var answer = answers[choicesKey];
+          if ( answer == undefined )
+            {
+              answer = new _Answer();
+              answer.type = type;
+              answers[choicesKey] = answer;
+            }
+          if ( answer.type != type )
+            _error("Different types for choices key \"" + choicesKey + "\": " +
+                  "\"" + answer.type + "\", \"" + type + "\"");
+
+          // Selected choices:
+          if ( answer.selectedChoices[choiceKey] )
+            _error("Dublicate choice-key for choices-key \"" + choicesKey + "\": " + choiceKey);
+          if ( type == UNIQUE &amp;&amp; _countItems(answer.selectedChoices) != 0)
+            _error("Multiple choices selected for the type=\"unique\" question with choices key: " + choicesKey);
+          answer.selectedChoices[choiceKey] = value;
+        }
+      
+      return answers;
+    };
+
+  /**
+   * Auxiliary function. Counts the properties of the specified object and returns the count.
+   */
+
+  var _countItems = function (object)
+    {
+      var count = 0;
+      for (var item in object) count++;
+      return count;
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Setting form controls from a datasheet
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Reads the answers from the specified datasheet and updates the from according to them.
+   */
+
+  this.readDataSheet = function (datasheet)
+    {
+   
+      var paths = datasheet.getAllDataPaths();
+      for (var i = 0; i &lt; paths.length; i++)
+        {
+          var pathTokens = _choicePathPattern.exec(paths[i]);
+          if ( pathTokens != null )
+            {
+              var choicesKey = pathTokens[1];
+              var choiceKey = pathTokens[2];
+              var type = datasheet.getAsString("common/problem/choices-" + choicesKey + "/type");
+              var value = datasheet.getAsString("user/answer/choices-" + choicesKey + "/choice-" + choiceKey);
+              if ( type ==  UNIQUE &amp;&amp; value == TRUE )
+                  {
+                    var controlName = PREFIX + "." + UNIQUE + "." + choicesKey;
+                    var controlValue = choiceKey;
+                    this.setControl(controlName, controlValue);  
+                  }
+                else if ( type == MULTIPLE &amp;&amp; value ==  TRUE )
+                  {
+                    var controlName = PREFIX + "." + MULTIPLE + "." + choicesKey + "." + choiceKey;
+                    var controlValue = SELECTED;
+                    this.toggleControl(controlName, controlValue);  
+                  }
+                else if ( type == YESNO )
+                  {
+                    var controlName = PREFIX + "." + YESNO +  "." + choicesKey + "." + choiceKey;
+                    // TODO: Use either yes|no or true|false                    
+                    var controlValue = (value == TRUE ? YES : NO);
+                    this.setControl(controlName, controlValue);  
+                  }
+            }
+        }
+
+    };
+
+
+}
+
+</txt:document>

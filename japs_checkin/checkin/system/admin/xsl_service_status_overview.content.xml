@@ -1,0 +1,328 @@
+<?xml version="1.0"  encoding = "ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!-- $Id: xsl_service_status_overview.content.xml,v 1.2 2007/07/16 11:23:14 grudzin Exp $ -->
+
+<xsl:stylesheet version="1.0"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:status="http://www.mumie.net/xml-namespace/status"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                exclude-result-prefixes="mumie status">
+
+<mumie:import lid="base_templates" internal="yes"/>
+
+<xsl:output method="xml"/>
+
+<mumie:insert-japs-xsl-lib/>
+
+<xsl:variable name="class-name" select="/*/status:service_class/@name"/>
+
+<xsl:variable name="recyclable">
+  <xsl:call-template name="get-yes-or-no">
+    <xsl:with-param name="value" select="/*/status:service_class/@recyclable"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<xsl:variable name="disposable">
+  <xsl:call-template name="get-yes-or-no">
+    <xsl:with-param name="value" select="/*/status:service_class/@disposable"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<xsl:variable name="startable">
+  <xsl:call-template name="get-yes-or-no">
+    <xsl:with-param name="value" select="/*/status:service_class/@startable"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<xsl:variable name="lookup-notifyable">
+  <xsl:call-template name="get-yes-or-no">
+    <xsl:with-param name="value" select="/*/status:service_class/@lookup_notifyable"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<xsl:template name="get-yes-or-no">
+  <xsl:param name="value"/>
+  <xsl:choose>
+    <xsl:when test="$value='yes' or $value='true'">yes</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="/">
+  <html>
+
+    <head>
+      <title><xsl:value-of select="concat('Service Status: ',$class-name)"/></title>
+      <link rel="stylesheet" type="text/css" mumie:href="base_styles"/>
+      <link rel="stylesheet" type="text/css" mumie:href="plain_styles"/>
+      <style type="text/css">
+        div.main
+          {
+            padding: 80px 40px 40px 40px;
+          }
+        span.class-name
+          {
+            font-family: courier, monospace;
+            font-size: larger;
+            font-weight: bold;
+            color: #901c1c;
+          }
+        span.interface
+          {
+            font-family: courier, monospace;
+            font-size: larger;
+          }
+      </style>
+    </head>
+
+    <body>
+
+      <xsl:call-template name="top-bar"/>
+
+      <div class="main">
+
+        <div class="nav-bar">
+          <a>
+            <xsl:attribute name="href">
+              <xsl:value-of select="$xsl.url-prefix"/>
+              <xsl:text>/protected/shortcut/desktop</xsl:text>
+            </xsl:attribute>
+            Desktop
+          </a>
+          &gt;
+          <a>
+            <xsl:attribute name="href">
+              <xsl:value-of select="$xsl.url-prefix"/>
+              <xsl:text>/protected/admin/home</xsl:text>
+            </xsl:attribute>
+            Admin
+          </a>
+          &gt;
+          <a>
+            <xsl:attribute name="href">
+              <xsl:value-of select="$xsl.url-prefix"/>
+              <xsl:text>/protected/admin/status/service/overview</xsl:text>
+            </xsl:attribute>
+            Service Status &#220;bersicht
+          </a>
+          &gt;
+        </div>
+        
+        <h1>Service Status</h1>
+
+        <xsl:choose>
+          <xsl:when test="/*/status:not_available">
+            <xsl:call-template name="notify-not-available"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:call-template name="show-status"/>
+          </xsl:otherwise>
+        </xsl:choose>
+
+
+      </div> <!-- div class="main-->
+
+      <xsl:call-template name="bottom-bar"/>
+
+    </body>
+
+  </html>
+</xsl:template>
+
+<xsl:template name="show-status">
+
+  <h2>Klasse:</h2>
+  <p>
+    <span class="class-name"><xsl:value-of select="$class-name"/></span>
+    <xsl:if test="$lookup-notifyable='yes'">
+      <br/><span class="interface">LookupNotifyable</span>
+    </xsl:if>
+    <xsl:if test="$recyclable='yes'">
+      <br/><span class="interface">Recyclable</span>
+    </xsl:if>
+    <xsl:if test="$disposable='yes'">
+      <br/><span class="interface">Disposable</span>
+    </xsl:if>
+    <xsl:if test="$startable='yes'">
+      <br/><span class="interface">Startable</span>
+    </xsl:if>
+  </p>
+
+  <h2>Globale Z&#228;hler:</h2>
+  <table class="genuine">
+    <thead>
+      <tr>
+        <td>Name</td><td>Wert</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Erzeugte Instanzen</td>
+        <td><xsl:value-of select="/*/status:number_of_created_instances/@value"/></td>
+      </tr>
+      <tr>
+        <xsl:if test="$startable='yes'">
+          <td>Laufende Instanzen</td>
+          <td><xsl:value-of select="/*/status:number_of_running_instances/@value"/></td>
+        </xsl:if>
+      </tr>
+      <tr>
+        <xsl:if test="$disposable='yes'">
+          <td>Aktive Instanzen</td>
+          <td><xsl:value-of select="/*/status:number_of_active_instances/@value"/></td>
+        </xsl:if>
+      </tr>
+      <tr>
+        <xsl:if test="$recyclable='yes'">
+          <td>Recycles</td>
+          <td><xsl:value-of select="/*/status:number_of_recycled_instances/@value"/></td>
+        </xsl:if>
+      </tr>
+      <tr>
+        <xsl:if test="$lookup-notifyable='yes'">
+          <td>Lookups</td>
+          <td><xsl:value-of select="/*/status:number_of_lookedup_instances/@value"/></td>
+        </xsl:if>
+      </tr>
+      <tr>
+        <xsl:if test="$lookup-notifyable='yes'">
+          <td>Momentan benutzt</td>
+          <td><xsl:value-of select="/*/status:number_of_used_instances/@value"/></td>
+        </xsl:if>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Instanzen:</h2>
+  <table class="genuine">
+    <thead>
+      <tr>
+        <td>Id</td>
+        <td>Lifecycle</td>
+        <!-- <xsl:if test="$startable='yes'"><td>Starts</td></xsl:if> -->
+        <xsl:if test="$lookup-notifyable='yes'"><td>Lookups</td></xsl:if>
+        <xsl:if test="$lookup-notifyable='yes'"><td>Releases</td></xsl:if>
+        <xsl:if test="$recyclable='yes'"><td>Recycles</td></xsl:if>
+        <!-- <xsl:if test="$startable='yes'"><td>Stops</td></xsl:if> -->
+        <xsl:if test="$lookup-notifyable='yes'"><td>Benutzt von</td></xsl:if>
+        <xsl:if test="$startable='yes'"><td>Erster Start</td></xsl:if>
+        <xsl:if test="$recyclable='yes'"><td>Letztes Recycle</td></xsl:if>
+        <xsl:if test="$lookup-notifyable='yes'"><td>Letztes Lookup</td></xsl:if>
+        <xsl:if test="$lookup-notifyable='yes'"><td>Letztes Release</td></xsl:if>
+        <xsl:if test="$startable='yes'"><td>Letzter Stop</td></xsl:if>
+        <xsl:if test="$disposable='yes'"><td>Disposed</td></xsl:if>
+      </tr>
+    </thead>
+    <tbody>
+      <xsl:for-each select="/*/status:instance_statuses/status:instance_status">
+        <xsl:sort select="@id" data-type="number"/>
+        <tr>
+          <!-- Id: -->
+          <td><xsl:value-of select="@id"/></td>
+          <!-- Lifecycle: -->
+          <td><xsl:value-of select="status:lifecycle/@name"/></td>
+          <!-- Number of starts: -->
+          <!--
+          <xsl:if test="$startable='yes'">
+            <td><xsl:value-of select="status:number_of_starts/@value"/></td>
+          </xsl:if>
+          -->
+          <!-- Number of lookups: -->
+          <xsl:if test="$lookup-notifyable='yes'">
+            <td><xsl:value-of select="status:number_of_lookups/@value"/></td>
+          </xsl:if>
+          <!-- Number of releases: -->
+          <xsl:if test="$lookup-notifyable='yes'">
+            <td><xsl:value-of select="status:number_of_releases/@value"/></td>
+          </xsl:if>
+          <!-- Number of recycles: -->
+          <xsl:if test="$recyclable='yes'">
+            <td><xsl:value-of select="status:number_of_recycles/@value"/></td>
+          </xsl:if>
+          <!-- Number of stops: -->
+          <!--
+          <xsl:if test="$startable='yes'">
+            <td><xsl:value-of select="status:number_of_stops/@value"/></td>
+          </xsl:if>
+          -->
+          <!-- Owner label: -->
+          <xsl:if test="$lookup-notifyable='yes'">
+            <td><xsl:value-of select="status:owner/@value"/></td>
+          </xsl:if>
+          <!-- First start time: -->
+          <xsl:if test="$startable='yes'">
+            <td><xsl:value-of select="status:first_started/@value"/></td>
+          </xsl:if>
+          <!-- Last recycle time: -->
+          <xsl:if test="$recyclable='yes'">
+            <td><xsl:value-of select="status:last_recycled/@value"/></td>
+          </xsl:if>
+          <!-- Last lookup time: -->
+          <xsl:if test="$lookup-notifyable='yes'">
+            <td><xsl:value-of select="status:last_lookup/@value"/></td>
+          </xsl:if>
+          <!-- Last release time: -->
+          <xsl:if test="$lookup-notifyable='yes'">
+            <td><xsl:value-of select="status:last_release/@value"/></td>
+          </xsl:if>
+          <!-- Last stop time: -->
+          <xsl:if test="$startable='yes'">
+            <td><xsl:value-of select="status:last_stopped/@value"/></td>
+          </xsl:if>
+          <!-- Dispose time: -->
+          <xsl:if test="$disposable='yes'">
+            <td><xsl:value-of select="status:disposed/@value"/></td>
+          </xsl:if>
+        </tr>
+      </xsl:for-each>
+    </tbody>
+  </table>
+
+</xsl:template>
+
+<xsl:template name="notify-not-available">
+  <p>
+    Status-Informationen nicht verf&#252;gbar.
+  </p>
+  <p>
+    Grund:
+    <xsl:variable name="reason" select="/*/status:not_available/@reason"/>
+    <xsl:variable name="prefix">Status report not enabled for class: </xsl:variable>
+    <xsl:choose>
+      <xsl:when test="starts-with($reason,$prefix)">
+        <xsl:text>Nicht implementiert f&#252;r Klasse: </xsl:text>
+        <code>
+          <xsl:value-of select="substring-after($reason,$prefix)"/>
+        </code>
+      </xsl:when>
+    </xsl:choose>
+  </p>
+</xsl:template>
+    
+</xsl:stylesheet>

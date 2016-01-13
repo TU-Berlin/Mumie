@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ASCII"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+
+    <style type="text/css">
+
+    </style>
+
+    <script type="text/javascript">
+      var connection = new XMLHttpRequest();
+
+      connection.onreadystatechange = function ()
+        {
+          if ( connection.readyState == 4 )
+            {
+              if ( connection.status == 200 )
+                addDataToList(connection.responseXML);
+              else
+                alert("Error " + connection.status);
+            }
+        };
+
+      function loadData ()
+      {
+        connection.open("GET", "http://teefix.math.tu-berlin.de:8080/dom_test/data.xml");
+        connection.send(null);
+      }
+
+      function addDataToList (data)
+      {
+        var items = data.getElementsByTagNameNS("http://www.mumie.net/test/data", "item");
+        for (var i = 0; i &lt; items.length; i++)
+          {
+            var text = items.item(i).firstChild.nodeValue;
+            var liElem = document.createElementNS("http://www.w3.org/1999/xhtml", "li");
+            var textNode = document.createTextNode(text);
+            var ulElem = document.getElementById("list");
+            ulElem.appendChild(liElem);
+            liElem.appendChild(textNode);
+          }
+      }
+
+    </script>
+
+  </head>
+  <body>
+    <button type="button" onclick="javascript:loadData()">Laden</button>
+    <ul id="list"/>
+  </body>
+</html>

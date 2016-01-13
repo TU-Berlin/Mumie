@@ -1,0 +1,192 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Quality Feedback}
+\subtitle{Halbautomatische Fehlerbericht-Erzeugung}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: applet_quality_feedback.tex,v 1.4 2006/08/11 16:18:22 rassy Exp $}
+
+\tableofcontents
+
+\section{Einleitung}
+
+Tritt zur Laufzeit des Applets ein Fehler auf, so soll dieser abgefangen und
+dem Benutzer gemeldet werden. Muss von einen Bug im Applet ausgegangen werden,
+so soll automatisch ein Fehlerbericht in XML-Form erstellt werden, der vom
+Benutzer ergänzt und an den Server geschickt werden kann. [Liegt mit grosser
+Wahrscheinlichkeit kein Bug vor, sondern z.B. eine falsche Benutzerangabe oder
+eine fehlerhafte Software-Umgebung, so soll der Fehlerbericht unterdrückt
+werden.] 
+
+Unter einem Fehler ist immer ein geworfenes \code{Throwable}, also eine
+\code{Exception} oder ein \code{Error}, zu verstehen.
+
+\section{Angaben im Fehlerbericht}
+
+Der Fehlerbericht enthält folgende Daten:
+
+\begin{enumerate}
+  \item Zeitpunkt des Fehlers,
+  \item Benutzer (gegeben durch Id)
+  \item Aufgabe und Übungsblatt (gegeben durch
+    Course-Subsection-Aufgaben-Referenz-Id),
+  \item Applet (Klassenname, ggf. weitere Angaben),
+  \item Java (Version und Hersteller laut System Properties java.vm.version
+    und java.vendor),
+  \item Betriebssystem (Architektur, Name und Version laut System Properties
+    os.arch, os.name, os.version),
+  \item Throwable (Klassenname, Meldung, Stacktrace),
+  \item Kommentar des Benutzers.
+\end{enumerate}
+
+\section{Benutzerdialog}
+
+Nachdem der Fehler aufgetreten ist, soll der Benutzer sofort durch einen
+Popup-Dialog informiert werden. Dieser Dialog sollte insbesondere enthalten:
+
+\begin{enumerate}
+  \item Die Aussage, dass ein Fehler aufgetreten ist.
+  \item Die Aussage, dass ein Fehlerbericht erstellt wurde.
+  \item Die Möglichkeit, den Fehlerbericht durch eine Notiz zu ergänzen.
+  \item Die Möglichkeit, den Fehlerbericht einzusehen
+    (s. \ref{fehlerbericht_einsehen}).
+  \item Die Möglichkeit, den Fehlerbericht abzuschicken. Der Dialog wird danach
+    beendet.
+  \item Die Möglichkeit, den Dialog zu beenden, ohne den Fehlerbericht
+    abzuschicken.
+  \item Ggf. die Empfehlung, vor dem Weiterarbeiten den Browser zu schliessen
+    und neu zu starten.
+\end{enumerate}
+
+Angaben wie das geworfene \code{Throwable}, dessen Meldung (\emph{message})
+oder der Stacktrace sind für den Benutzer meist wenig aufschlussreich und
+brauchen im Dialog nicht aufzutreten. [Wenn der Benutzer doch an diesen Angaben
+interessiert ist, kann er den Fehlerbericht einsehen. Dort sind die Angaben
+enthalten. Ausserdem findet er sie in der Java-Konsole.]
+
+Demnach könnte der Dialog beispielsweise wie folgt aussehen:
+
+\image[][c]{applet\_quality\_feedback\_dialog.png}
+
+\section{Fehlerbericht einsehen}\label{fehlerbericht_einsehen}
+
+Die Einsicht in den Fehlerbericht wird am Besten durch ein weiteres
+Popup-Fenster realisiert. Sie soll folgendes umfassen:
+
+\begin{enumerate}
+  \item Eine Liste, welche Arten von Daten im Bericht vorkommen. Die konkreten
+    Werte der Daten brauchen nicht aufgeführt zu werden.
+  \item Der XML-Code des Fehlerberichts.
+\end{enumerate}
+
+Damit könnte das Fenster beispielsweise so aussehen:
+
+\image[][c]{applet\_quality\_feedback\_einsicht.png}
+
+\section{Fehlerbericht abschicken}
+
+Der Fehlerbericht wird an folgende URL geschickt:
+
+\begin{preformatted}[code]%
+  \var{prefix}/protected/qf/applet
+\end{preformatted}
+
+wobei \var{prefix} der gemeinsame Prefix aller JAPS-URLs ist, also
+z.B. \val{http://japs.mumie.net/cocoon}.
+
+Der URL werden zwei Request-Parameter hinzugefügt:
+
+\begin{enumerate}
+\item \val{report} -- Der Fehlerbericht,
+\item \val{subject} -- eine Kurzbezeichnung des Fehlers. 
+\end{enumerate}
+
+Konventionsvorschlag für die Kurzbezeichnung:
+
+\begin{preformatted}[code]%
+  "\var{ref\_id}/\var{applet\_class}: \var{throwable\_class}: \var{message}"
+\end{preformatted}
+
+Dabei ist \var{ref\_id} die Id der Course-Subsection-Problem-Referenz,
+\var{applet\_class} die Applet-Klasse, \var{throwable\_class} die Throwable-Klasse
+und \var{message} die Meldung des Throwables. Beispiel:
+
+\begin{preformatted}[code]%
+  45/net.mumie.mathlet.linalg.Foo: java.lang.NullPointerException: Cannot add null
+\end{preformatted}
+
+Der Fehlerbericht wird am besten mit der Http-POST-Methode geschickt.
+
+Der Server antwortet mit einem kurzen String. Dieser ist \code{"OK"}, wenn der
+Fehlerbericht korrekt empfangen und verarbeitet wurde. Andernfalls enthählt er
+eine Fehlermeldung. Der Benutzer soll mit Hilfe eines Popup-Fensters über den
+Erfolg bzw. Misserfolg des Vorgangs informiert werden.
+
+\section{XML-Struktur}
+
+\subsection{Beispiel}
+
+\begin{preformatted}[code]
+<applet_quality_feedback
+   xmlns="http://www.mumie.net/xml-namespace/applet-quality-feedback">
+
+  <!-- Timestamp: Formatierter Wert, Format (s. SimpleDateFormat), Wert als
+    Millisekunden seit 1.1.1970 (raw) -->
+  <time value="2005-12-18 19:24:12 354" format="yyyy-MM-dd HH:mm:ss S"
+        raw="167233672"/>
+
+  <!-- Benutzer, gegeben durch Id: -->
+  <user id="34"/>
+
+  <!-- Aufgabe, gegeben durch Ref-Id: -->
+  <problem ref_id="45"/>
+
+  <!-- Applet, Klassenname, ggf. weitere Angaben: -->
+  <applet class="net.mumie.mathlet.linalg.Foo"/>
+
+  <!-- Java: Version und Hersteller, laut System Properties java.vm.version
+    und java.vendor -->
+  <java version="1.4.2_08-b03" vendor="Sun Microsystems Inc."/>
+
+  <!-- Rechner/Betriebssystem: Architektur, Name, Version, laut System Properties
+     os.arch, os.name, os.version -->
+  <system arch="i386" name="Linux" version="2.4.21-297-athlon"/>
+
+  <!-- Geworfenes Throwable: Klassenname, Fehlermeldung, Stacktrace -->
+  <throwable class="java.lang.NullPointerException">
+    <message>Cannot add null!</message>
+    <stacktrace>
+      java.lang.NullPointerException: Cannot add null!
+      net.mumie.mathletfactory.test.markus.TestApplet.init ( line 33 )
+      net.mumie.mathletfactory.test.markus.TestApplet.main ( line 177 )
+    </stacktrace>
+    <cause>
+      <throwable class="java.lang.IllegalArgumentException">
+        <message>Parameter is null!</message>
+        <stacktrace>
+          java.lang.IllegalArgumentException: Parameter is null!
+          net.mumie.mathletfactory.test.markus.TestApplet.init ( line 32 )
+          net.mumie.mathletfactory.test.markus.TestApplet.main ( line 177 )
+        </stacktrace>
+      </throwable>
+    </cause>
+  </throwable>
+
+  <!-- Vom Benutzer verfasster Kommentar: -->
+  <user_comment>
+    ...
+  </user_comment>
+
+</applet_quality_feedback>
+\end{preformatted}
+
+-- ENDE DER DATEI --
+
+\end{document}

@@ -1,0 +1,25 @@
+\emph{Test}:
+
+\begin{itemize}
+\item Die Datei wird gespeichert, und kann danach ebenso geladen werden.
+\item Wurde der Graph nicht verändert, erscheint ein Hinweis, dass der Graph
+  unverändert ist und der Autor hat die Möglichkeit trotzdem zu speichern.
+\item Hat ein Graph bisher keinen Dateinamen (zb, weil er nicht geladen oder
+  bisher nicht gespeichert wurde, oder seinen Namen durch erneutes Öffnen
+  verloren hat) wird automatisch die Aktion "Speichern unter" statt "Speichern"
+  ausgeführt.
+\item Hat der Graph einen Dateinamen, so wird der Graph bei der Aktion
+  "Speichern" ohne Dateiauswahlfenster gespeichert.
+\item Es werden eine Datei "file.meta.xml" und eine Datei "file.content.xml"
+  erzeugt.
+\item Der Graph wird gespeichert, unabhängig davon, ob der Name mit
+  "file.meta.xml" oder nur mit "file" angegeben wird.
+\item Im Dateiauswahlfenster werden per Default nur Verzeichnisse und die
+  ".meta.xml"-Dateien angezeigt.
+\item Beim erfolgreichen oder missglückten Speichern erscheint jeweils eine
+  Nachricht darüber.
+\item Es werden Warnungen ausgegeben wenn mindestens einer Komponente kein
+  Dokument zugewiesen wurde oder der Rote Faden nicht korrekt ist.
+\item Der gespeicherte Name erscheint im Metainformationsfenster auf der
+  rechten Seite.
+\end{itemize}

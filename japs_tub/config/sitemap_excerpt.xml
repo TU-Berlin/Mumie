@@ -1,0 +1,64 @@
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<map:match pattern="public/tub/linalg/create-account">
+      <map:act type="tub-create-account">
+        <map:parameter name="form-stage" value="{request-param:form-stage}"/>
+        <map:parameter name="login-name" value="{request-param:login-name}"/>
+        <map:parameter name="first-name" value="{request-param:first-name}"/>
+        <map:parameter name="surname" value="{request-param:surname}"/>
+        <map:parameter name="e-mail" value="{request-param:e-mail}"/>
+        <map:parameter name="password" value="{request-param:password}"/>
+        <map:parameter name="user-groups" smac:value="ugr-names-to-ids(students)"/>
+         <map:parameter name="tutorials" smac:value="psdoc-paths-to-ids(tutorial, org/tub/ss_09/tutorials/tut_warteliste.meta.xml)"/>
+         <map:generate type="file" src="fs_content/tub_create_account.xml"/>
+         <map:transform src="fs_content/transform.xsl">
+           <map:parameter name="url-prefix" value="@url-prefix@"/>
+           <map:parameter name="error" value="{error}"/>
+           <map:parameter name="param0" value="{form-stage}"/>
+           <map:parameter name="param1" value="{mode}"/>
+           <map:parameter name="param2" value="{login-name}"/>
+           <map:parameter name="param3" value="{first-name}"/>
+           <map:parameter name="param4" value="{surname}"/>
+           <map:parameter name="param5" value="{e-mail}"/>
+           <map:parameter name="param6" value="{temp-account}"/>
+         </map:transform>
+         <map:serialize resource="xhtml"/>
+      </map:act>
+    </map:match>
+
+    <map:match pattern="public/tub/linalg/convert-account">
+      <map:generate type="tub-convert-account"/>
+      <map:transform src="cocoon:/protected/view/document/type-name/xsl_stylesheet/id/ID"/>
+      <map:serialize resource="xhtml"/>
+    </map:match>
+
+    <map:generator name="authentication"
+                   src="net.mumie.cocoon.generators.TUBAuthenticationGenerator">
+      <ldap-bind-dn>cn=mumie,ou=medpriv,ou=admins,dc=mulf,dc=de</ldap-bind-dn>
+      <ldap-password></ldap-password>
+      <ldap-search-base>dc=de</ldap-search-base>
+      <ldap-hosts>ldap://guest15.mulf.tu-berlin.de</ldap-hosts>
+    </map:generator>

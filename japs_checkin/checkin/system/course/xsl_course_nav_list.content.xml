@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Authors:  Tilman Rassy
+   $Id: xsl_course_nav_list.content.xml,v 1.6 2008/09/09 14:44:33 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:data="http://www.mumie.net/xml-namespace/data"
+                xmlns:crs="http://www.mumie.net/xml-namespace/document/content/course"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie data crs">
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The CSS stylesheet -->
+<xsl:variable name="list.css-stylesheet"><xsl-ext:url lid="css-stylesheet"/></xsl:variable>
+
+<!-- Sizes of the icon areas -->
+<xsl:variable name="list.main-icon-area-width">37</xsl:variable>
+<xsl:variable name="list.main-icon-area-height">37</xsl:variable>
+<xsl:variable name="list.sub-icon-area-width">26</xsl:variable>
+<xsl:variable name="list.sub-icon-area-height">26</xsl:variable>
+
+<!-- The "strut" image -->
+<xsl:param name="strut-image"><xsl-ext:url lid="strut-image"/></xsl:param>
+
+<!-- HTML ids: -->
+<xsl:variable name="list.summary-link-html-id">_SUMMARY_LINK_</xsl:variable>
+<xsl:variable name="list.summary-nolink-html-id">_SUMMARY_NOLINK_</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: Javascript                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="list.javascript">
+  <script type="text/javascript">
+
+    function setSummaryLink (enabled)
+    {
+      var link = document.getElementById("<xsl:value-of select="$list.summary-link-html-id"/>");
+      var nolink = document.getElementById("<xsl:value-of select="$list.summary-nolink-html-id"/>");
+      if ( enabled )
+        {
+          nolink.style.display = "none";
+          link.style.display = "inline";
+        }
+      else
+        {
+          link.style.display = "none";
+          nolink.style.display = "inline";
+        }
+    }
+
+    function startHover (id)
+    {
+      document.getElementById(id + "-normal").style.display = "none";
+      document.getElementById(id + "-hover").style.display = "inline";
+    }
+
+    function endHover (id)
+    {
+      document.getElementById(id + "-hover").style.display = "none";
+      document.getElementById(id + "-normal").style.display = "inline";
+    }
+
+    function selectComponent (url, navUrl)
+    {
+      parent.<xsl:value-of select="$main-frame"/>.location.href = url;
+      <xsl:if test="$input-doctype='course'">
+      parent.<xsl:value-of select="$nav-frame"/>.location.href = navUrl;
+      </xsl:if>
+      setSummaryLink(true);
+    }
+
+    function showSummary ()
+    {
+      parent.<xsl:value-of select="$main-frame"/>.location.href = '<xsl:call-template name="summary-url"/>?as-frame=true';
+      setSummaryLink(false);
+    }
+
+    function showCourse ()
+    {
+      parent.<xsl:value-of select="$nav-frame"/>.location.href = <!--
+        -->'<xsl:call-template name="xsl.document-url">
+              <xsl:with-param name="id" select="$parent-id"/>
+              <xsl:with-param name="document-type.name" select="$parent-type-name"/>
+              <xsl:with-param name="context" select="'nav'"/>
+             </xsl:call-template>';
+      parent.<xsl:value-of select="$main-frame"/>.location.href = <!--
+        -->'<xsl:call-template name="xsl.document-url">
+              <xsl:with-param name="id" select="$parent-id"/>
+              <xsl:with-param name="document-type.name" select="$parent-type-name"/>
+              <xsl:with-param name="context" select="'homework'"/>
+             </xsl:call-template>';
+    }
+
+  </script>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Icons                                                                        -->
+<!-- ================================================================================ -->
+
+<xsl:template name="list.put-icon">
+  <xsl:param name="lid" select="@lid"/>
+  <xsl:param name="state"/>
+  <xsl:param name="key">
+    <xsl:call-template name="icon-key">
+      <xsl:with-param name="lid" select="$lid"/>
+      <xsl:with-param name="state" select="$state"/>
+    </xsl:call-template>
+  </xsl:param>
+  <xsl:param name="area-width"/>
+  <xsl:param name="area-height"/>
+  <xsl:param name="display">
+    <xsl:choose>
+      <xsl:when test="$state='normal'">inline</xsl:when>
+      <xsl:otherwise>none</xsl:otherwise>
+    </xsl:choose>
+  </xsl:param>
+  <xsl:param name="onmouseover"/>
+  <xsl:param name="onmouseout"/>
+  <xsl:param name="onclick"/>
+  <xsl:param name="id"/>
+  <xsl:param name="tooltip"/>
+  <xsl:variable name="icon" select="$data/data:icon[@key=$key]/*"/>
+  <xsl:variable name="x" select="round(($area-width - $icon/@width) div 2)"/>
+  <xsl:variable name="y" select="round(($area-height - $icon/@height) div 2)"/>
+  <img class="icon">
+    <xsl:attribute name="id">
+      <xsl:value-of select="$id"/></xsl:attribute>
+    <xsl:attribute name="src">
+      <xsl:value-of select="$icon/@src"/>
+    </xsl:attribute>
+    <xsl:attribute name="width">
+      <xsl:value-of select="$icon/@width"/>
+    </xsl:attribute>
+    <xsl:attribute name="height">
+      <xsl:value-of select="$icon/@height"/>
+    </xsl:attribute>
+    <xsl:attribute name="style">
+      <xsl:value-of select="concat('display:', $display, ';left:', $x, 'px;top:', $y, 'px')"/>
+    </xsl:attribute>
+    <xsl:if test="$onmouseover and $onmouseover !=''">
+      <xsl:attribute name="onmouseover">
+        <xsl:value-of select="$onmouseover"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$onmouseout and $onmouseout !=''">
+      <xsl:attribute name="onmouseout">
+        <xsl:value-of select="$onmouseout"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$onclick and $onclick !=''">
+      <xsl:attribute name="onclick">
+        <xsl:value-of select="$onclick"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$tooltip and $tooltip !=''">
+      <xsl:attribute name="title">
+        <xsl:value-of select="$tooltip"/>
+      </xsl:attribute>
+    </xsl:if>
+  </img>
+</xsl:template>
+
+<xsl:template name="list.put-icon-group">
+  <xsl:param name="area-width"/>
+  <xsl:param name="area-height"/>
+  <xsl:param name="url"/>
+  <xsl:param name="nav-url"/>
+  <xsl:param name="id"/>
+  <xsl:param name="tooltip"/>
+
+  <!-- Normal icon: -->
+  <xsl:call-template name="list.put-icon">
+    <xsl:with-param name="id" select="concat($id, '-normal')"/>
+    <xsl:with-param name="state">normal</xsl:with-param>
+    <xsl:with-param name="area-width" select="$area-width"/>
+    <xsl:with-param name="area-height" select="$area-height"/>
+    <xsl:with-param name="onmouseover">
+      <xsl:text>startHover("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>")</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Hover icon: -->
+  <xsl:call-template name="list.put-icon">
+    <xsl:with-param name="id" select="concat($id, '-hover')">
+    </xsl:with-param>
+    <xsl:with-param name="state">hover</xsl:with-param>
+    <xsl:with-param name="area-width" select="$area-width"/>
+    <xsl:with-param name="area-height" select="$area-height"/>
+    <xsl:with-param name="onmouseout">
+      <xsl:text>endHover("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>")</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="onclick">
+      <xsl:text>selectComponent("</xsl:text>
+      <xsl:value-of select="$url"/>
+      <xsl:text>", "</xsl:text>
+      <xsl:value-of select="$nav-url"/>
+      <xsl:text>")</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="tooltip" select="$tooltip"/>
+  </xsl:call-template>
+  
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: List items                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template match="crs:list/*">
+  <xsl:variable name="url">
+    <xsl:call-template name="url"/>
+  </xsl:variable>
+  <xsl:variable name="nav-url">
+    <xsl:choose>
+      <xsl:when test="$input-doctype='course'"><xsl:call-template name="nav-url"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="tooltip">
+    <xsl:call-template name="tooltip"/>
+  </xsl:variable>
+  <xsl:variable name="id" select="generate-id()"/>
+  <tr>
+    <td class="main-icon">
+      <xsl:call-template name="list.put-icon-group">
+        <xsl:with-param name="area-width" select="$list.main-icon-area-width"/>
+        <xsl:with-param name="area-height" select="$list.main-icon-area-height"/>
+        <xsl:with-param name="url" select="$url"/>
+        <xsl:with-param name="nav-url" select="$nav-url"/>
+        <xsl:with-param name="id" select="$id"/>
+        <xsl:with-param name="tooltip" select="$tooltip"/>
+      </xsl:call-template>
+    </td>
+    <td class="main-label">
+      <a onclick="javascript:selectComponent('{$url}', '{$nav-url}')"
+         target="{$main-frame}"
+         title="{$tooltip}">
+        <xsl:call-template name="name-prefix"/>
+        <xsl:call-template name="doc-name"/>
+      </a>
+    </td>
+  </tr>
+  <xsl:if test="*">
+    <tr>
+      <td class="void"/>
+      <td class="sub-items">
+        <table class="sub-items">
+          <xsl:apply-templates mode="sub-items"/>
+        </table>
+      </td>
+    </tr>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="*" mode="sub-items">
+  <xsl:variable name="url">
+    <xsl:call-template name="url"/>
+  </xsl:variable>
+  <xsl:variable name="nav-url">
+    <xsl:choose>
+      <xsl:when test="$input-doctype='course'"><xsl:call-template name="nav-url"/></xsl:when>
+      <xsl:otherwise></xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="tooltip">
+    <xsl:call-template name="tooltip"/>
+  </xsl:variable>
+  <xsl:variable name="id" select="generate-id()"/>
+  <tr>
+    <td class="sub-icon">
+      <xsl:call-template name="list.put-icon-group">
+        <xsl:with-param name="area-width" select="$list.sub-icon-area-width"/>
+        <xsl:with-param name="area-height" select="$list.sub-icon-area-height"/>
+        <xsl:with-param name="url" select="$url"/>
+        <xsl:with-param name="nav-url" select="$nav-url"/>
+        <xsl:with-param name="id" select="$id"/>
+        <xsl:with-param name="tooltip" select="$tooltip"/>
+      </xsl:call-template>
+    </td>
+    <td class="sub-label">
+      <a onclick="javascript:selectComponent('{$url}', '{$nav-url}')"
+         target="{$main-frame}"
+         title="{$tooltip}">
+        <xsl:call-template name="name-prefix"/>
+        <xsl:call-template name="doc-name"/>
+      </a>
+    </td>
+  </tr>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Header                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="title">
+  <span class="title">
+    <xsl:choose>
+      <xsl:when test="$input-doctype='course'">
+        <xsl:value-of select="$i18n-course"/>
+      </xsl:when>
+      <xsl:when test="$input-doctype='course_section'">
+        <xsl:value-of select="$i18n-course_section"/>
+      </xsl:when>
+      <xsl:when test="$input-doctype='worksheet'">
+      <xsl:value-of select="$i18n-worksheet"/>
+      </xsl:when>
+    </xsl:choose>
+    <xsl:text>: </xsl:text>
+    <xsl:value-of select="/*/mumie:name"/>
+  </span>
+</xsl:template>
+
+<xsl:template name="links">
+  <a title="{$i18n-show-summary}" id="{$list.summary-link-html-id}" style="display:none"
+     onclick="javascript:showSummary()">
+    <xsl:value-of select="$i18n-summary"/>
+  </a>
+  <span id="{$list.summary-nolink-html-id}" class="nolink">
+    <xsl:value-of select="$i18n-summary"/>
+    <xsl:text>: </xsl:text>
+    <xsl:value-of select="$i18n-see-right"/>
+  </span>
+  <xsl:if test="$input-doctype!='course'">
+    &#183;
+    <a title="{$i18n-show-course}" onclick="javascript:showCourse()">
+      <xsl:value-of select="$i18n-course"/>
+    </a>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main structure                                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template name="list.main">
+  <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="{$list.css-stylesheet}"/>
+      <xsl:call-template name="list.javascript"/>
+    </head>
+    <body>
+      <div id="BORDER_RIGHT"/>
+      <div class="title">
+        <xsl:call-template name="title"/>
+      </div>
+      <div class="links">
+        <xsl:call-template name="links"/>
+      </div>
+      <h1><xsl:value-of select="$i18n-toc"/></h1>
+      <table class="crslist">
+        <xsl:apply-templates select="/*/mumie:content/*/crs:list/*"/>
+      </table>
+    </body>
+  </html>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Auxiliaries                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template name="tooltip">
+  <xsl:param name="doctype" select="local-name()"/>
+  <xsl:choose>
+    <xsl:when test="$doctype = 'course' or $doctype = 'course_section' or $doctype = 'worksheet'">
+      <xsl:value-of select="$i18n-show-summary"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$i18n-show"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+</xsl:stylesheet>

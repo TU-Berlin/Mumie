@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy <rassy@math.tu-berlin.de>
+   $Id: xsl_mmbrowser_section_toc_filter.content.xml,v 1.5 2008/09/08 08:49:10 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl:variable name="entries" select="/mumie:section/mumie:contains/*"/>
+
+
+<!-- The resolved generic references -->
+<xsl:variable name="real-docs"
+              select="/*/mumie:dynamic_data/mumie:store/mumie:generic_document_impl/*"/>
+
+<xsl:template match="@*|node()" priority="0">
+  <xsl:copy>
+    <xsl:apply-templates select="@*|node()"/>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="/mumie:section/mumie:contains/*" priority="1">
+  <xsl:variable name="type" select="local-name()"/>
+  <xsl:choose>
+    <xsl:when test="mumie:hide/@value = 'true'">
+      <!-- Ignore -->
+    </xsl:when>
+    <xsl:when
+      test="$type='section' or
+            $type='applet'">
+      <xsl:copy>
+        <xsl:apply-templates select="@*|node()"/>
+      </xsl:copy>
+    </xsl:when>
+    <xsl:when
+      test="$type='generic_element' or
+            $type='generic_subelement' or
+            $type='generic_problem' or
+            ( $type='generic_image' and not($entries/mumie:thumbnail[@id = current/@id]) )">
+      <xsl:variable name="real-type" select="substring-after($type, 'generic_')"/>
+      <xsl:variable name="real-doc"
+        select="$real-docs[local-name()=$real-type and ../@id_of_generic=current()/@id]"/>
+      <xsl:apply-templates select="$real-doc"/>
+    </xsl:when>
+  </xsl:choose>
+
+</xsl:template>
+
+</xsl:stylesheet>

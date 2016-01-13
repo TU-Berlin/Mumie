@@ -1,0 +1,179 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2010 Technische Universitaet Berlin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/* Colorslist
+
+ Table Background - rgb(255,255,255)
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                  Simple Markup                                   */
+/* -------------------------------------------------------------------------------- */
+
+
+span.code
+{ 
+  color: red;
+
+ }
+
+span.man-arg,
+span.man-args
+  {
+    color: brown;
+  }
+
+span.opt-arg,
+span.opt-args
+  {
+    color: green;
+}
+
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                Command List Info Top Table                       */
+/* -------------------------------------------------------------------------------- */
+
+
+table
+{ 
+  margin: 4px;   
+}
+
+
+table th
+{ 
+  text-align: left;
+  background-color: #D2FFC4;
+  font-size: 13pt;
+  padding: 4px;
+}
+
+table td
+{ 
+  background-color: #E6FCFF;
+  padding: 3px;
+}
+
+
+
+
+table.library 
+{ 
+  border-style:solid;
+  border-color: grey;
+}
+
+
+
+
+table.lib-info
+{ 
+  border-style: dotted;
+  border-color: red;
+  border-width: 2px;
+}
+
+table.lib-info th 
+{ 
+  font-size: medium;
+ }
+
+
+
+
+
+/*-----------------------------*/
+/* short-list table properties */
+/*-----------------------------*/
+
+td.description,
+td.args
+{ 
+  background-color: rgb(245,245,245);
+  padding: 1px;
+}
+
+td.command-line
+{ 
+  background-color:  #D2FFC4;
+  padding: 1px;
+}
+
+tr.cmd-header td, 
+tr.env-header td
+{ 
+  background-color: black;
+  color: white;
+  font-weight: bold;
+}
+
+
+/*-----------------------------*/
+/* man-args and opt-args table */
+/*-----------------------------*/
+
+table.arg-description
+{ 
+  width: 100%;
+  margin: 0px;     
+ }
+
+table.arg-description td
+{ 
+  vertical-align: top;
+  padding: 1px 3px;
+ }
+
+table.arg-description td.arg
+{ 
+  width: 60px;
+  background-color: #FFFFE3;
+ }
+
+table.arg-description td.des
+{ 
+  background-color: white;
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,32 @@
+% $Id: thm_link_origin.src.tex,v 1.1 2009/10/27 16:00:13 linges Exp $
+
+\documentclass[free]{japs.element.theorem}
+
+\begin{metainfo}
+  \name{Test}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \begin{links}
+    \link{generic_element}{samples/g_def_link_target.meta.xml}{def}
+    \link{generic_subelement}{samples/g_exm_link_target.meta.xml}{exm}
+  \end{links}
+\end{metainfo}
+
+
+\begin{content}
+
+\title{Titel}
+
+  Freier Text.
+
+  Hier ein Link zu einer \href{def}{Definition}.
+
+  Hier ein Link zu einem \href{exm}{Beispiel}.
+
+  Hier ein externer Link zu \ehref{http://www.mozilla.com}{Mozilla}.
+
+\end{content}

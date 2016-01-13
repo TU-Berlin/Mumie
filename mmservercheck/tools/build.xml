@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmservercheck" default="all" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="srvck.src.dir" value="src"/>
+  <property name="srvck.src.java.dir" value="${srvck.src.dir}/java"/>
+  <property name="srvck.lib.dir" value="lib"/>
+  <property name="srvck.lib.java.dir" value="${srvck.lib.dir}/java"/>
+  <property name="srvck.lib.java.classes.dir" value="${srvck.lib.java.dir}/classes"/>
+  <property name="srvck.install.lib.java.dir" value=""/>
+  <property name="srvck.test.dir" value="test"/>
+  <property name="srvck.doc.dir" value="doc"/>
+  <property name="srvck.doc.apidocs.dir" value="${srvck.doc.dir}/apidocs"/>
+  <property name="srvck.resources.dir" value="resources"/>
+  <property name="srvck.resources.apidocs.css.file"
+            value="${srvck.resources.dir}/apidocs.css"/>
+  <property name="srvck.verbose" value="no"/>
+  <property name="srvck.force" value="no"/>
+  <property name="srvck.javac.verbose" value="no"/>
+  <property name="srvck.javac.deprecation" value="no"/>
+  <property name="srvck.javac.debug" value="yes"/>
+  <property name="srvck.jar.file" value="mumie-server-check.jar"/>
+  <property name="srvck.jdk.apidocs.url" value=""/>
+  <property name="srvck.vendor" value="Berlin University of Technology"/>
+  <property name="srvck.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="srvck.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="srvck.internal.force">
+    <istrue value="${srvck.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${srvck.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+        <include name="mumie-japs-client.jar"/>
+      </fileset>
+    </path>
+    <property name="srvck.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="srvck."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$srvck.verbose}">
+      <fileset dir="${srvck.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) srvck.internal.force is set, which is
+     equivalent to srvck.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="srvck.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     srvck.internal.force is set, which is equivalent to srvck.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${srvck.src.java.dir}"
+           destdir="${srvck.lib.java.classes.dir}"
+           listfiles="${srvck.verbose}"
+           classpathref="classpath"
+           deprecation="${srvck.javac.deprecation}"
+           verbose="${srvck.javac.verbose}"
+           debug="${srvck.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${srvck.lib.java.dir}/${srvck.jar.file}"
+         basedir="${srvck.lib.java.classes.dir}"
+         excludes=".KEEP_ME">
+      <manifest>
+        <attribute name="Created" value="${srvck.timestamp}"/>
+        <section name="net/mumie/servercheck">
+          <attribute name="Specification-Title" value="Mumie Server Checks"/>
+          <attribute name="Specification-Version" value="${srvck.version}"/>
+          <attribute name="Specification-Vendor" value="${srvck.vendor}"/>
+          <attribute name="Implementation-Title" value="net/mumie/servercheck"/>
+          <attribute name="Implementation-Version" value="${srvck.version}"/> 
+          <attribute name="Implementation-Vendor" value="${srvck.vendor}"/>
+        </section>
+      </manifest>  
+    </jar> 
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if srvck.internal.force is set, which is equivalent to srvck.force being 
+     true.
+  -->
+
+  <target name="all"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs"
+          depends="clear-apidocs, classpath"
+          description="Creates the API docs">
+    <mkdir dir="${srvck.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Server Checks"
+             packagenames="net.mumie.servercheck.*"
+             sourcepath="${srvck.src.java.dir}"
+             destdir="${srvck.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${srvck.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${srvck.verbose}">
+      <link href="${srvck.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="clear-apidocs">
+    <delete verbose="${srvck.verbose}"
+            dir="${srvck.doc.apidocs.dir}"/>
+  </target>
+
+</project>

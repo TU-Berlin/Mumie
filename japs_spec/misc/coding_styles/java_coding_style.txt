@@ -1,0 +1,186 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: java_coding_style.txt,v 1.1 2007/12/17 11:57:02 rassy Exp $
+
+
+                            MUMIE JAVA-CODING-STYLE
+
+
+1. Keine Tabs verwenden
+
+  Tabs können von unterschiedlichen Editoren unterschiedlich interpretiert
+  werden. Die Formatierung kann dadurch zunichte gemacht werden.
+
+
+2. Einrückungen im GNU-Stil mit 2 Zeichen Einrücktiefe
+
+  Beispiele:
+
+    if ( resultSet.next() )
+      {
+        int id = resultSet.getInt(DbColumn.ID);
+        // ...
+      }
+
+    public int getName ()
+    {
+      return this.name;
+    }
+
+    public Class Test
+    {
+      // ...
+    }
+
+  (Bei Methoden- und Klassendefinitionen also keine Einrückung des {}-Blocks.)
+
+
+3. Bei boolschen Ausdrücken ein Leerzeichen nach öffnender und vor schließender
+   Klammer
+
+  Beispiel:
+
+    if ( value > 2 || value < -1 )
+      {
+        // ...
+      }
+
+
+4. Ein Leerzeichen vor und nach Operatoren
+
+  Beispiele:
+
+    String name = "foo";
+
+    return (name != null ? name : "unknown");
+
+  FALSCH:
+
+    String name= "foo";
+
+    return (name != null ? name: "unknown");
+
+
+5. Namen von Klassen mit Grossbuchstaben, Namen von Variablen mit
+   Kleinbuchstaben beginnen lassen. Namen aussagekräftig
+   wählen. Namenskomponenten durch Grossschreiben der nächsten Komponente
+   trennen. In Ausnahmefällen kann auch "_" zur Trennung verwendet werden.
+
+  Beispiele:
+
+    absFilename
+    getAbsFilename
+
+  FALSCH:
+
+    f (nicht aussagekräftig)
+    abs_filename
+
+
+6. Namen von statischen Konstanten ('static final' Variablen) in
+   Grossbuchstaben; Namenskomponenten durch "_" getrennt.
+
+  Beispiel:
+
+    static final int MAX_LINE_NUMBER = 10000;
+
+
+7. Maximale Zeilenlänge: 90 Zeichen
+
+  Ausnamen sind erlaubt. Wenn möglich, maximale Zeilenlänge jedoch noch unter
+  90 Zeichen halten (ca. 80 Zeichen).
+
+
+8. Nicht mehr als eine Leerzeile zum Trennen von Code-Blöcken
+
+  Beispiel:
+  
+    // Initialize services:
+    dbHelper = (DbHelper) this.serviceManager.lookup(DbHelper.ROLE);
+    user = (User) this.serviceManager.lookup(SessionUser.ROLE);
+
+    // Process parameters:
+    int id = ParamUtil.getAsId(this.parameters, "id");
+    int type = ParamUtil.getAsInt(this.parameters, "id");
+
+  FALSCH:
+  
+    // Initialize services:
+    dbHelper = (DbHelper) this.serviceManager.lookup(DbHelper.ROLE);
+    user = (User) this.serviceManager.lookup(SessionUser.ROLE);
+
+
+    // Process parameters:
+    int id = ParamUtil.getAsId(this.parameters, "id");
+    int type = ParamUtil.getAsInt(this.parameters, "id");
+
+  Gilt auch für Zwischenräume zwischen Funktions-Definitionen und
+  Top-Level-Kommentaren. Beispiel:
+
+    /**
+     * Sets the id.
+     */
+
+     public void setId (int id)
+     {
+       this.id = id;
+     }
+
+    /**
+     * Returns the id.
+     */
+
+    public id getId ()
+    {
+      return this.id;
+    }
+
+  FALSCH:
+
+    /**
+     * Sets the id.
+     */
+
+     public void setId (int id)
+     {
+       this.id = id;
+     }
+
+
+    /**
+     * Returns the id.
+     */
+
+    public id getId ()
+    {
+      return this.id;
+    }
+
+  FALSCH:
+
+    /**
+     * Sets the id.
+     */
+     public void setId (int id)
+     {
+       this.id = id;
+     }
+
+    /**
+     * Returns the id.
+     */
+    public id getId ()
+    {
+      return this.id;
+    }
+
+9. Zur Gliederung des Codes Kommentare der Form
+
+     // ------------------------------------------------------------------------
+     // Ueberschrift
+     // ------------------------------------------------------------------------
+
+   verwenden.
+
+
+
+-- ENDE DER DATEI --

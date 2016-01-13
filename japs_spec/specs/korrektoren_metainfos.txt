@@ -1,0 +1,28 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: korrektoren_metainfos.txt,v 1.1 2005/10/04 14:22:21 rassy Exp $
+
+                             KORREKTOREN-METAINFOS
+
+
+  Korrektoren von Aufgaben-Applets haben, wie Applets, Metainformationen, die
+  im Quellcode durch Javadoc-Tags angegeben werden. Dies sind:
+
+    mm.category     Muss immer den Wert "corrector" haben.
+
+    mm.copyright    Copyright-Angabe. Optional. Default ist "Copyright (C) 2004,
+                    Berlin University of Technology".
+
+    mm.status       QS Status. Erlaubte Werte sind: pre, devel_ok, content_ok,
+                    content_complete, ok_for_publication, final
+
+    mm.description  Kurze Beschreibung (in Deutsch), wird als ToolTip
+                    angezeigt.
+
+    mm.todo         Hinweise für den Entwickler, was noch zu tun ist
+
+    mm.changelog    Werdegang des Dokuments
+
+
+
+                           --- Ende der Datei ---
+

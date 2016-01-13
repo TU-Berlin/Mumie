@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="spck" default="jar" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property name="spck.install.lib.java.dir" value=""/>
+  <property name="spck.jdk.apidocs.url" value=""/>
+  <property name="spck.verbose" value="no"/>
+  <property name="spck.force" value="no"/>
+  <property name="spck.javac.verbose" value="no"/>
+  <property name="spck.javac.deprecation" value="no"/>
+  <property name="spck.javac.debug" value="yes"/>
+  <property name="spck.jar.file" value="mumie-speed-check.jar"/>
+  <property name="spck.vendor" value="Berlin University of Technology"/>
+  <property name="spck.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="spck.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="spck.internal.force">
+    <istrue value="${spck.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${spck.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+      </fileset>
+    </path>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$spck.verbose}">
+      <fileset dir="${basedir}/lib/java/classes">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) spck.internal.force is set, which is
+     equivalent to spck.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="spck.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     spck.internal.force is set, which is equivalent to spck.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${basedir}/src/java"
+           destdir="${basedir}/lib/java/classes"
+           listfiles="${spck.verbose}"
+           classpathref="classpath"
+           deprecation="${spck.javac.deprecation}"
+           verbose="${spck.javac.verbose}"
+           debug="${spck.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes"
+          depends="classes">
+    <jar destfile="${basedir}/lib/java/${spck.jar.file}"
+         basedir="${basedir}/lib/java/classes"
+         excludes=".KEEP_ME">
+      <manifest>
+        <attribute name="Created" value="${spck.timestamp}"/>
+        <section name="net/mumie/speedcheck">
+          <attribute name="Specification-Title" value="Mumie speed checking tools"/>
+          <attribute name="Specification-Version" value="${spck.version}"/>
+          <attribute name="Specification-Vendor" value="${spck.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.spck"/>
+          <attribute name="Implementation-Version" value="${spck.version}"/> 
+          <attribute name="Implementation-Vendor" value="${spck.vendor}"/>
+        </section>
+      </manifest>
+    </jar>  
+  </target>
+ 
+  <!--
+    Creates the API docs
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${basedir}/doc/apidocs"/>
+    <javadoc doctitle="Mumie XTR API "
+             packagenames="net.mumie.xtr.*"
+             sourcepath="${basedir}/src/java"
+             destdir="${basedir}/doc/apidocs"
+             classpathref="classpath"
+             stylesheetfile="${basedir}/resources/apidocs.css"
+             failonerror="yes"
+             verbose="${spck.verbose}">
+      <link href="${spck.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${spck.verbose}"
+            dir="${basedir}/doc/apidocs"/>
+  </target>
+
+</project>

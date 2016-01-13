@@ -1,0 +1,24 @@
+package net.mumie.srv.notions;
+
+public class DbFunction
+{
+  // ================================================================================
+  // Autocoded start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private DbFunction ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("DbFunction must not be instanciated");
+  }
+}

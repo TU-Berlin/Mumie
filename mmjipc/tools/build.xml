@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy
+  
+  $Id: build.xml,v 1.3 2007/07/16 11:03:26 grudzin Exp $
+-->
+
+<project name="mmjipc" default="all" basedir="..">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property environment="env"/>
+  <property name="mmjipc.src.dir" value="src"/>
+  <property name="mmjipc.src.java.dir" value="${mmjipc.src.dir}/java"/>
+  <property name="mmjipc.lib.dir" value="lib"/>
+  <property name="mmjipc.lib.java.dir" value="${mmjipc.lib.dir}/java"/>
+  <property name="mmjipc.lib.java.classes.dir" value="${mmjipc.lib.java.dir}/classes"/>
+  <property name="mmjipc.test.dir" value="test"/>
+  <property name="mmjipc.doc.dir" value="doc"/>
+  <property name="mmjipc.doc.apidocs.dir" value="${mmjipc.doc.dir}/apidocs"/>
+  <property name="mmjipc.resources.dir" value="resources"/>
+  <property name="mmjipc.resources.apidocs.css.file"
+            value="${mmjipc.resources.dir}/apidocs.css"/>
+  <property name="mmjipc.verbose" value="no"/>
+  <property name="mmjipc.force" value="no"/>
+  <property name="mmjipc.javac.verbose" value="no"/>
+  <property name="mmjipc.javac.deprecation" value="no"/>
+  <property name="mmjipc.javac.debug" value="yes"/>
+  <property name="mmjipc.jar.file" value="mumie-ipc.jar"/>
+  <property name="mmjipc.jdk.apidocs.url" value=""/>
+  <property name="mmjipc.jar.manifest" value="${mmjipc.lib.java.dir}/META-INF/MANIFEST.MF"/>
+  <property name="mmjipc.vendor" value="Berlin University of Technology"/>
+  <property name="mmjipc.version" value="-NONE-"/>
+
+  <!--
+    ================================================================================
+    Auto-set properties
+    ================================================================================
+  -->
+
+  <tstamp>
+    <format property="mmjipc.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmjipc.internal.force">
+    <istrue value="${mmjipc.force}"/>
+  </condition>
+
+  <!--
+    ================================================================================
+    Path for compiling
+    ================================================================================
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <pathelement path="${mmjipc.lib.java.classes.dir}"/>
+      <fileset dir="${mmjipc.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <property name="mmjipc.classpath" refid="classpath" />
+  </target>
+
+  <!--
+    ================================================================================
+    Printing properties
+    ================================================================================
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmjipc."/>
+  </target>
+
+  <!--
+    ================================================================================
+    Java classes
+    ================================================================================
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmjipc.verbose}">
+      <fileset dir="${mmjipc.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clear-classes.iff-force" if="mmjipc.internal.force">
+    <!-- Deletes the compiled classes if (and only if) mmjipc.internal.force
+         is set, which is equivalent to mmjipc.force being true. -->
+    <antcall target="clear-classes"/>
+  </target>
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="classpath">
+    <javac srcdir="${mmjipc.src.java.dir}"
+           destdir="${mmjipc.lib.java.classes.dir}"
+           listfiles="${mmjipc.verbose}"
+           deprecation="${mmjipc.javac.deprecation}"
+           verbose="${mmjipc.javac.verbose}"
+           debug="${mmjipc.javac.debug}"
+           failonerror="yes">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!--
+    ================================================================================
+    Jars
+    ================================================================================
+  -->
+
+  <target name="jar" 
+          description="Creates a jar with all classes">
+    <jar destfile="${mmjipc.lib.java.dir}/${mmjipc.jar.file}"
+         basedir="${mmjipc.lib.java.classes.dir}"
+         excludes=".KEEP_ME"> 
+      <manifest>
+        <attribute name="Created" value="${mmjipc.timestamp}"/>
+        <section name="net/mumie/ipc">
+          <attribute name="Specification-Title" value="Mumie IPC Tools"/>
+          <attribute name="Specification-Version" value="${mmjipc.version}"/>
+          <attribute name="Specification-Vendor" value="${mmjipc.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.ipc"/>
+          <attribute name="Implementation-Version" value="${mmjipc.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmjipc.vendor}"/>
+      </section>
+    </manifest>
+    </jar>
+  </target>
+
+  <target name="clear-jar"
+          description="Deletes the jar archives">
+    <delete verbose="{$mmjipc.verbose}">
+      <fileset dir="${mmjipc.lib.java.dir}">
+        <include name="${mmjipc.jar.file}"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+    ================================================================================
+    API docs
+    ================================================================================
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${mmjipc.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie IPC Tools API "
+             packagenames="net.mumie.ipc.*"
+             sourcepath="${mmjipc.src.java.dir}"
+             destdir="${mmjipc.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmjipc.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmjipc.verbose}">
+      <link href="${mmjipc.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${mmjipc.verbose}"
+            dir="${mmjipc.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Main target - creates all
+    ================================================================================
+  -->
+
+  <target name="all"
+          description="Creates all"
+          depends="clear-classes.iff-force,
+                   classes,
+                   jar">
+  </target>
+
+  <!--
+    ================================================================================
+    Clears all
+    ================================================================================
+  -->
+
+  <target name="clear"
+          description="Deletes all generated files"
+          depends="clear-classes,
+                   clear-jar,
+                   clear-apidocs">
+  </target>
+    
+</project>

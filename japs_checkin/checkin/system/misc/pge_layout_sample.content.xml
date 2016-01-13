@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+
+  <head>
+    <title>Layout Testseite</title>
+    <mmx:css-stylesheet/>
+  </head>
+
+  <body>
+
+    <mmx:top-bar/>
+
+    <div class="main-bounded-width">
+
+    <h1>&#220;berschrift h1</h1>
+    <h2>&#220;berschrift h2</h2>
+    <h3>&#220;berschrift h3</h3>
+    <h4>&#220;berschrift h4</h4>
+    <p>
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+    </p>
+    <p>
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Etwas <em>hervorgehobener Text.</em> Etwas <strong>stark hervorgehobener
+      Text</strong>.
+    </p>
+    <p>
+      Eine Tablelle:
+    </p>
+    <table class="genuine">
+      <thead>
+        <tr>
+          <td>Id</td><td>Name</td><td>Vorname</td><td>Konto</td><td></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>134</td>
+          <td>M&#252;ller</td>
+          <td>Hans</td>
+          <td>234343</td>
+          <td><a href="foo">Details</a></td>
+        </tr>
+        <tr>
+          <td>206</td>
+          <td>Schmitt</td>
+          <td>Werner</td>
+          <td>656465</td>
+          <td><a href="foo">Details</a></td>
+        </tr>
+        <tr>
+          <td>164</td>
+          <td>Schneider</td>
+          <td>Marta</td>
+          <td>75757</td>
+          <td><a href="foo">Details</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Buttons:
+    </p>
+
+    <p>
+      <button type="button" onclick="javascript:alert('Hallo Welt!')">Speichern</button>
+      <button type="button" onclick="javascript:alert('Hallo Welt!')">Abbrechen</button>
+    </p>
+
+    <p>
+      Links als Buttons:
+    </p>
+
+    <p>
+      <a class="button" href="foo">Speichern</a>
+      <a class="button" href="foo">Abbrechen</a>
+    </p>
+
+    <p>
+      Links als kleine Buttons:
+    </p>
+
+    <p>
+      <a class="button-small" href="foo">Speichern</a>
+      <a class="button-small" href="foo">Abbrechen</a>
+    </p>
+
+    <p>
+      Texteingabefelder, einzeilig:
+    </p>
+
+    <table class="layout">
+      <tr>
+        <td>
+          <div class="label">Vorname:</div>
+        </td>
+        <td>
+          <div class="input">
+            <input type="text" name="foo" size="20" value="Test"/>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="label">
+            Nachname:
+          </div>
+        </td>
+        <td>
+          <div class="input">
+            <input type="text" name="foo2" size="20" value="Test"/>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <p>
+      Dialog:
+    </p>
+
+    <table class="menu" style="visibility:visible">
+      <tr>
+        <th class="sep-after">Rechter Frame</th>
+      </tr>
+      <tr>
+        <td>Vergr&#246;ssern</td>
+      </tr>
+      <tr>
+        <td class="sep-after">Stark vergr&#246;ssern</td>
+      </tr>
+      <tr>
+        <td>Verkleinern</td>
+      </tr>
+      <tr>
+        <td class="sep-after">Start verkleinern</td>
+      </tr>
+      <tr>
+        <td class="sep-after">Zuklappen</td>
+      </tr>
+      <tr>
+        <td>Men&#252; schliessen</td>
+      </tr>
+    </table>
+  </div>
+
+  </body>
+
+</html>

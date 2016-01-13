@@ -1,0 +1,184 @@
+Autor: Markus Gronau <gronau@math.tu-berlin.de>
+$Id: applet_display_properties.txt,v 1.6 2008/01/23 10:04:39 gronau Exp $
+
+   Spezifikation zu den Display-Properties der MathletFactory-Bibliothek
+  =======================================================================
+
+I. Einleitung
+=============
+
+   1.1 Motivation
+   --------------
+   DisplayProperties bilden in der MathletFactory eine Abstraktionsschicht für
+   Anzeige-Einstellungen, welche für alle Drawables des gleichen MM-Objekts
+   gelten sollen. Sie bilden somit eine Schnittstelle zwischen den MM-Objekten
+   und deren Visualisierungen sowohl in 2D und 3D als auch in SWING-Containern.
+   Um die Trennung zwischen Mathematik und Darstellung auch für JReality-Drawables
+   zu ermöglichen, bedarf es einer Architektur der Anzeige-Einstellungen, die 
+   unabhängig vom Typ der jeweiligen Einstellung funktioniert und somit abstrakt
+   mit den gespeicherten Werten umgehen kann.
+   Dies heißt insbesondere, dass sowohl allgemeine/abstrakte als auch spezielle Werte 
+   an einem einzigen Ort abgelegt werden (z.B. Integer-Werte und direkte Klassenverweise
+   zu JReality-Konstanten).
+
+   1.2 Forderungen
+   ---------------
+    - nur JReality-Applets brauchen ein zusätzliches Jar im Classpath
+    - spezialisierte Display-Prop.-Klassen mit JReality-Objekten
+    - Standard- und benutzerdefinierte Einstellungen
+    - allgemeine und spezielle "Screen-Type"-Einstellungen
+    - unbenötigte spezielle Einstellungen möglichst nicht laden
+    - volle Abwärtskompatibilität für bestehende Applets:
+      - alle Methoden der allgemeinen DisplayProperties beibehalten
+      - keine Änderungen in den Standards der allgemeinen Einstellungen
+      - nur eine DisplayProperties-Instanz pro MM-Objekt
+
+   1.3 Beispiele
+   -------------
+      1.3.1 Beispiel 1: LineDisplayProperties
+            ---------------------------------
+      Allg. Einstellung (benutzt in 2D und 3D): Linienbreite
+      Spezielle JReality-Einstellung: Pixel- oder Objektdarstellung der Linie
+
+      1.3.2 Beispiel 2: DisplayProperties
+            -----------------------------
+      Die Methode "isFilled()" ist eine allgemeine Einstellung, die in JReality
+      einen anderen Default-Wert hat bzw. dieser aus JReality-Konstanten gelesen wird.
+
+
+II. Architektur
+===============
+
+   2.1 Format der Properties
+   -------------------------
+   Die Werte der Einstellungen werden unter einem eindeutigen Namen in einer Tabelle/Map
+   gespeichert. Als Property-Typ wird java.lang.Object verwendet, womit die Werte sowohl
+   anonym gespeichert als auch geladen werden können. Die herkömlichen Methoden der
+   DisplayProperties-Klasse lesen diese Werte anhand ihres Namens aus und liefern die
+   gecasteten Werte zurück. Spezialisierte JReality-DisplayProperties können so direkt
+   auf JReality-Objekte verweisen.
+   Alle DisplayProperties-Namen beginnen mit dem Prefix "display.", womit sich die Architektur
+   der DisplayProperties in das allgemeine MathletFactory Properties Framework eingliedert.
+   Unter-Klassen können längere Prefixe verwenden (z.B. "display.jr3d.surface").
+   Default-Werte sollten nicht im Map gespeichert werden sondern über die "getter"-Methoden
+   zurückgegeben werden, wenn kein konkreter Eintrag im Map existiert.
+   
+   2.2 Basis-Klasse
+   ----------------
+   Die Basis-Klasse "DisplayProperties" ist die Super-Klasse für alle allgemeinen und
+   speziellen DisplayProperties-Klassen und hält intern die Werte für alle Einstellungen
+   in einer Tabelle/Map. Die Basis-Klasse enthält die herkömlichen DP-Methoden, welche die 
+   Properties des Maps kapseln, d.h. eine Property über ihren Namen auslesen und in den 
+   korrekten Rückgabewert casten.
+   Die DP-Basis-Klasse enthält Methoden zum Verlinken und Kopieren des Property-Maps für 
+   Unter-Klassen. Wenn möglich, sollten Maps verlinkt werden, da dies einen viel kleineren
+   Aufwand hat, als das Kopieren aller Werte in einen neuen Map.
+   
+   2.3 Spezialisierte Unter-Klassen
+   --------------------------------
+   Spezialisierte DisplayProperties-Klassen bedienen sich des Maps einer anderen DP-Instanz
+   und fügen durch eigene Methoden neue/spezielle Eigenschaften hinzu. 
+   Das Erstellen von spezialisierten DPs aus einer allgemeinen Instanz heraus besteht also 
+   im Grunde nur aus dem Verlinken zum existierenden Map, da die eigentlichen
+   Daten nur in diesem gespeichert werden und die spezialisierten Methoden diese nur kapseln.
+   Es ist möglich, Methoden der Basis-DP-Klasse zu überschreiben. Dies kann allerdings zur 
+   Folge haben, dass 2 DP-Referenzen unterschiedlichen Typs unterschiedliche Ergebnisse
+   zurückgeben, obwohl sie aus dem selbem Map lesen.
+   
+   2.4 DisplayProperties in MM-Objekten
+   ------------------------------------
+   Jedes MM-Objekt besitzt eine DP-Instanz, welche die ganz allgemeinen Einstellungen enthält.
+   Allgemeine Einstellungen können über aprobate "set"-Methoden über diese DP-Instanz geändert werden.
+   Spezielle DP-Einstellungen müssen über eine jeweilige spezielle Instanz einer DP-Unter-Klasse
+   gelesen bzw. geschrieben werden oder können anhand ihres Property-Namens direkt aus dem Map 
+   gelesen bzw. in den Map gespeichert werden.
+   Dabei ist zu beachten, dass in den Drawables nicht-benutzte Einstellungen ignoriert werden, d.h.
+   keine Auswirkungen auf die Visualisierungen haben.
+   Aufgrund der Forderung, sowohl allgemeine als auch Screen-Type-Properties an einem Ort zu speichern,
+   diese jedoch nicht unbedingt Klassen-technisch voneinander ableiten müssen, ergibt sich das
+   Problem der Mehrfachvererbung von Klassen in Java. Da jedoch das Erstellen von neuen
+   DP-Referenzen anderen Typs allein durch das Verlinken des DP-Maps bewerkstelligt werden kann,
+   wird dieser Nachteil wieder aufgehoben.
+   
+   2.5 DisplayProperties in Drawables
+   ----------------------------------
+   Jedes Drawables ist einem MM-Objekt zugehörig und soll dessen DisplayProperties beachten.
+   Dazu wird beim Initialisieren eines Transformers eine Referenz auf die DP-Instanz des
+   MM-Objektes ("Master") in die Basis-Klasse des jeweiligen Drawable-Typen gespeichert.
+   Diese kann zusätzlich zur Referenz auf die DP-Basis-Klasse weitere Referenzen anderen Typs
+   benutzen, wobei alle weiteren Referenzen auf den Map der Master-DP-Referenz verweisen.
+   Damit stehen die speziellen Methoden vieler DP-Unter-Klassen im Drawable zur Verfügung,
+   wobei hier das veränderte Verhalten von überschriebenen DP-Basis-Methoden genutzt werden kann.
+   Außerdem werden Änderungen in den DPs des Master-MM-Objektes beim nächsten Render-Vorgang
+   sofort angezeigt und müssen nicht im Transformer explizit übertragen werden.
+   
+   
+III. Änderungen an der MathletFactory
+=====================================
+
+   3.1 Verschieben der JReality-Klassen
+   ------------------------------------
+      3.1.1 Drawable-Klassen
+            ----------------
+         Von:  "net.mumie.mathletfactory.display.j3d"
+         Nach: "net.mumie.mathletfactory.display.jr3d"
+         Klassen:
+           JR3DCompositeDrawable
+           JR3DCoordAxisDrawable
+           JR3DDrawable
+           JR3DFaceSetDrawable
+           JR3DLineSetDrawable
+           JR3DPointSetDrawable
+           JR3DVectorDrawable
+         
+      3.1.2 Display-Properties-Klassen
+            --------------------------
+         Von:  "net.mumie.mathletfactory.display"
+         Nach: "net.mumie.mathletfactory.display.jr3d"
+         Klassen:
+           AttributesMap (ersetzt durch internen Display-Properties-Map)
+           CanvasLightProperties
+           CanvasViewerProperties
+           MMJRealityCanvas
+           ShaderDisplayProperties
+           TextDisplayProperties
+         
+      3.1.3 Transformer-Klassen
+            -------------------
+         Von:  "net.mumie.mathletfactory.transformer.j3d"
+         Nach: "net.mumie.mathletfactory.transformer.jr3d"
+         Klassen:
+           JR3DCanvasTransformer
+           JR3DDefaultR3Transformer
+           JR3DDefaultR3VectorTransformer
+           JR3DFunctionOverR2Transformer
+           JR3DLineSegmentTransformer
+           JR3DLineTransformer
+           JR3DParametricFunctionTransformer
+           JR3DPointTransformer
+           JR3DPolygonTransformer
+           JR3DQuadricTransformer
+           JR3DSubspaceTransformer
+         
+      3.1.4 Aktion-Klassen
+            --------------
+         Von:  "net.mumie.mathletfactory.action"
+         Nach: "net.mumie.mathletfactory.action.jr3d"
+         Klassen:
+           JR3DCanvasController
+           JR3DCanvasControllerIF
+           MMJREvent
+           
+      3.1.5 Divers
+            ------
+         1) Von:  "net.mumie.mathletfactory.util.jreality.JRGeometryUtils"
+            Nach: "net.mumie.mathletfactory.action.jr3d.JRGeometryUtils"
+           
+           
+   3.2 Umbenennen der JReality-Klassen
+   -----------------------------------
+      CanvasLightProperties --> JR3DCanvasLightProperties
+      CanvasViewerProperties --> JR3DCanvasViewerProperties
+      ShaderDisplayProperties --> JR3DShaderDisplayProperties
+      TextDisplayProperties --> JR3DTextDisplayProperties
+      

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE html
+  [
+   <!ENTITY form-stage        "0">
+   <!ENTITY temp-account      "6">
+  ]
+>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:fs="http://www.mumie.net/xml-namespace/fs-content">
+
+  <head>
+    <title>Nachz&#252;gler Lineare Algabra</title>
+    <link rel="stylesheet" type="text/css" href="%{prefix}/public/resources/styles.css"/>
+  </head>
+
+  <body>
+
+    <fs:top-bar/>
+
+    <div class="main-bounded-width">
+
+      <fs:switch-param pos="&form-stage;">
+
+        <fs:case-param value="0">
+
+          <h1>Nachz&#252;gler Lineare Algabra</h1>
+          <p>
+            Hier k&#246;nnen Sie sich als Nach&#252;gler zur Lehrveranstaltung 
+            <em>Lineare Algebra f&#252;r Ingenieure</em> anmelden. &#8230;
+          </p>
+          <form fs:id="form"
+                action="%{prefix}/public/auth/tub-create-account"
+                enctype="multipart/form-data"
+                method="post">
+            <table class="grid" style="margin: 0.5em 0em 0.5em 0em">
+              <tr>
+                <td>Login-Name des tubIT-Kontos:</td>
+	        <td><input type="text" name="login-name" size="32" fs:value="$param2"/></td>
+              </tr>
+              <tr>
+                <td>Passwort des tubIT-Kontos:</td>
+	        <td><input type="password" name="password" size="32"/></td>
+              </tr>
+              <tr>
+                <td>Vorname:</td>
+	        <td><input type="text" name="first-name" size="32" fs:value="$param3"/></td>
+              </tr>
+              <tr>
+                <td>Nachname:</td>
+	        <td><input type="text" name="surname" size="32" fs:value="$param4"/></td>
+              </tr>
+              <tr>
+                <td>E-Mail:</td>
+	        <td><input type="text" name="e-mail" size="32" fs:value="$param5"/></td>
+              </tr>
+            </table>
+            <input type="hidden" name="form-stage" value="1"/>
+            <p>
+              <button type="submit" name="submit" value="submit">Abschicken</button>
+            </p>
+          </form>
+
+        </fs:case-param>
+        
+        <fs:case-param value="1">
+
+          <h1>Nachz&#252;gler Lineare Algabra</h1>
+
+          <fs:if-error>
+
+            <fs:then>
+
+              <div class="error">
+                <h2>Ein Fehler ist aufgetreten</h2>
+                <p>
+                  <fs:switch-error>
+                    <fs:case-error value="login-name-missing">
+                      Login-Name des tubIT-Kontos nicht eingetragen
+                    </fs:case-error>
+                    <fs:case-error value="first-name-missing">
+                      Vorname nicht eingetragen
+                    </fs:case-error>
+                    <fs:case-error value="surname-missing">
+                      Nachname nicht eingetragen
+                    </fs:case-error>
+                    <fs:case-error value="email-missing">
+                      E-Mail nicht eingetragen
+                    </fs:case-error>
+                    <fs:case-error value="password-missing">
+                      Passwort nicht eingetragen
+                    </fs:case-error>
+                    <fs:case-error value="user-not-found-in-ldap">
+                      Autentifizierung fehlgeschlagen (Benutzer existiert nicht)
+                    </fs:case-error>
+                    <fs:case-error value="password-check-failed">
+                      Autentifizierung fehlgeschlagen (falsches Passwort)
+                    </fs:case-error>
+                  </fs:switch-error>
+                </p>
+              </div>
+
+              <fs:insert ref="form"/>
+
+            </fs:then>
+
+            <fs:else>
+              
+              <p>
+                Sie wurden erfolgreich in die Lehrveranstaltung <em>Lineare Algebra f&#252;r
+                Ingenieure</em> eingetragen.
+              </p>
+              <p>
+                Sie k&#246;nnen sich jetzt mit Ihrem tubIT-Login-Namen und Passwort bei der Mumie
+                anmelden und die Online-Angebote des Kurses nutzen.
+              </p>
+              <p>
+                In ein Tutorium wurden Sie noch nicht eingetragen. Bitte wenden Sie sich
+                hierf&#252;r an einen Tutor oder Assistenten der Lehrveranstaltung.
+              </p>
+
+              <fs:if-param pos="&temp-account;" value="yes">
+                <p>
+                  <strong>Wichtiger Hinweis:</strong> Sie arbeiten z.Z. mit einem tubIT-Gastkonto.
+                  Wir empfeheln Ihnen, sich so schnell wie m&#246;glich ein regul&#228;res
+                  tubIT-Konto zu besorgen. &#8230;
+                </p>
+              </fs:if-param>
+              
+            </fs:else>
+
+          </fs:if-error>
+          
+        </fs:case-param>
+
+      </fs:switch-param>
+
+    </div>
+  </body>
+
+</html>

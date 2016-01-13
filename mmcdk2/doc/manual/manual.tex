@@ -1,0 +1,1109 @@
+\documentclass{generic}
+
+\newcommand{\texcmd}[1]{\backslash#1}
+
+\begin{document}
+
+\title{Mmcdk Manual}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: manual.tex,v 1.24 2008/03/17 01:06:32 rassy Exp $}
+
+\tableofcontents
+
+\section{Introduction}
+
+Mmcdk, the \emph{Mumie Content Development Kit}, is a
+framework for authors to create or modify contents of the Mumie e-learning
+platform. It comprises tools to convert TeX and Java sources, preview
+documents, check-in documents, and many other purposes.
+
+To work with Mmcdk, you need some basic knowledge about the Mumie system. This
+knowledge is provided in section \ref{mumie_basics}.
+
+\section{Mumie basics}\label{mumie_basics}
+
+\subsection{Documents and pseudo-documents}\label{docs_and_pseudo_docs}
+
+In Mumie, \emph{documents} are entities with textual or binary content. (An
+exception are the so-called generic documents, which have no content. They are
+explained below.) Examples for documents are theorems, definitions, images or
+Java applets. Besides ordinary documents, Mumie knows so-called
+\emph{pseudo-documents}. These are entities which can be treated formally as
+documents, but are not documents in the actual sense of the term. Examples are:
+users, user groups, semesters.
+
+A special kind of documents are the so-called \emph{generic documents}. They
+have no content of their own; rather, they are placeholders for "real" (i.e.,
+non-generic) documents. These placeholders may be implemented by different real
+documents in different contexts. Generic documents are a means to implement two
+concepts in Mumie: internationalization and themes. The concepts are explained
+in the next subsection.
+
+Each document or pseudo-document has a certain \emph{type} and several
+\emph{meta-informations}. Types are explained in more detail subsections
+\ref{doc_types} and \ref{pseudodoc_types}, meta-informations in subsection
+\ref{metainfos}.
+
+Mumie has a simple build-in version control system for non-generic documents:
+If a document is checked-in for a second time, the former version it not
+replaced but saved. Thus, it is always possible to recover older versions.
+
+\subsection{Internationalization and themes}\label{intern_and_themes}
+
+Internationalization means that the same content is available in different
+languages. Mumie realizes this by generic documents which are implemented by
+real documents in different languages. The following figure  illustrates this
+with a simple example:
+
+\image{internationalization.png}
+
+The \emph{theme concept} allows for different appearances of the same content.
+A theme represents a certain web layout style. Thus, the theme controls things
+like fonts, background colors, button shapes, etc. The theme concept is
+realized by the same mechanism that realizes internationalization, too: generic
+documents implemented by different real documents for different themes.
+
+If the user requests a generic document, the server checks which language and
+theme the user has selected, and tries to respond with the corresponding real
+document for the required language and theme. However, it may happen that the
+generic document is not implemented for all language-theme combinations. In
+that case, the server tries to find another real document which is nevertheless
+suitable to represent the requested generic document.
+
+Here are the detailed rules for determining the real document for a given
+generic document:
+
+\begin{itemize}
+\item If a real document exists for the required language and theme, that is
+  selected.
+\item Otherwise, if a real document exists for the required language and the
+  \emph{default theme}, that is selected (see below fore the term "default
+  theme").
+\item Otherwise, if a real document exists for the \emph{non-lingual language}
+  and the required theme, that is selected (see below for the term "non-lingual
+  language").
+\item Otherwise, if a real document exists for the non-lingual language
+  and the default theme, that is selected.
+\item Otherwise, if a real document exists for the \emph{default language}
+  and the required theme, that is selected (see below for the  default language).
+\item Otherwise, if a real document exists for the default language
+  and the default theme, that is selected.
+\end{itemize}
+
+The default theme, default language and non-lingual language always exist. The
+default language can be set by the administrator when the Mumie sever is
+installed. The non-lingual language represents content which is not language
+specific. For example, CSS stylesheets usually do not contain any language
+specific content. The language code for the non-lingual language is \code{zxx}
+(language codes are the two- or three-letter codes to identify languages; i.e.,
+\code{en} for English or \code{de} for German).
+
+
+\subsection{Document types}\label{doc_types}
+
+Each document or pseudo-document has a certain \emph{type}. Types are
+characterized by names (internally by numbers, too).
+
+Documents with a type name starting with \code{generic_} are generic documents. All
+others are non-generic or "real" documents. We also speak of generic and
+non-generic document types.
+
+For each generic document type a corresponding non-generic one exists. The
+latter emerges from the former by removing the \code{generic_} from the
+beginning of the type name. A generic document can only be implemented by documents
+of the corresponding non-generic type.
+
+It follows a list of all document types. First come the non-generic types, then
+the generic types, both in alphabetical order.
+
+\begin{description}
+\item[\code{applet}] A Java-Applet. The content is binary; it is a Jar archive
+  containing the applet class file, perhaps class files needed by the applet,
+  and supplementary resources like property files. Usually, applets have
+  sources which also specify meta-informations (see subsection \ref{metainfos}
+  and section \ref{java_sources}).
+\item[\code{course}] A course. Represents a course as a document rather then a
+  course as a organizational unit (the latter is represented by the
+  pseudo-document \code{class}). A course consists of several course sections
+  arranged in a net. The content is XML. Courses are created by the
+  \emph{CourseCreater}, a GUI tool for that purpose.
+\item[\code{course_section}] A course section, i.e., a subunit of a
+  course. Consists of elements and subelements arranged in a net. The content
+  is XML. Course sections are created by the CourseCreater (see \code{course}).
+\item[\code{css_stylesheet}] A CSS stylesheet. The content is XML (it is
+  translated on-the-fly to the actual CSS format when the stylesheet is
+  requested).
+\item[\code{element}] A mathematical content entity. There exist different
+  kinds of elements, distinguished by the \emph{category} metainfo. Examples
+  are: \code{theorem}, \code{definition}, \code{motivation}. Elements are
+  written in a special TeX dialect which is converted to XML by the
+  \emph{mmtex} tool. (Cf. section \ref{tex_sources}.) Thus, the actual content
+  is in XML, created from sources in TeX.
+\item[\code{flash}] A Flash movie. The content is binary (the \file{fla} file).
+\item[\code{image}] An image. The content is binary (the image data) and may be
+  in any of the following formats: PNG, JPEG, GIF, TIFF (the Mumie
+  administrator can add more when the server is installed).
+\item[\code{jar}] A Jar archive. The content is binary (the \file{jar} file).
+\item[\code{java_class}] A single java class. The content is the class
+  file. Documents of this type are used to implement correctors for problems.
+\item[\code{js_lib}] A JavaScript library. The content is XML (it is translated
+  on-the-fly to the actual JavaScript code when the library is requested).
+% \item[\code{movie}] A movie. The content is binary.
+\item[\code{page}] An ordinary web page. The content is in XHTML plus an
+  extension XML. Documents of this type are used to implement auxiliary pages
+  like the start page, framesets, etc.
+\item[\code{problem}] A mathematical problem. This document type is similar to
+  \code{element}. There exist three different kinds of problems, distinguished
+  by the \emph{category} metainfo: \code{applet}, \code{mchoice}, and
+  \code{traditional}. Problems of the first kind are edited in a Java applet.
+  Problems of the second kind contain multiple-choice questions. Problems of
+  the third kind are not edited online; rather, the user submits a written
+  solution to a human corrector.  Like elements, problems are written in TeX
+  and translated to XML by the mmtex tool.
+\item[\code{sound}] An audio document. The content is binary (the sound data)
+  and may be in the formats MPEG or WAF (the administrator can add more
+  formats at build-time of the Mumie server).
+\item[\code{subelement}] A mathematical content sub-entity. Similar to
+  \code{element}. Different kinds of subelements exist, distinguished by the
+  \emph{category} metainfo. Examples are: \code{visualization}, \code{remark},
+  \code{example}. Subelements are written in TeX and translated to XML by the
+  mmtex tool.
+\item[\code{summary}] A summary of a course, course section or worksheet.
+  Written in TeX and translated to XML by the mmtex tool.
+\item[\code{worksheet}] A worksheet, i.e., a collection of problems arranged in
+  a net. Three different kinds exist, distinguished by the \emph{category}
+  meta-information: \code{homework}, \code{prelearn}, and \code{selftest}. The
+  first describes a worksheet given as a homework to the students, the second a
+  prelearning worksheet, and the third a worksheet with which the students can
+  train and test themselves autonomously.
+\item[\code{xsl_stylesheet}] An XSL stylesheet. The content is in XSLT plus an
+  extension XML.
+\item[\code{generic_css_stylesheet}]  A generic CSS stylesheet 
+\item[\code{generic_element}]  A generic mathematical content entity 
+\item[\code{generic_image}]  A generic image 
+\item[\code{generic_page}]  A generic web page 
+\item[\code{generic_problem}]  A generic problem
+\item[\code{generic_subelement}]  A generic mathematical content sub-entity 
+\item[\code{generic_summary}]  A generic summary 
+\item[\code{generic_xsl_stylesheet}]  A generic XSL stylesheet
+\end{description}
+
+
+\subsection{Pseudo-document types}\label{pseudodoc_types}
+
+Here is a list of all pseudo-documents types in alphabetical ordinary, with a
+short description for each:
+
+\begin{description}
+\item[\code{class}] A course in the sense of an organizational unit. A class
+  has lecturers, students attending it, learning groups, and a semester it
+  takes place in (see pseudo-document types \code{tutorial} and
+  \code{semester}). Does not represent the \emph{contents} of teaching; this is
+  done by the document type \code{course}.
+\item[\code{language}] A language
+\item[\code{section}] A section. Similar to a directory on your
+  computer. Sections are explained in more detail in \ref{sec_struct}.
+\item[\code{semester}] A semester
+\item[\code{theme}] A theme (see \ref{intern_and_themes}).
+\item[\code{tutorial}] A learning group of students of a class.
+\item[\code{user}] A user
+\item[\code{user_group}] A user group
+\end{description}
+
+\subsection{Meta-informations}\label{metainfos}
+
+Each document or pseudo-document has a set of \emph{meta-informations} or
+\emph{metainfos } for short. Not all kinds of metainfo are defined for all
+types. For example, \emph{width} and \emph{height} are metainfos of images, but
+do not make sense for elements, so elements do not have this metainfos. The
+value of a metainfo may be a single item or a list of items.
+
+On the Mumie server, metainfos are stored in several database tables. A
+representation of metainfos as XML exists, too. As a content developer, you
+will rarely come in contact with either of the both. However, you must specify
+metainfos in a special format in TeX or Java sources if you write documents of
+the respective types. This will be explained in more detail later.
+
+Here is a list of all metainfos, in alphabetical order:
+
+\begin{description}
+\item[Category]
+  Defined for: \code{element}, \code{subelement}, \code{problem},
+  \code{worksheet}, \code{java_class}
+
+  Distinguishes various "sub-types" of a document type. For example, an
+  element can be a definition, theorem, lemma, application, motivation, or
+  algorithm. This is specified by the category.
+
+\item[Components]
+  Defined for all non-generic document types.
+
+  List of documents needed by this document to operate. For example, if an
+  element contains an image or applet, the latter is one of the elements
+  \emph{components}. Another example is a Jar needed by an applet: the Jar is
+  a component of the applet.
+
+\item[Contained in]
+  Defined for all (pseudo-)document types.
+
+  The section the (pseudo-)document resides in (cf. \ref{sec_struct}).
+
+\item[Content length]
+  Defined for all non-generic document types.
+
+  Length of the content of the document, in bytes.
+
+\item[Content type]
+  Defined for all non-generic document types.
+
+  The \emph{internet media type} of the content of the document. E.g.,
+  \code{text/xml} or \code{image/png}.
+
+\item[Copyright]
+  Defined for all non-generic document types.
+
+  A copyright note.
+
+\item[Created]
+  Defined for all (pseudo-)document types.
+
+  The time when the document or pseudo-document was created.
+
+\item[Deleted]
+  Defined for all (pseudo-)document types.
+
+  Boolean flag indicating that the (pseudo-)document is deleted.
+
+\item[Description]
+  Defined for all (pseudo-)document types except \code{user}.
+
+  Short description of the (pseudo-)document. Should be
+  suitable to be displayed in a tooltip. If mathematical formulas are
+  inevitable, write them in TeX enclosed in \code{\$} characters; e.g.,
+  \verb'$\vec{v_1}$'.
+
+\item[First name]
+  Only defined for \code{user}.
+
+  The first name of the user.
+
+\item[Id]
+  Defined for all (pseudo-)document types.
+
+  The database id of the (pseudo-)document. Unique among (pseudo-)documents of
+  the same type. The value is a non-negative integral number.
+
+\item[Last modified]
+  Defined for all non-generic document types and all pseudo-document types.
+
+  Time of the last modification of the document or pseudo-document.
+
+\item[Links]
+  Defined for all non-generic document types.
+
+  List of documents linked to by this document. Example: An element
+  contains a hyperlink to another element. Then the latter is a link of the
+  former.
+
+\item[Login name]
+  Only defined for \code{user}.
+
+  The login name of the user.
+
+\item[Name] Name of the (pseudo-)document. Should be suitable to be displayed
+  in a tooltip. If mathematical formulas are inevitable, write them in TeX
+  enclosed in \code{\$} characters; e.g., \verb'$\vec{v_1}$'.
+
+  Defined for all (pseudo-)document types except \code{user}.
+
+\item[Password]
+  Only defined for \code{user}.
+
+  The password of the user. What is actually stored with this metainfo depends
+  on the type of authentication the Mumie server uses. Usually, it is a hash
+  code (e.g., MD5) of the password.
+
+\item[Pure name]
+  Defined for all (pseudo-)document types.
+
+  You can think of this as a filename without directory part and suffixes.
+  Under this name, the document or pseudo-document occurs in the DB
+  browser (cf.  \ref{sec_struct}). The pure name is also the base for creating
+  filenames when the (pseudo-)document is represented locally on your computer
+  (cf. \ref{local_repr}).
+
+\item[Surname]
+  Only defined for \code{user}.
+
+  The surname of the user.
+
+\item[VC thread]
+  Defined for all non-generic document types.
+
+  The \emph{version control thread} the document belongs to. The version
+  control thread comprises all documents which are different versions of each
+  other.
+
+\item[Version]
+  Defined for all non-generic document types.
+
+  The version number of the document.
+
+\end{description}
+
+
+\subsection{Section structure}\label{sec_struct}
+
+\emph{Sections} are similar to directories on a computer. A section can contain
+documents and pseudo-documents of any kind, including other sections;
+conversely, each document or pseudo-document is contained in exactly one
+section (the only exception is the root section which is explained in a few
+moments). Cycles with respect to the included-in relation are not allowed.
+This way, a hierarchical structure of sections emerges. It has a single origin,
+the so called \emph{root section}. Thus, the structure has the form of a
+tree. Each document or pseudo-document can be found at exactly one place in the
+tree.
+
+There is a certain standard for the section structure. Beyond the standard, the
+structure can be arranged arbitrarily. Below is an overview over the standard.
+The sections are specified by their pure names (cf. \ref{metainfos}).
+
+\begin{tree}{\var{ROOT}}
+  \begin{branch}{\href{\#sec_system}{system}}
+    \leaf{\href{\#sec_common}{common}}
+    \leaf{\href{\#sec_libraries}{libraries}}
+    \leaf{\href{\#sec_languages}{languages}}
+    \leaf{\href{\#sec_themes}{themes}}
+    \leaf{\href{\#sec_document}{document}}
+    \leaf{\href{\#sec_pseudodoc}{pseudodoc}}
+    \leaf{\href{\#sec_element}{element}}
+    \leaf{\href{\#sec_problem}{problem}}
+    \leaf{\href{\#sec_course}{course}}
+    \leaf{\href{\#sec_admin}{admin}}
+    \leaf{\href{\#sec_misc}{misc}}
+  \end{branch}
+  \begin{branch}{\href{\#sec_org}{org}}
+    \leaf{\href{\#sec_users}{users}}
+    \leaf{\href{\#sec_user_groups}{user_groups}}
+    \begin{branch}{\href{\#sec_uni}{uni}}
+      \begin{branch}{\href{\#sec_semester}{\var{semester}}}
+        \leaf{\href{\#sec_classes}{classes}}
+        \leaf{\href{\#sec_courses}{courses}}
+        \leaf{\href{\#sec_tutorials}{tutorials}}
+      \end{branch}
+    \end{branch}
+  \end{branch}
+  \begin{branch}{\href{\#sec_content}{content}}
+    \begin{branch}{\href{\#sec_field}{\var{field}}}
+      \begin{branch}{\href{\#sec_media}{media}}
+        \leaf{\href{\#sec_applets}{applets}}
+        \leaf{\href{\#sec_images}{images}}
+      \end{branch}
+      \begin{branch}{\href{\#sec_problems}{problems}}
+        \leaf{\href{\#sec_correctors}{correctors}}
+      \end{branch}
+      \leaf{...}
+    \end{branch}
+  \end{branch}
+\end{tree}
+
+The following list gives a short description of what the sections contain:
+
+\begin{description}
+\item[\code{system}\label{sec_system}] (Pseudo-)documents which are of a
+  technical nature (e.g., XSL and CSS stylesheets, layout images, themes,
+  languages) or are needed to operate the server (start page, admin page, etc.)
+\item[\code{system/common}\label{sec_common}] Common resources (e.g., XSL and
+  CSS stylesheets needed by several documents)
+\item[\code{system/libraries}\label{sec_libraries}] Libraries needed by clients
+  (e.g., Jar archives, JavaScript libraries)
+\item[\code{system/languages}\label{sec_languages}] Languages
+\item[\code{system/themes}\label{sec_themes}] Themes
+\item[\code{system/document}\label{sec_document}] Resources for documents,
+  e.g., XSL and CSS stylesheets for rendering documents, for displaying
+  information about documents, or for creating forms to administrate documents.
+  Note that documents of some types have their own subsections in \code{system}.
+\item[\code{system/pseudodoc}\label{sec_pseudodoc}] Resources for
+  pseudo-documents, e.g., XSL and CSS stylesheets for rendering
+  pseudo-documents, for displaying information about pseudo-documents, or for
+  creating forms to administrate pseudo-documents
+\item[\code{system/element}\label{sec_element}] Resources for elements and
+  subelements
+\item[\code{system/problem}\label{sec_problem}] Resources for problems
+\item[\code{system/course}\label{sec_course}] Resources for courses, course
+  sections, and worksheets
+\item[\code{system/admin}\label{sec_admin}] Resources for web frontends to
+  administrate the Mumie server
+\item[\code{system/misc}\label{sec_misc}] (Pseudo-)documents which do not fit
+  into one of the above subsections of \code{system}
+\item[\code{org}\label{sec_org}] (Pseudo-)documents of an organizational
+  nature (users, user groups, classes, etc.)
+\item[\code{org/users}\label{sec_users}] Users
+\item[\code{org/user_groups}\label{sec_users}] User groups
+\item[\code{org/uni}\label{sec_uni}] Everything related to the organizing of
+  teaching. The pure name of this section may be adapted to the institution
+  which runs the Mumie server, e.g., \code{tu_berlin} for \emph{Technische
+    Universit\"at Berlin}. If the server is shared by several institutions,
+  there may be one such section for each institution.
+\item[\code{org/uni/\var{semester}}\label{sec_semester}] (Pseudo-)documents for
+  a certain semester. \code{\var{semester}} is to be replaced by a suitable
+  notion for the semester, e.g., \code{susem_2007} for "summer semester 2007".
+  In particular, this section contains the pseudo-document of type
+  \code{semester} which represents the semester. There is one such section for
+  each semester.
+\item[\code{org/uni/\var{semester}/classes}\label{sec_classes}] Classes taking
+  place in the semester corresponding to the parent section. See
+  \ref{pseudodoc_types} for the term "class".
+\item[\code{org/uni/\var{semester}/courses}\label{sec_courses}] Courses for the
+  semester corresponding to the parent section. See \ref{doc_types} for
+  the term "course".
+\item[\code{org/uni/\var{semester}/tutorials}\label{sec_tutorials}] Tutorials
+  taking place in the semester corresponding to the parent section. See
+  \ref{pseudodoc_types} for the term "tutorial".
+\item[\code{content}\label{sec_content}]
+  The actual mathematical content (elements, subelements, problems, applets,
+  images, etc.)
+\item[\code{content/\var{field}}\label{sec_field}] A thematic field of the
+  content (e.g., linear algebra, analysis, probability). \code{\var{field}} is
+  to be replaced by the actual pure name of the field (e.g.,
+  \code{linear_algebra}). There is one such section for each field. Each field
+  section is usually the starting point for a deeper section structure which is
+  motivated by field-specific considerations. This field-specific section
+  structure is not subject to the standard. The standard only expects the two
+  subsections \code{media} and \code{problems} explained below.
+\end{description}
+
+\subsection{Authoring process}
+
+This chapter briefly describes the workflow of creating Mumie contents.
+
+Usually, Mumie is used in combination with a CVS or SVN system. The latter
+stores:
+
+\begin{itemize}
+\item sources of documents,
+\item documents which are not auto-creatable from sources,
+\item generic documents,
+\item pseudo-documents.
+\end{itemize}
+
+(The format in in which they are stored is explained in the next chapter.)
+
+Editing a non-generic document typically comprises the following steps:
+
+\begin{enumerate}
+\item retrieving the source or document from CVS or SVN,
+\item editing of the source or document (off-line on your local computer),
+\item if desired, previewing the result (off-line on your local computer),
+\item committing the changed source resp. document to the CVS or SVN,
+\item uploading the document in the Mumie server.
+\end{enumerate}
+
+Thus, you work with a local copy of the document on your computer. The work can
+be done without any network connection to the Mumie server. During the work,
+you can check the results be means of a preview function which works off-line,
+too. Only after you are finished you need network connection to upload the
+document to the server. This process is called \emph{check-in}.
+
+All this will be explained for special cases in far more detail later.
+
+\subsection{Local representation of (pseudo-)documents}\label{local_repr}
+
+For the authoring process, the documents and pseudo-documents of the Mumie
+server must be mapped to your local computer. Not very surprisingly, sections
+are mapped to directories. The directory representing the root section is
+called the \emph{checkin root}. It usually has the name \code{checkin}. All
+other directories which represent sections have names which are equal to the
+pure names of the corresponding sections. Thus, you will find on your computer
+a directory structure which coincides with the section structure described in
+\ref{sec_struct}. However, the directory structure may comprise only a part of
+all sections, i.e., only those you need to edit the (pseudo-)documents you want
+to change or create. To have a name for it, we call the directory structure the
+\emph{local checkin tree}.
+
+The absolute path of the checkin root is \code{\~/mumie/checkin} by default
+(where \code{\~} denotes your home directory). This can be changed during the
+build or by means of the environment variable \code{MM_CHECKIN_ROOT}.
+
+Each non-generic document is represented by two files:
+
+\begin{description}
+\item[\code{\var{pure_name}.meta.xml}]
+  Contains the metainfos. This file is called the \emph{master file}.
+\item[\code{\var{pure_name}.content.\var{type}}]
+  Contains the actual content. This file is called the \emph{content
+    file}. \var{type} is the so-called \emph{type suffix}; it indicates the
+  media type of the content; e.g. \code{xml} for text/xml or \code{png} for
+  image/png.
+\end{description}
+
+\var{pure_name} stands for the pure name of the document. In addition, there
+may exist the following two files for the document:
+
+\begin{description}
+\item[\code{\var{pure_name}.preview.\var{type'}}]
+  Contains the preview of the document.  This file is called the \emph{preview
+    file}. \var{type'} is the type suffix of the preview; it does not need to
+  be the same as \var{type}, the type suffix of the content file (see examples
+  below).
+\item[\code{\var{pure_name}.tmp.xml}]
+  An intermediate format of the document, created when the preview is
+  made. This file is not important for you as a content developer, you can
+  ignore it.
+\end{description}
+
+Finally, there may exist a \emph{source file:}
+
+\begin{description}
+\item[\code{\var{pure_name'}.src.\var{type''}}]
+  Contains the source of the document. \var{type''} is the type suffix of the
+  source (it does not need to be the same as \var{type} or
+  \var{type'}). \var{pure_name'} may differ from \var{pure_name} in respect to the language
+  code: If documents in different languages are created from the same source,
+  than \var{pure_name} has the form
+
+  \begin{preformatted}\var{pure_name'}_\var{lang_code}\end{preformatted}
+
+  where \var{lang_code} is the language code.
+\end{description}
+
+As an example, we consider a document containing the definition of the term
+"linear combination". The source file may have the name:
+
+\begin{preformatted}def_linear_combination.src.tex\end{preformatted}
+
+The type suffix \code{tex} indicates that it is a TeX file. The corresponding
+master and content files for the English version of the definition are:
+
+\begin{preformatted}%
+def_linear_combination_en.meta.xml
+def_linear_combination_en.content.xml%
+\end{preformatted}
+
+The \code{"en"} at the end of the pure name indicates the language. The
+corresponding preview file is:
+
+\begin{preformatted}def_linear_combination_en.preview.xhtml\end{preformatted}
+
+As the type suffix indicates, it is an XHTML file.
+
+Each generic document and pseudo-document is represented by a master file
+only. This makes sense because generic documents and pseudo-documents have no
+content.
+
+\subsection{Rules and conventions for pure names}
+
+The following rules and conventions apply to pure names:
+
+\begin{enumerate}
+  \item Pure names must not contain dots (\code{"."} characters).
+  \item It is recommended that pure names only contain lower case letters,
+    digits, and underscores (\code{"_"} characters).
+  \item Pure names should start with a type/category indicator (see below).
+  \item If appropriate, pure names should end with a language indicator (see
+    below). 
+  \item Pure names of generic documents should start with \code{"g_"}.
+\end{enumerate}
+
+\emph{Type/category indicators} are three- or five-letter codes specifying the
+type and/or the category of a document. Two Examples:
+
+\begin{itemize}
+\item \code{img_sphere} -- \code{"img"} indicates that the document is an image.
+\item \code{def\_linear\_combination} -- \code{"def"} indicates that the
+  document is an element of category \code{definition}.
+\end{itemize}
+
+\subsection{Type/category indicators}
+
+The following table lists all type/category indicators and their meanings:
+
+\begin{table}
+  \head
+    Indicator & Meaning  \\
+  \body
+    \code{alg} & Document of type \code{element} and category \code{algorithm} \\
+    \code{apl} & Document of type \code{applet}  \\
+    \code{apl} & Document of type \code{element} and category \code{application} \\
+    \code{cls} & Pseudo-Document of type \code{class} \\
+    \code{crs} & Document of type \code{course} \\
+    \code{csb} & Document of type \code{course_subsection}  \\
+    \code{csc} & Document of type \code{course_section}  \\
+    \code{css} & Document of type \code{css_stylesheet}  \\
+    \code{def} & Document of type \code{element} and category \code{definition} \\
+    \code{exm} & Document of type \code{subelement} and category \code{example} \\
+    \code{g_css} & Document of type \code{generic_css_stylesheet}  \\
+    \code{g_img} & Document of type \code{generic_image}  \\
+    \code{g_mov} & Document of type \code{generic_movie}  \\
+    \code{g_pge} & Document of type \code{generic_page} \\
+    \code{g_snd} & Document of type \code{generic_sound}  \\
+    \code{g_xsl} & Document of type \code{generic_xsl_stylesheet}  \\
+    \code{his} & Document of type \code{subelement} and category \code{history} \\
+    \code{img} & Document of type \code{image}  \\
+    \code{jar} & Document of type \code{jar}  \\
+    \code{jcl} & Document of type \code{java_class}  \\
+    \code{jsl} & Document of type \code{js_lib}  \\
+    \code{lem} & Document of type \code{element} and category \code{lemma} \\
+    \code{lng} & Pseudo-Document of type \code{language} \\
+    \code{mot} & Document of type \code{element} or \code{subelement} and category \code{motivation} \\
+    \code{mov} & Document of type \code{movie}  \\
+    \code{pge} & Document of type \code{page}  \\
+    \code{prb} & Document of type \code{problem}  \\
+    \code{prf} & Document of type \code{subelement} and category \code{proof} \\
+    \code{rmk} & Document of type \code{subelement} and category \code{remark} \\
+    \code{sbe} & Document of type \code{subelement}  \\
+    \code{sem} & Pseudo-Document of type \code{semester} \\
+    \code{snd} & Document of type \code{sound}  \\
+    \code{thm} & Document of type \code{element} and category \code{theorem} \\
+    \code{tme} & Pseudo-Document of type \code{theme} \\
+    \code{tut} & Pseudo-Document of type \code{tutorial} \\
+    \code{ugr} & Pseudo-Document of type \code{user_group} \\
+    \code{usr} & Pseudo-Document of type \code{user} \\
+    \code{vis} & Document of type \code{subelement} and category \code{visualization} \\
+    \code{xsl} & Document of type \code{xsl_stylesheet}  \\
+\end{table}
+
+\subsection{Modularization of content}\label{mod_of_content}
+
+In \ref{local_repr} we saw that the contents of the Mumie server are
+represented by directories and files in the local checkin tree. However, some
+of the directories and files are not "really" in the checkin tree but
+softlinks. This is because of \emph{content modularization}.
+
+A content module comprises (pseudo-)documents which belong together for
+thematic or other reasons. Usually, the module contains additional files
+like a build script or documentation. Though Mumie has its own version control
+system, it is common practice to maintain content modules in a CVS or SVN
+repository. Among other advantages, this allows for keeping the additional
+files under version control, too.
+
+On the one hand, all files of a module belong together and should be stored in
+a module directory tree. On the other hand, the files the module contributs to
+the Mumie content must exist in the local checkin tree. To meet both
+conditions, \emph{softlinks} are created in the local checkin tree which point
+to the respective files or directories in the module tree.
+
+The following figure sketches this by an example:
+
+\image{content_modularization.png}
+
+The figure shows parts of your home directory. The home directory itself is
+denoted by \code{\var{\$HOME}}. The checkin root is
+\code{\var{\$HOME}/mumie/checkin}, which is the default (cf. chapter
+\ref{local_repr}). In the subdirectory \code{projects}, we see a content module
+\code{analysis_content}. Beneath its subdirectory \code{checkin}, we recognize the
+same directory structure as in the local checkin tree, except that some
+directories are missing. This directory structure contains what the module
+contributes to the Mumie content. We call it the \emph{module checkin tree}.
+
+Now look at the three directories  \code{chapter1}, \code{chapter2}, \code{chapter3}.
+Physically, they exist in the module checkin tree. At the corresponding places in
+the local checkin tree, softlinks to the directories exist; as shown by the dashed
+arrows (a dashed arrow from A to B means "A is a softlink to B").
+
+Please note that it is only in this example that the module is located in a subfolder
+named \code{projects} of your home directory; it could be at any other place on your
+computer.
+
+The process of creating the softlinks (and necessary parent directories) is called
+\emph{mounting} the module. Removing the softlinks is called \emph{unmounting}. (Parent
+directories are usually not deleted during unmounting, even if they have been created during
+mounting. The reason is that they may contain contents from other modules.) The path of the
+directory where the softlinks are made is called the \emph{mount path}. Unless otherwise
+stated, the mount path is always relative to the checkin root. In the above example, the
+mount path is \code{content/analysis}. 
+
+Usually content modules have a build script \code{build.sh}, just like Mumie software
+packages. If so, there usually exist build targets \code{mount-checkin} and
+\code{unmount-checkin} which mount or unmount the module, respectively.
+
+
+\section{Mmcdk overview}
+
+\subsection{Functioning}
+
+This chapter gives you some insight in the software architecture of Mmcdk.
+If you are simply using Mmcdk, not administrating or developing it, this
+chapter is of minor importance for you; and you may skip it. It is not required
+by the following chapters.
+
+Mmcdk is based on Mmjvmd, another Mumie software package. Mmjvmd stands for
+\emph{Mumie Java virtual machine daemon.} Thus, Mmjvmd is a Java VM daemon. It
+runs as a Java process in the background. Clients can communicate with the
+daemon via Unix sockets. Usually, a client starts a command on the daemon.
+Commands are represented as certain Java classes having an \code{execute}
+method. Starting a command means calling its execute method. Each command runs
+in its own thread of the daemon process.  The standard input, standard output,
+and standard error steams are sent through the socket from the client to the
+daemon resp. from the daemon to the client.
+
+Mmjvmd comes with two executables: \code{mmjvmd} and \code{mmjvmc}. The former
+is a shell script to start and stop the daemon. The latter is a client program
+written in C. It is used to start commands on the daemon like this:
+\begin{preformatted}%
+  mmjvmd \var{cmd} \var{param1} \var{param2} ...
+\end{preformatted}
+\code{\var{cmd}} is the command and \code{\var{param1}}, \code{\var{param2}},
+etc. are parameters passed to it.
+
+Mmcdk defines several Mmjvmd commands to perform tasks like creating previews,
+uploading content to the server, and the like. All commands intended to be
+called directly by the user are wrapped by shell scripts, so you don't need to
+start them via the \code{mmjvmc} executable as above; rather, you can type:
+\begin{preformatted}%
+  \var{cmd} \var{param1} \var{param2} ...
+\end{preformatted}
+Furthermore, the wrapper scripts starts the daemon if it is not running, so you
+don't need the \code{mmjvmd} script, either.
+
+It should be mentioned that not all Mmcdk commands are Mmjvmd commands. The
+\code{mmtex} tool, for example, is written in Perl.
+
+
+\subsection{Starting and stopping}
+
+If you have skipped the previous chapter, here is the only thing you must know
+from it: Mmcdk needs a daemon process running in the background. The daemon is
+called \emph{Mmjvmd}.
+
+You can start and stop the daemon by the commands
+
+\begin{preformatted}mmjvmd start\end{preformatted}
+
+and
+
+\begin{preformatted}mmjvmd stop\end{preformatted}
+
+respectively. However, it is not necessary to start the daemon manually. It
+will be started automatically if you call the first Mmcdk command which
+requires the daemon. If you don't stop the daemon, it will continue to run;
+usually even after you have logged off your computer. This is harmless, but we
+recommend to stop the daemon when you don't need it to avoid wasting resources.
+
+\subsection{Commands}
+
+The following is a list of all Mmcdk commands.
+
+\begin{description}
+
+\item[\code{mmalias}]
+
+  Defines so-called \emph{server account aliases}. A server account alias
+  comprises two things: The URL prefix of a Mumie server and an account on
+  that server. The URL prefix is the first, common part of all URLs of the
+  server up to and including \code{"cocoon"}. Example:
+  \code{https://mumie.uni.org/cocoon}. Server account aliases are necessary for
+  the \code{mmckin} and \code{mmsrv} commands. See also chapter
+  \ref{spec_mumie_server}.
+
+\item[\code{mmckin}]
+
+  By means of this command, you check-in new documents and/or pseudo-documents
+  to a Mumie server. The server and account to use for the check-in are
+  specified by a server account alias (see above). For more details on the
+  check-in, see chapter \ref{check_in}.
+
+\item[\code{mmckrefs}]
+
+  Checks the references of documents locally on your computer, and prints a
+  warning for each reference which targets to an inexistent document. This is
+  useful because references must be fulfilled to be able to create previews or
+  to check-in documents. With this command you can quickly detect reference
+  errors.
+
+\item[\code{mmclearpass}]
+
+  Clears a stored password. This is the counterpart to the \code{storepass}
+  command. See the description of the latter below for more information about
+  storing passwords.
+
+\item[\code{mmdatasheet}]
+
+  Creates the so-called \emph{data sheet} for a problem. A data sheet contains
+  additional data for a problem, e.g., personalized data. Actually, data sheets
+  are created on the server. With this command, you can create a datasheet
+  offline for testing and debugging the problem prior to check-in.
+
+\item[\code{mmencrypt}]
+
+  Encrypts a word just like the server would do it. You will hardly need this
+  command, but it may be useful for administrators sometimes.
+
+\item[\code{mmgdimc}]
+
+  Controls the generic document implementation map cache. This needs to be
+  explained. To handle references to generic documents, the latter must be
+  resolved to real documents when a preview is created. Previews are created
+  with a fixed language and theme (usually the default language and the default
+  theme). Having the language and theme fixed, there is exactly one real
+  document for each generic one. The former can be determined dynamically from
+  the latter; but to increase performance, Mmcdk caches assignments from real to
+  generic documents. The \code{mmgdimc} command controls the cache (size,
+  entries, etc.) However, there will hardly be a necessity to use this command.
+
+\item[\code{mmgendoc}]
+
+  Creates a generic document. Type and metainfos must be specified on the
+  command line. The output of the command is the master file of the
+  document. See also \code{mmr2gdoc}, which is a similar command.
+
+\item[\code{mmimg}]
+
+  Creates an image document from an existing image. Some of the metainfos
+  (content type, width, height) are determined automatically, the others must
+  be specified on the command line. The command creates the master and content
+  files of the document. The content file is simply a copy of the original
+  image.
+
+\item[\code{mmjava}]
+
+  Creates documents of the type \code{applet} or \code{java_class} from Java
+  source files. This is explained in more detail in chapter \ref{java_sources}.
+
+\item[\code{mmjmtag}]
+
+  Prints \emph{metatags} in Java source files. Metatags are Mumie-specified
+  Javadoc tags which specify metainfos. See chapter \ref{java_sources}, where
+  this is explained in more detail.
+
+\item[\code{mmlnjava}]
+
+\item[\code{mmlsprev}]
+
+\item[\code{mmlsrefs}]
+
+\item[\code{mmprev}]
+
+\item[\code{mmr2gdoc}]
+
+\item[\code{mmroot}]
+
+\item[\code{mmsec}]
+
+\item[\code{mmsrv}]
+
+\item[\code{mmstorepass}]
+
+\item[\code{mmtex}]
+
+
+\end{description}
+
+\section{Creating new content modules}
+
+It is recommended that you organize your content in modules as described in subchapter
+\ref{mod_of_content}. It is possible to create a new module by hand, but this is quite
+cumbersome and requires programming skills. For this reason, Mmcdk provides the
+\code{mmcntmod} command which starts a new content module. You only have to specify the
+module name and mount path: 
+
+\begin{preformatted}mmcntmod \var{name} \var{mount_path} \end{preformatted}
+
+
+\section{TeX sources}\label{tex_sources}
+
+\subsection{General structure of a TeX source}\label{tex_sources_gen_struc}
+
+It is beyond the scope of this manual to give a complete explanation of the
+Mumie LaTeX dialect. We only give a brief overview here.
+
+The general structure of a TeX source is as follows:
+
+\begin{preformatted}%
+\texcmd{documentclass}[\var{options}]\{japs.\var{type}.\var{category}\}
+\texcmd{begin}\{metainfo\}
+  \var{metainfos}
+\texcmd{end}\{metainfo\}
+\texcmd{begin}\{content\}
+  \var{content (text, formulas, images, applets, ...)}
+\texcmd{end}\{content\}
+\end{preformatted}
+
+\var{options} stands for the document class options (e.g., \code{free} for a
+free-text document), \var{type} for the document type (e.g., \code{element} or
+\code{subelement}), and \var{category} for document category (e.g.,
+\code{theorem} or \code{definition}).
+
+The above source must be contained in a file with the name
+
+\begin{preformatted}\var{pure_name'}.src.tex\end{preformatted}
+
+where \var{pure_name'} is the pure name of the document except the language
+code (cf. chapter \ref{local_repr}).
+
+
+\subsection{The metainfo environment}
+
+The \code{metainfo} environment specifies the metainfos of the document by
+means of TeX commands and environments. Its general structure is as follows:
+
+\begin{preformatted}%
+\texcmd{begin}\{metainfo\}
+  \texcmd{name}\{\var{name}\}
+  \texcmd{begin}\{description\}
+    \var{description}
+  \texcmd{end}\{description\}
+  \texcmd{begin}\{changelog\}
+    \var{documentation of changes}
+  \texcmd{end}\{changelog\}
+  \texcmd{begin}\{components\}
+    \var{declaration of used components}
+    \var{(images, applets, ...)}
+  \texcmd{end}\{components\}
+  \texcmd{begin}\{links\}
+    \var{declaration of linked documents}
+    \var{(elements, subelements, ...)}
+  \texcmd{end}\{links\}
+  \texcmd{creategeneric}
+\texcmd{end}\{metainfo\}
+\end{preformatted}
+
+Except \code{\texcmd{creategeneric}}, the commands and environments correspond to the
+metainfos with the respective names (cf. \ref{metainfos}). The \code{\texcmd{creategeneric}}
+command has the effect that a generic document is created automatically when the TeX source
+is converted to XML. Instead of \code{\texcmd{creategeneric}}, the \code{\texcmd{generic}}
+command may occur in the metainfo environment. It connects the document to a generic
+document not automatically created. All this is explained in more detail in chapter
+\ref{gen_docs}.
+
+In addition, if the document is a problem (\var{type} = \code{problem}), and the category is
+\code{applet}, the \code{\texcmd{corrector}} command may appear in the metainfo section
+to specify a corrector for the problem.
+
+\subsection{The content environment}
+
+The \code{content} environment contains the actual content of the document. The
+structure of this environment depends on the document type and category as well
+as on the nature of the mathematical statement it describes. For example, a
+document of type \emph{element} and category \emph{theorem} which states that a
+certain proposition A implies a second proposition B under certain suppositions
+may have a \code{content} environment of the following form:
+
+\begin{preformatted}%
+\texcmd{begin}\{content\}
+  \texcmd{title}\{\var{title}\}
+  \texcmd{begin}\{suppositions\}
+    \var{suppositions}
+  \texcmd{end}\{suppositions\}
+  \texcmd{begin}\{implication\}
+    \var{proposition A}
+    \texcmd{implies}
+    \var{proposition B}
+  \texcmd{end}\{implication\}
+  \texcmd{begin}\{remarks\}
+    \var{remarks}
+  \texcmd{end}\{remarks\}
+\texcmd{end}\{content\}
+\end{preformatted}
+
+\subsection{Including components (images, applets, \ldots)}
+
+To include a component (for example an image or applet) in the document, two
+things must be done: First, the component must be declared in the
+\code{components} environment by means of the \code{\texcmd{component}} command:
+
+\begin{preformatted}%
+\texcmd{begin}\{components\}
+  \texcmd{component}\{\var{type}\}\{\var{master_path}\}\{\var{lid}\}
+  \var{...}
+\texcmd{end}\{components\}
+\end{preformatted}
+
+Here, \var{type} is the type of the component and \var{master_path} the path to
+its master file relative to the root of the checkin tree. \var{lid}, the
+\emph{local id}, is an arbitrary identifier by which the component is
+referenced within the document. Now the component can be inserted
+anywhere in \code{content} environment. The name of the corresponding command
+depends on the type of the component. Usually, the name of the command
+coincides with the name of the type. For instance, if the component is an
+image, the code would be
+
+\begin{preformatted}%
+\texcmd{begin}\{components\}
+  \var{...}
+  \texcmd{image}\{\var{lid}\}
+  \var{...}
+\texcmd{end}\{components\}
+\end{preformatted}
+
+This inserts the image at the position of the \code{\texcmd{image}} command.
+
+
+\subsection{Converting TeX sources}
+
+TeX sources are converted by the \code{mmtex} command. The following list
+summarizes its usage.
+
+\begin{itemize}
+\item
+  To convert a single TeX source, type
+
+  \begin{preformatted}mmtex \var{filename}\end{preformatted}
+
+  where \var{filename} is the name of the source file, possibly with
+  a directory path.
+
+\item
+  To convert several sources, type
+
+  \begin{preformatted}mmtex \var{filename1} \var{filename1} ...\end{preformatted}
+
+\item
+  To convert all TeX sources in the current directory, type
+
+  \begin{preformatted}mmtex\end{preformatted}
+
+\item
+  To convert all TeX sources in the current and descendant directories, type
+
+  \begin{preformatted}mmtex -r\end{preformatted}
+
+  (\code{-r} stands for "recursive").
+  
+\end{itemize}
+
+As mentioned above (\ref{tex_sources_gen_struc}), TeX source files must have names of the
+form:
+
+\begin{preformatted}%
+  \var{pure_name'}.src.tex
+\end{preformatted}
+
+where \var{pure_name'} is the pure name of the document except the language
+code. If \code{mmtex} is applied to the source file, two or three new files occur:
+
+\begin{itemize}
+\item The master file, \code{\var{pure_name}.meta.xml}
+\item The content file, \code{\var{pure_name}.content.xml}
+\item Provided the \code{\texcmd{creategeneric}} command was applied: the master file of the
+generic document, \code{g_\var{pure_name'}.meta.xml}
+\end{itemize}
+
+
+\section{Java sources}\label{java_sources}
+
+\subsection{General remarks}
+
+\subsection{Development vs. checkin folder}
+
+\subsection{Javadoc tags}
+
+\subsection{Converting Java sources}
+
+\subsection{Linking Java documents}
+
+\section{Specifying a Mumie server}\label{spec_mumie_server}
+
+\section{Check-in}\label{check_in}
+
+\section{Creating generic documents}\label{gen_docs}
+
+\section{Creating sections}
+
+\section{Reference guide}
+
+\end{document}

@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy
+  
+  $Id: build.xml,v 1.3 2007/07/16 10:49:30 grudzin Exp $
+-->
+
+<project name="mmjvmd" default="all" basedir="..">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property environment="env"/>
+  <property name="mmjvmd.src.dir" value="src"/>
+  <property name="mmjvmd.src.java.dir" value="${mmjvmd.src.dir}/java"/>
+  <property name="mmjvmd.lib.dir" value="lib"/>
+  <property name="mmjvmd.lib.java.dir" value="${mmjvmd.lib.dir}/java"/>
+  <property name="mmjvmd.lib.java.classes.dir" value="${mmjvmd.lib.java.dir}/classes"/>
+  <property name="mmjvmd.install.lib.java.dir" value="/usr/local/lib/java"/>
+  <property name="mmjvmd.test.dir" value="test"/>
+  <property name="mmjvmd.doc.dir" value="doc"/>
+  <property name="mmjvmd.doc.apidocs.dir" value="${mmjvmd.doc.dir}/apidocs"/>
+  <property name="mmjvmd.resources.dir" value="resources"/>
+  <property name="mmjvmd.resources.apidocs.css.file"
+            value="${mmjvmd.resources.dir}/apidocs.css"/>
+  <property name="mmjvmd.verbose" value="no"/>
+  <property name="mmjvmd.force" value="no"/>
+  <property name="mmjvmd.javac.verbose" value="no"/>
+  <property name="mmjvmd.javac.deprecation" value="no"/>
+  <property name="mmjvmd.javac.debug" value="yes"/>
+  <property name="mmjvmd.jar.file" value="mumie-jvmd.jar"/>
+  <property name="mmjvmd.jdk.apidocs.url" value=""/>
+  <property name="mmjvmd.jar.manifest" value="${mmjvmd.lib.java.dir}/META-INF/MANIFEST.MF"/>
+  <property name="mmjvmd.vendor" value="Berlin University of Technology"/>
+  <property name="mmjvmd.version" value="-NONE-"/>
+
+  <!--
+    ================================================================================
+    Auto-set properties
+    ================================================================================
+  -->
+
+  <tstamp>
+    <format property="mmjvmd.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmjvmd.internal.force">
+    <istrue value="${mmjvmd.force}"/>
+  </condition>
+
+  <!--
+    ================================================================================
+    Path for compiling
+    ================================================================================
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmjvmd.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+        <include name="mumie-ipc.jar"/>
+      </fileset>
+    </path>
+    <property name="mmjvmd.classpath" refid="classpath" />
+  </target>
+
+  <!--
+    ================================================================================
+    Printing properties
+    ================================================================================
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmjvmd."/>
+  </target>
+
+  <!--
+    ================================================================================
+    Java classes
+    ================================================================================
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmjvmd.verbose}">
+      <fileset dir="${mmjvmd.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="clear-classes.iff-force" if="mmjvmd.internal.force">
+    <!-- Deletes the compiled classes if (and only if) mmjvmd.internal.force
+         is set, which is equivalent to mmjvmd.force being true. -->
+    <antcall target="clear-classes"/>
+  </target>
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="classpath">
+    <javac srcdir="${mmjvmd.src.java.dir}"
+           destdir="${mmjvmd.lib.java.classes.dir}"
+           listfiles="${mmjvmd.verbose}"
+           deprecation="${mmjvmd.javac.deprecation}"
+           verbose="${mmjvmd.javac.verbose}"
+           debug="${mmjvmd.javac.debug}"
+           failonerror="yes">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!--
+    ================================================================================
+    Jars
+    ================================================================================
+  -->
+
+  <target name="jar" 
+          description="Creates a jar with all classes">
+    <jar destfile="${mmjvmd.lib.java.dir}/${mmjvmd.jar.file}"
+         basedir="${mmjvmd.lib.java.classes.dir}"
+         excludes=".KEEP_ME"> 
+      <manifest>
+        <attribute name="Created" value="${mmjvmd.timestamp}"/>
+        <section name="net/mumie/jvmd">
+          <attribute name="Specification-Title" value="Mumie JVMD"/>
+          <attribute name="Specification-Version" value="${mmjvmd.version}"/>
+          <attribute name="Specification-Vendor" value="${mmjvmd.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.jvmd"/>
+          <attribute name="Implementation-Version" value="${mmjvmd.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmjvmd.vendor}"/>
+      </section>
+    </manifest>
+    </jar>
+  </target>
+
+  <target name="clear-jar"
+          description="Deletes the jar archives">
+    <delete verbose="{$mmjvmd.verbose}">
+      <fileset dir="${mmjvmd.lib.java.dir}">
+        <include name="${mmjvmd.jar.file}"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+    ================================================================================
+    API docs
+    ================================================================================
+  -->
+
+  <target name="apidocs" depends="clear-apidocs"
+          description="Creates the API docs">
+    <mkdir dir="${mmjvmd.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie JVMD API "
+             packagenames="net.mumie.jvmd.*"
+             sourcepath="${mmjvmd.src.java.dir}"
+             destdir="${mmjvmd.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmjvmd.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmjvmd.verbose}">
+      <link href="${mmjvmd.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <target name="clear-apidocs"
+          description="Deletes the API docs">
+    <delete verbose="${mmjvmd.verbose}"
+            dir="${mmjvmd.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Main target - creates all
+    ================================================================================
+  -->
+
+  <target name="all"
+          description="Creates all"
+          depends="clear-classes.iff-force,
+                   classes,
+                   jar">
+  </target>
+
+  <!--
+    ================================================================================
+    Clears all
+    ================================================================================
+  -->
+
+  <target name="clear"
+          description="Deletes all generated files"
+          depends="clear-classes,
+                   clear-jar,
+                   clear-apidocs">
+  </target>
+    
+</project>

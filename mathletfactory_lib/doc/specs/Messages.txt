@@ -1,0 +1,23 @@
+Autor: Markus Gronau <gronau@math.tu-berlin.de>
+$Id: Messages.txt,v 1.1 2005/08/01 15:16:01 gronau Exp $
+
+               Spezifikation zu (lokalen) Sprachen-("Messages-")Dateien
+               
+               
+1. Struktur der Messages-Dateien
+---------------------------------
+  - es existiert eine Messages-Datei pro Sprache
+  - diese Datei ist eine Property-Datei
+  - diese Datei enthaelt String-Schluessel und deren Wert ("Message") in der jeweiligen Sprache
+  - jeder Schluessel sollte/muss in allen Sprachen vorhanden sein
+
+
+2. Name und Ort der Datei
+--------------------------
+  2.1 bisher und weiterhin
+    - "Messages_[en/de].properties"
+    - im selben Verz. wie das Applet
+  
+  2.1 neu und zusaetzlich
+    - "[Applet-Name]Messages_[de/en].properties"
+    - im selben Verz. wie das Applet oder im Unterverz. "messages"

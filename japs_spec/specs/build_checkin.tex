@@ -1,0 +1,72 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Build-Checkin}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+\end{authors}
+
+\version{$Id: build_checkin.tex,v 1.1 2006/12/29 16:44:11 lehmannf Exp $}
+
+Einige Pseudo-Dokumente müssen in der Datenbank vorhanden sein, bevor der
+normale Checkin funktioniert.
+Hier wird beschrieben, welche das sind, wie sie und aus welchen Quellen in die
+Datenbank geschrieben werden.
+
+\tableofcontents
+
+\section{Überblick}\label{ueberblick}
+
+Es werden in der Datenbanksprache SQL \code{INSERT} Befehle geschrieben. Diese werden
+dann auf leeren wie in der \href{mumie_database}{Datenbankstruktur}
+festgelegten Tabellen augeführt. Das setzt eine laufende Postgres voraus.
+
+Der SQL \code{INSERT} Befehl wird für jedes Pseudo-Dokument zusammengesetzt aus
+\begin{itemize}
+\item einem in XSL geschriebenen Template, das ein Skelett des Befehls enthält und 
+\item Einträgen in der Konfigurationsdatei \file{config.xml}. Diese
+  fungiert dabei in gewisser Weise als Masterdatei für alle so erzeugten Pseudo-Dokumente.
+\end{itemize}
+
+Insbesondere wird (anders als sonst bei Masterdateien!) die Datenbank-Id in
+\file{config.xml} festgelegt. Daher muss nachher in den betroffenen
+Datenbanktabellen die kleinste automatisch zu vergebende Id initialisiert
+werden. Für die PostgreSQL geschieht das mit dem \code{SELECT setval(.,.)}
+Befehl. Als deren erstes Argument wird der Tabellenname und als zweites die
+grösste festgelegte Id + 1 eingetragen.
+
+Abschnitt \ref{build_docs} enthält eine Liste aller 
+
+\section{Liste aller zu erzeugenden Pseudo-Dokumente}\label{build_docs}
+
+\subsection{Root Section}
+
+\subsection{Org Section}
+
+\subsection{Org User-Groups Section}
+
+\subsection{Org Users Section}
+
+\subsection{System Section}
+
+\subsection{System Themes Section}
+
+\subsection{System Languages Section}
+
+\subsection{Admin User-Group}
+
+\subsection{Admin User}
+
+\subsection{Default Theme}
+
+\subsection{Neutral Language}
+
+\subsection{Default Language}
+
+-- WIRD FORTGESETZT --
+
+\end{document}

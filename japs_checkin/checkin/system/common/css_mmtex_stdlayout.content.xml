@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!-- ================================================================================ -->
+<!-- h1: Definitions                                                                  -->
+<!-- ================================================================================ -->
+
+<!-- Zero space -->
+<css:def id="no-space" value="0pt 0pt 0pt 0pt"/>
+
+<!-- Font sizes, relative: -->
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Tables - TODO: Move to css_base ?                                            -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.genuine'>
+  <css:property name='border-collapse' value='collapse'/>
+</css:rule>
+
+<css:rule selector='table.genuine thead'>
+  <css:property name='background-color' value='#EAEAEA'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='table.genuine td'>
+  <css:property name='padding' value='0.25em 0.25em 0.25em 0.25em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' value='#949494'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='table.genuine tfoot'>
+  <css:property name='font-size' ref='small-rel'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Lists - TODO: Move to css_base ?                                             -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.list'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='border-spacing' value='0px'/>
+  <css:property name='margin' value='0.25em 1em 0.25em 1em'/>
+</css:rule>
+
+<css:rule selector='table.list table.list'>
+  <css:property name='margin-top' value='0.125em'/>
+  <css:property name='margin-bottom' value='0.125em'/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td'>
+  <css:property name='vertical-align' value='baseline'/>
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td.list-label'>
+  <css:property name='padding-right' value='0.5em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Math                                                                         -->
+<!-- ================================================================================ -->
+
+<css:rule selector='math'>
+  <!-- <css:property name='font-family' value='CMSY10, CMEX10, Symbol, Times'/> -->
+  <css:property name='font-size' value='110%'/>
+</css:rule>
+
+<css:rule selector='mi[class="vector underline"]'>
+  <css:property name='text-decoration' value='underline'/>
+</css:rule>
+
+<css:rule selector='mrow[class="vector underline"]'>
+  <css:property name='border-bottom-style' value='solid'/>
+  <css:property name='border-bottom-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='mtable[class="normal script"]'>
+  <css:property name='font-size' ref='Small-rel'/>
+</css:rule>
+
+<css:rule selector='mtable[class="normal script"] &gt; mtr &gt; mtd'>
+  <css:property name='margin' value='0pt 0pt 0pt 0pt'/>
+  <css:property name='padding' value='0pt 0pt 0pt 0pt'/>
+</css:rule>
+
+<css:rule selector='mtable[class="row-vector"] mtd'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='text-align' value='center'/>
+  <css:property name='vertical-align' value='middle'/>
+</css:rule>
+
+<css:rule selector='mtable[class="column-vector"] mtd'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='text-align' value='center'/>
+  <css:property name='vertical-align' value='middle'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-0']">
+  <css:property name='color' value='red'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-1']">
+  <css:property name='color' value='blue'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-2']">
+  <css:property name='color' value='green'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-3']">
+  <css:property name='color' value='#FF9900'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-4']">
+  <css:property name='color' value='fuchsia'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-5']">
+  <css:property name='color' value='purple'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-6']">
+  <css:property name='background-color' value='red'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-7']">
+  <css:property name='background-color' value='blue'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-8']">
+  <css:property name='background-color' value='green'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='mark-9']">
+  <css:property name='background-color' value='#FF9900'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector="*[class='overline']">
+  <css:property name='border-top-style' value='solid'/>
+  <css:property name='border-top-width' value='1px'/>
+</css:rule>
+
+</css:style>

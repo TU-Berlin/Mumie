@@ -1,0 +1,171 @@
+\documentclass{generic}
+
+\begin{document}
+
+\title{Lists}
+
+\tableofcontents
+
+
+
+\section{The result}
+
+\subsection{Normal lists}
+
+\subsubsection{Enumerate list}
+\begin{enumerate}
+\item[First item]
+  This is the first item of an enumerated list. 
+  You may label the item or not, just as you prefer.
+\item[Second item]
+  Another labeled item, perhaps the next one should 
+  be without a label, to get an impression
+  how it might look
+\item
+  This is not labeled, so the text appears right 
+  next to the number..
+\end{enumerate} 
+
+\subsubsection{Description list}
+\begin{description}
+\item[Item1]
+  The same with a description list, 
+  the first two are labeled...
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{description}
+
+\subsubsection{Itemize list}
+\begin{itemize}
+\item[Item1]
+  And, last but not least, a list created with \verb/\begin{itemize}/
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{itemize}
+
+\subsection{Lists inside a table}
+
+There is a slight difference if these lists are inside a table cell. This is caused by the
+stylesheet, and may be changed according to your preferences. I just thought a short
+demostration would be nice..
+
+
+\begin{table}
+\begin{enumerate}
+\item[First item]
+  This is the first item of an enumerated list. 
+\item[Second item]
+  Another labeled item, perhaps the ...
+\item
+  This is not labeled, so the text appears right 
+  next to the number..
+\end{enumerate} 
+\\
+
+\begin{description}
+\item[Item1]
+  The same with a description list..
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{description}
+\\
+
+\begin{itemize}
+\item[Item1]
+  And, last but not least, a list created with \verb/\begin{itemize}/
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{itemize}
+
+\end{table}
+
+\section{The source code}
+\subsection{Normal lists}
+
+\verbatim
+\subsubsection{Enumerate list}
+\begin{enumerate}
+\item[First item]
+  This is the first item of an enumerated list. 
+  You may label the item or not, just as you prefer.
+\item[Second item]
+  Another labeled item, perhaps the next one should 
+  be without a label, to get an impression
+  how it might look
+\item
+  This is not labeled, so the text appears right 
+  next to the number..
+\end{enumerate} 
+
+\subsubsection{Description list}
+\begin{description}
+\item[Item1]
+  The same with a description list, 
+  the first two are labeled...
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{description}
+
+\subsubsection{Itemize list}
+\begin{itemize}
+\item[Item1]
+  And, last but not least, a list created with \verb/\begin{itemize}/
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{itemize}
+\endverbatim
+
+\subsection{Lists inside a table}
+
+\verbatim
+
+\begin{table}
+\begin{enumerate}
+\item[First item]
+  This is the first item of an enumerated list. 
+\item[Second item]
+  Another labeled item, perhaps the ...
+\item
+  This is not labeled, so the text appears right 
+  next to the number..
+\end{enumerate} 
+\\
+
+\begin{description}
+\item[Item1]
+  The same with a description list..
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{description}
+\\
+
+\begin{itemize}
+\item[Item1]
+  And, last but not least, a list created with \verb/\begin{itemize}/
+\item[Item2]
+  Some more test text, nothing really creative.
+\item
+  And as always, the last unlabeled item.
+\end{itemize}
+
+\end{table}
+\endverbatim
+
+
+
+\end{document}
+

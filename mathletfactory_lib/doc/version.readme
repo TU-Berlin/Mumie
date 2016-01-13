@@ -1,0 +1,42 @@
+*************************************************************************
+*                  Versioning in der MathletFactory                     *
+*************************************************************************
+
+
+Die Versionskontrolle in der MathletFactory basiert auf 2 Dateien, welche beide im CVS der
+MF-Bibliothek liegen ("mathletfactory_lib"):
+1. /resource/version.properties
+2. /doc/version.history
+
+Ziele der Versionskontrolle sind:
+ - Überblick, welche Version gerade auf dem Server benutzt wird ("alt oder neu?")(1)
+ - Changelog über die wichtigsten Änderungen in der Bibliothek (2)
+
+Dazu ist es notwenig, Änderungen in der Bibliothek in der Datei (2) zu notieren und
+gegebenfalls die Versionsnummer in der Datei (1) zu erhöhen und einen neuen Eintrag in der Datei (2) hinzuzufügen.
+Zu jeder Version muss das Checkin-Datum der Server eingetragen werden oder "???" falls die neue
+Version noch nicht auf die Server eingecheckt wurde und nur im CVS liegt.
+
+
+Format von (1):
+Diese Datei beinhaltet lediglich einen Schlüssel "version" und die dazugehörige Versionsnummer als Wert 
+(z.B. "version=1.0.3-b05"). Dieser Wert wird vom Applet ausgelesen und im "About"-Dialog angezeigt.
+
+
+Format von (2):
+Ein Eintrag für eine Versionsnummer hat z.B. folgende Gestalt:
+
+    Version 1.0.3:
+    ==============
+    Checkin Gigantix: <Datum> oder ???
+    Checkin Habnix  : <Datum> oder ???
+
+    <Kategorie>:
+    ------------
+    -<Beschreibung> (b05)
+
+    ---------------------------------------------------------------------------
+
+    Version 1.0.2:
+    ==============
+    ....

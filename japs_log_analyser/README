@@ -1,0 +1,221 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.3 2007/08/30 22:59:26 rassy Exp $
+
+
+                               JAPS LOG ANALYSER
+
+
+1. The basics
+   ==========
+
+Japs log analyser is a framework for analysing Cocoon log files. It works
+similar to Cocoon itself: A pipeline contains a parser, one or more filters,
+and a serializer. The parser parses Cocoon's log output and creates so-called
+"log output events". These events are sent to the first filter, which processes
+the information in some way and sends the result, again as log output events,
+to the next filter; and so on. The last filter sends the events to the
+serializer, which renders the final result in some way.
+
+Besides serializers, the Japs log analyser also knows so-called "investigators".
+Technically, investigators are the same as serializers; the only difference is
+that the purpose of an investigator is not mere rendering of the log events,
+but analysing them in some way and printing the result.
+
+
+2. The analyse.xml and components.xml files
+   ========================================
+
+The pipeline together with the sources are defined in an XML file (similar to
+Cocoon's sitemap.xml file). This file is called "analyse.xml" by default. It
+has a form as shown in the following example:
+
+<analyse>
+
+  <sources>
+    <file>logs/core.log.000001</file>
+    <file>logs/sitemap.log</file>
+  </sources>
+
+  <pipeline>
+
+    <parser name="default"/>
+
+    <filter name="field">
+      <param name="uri">false</param>
+      <param name="category">false</param>
+    </filter>
+
+    <filter name="thread">
+      <param name="thread">Thread-12</param>
+    </filter>
+
+    <filter name="regex">
+      <param name="regex">DocumentGenerator#2</param>
+    </filter>
+
+    <serializer name="html">
+      <param name="target-file">DocumentGenerator.html</param>
+    </serializer>
+
+  </pipeline>
+
+</analyse>
+
+Thus, the input comes from two log files, core.log.000001 and sitemap.log, is
+parsed by the default parser, goes through three filters, and is rendered by
+the HTML serializer. The default parser, filters, and the HTML serializer are
+explained in more detail below.
+
+The components referenced in analyse.xml, i.e., the parser, filter, and
+serializer, are implemented by Java classes (cf. section 3). The information
+which component is implemented by which Java class is defined in another XML
+file, usually called "components.xml". It has a form as shown in the following
+example:
+
+<components xmlns="http://www.mumie.net/xml-namespace/log-analyser-components">
+
+  <parser
+    name="default"
+    class="net.mumie.japs.log.analyse.parse.DefaultLogOutputParser"/>
+
+  <filter
+    name="field"
+    class="net.mumie.japs.log.analyse.filter.FieldLogOutputFilter"/>
+
+  <filter
+    name="time"
+    class="net.mumie.japs.log.analyse.filter.TimeLogOutputFilter"/>
+
+  <filter
+    name="regex"
+    class="net.mumie.japs.log.analyse.filter.RegexLogOutputFilter"/>
+
+  <filter
+    name="uri"
+    class="net.mumie.japs.log.analyse.filter.UriLogOutputFilter"/>
+
+  <filter
+    name="thread"
+    class="net.mumie.japs.log.analyse.filter.ThreadLogOutputFilter"/>
+
+  <filter
+    name="sort"
+    class="net.mumie.japs.log.analyse.filter.SortLogOutputFilter"/>
+
+  <serializer
+    name="text"
+    class="net.mumie.japs.log.analyse.serialize.TextLogOutputSerializer"/>
+
+  <serializer
+     name="html"
+     class="net.mumie.japs.log.analyse.serialize.HtmlLogOutputSerializer"/>
+
+</components>
+
+As you can see, each component has a name, which corresponds to the "name"
+attributes in the analyse.xml file.
+
+DTDs exist for both the analyse.xml and component.xml files. You find them in
+the "etc" directory.
+
+
+3. Java representation of sources and pipeline components
+   ======================================================
+
+Sources and pipeline components (parser, filter, serializer) are represented by
+the following Java interfaces:
+
+  net.mumie.japs.log.analyse.source.LogOutputSource
+  net.mumie.japs.log.analyse.parse.LogOutputParser
+  net.mumie.japs.log.analyse.filter.LogOutputFilter
+  net.mumie.japs.log.analyse.serialize.LogOutputSerializer
+
+Each interface is implemented by one ore more classes. LogOutputSource has a
+single, fixed implementation by
+
+  net.mumie.japs.log.analyse.source.FileLogOutputSource
+
+The implementations of the remaining interfaces can be controlled by the
+components.xml file (see section 2).
+
+In addition to the above interfaces, there exist three more general ones:
+
+  net.mumie.japs.log.analyse.LogAnalyserComponent
+  net.mumie.japs.log.analyse.LogOutputProducer
+  net.mumie.japs.log.analyse.LogOutputHandler
+
+A LogAnalyserComponent is a pipeline component. A LogOutputProducer is a
+pipeline component that produces log output events. A LogOutputHandler is a
+pipeline component that handles log output events.
+
+The inheritance relations between all interfaces are shown in the following
+diagram (A -> B means "A extends B"):
+
+  
+                                LogAnalyserComponent
+                                         ^
+                                 ________|_______
+                                |                |
+                         LogOutputProducer LogOutputHandler
+                          ^        ^           ^         ^
+                          |        |___________|         |
+                          |              |               |
+  LogOutputSource LogOutputParser LogOutputFilter LogOutputSerializer  
+
+
+
+4. Component parameters
+   ====================
+
+Pipeline components (parser, filter, serializer) can have parameters. They are
+specified in the analyse.xml file (see section 2). Which parameters are
+possible depends on the component. Consult the api documentation of the
+component for that.
+
+
+5. Available components
+   ====================
+
+5.1. Parsers
+
+The Japs log analyser package contains only one parser,
+
+  net.mumie.japs.log.analyse.parse.DefaultLogOutputParser
+
+It is capable of parsing standard Cocoon log files, but can be adapted by
+parameters.
+
+5.2. Filters
+
+Currently, the Japs log analyser package comes with six filters, all of them in
+the package net.mumie.japs.log.analyse.filter:
+
+  FieldLogOutputFilter   Eleminates certain fields from the log records.
+  RegexLogOutputFilter   Filters by a regular expression
+  SortLogOutputFilter    Sorts the log records by time
+  ThreadLogOutputFilter  Filters by a thread
+  TimeLogOutputFilter    Filters by time
+  UriLogOutputFilter     Filters by an URI
+
+For more detailed descriptions, see the api documentation.
+
+5.3. Serializers
+
+The Japs log analyser package comes with two serializers, both in the package
+net.mumie.japs.log.analyse.serialize:
+
+  TextLogOutputSerializer  Renders the result as plain text
+  HtmlLogOutputSerializer  Renders the result as HTML
+
+5.4. Investigators
+
+Technically, investigators are serializers (there is no extra interface for
+them). The only difference to "ordinary" serializers is that they analyse the
+log events in some way and print the result instead of simply rendering them.
+
+The Japs log analyser package comes one investigator, which is in the package
+net.mumie.japs.log.analyse.investigate:
+
+  TimeInvestigator  Investigates the durations of certain operation
+
+For more detailed descriptions, see the api documentation.

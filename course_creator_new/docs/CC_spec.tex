@@ -1,0 +1,82 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{graphicx,german}
+\usepackage[latin1]{inputenc}
+
+\textwidth15.5cm \textheight23cm
+\oddsidemargin2mm \evensidemargin2mm \topmargin-10mm
+\nonfrenchspacing
+\parskip0.15\baselineskip
+
+\title{Der CourseCreator}
+\author{Jens Binder $<$binder@math.tu-berlin.de$>$}
+
+\newcommand{\minorheadline}[1]{\textbf{#1:}}
+
+\begin{document}
+
+\maketitle
+
+
+\begin{center}
+{\verb'$Id: CC_spec.tex,v 1.1 2006/10/05 09:20:50 binder Exp $'}
+\end{center}
+
+\section{Präambel}
+
+Der \emph{CourseCreator} ist ein Autorenwerkzeug für die multimediale
+Lernplattform ''Mumie''. Der Benutzer(Autor) ist mit dem CourseCreator in der
+Lage, die innerhalb der Mumie vorhandenen Inhalte miteinander zu verknüpfen um
+sie in einer für den Studenten logischen, nichtliniearen Reihenfolge
+darzustellen. Gerade bei mathematischen Inhalten ist es zumeist sehr hilfreich
+auf eine nichtlineare, parallele Darstellung von Inhalten zurückzugreifen
+um Gemeinsamkeiten, Unterschiede sowie Abhängikeiten von Elementen
+aufzuzeigen. Das wird im CourseCreator mittels ungerichteten Graphen
+erreicht deren Knoten den jeweiligen Inhaltselementen und die
+Kanten logische Verknüpfungen zwischen diesen Elementen entsprechen.
+Wir erreichen damit eine Darstellungsform, welche über
+die pure Abbildung der Reihenfolge von Elementen hinausgeht, aber auch für
+Nichtinformatiker bearbeitbar bleibt. 
+Vor diesem Hintergrund wurde der CourseCreator als ein grafisches Interface für
+die Erstellung und Verwaltung von Kursen entwickelt. Er setzt indirekt auf dem
+Appliaktion-Server der Mumie - dem \emph{Japs} auf
+
+\section{Das Grunddesign}
+
+Der CourseCreator ist eine Java-Applikation mit grafischer Benutzeroberfläche
+auf Basis der Java-Komponente \emph{Swing}. 
+Die Hauptaufgaben sind:
+\begin{itemize}
+\item \minorheadline{Darstellung von Kursen} Der (nichtlinearen) Darstellung
+von Kursen kommt eine besondere Bedeutung zu. Nach außen hin wird dies mit
+\emph{JGraph}, einer Unterkomponente von Swing realisiert, die es erlaubt
+komplexe Graphen grafisch darzustellen. Der Benutzer arbeitet also einzig
+auf einem bildlich dargestellten Graphen. Intern (innerhalb von
+Japs und CourseCreator) werden die Graphen im XML-Format dargestellt. Für diese
+Darstellung existiert eine eigene Spezifikation (''KursXML'').
+\item \minorheadline{Laden von Kursen aus der Datenbank bzw. aus dem
+Dateisystem} Der CourseCreator soll in der Lage sein Kurse zu laden -
+unabhängig vom Speicherort. Im Falle des Ladens aus der Datenbank soll die
+Japs-Komponente MMCDK benutzt werden um die XML codierten Kursdaten in den
+CourseCreator zu laden, welcher diese anschließend grafisch aufbereitet (siehe
+oben).
+Die Aufgabe des MMCDK ist das Verwalten der Kurs-Inhalte einschliesslich deren
+Checkout aus dem Japs. Er soll vom CourseCreator ''fernsteuerbar'' sein.
+\item \minorheadline{Zuweisen von Inhalten} Dies setzt eine http(s)-Verbindung
+zur Mumie vorraus, um konsitente Inhaltsverknüpfungen zu garantieren. Das
+bedeutet das die Kurselemente die im CourseCreator zugeordnet werden und die
+später vom Studenten verwendet werden sollen auch wirklich in der Datenbank
+vorhanden sein müssen. Die Zuweisung direkt geschieht über ein weiteres Fenster
+in welchem die aktuelle Pfadstruktur innerhalb des Japs abgebildet ist. In
+dieser Struktur kann sich der Benutzer die gewünschten Elemente auswählen und in
+seiner Kurstruktur zuweisen.
+\item \minorheadline{Speichern von Kursen - lokal oder in die Datenbank}
+Beim Speichern der Kurse wird der erstellte Graph auf das interne XML
+abgebildet und anschließend in die Datenbank mittels MMCDK eingecheckt oder
+einfach lokal auf der Festplatte gespeichert - wenn zum Beispiel ein Kurs noch
+unvollständig ist.
+
+\end{itemize}
+
+
+
+\end{document}

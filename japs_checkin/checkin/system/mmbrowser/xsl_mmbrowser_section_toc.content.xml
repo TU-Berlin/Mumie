@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy <rassy@math.tu-berlin.de>
+   $Id: xsl_mmbrowser_section_toc.content.xml,v 1.10 2008/09/14 15:54:43 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<xsl:variable name="subsections"
+              select="/mumie:section/mumie:contains/mumie:section[@id!=0]"/>
+
+<xsl:variable name="parent-section"
+              select="/*/mumie:dynamic_data/mumie:store[@name='section']/mumie:section"/>
+
+<xsl:variable name="parent-section-url">
+  <xsl:call-template name="xsl.pseudodoc-url">
+    <xsl:with-param name="type-name">section</xsl:with-param>
+    <xsl:with-param name="id" select="$parent-section/@id"/>
+    <xsl:with-param name="context">mmbrowser</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<xsl:variable name="items" select="/mumie:section/mumie:contains/*[local-name()!='section']"/>
+
+<xsl:param name="part">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">part</xsl:with-param>
+    <xsl:with-param name="default">1</xsl:with-param>
+  </xsl:call-template>
+</xsl:param>
+
+<xsl:param name="items-per-part">10</xsl:param>
+
+<xsl:variable name="num-items" select="count($items)"/>
+
+<xsl:variable name="num-parts" select="ceiling($num-items div $items-per-part)"/>
+
+<xsl:variable name="first" select="($part - 1) * $items-per-part + 1"/>
+
+<xsl:variable name="last" select="$part * $items-per-part"/>
+
+<xsl:variable name="this-url">
+  <xsl:call-template name="xsl.pseudodoc-url">
+    <xsl:with-param name="type-name">section</xsl:with-param>
+    <xsl:with-param name="id" select="/*/@id"/>
+    <xsl:with-param name="context">mmbrowser</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<xsl:template name="part-list">
+  <xsl:param name="count">1</xsl:param>
+  <xsl:if test="$count &gt; 1">&#183;</xsl:if>
+  <xsl:choose>
+    <xsl:when test="$count = $part">
+      <em class="checked">
+        <xsl:value-of select="$count"/>
+      </em>
+    </xsl:when>
+    <xsl:otherwise>
+      <a href="{$this-url}?part={$count}">
+        <xsl:value-of select="$count"/>
+      </a>
+    </xsl:otherwise>
+  </xsl:choose>
+  <xsl:if test="$count &lt; $num-parts">
+    <xsl:call-template name="part-list">
+      <xsl:with-param name="count" select="$count + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="/">
+
+  <html>
+    <head>
+      <title><xsl:value-of select="$i18n-title"/></title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmbrowser"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+
+      <!-- Top-bar: -->
+      <xsl:choose>
+        <!-- If root section, make link "mm-browser" "checked": -->
+        <xsl:when test="/mumie:section/@id = 0">
+          <xsl:call-template name="top-bar">
+            <xsl:with-param name="checked">mm-browser</xsl:with-param>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="top-bar"/>
+        </xsl:otherwise>
+      </xsl:choose>
+
+      <!-- Main: -->
+      <div class="main-bounded-width">
+
+        <!-- Headline: -->
+        <h1><xsl:value-of select="$i18n-headline"/></h1>
+
+        <!-- Header: -->
+        <table class="list" style="margin-left: 0em">
+          <tr>
+            <td class="list-label"><p><xsl:value-of select="$i18n-section"/>:</p></td>
+            <td>
+              <p class="section-name">
+                <xsl:apply-templates select="/mumie:section/mumie:name"/>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td/>
+            <td>
+              <p><xsl:apply-templates select="/mumie:section/mumie:description"/></p>
+            </td>
+          </tr>
+          <xsl:if test="/mumie:section/@id != 0">
+            <tr>
+              <td class="list-label"><p><xsl:value-of select="$i18n-parent-section"/>:</p></td>
+              <td>
+                <p><a href="{$parent-section-url}">
+                  <xsl:apply-templates select="$parent-section/mumie:name"/>
+                </a></p>
+              </td>
+            </tr>
+          </xsl:if>
+          <xsl:if test="$subsections">
+            <tr>
+              <td class="list-label"><p><xsl:value-of select="$i18n-subsections"/>:</p></td>
+              <td>
+                <table class="list">
+                  <xsl:for-each select="$subsections">
+                    <xsl:sort select="mumie:name"/>
+                    <xsl:variable name="url">
+                      <xsl:call-template name="xsl.pseudodoc-url">
+                        <xsl:with-param name="context">mmbrowser</xsl:with-param>
+                      </xsl:call-template>
+                    </xsl:variable>
+                    <tr>
+                      <td>
+                        <p><a href="{$url}">
+                          <xsl:apply-templates select="mumie:name"/>
+                        </a></p>
+                      </td>
+                    </tr>
+                  </xsl:for-each>
+                </table>
+              </td>
+            </tr>
+          </xsl:if>
+        </table>
+
+        <xsl:if test="$num-parts &gt; 1">
+          <div class="part-list">
+            <xsl:call-template name="part-list"/>
+          </div>
+        </xsl:if>
+
+        <!-- Items -->
+        <table class="mmbrowser-toc">
+          <xsl:for-each select="$items[position() &gt;= $first and position() &lt;= $last]">
+            <xsl:sort select="mumie:name"/>
+
+            <!-- URL of the info page: -->
+            <xsl:variable name="url">
+              <xsl:choose>
+                <xsl:when test="mumie:info_page">
+                  <xsl:call-template name="xsl.document-url">
+                    <xsl:with-param name="document-type.name">generic_page</xsl:with-param>
+                    <xsl:with-param name="id" select="mumie:info_page/@id"/>
+                  </xsl:call-template>
+                </xsl:when>
+                <xsl:otherwise>
+                  <xsl:call-template name="xsl.document-url">
+                    <xsl:with-param name="context">mmbrowser</xsl:with-param>
+                  </xsl:call-template>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:variable>
+
+            <!-- URL of the thumbnail: -->
+            <xsl:variable name="thumbnail-url">
+              <xsl:call-template name="xsl.document-url">
+                <xsl:with-param name="document-type.name">generic_image</xsl:with-param>
+                <xsl:with-param name="id">
+                  <xsl:choose>
+                    <xsl:when test="mumie:thumbnail">
+                      <xsl:value-of select="mumie:thumbnail/@id"/>
+                    </xsl:when>
+                    <xsl:otherwise><xsl-ext:id lid="fallback-thumbnail"/></xsl:otherwise>
+                  </xsl:choose>
+                </xsl:with-param>
+              </xsl:call-template>
+            </xsl:variable>
+
+            <tr>
+              <td class="thumbnail" rowspan="2">
+                <a class="image" href="{$url}" title="{$i18n-view}">
+                  <img src="{$thumbnail-url}"/>
+                </a>
+              </td>
+              <td class="name">
+                <a href="{$url}" title="{$i18n-view}">
+                  <xsl:call-template name="label"/>
+                  <xsl:text>: </xsl:text>
+                  <xsl:apply-templates select="mumie:name"/>
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td class="description">
+                <xsl:apply-templates select="mumie:description"/>
+              </td>
+            </tr>
+
+          </xsl:for-each>
+
+        </table>
+
+      </div>
+
+    </body>
+  </html>
+
+</xsl:template>
+
+<xsl:template name="label">
+  <xsl:param name="doctype" select="local-name()"/>
+  <xsl:param name="category" select="mumie:category/@name"/>
+  <xsl:choose>
+    <xsl:when test="$doctype='applet'">
+      <xsl:value-of select="$i18n-applet"/>
+    </xsl:when>
+    <xsl:when test="$doctype='image'">
+      <xsl:value-of select="$i18n-image"/>
+    </xsl:when>
+    <xsl:when test="$doctype='element'">
+      <xsl:choose>
+        <xsl:when test="$category='algorithm'">
+          <xsl:value-of select="$i18n-algorithm"/>
+        </xsl:when>
+        <xsl:when test="$category='application'">
+          <xsl:value-of select="$i18n-application"/>
+        </xsl:when>
+        <xsl:when test="$category='definition'">
+          <xsl:value-of select="$i18n-definition"/>
+        </xsl:when>
+        <xsl:when test="$category='lemma'">
+          <xsl:value-of select="$i18n-lemma"/>
+        </xsl:when>
+        <xsl:when test="$category='motivation'">
+          <xsl:value-of select="$i18n-motivation"/>
+        </xsl:when>
+        <xsl:when test="$category='theorem'">
+          <xsl:value-of select="$i18n-theorem"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:when>
+    <xsl:when test="$doctype='subelement'">
+      <xsl:choose>
+        <xsl:when test="$category='deduction'">
+          <xsl:value-of select="$i18n-deduction"/>
+        </xsl:when>
+        <xsl:when test="$category='example'">
+          <xsl:value-of select="$i18n-example"/>
+        </xsl:when>
+        <xsl:when test="$category='history'">
+          <xsl:value-of select="$i18n-history"/>
+        </xsl:when>
+        <xsl:when test="$category='motivation'">
+          <xsl:value-of select="$i18n-motivation"/>
+        </xsl:when>
+        <xsl:when test="$category='proof'">
+          <xsl:value-of select="$i18n-proof"/>
+        </xsl:when>
+        <xsl:when test="$category='remark'">
+          <xsl:value-of select="$i18n-remark"/>
+        </xsl:when>
+        <xsl:when test="$category='table'">
+          <xsl:value-of select="$i18n-table"/>
+        </xsl:when>
+        <xsl:when test="$category='test'">
+          <xsl:value-of select="$i18n-test"/>
+        </xsl:when>
+        <xsl:when test="$category='visualization'">
+          <xsl:value-of select="$i18n-visualization"/>
+        </xsl:when>
+      </xsl:choose>
+      <xsl:text> (</xsl:text>
+      <xsl:value-of select="$i18n-subelement"/>
+      <xsl:text>)</xsl:text>
+    </xsl:when>
+    <xsl:when test="$doctype='problem'">
+      <xsl:value-of select="$i18n-problem"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+</xsl:stylesheet>
+

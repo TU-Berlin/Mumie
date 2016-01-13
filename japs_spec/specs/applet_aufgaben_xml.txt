@@ -1,0 +1,240 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: applet_aufgaben_xml.txt,v 1.1 2005/05/19 09:04:53 rassy Exp $
+
+
+                     XML-SPEZIFIKATION "PRACTICE"-AUFGABEN
+
+
+1. Grundsätzliche Struktur
+   =======================
+
+  1.1. Drei Parts mit den subtypes "task", "input" und "execute".
+
+  1.2. Der 'subtype="task"'-Part enthält genau einen Subpart, und dieser
+       enthält die eigentliche Aufgabenstellung. Er darf Text mit den üblichen
+       Formatierungen (Absätze, Listen, Tabellen usw.) sowie mathematische
+       Formeln und Multimedia (Bilder usw.) enthalten.
+
+       Zusätzlich darf der Subpart das Element "subtasks" enthalten, mit dem
+       eine Liste von Teiaufgaben definiert wird. Für jede Teilaufgabe
+       existiert ein "subtask"-Kindelement, das Text mit den üblichen
+       Formatierungen, mathematische Formeln und Multimedia enthalten darf. Per
+       Default sollen die Teilafgaben mit "a) b) c) ..." durchnumeriert
+       werden. 
+
+  1.3. Der 'subtype="input"'-Part enthält genau einen Subpart, und dieser
+       enthält die Daten zur Aufgabe. Aus diesem Teil wird das Data-Sheet
+       zusammengestellt, das an das als Bearbeitungsumgebung fungierende Applet
+       geschickt wird (wobei das DataSheet noch um die Studenteneingaben aus
+       vorherigen Sitzungen erweitert wird). Für Data-Sheets
+       s. data_sheet_spec.txt. 
+
+  1.4. Der subpart des 'subtype="input"'-Part darf Text mit den üblichen
+       Formatierungen (Absätze, Listen, Tabellen usw.) sowie mathematische
+       Formeln und Multimedia (Bilder usw.) enthalten. Elemente, die in das
+       Data-Sheet aufgenommen werden sollen, werden wie folgt gekennzeichnet:
+       Sie enthalten ein Kindelement "datalabel" mit einem Attribut "path", das
+       die Adresse angibt, unter der das Element im Data-Sheet erscheinen
+       soll. Das "datalabel"-Element gehört dem Namensraum der
+       Element-Dokumente an und muss daher ggf. einen Namespace-Prefix oder
+       eine 'xmlns="..."'-Namespace-Deklaration haben (insbesondere, wenn es
+       sich in einem MathML-Fragment befindet).  Beispiel:
+
+         <math mode="display" xmlns="http://www.w3.org/1998/Math/MathML">
+           <mtable class="bmatrix">
+             <elm:datalabel path="matrix_pair/left_matrix"/>
+             <!-- eine Matrix -->
+           </mtable>
+           <!-- weiterer MathML-Code -->
+         </math>
+
+       Hier wurde vorausgesetzt, dass der Prefix "elm" an den entsprechenden
+       Namensraum gebunden ist.
+
+  1.5. Der 'subtype="execute"'-Part enthält genau einen Subpart, und dieser
+       enthält genau ein "applet"-Element. Dieses hat die übliche Struktur. Es
+       referenziert das Applet, mit dem die Aufgabe bearbeitet werden soll.
+
+
+
+2. XML-Elemente
+   ============
+
+Root-Element:
+<element>
+  <!-- Content: title part part part-->
+</element>
+
+<title>
+  <!-- Content: TITLE_MISC -->
+</title>
+
+<part
+  subtype="task|input|execute">
+  <!-- Content: subpart -->
+</part>
+
+In 'part subtype="task"':
+<subpart>
+  <!-- Content: MISC subtasks?-->
+</subpart>
+
+In 'part subtype="input"':
+<subpart>
+  <!-- Content: MISC -->
+</subpart>
+
+In 'part subtype="execute"':
+<subpart>
+  <!-- Content: applet -->
+</subpart>
+
+<subtasks>
+  <!-- Content: subtask* -->
+</subtasks>
+
+<subtask>
+  <!-- Content: MISC -->
+</subtask>
+
+<datalabel
+  path="DATA_SHEET_PATH"/>
+
+
+Abkürzungen/Platzhalter:
+
+  MISC
+      Text mit den üblichen Formatierungen (Absätze, Listen, Tabellen usw.),
+      mathematische Formeln, Multimedia-Objekte (Bilder usw.).
+
+  TITLE_MISC
+      Text mit den in Titeln üblichen Formatierungen.
+
+  DATA_SHEET_PATH
+      Data-Sheet-Adresse, s. data_sheet_spec.txt.
+      
+
+
+3. Beispiel
+   ========
+
+<element xmlns="http://www.mumie.net/xml-namespace/document/content/element"
+         xmlns:elm="http://www.mumie.net/xml-namespace/document/content/element">
+  <title>Der Titel</title>
+  <part subtype="task">
+    <subpart>
+      <par>
+        Multiplizieren Sie die beiden folgenden Matrizen:
+      </par>
+    </subpart>
+  </part>
+  <part subtype="input">
+    <subpart>
+      <displaymath>
+        <math mode="display" xmlns="http://www.w3.org/1998/Math/MathML">
+          <mtable class="bmatrix">
+            <elm:datalabel path="matrix_pair/left_matrix"/>
+            <!-- erste Matrix -->
+          </mtable>
+          <mspace width="1em"/>
+          <html xmlns="http://www.w3.org/1999/xhtml" style="display:inline">
+            und
+          </html>
+          <mtable class="bmatrix">
+            <elm:datalabel path="matrix_pair/right_matrix"/>
+            <!-- erste Matrix -->
+          </mtable>
+          <mspace width="1em"/>
+        </math>
+      </displaymath>
+    </subpart>
+  </part>
+  <part subtype="execute">
+    <subpart>
+      <applet lid="engine"/>
+    </subpart>
+  </part>
+</element>
+
+Das daraus generierte Data-Sheet würde wie folgt aussehen:
+
+<data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+  <unit name="matrix_pair">
+    <data name="left_matrix">
+      <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+        <!-- MathML-Code  -->
+      </mtable>
+    </data>
+    <data name="right_matrix">
+      <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+        <!-- MathML-Code -->
+      </mtable>
+    </data>
+  </unit>
+</data_sheet>
+
+
+
+4. XHTML-Darstellung
+   =================
+
+Wird die Aufgabe auf Client-Seite durch XHTML-Formularelemente
+dargestellt, so sollen folgende Regeln gelten:
+
+  4.1. Läuft der Bearbeitungszeitraum des Trainings-Blatts gerade, so  wird aus
+       dem 'subtype="execute"'-Part ein 'applet'- oder auch 'object'-Element,
+       das das Applet, mit dem die Aufgabe bearbeitet werden soll,
+       einbindet. Dem Applet sollen dabei folgende Parameter mitgegeben werden:
+
+    4.1.1. 'homeworkMode'. Wert: "true". Versetzt das Applet beim Start in den
+            Hausaufgabenmodus.
+
+    4.1.2. 'urlPrefix'. Wert: Der URL-Prefix des Japs, von dem die Seite
+           geladen wurde.
+
+    4.1.3. 'problemRef'. Wert: Die Id der cousre_subsection-element-Referenz zu
+           diesem Dokument.
+
+  4.2. Ist der Bearbeitungszeitraum des Trainings-Blatts bereits verstrichen,
+       so wird aus dem 'subtype="execute"'-Part ein Link zu der korrigierten
+       Fassung der Antworten mit Musterlösungen. Die URL ergibt sich aus:
+
+    4.2.1. Dem URL-Prefix des Japs, von dem die Seite geladen wurde.
+
+    4.2.2. Dem Pfad
+
+             protected/training/view/problem-marking
+
+           (mit einem "/" vom URL-Prefix getrennt).
+
+    4.2.3. Einem Request-Parameter mit dem Namen "ref" und dem Wert der Id der
+           cousre_subsection-element-Referenz zu diesem Dokument.
+
+
+
+5. Daten im 'mumie:dynamic_data'-Element
+   =====================================
+
+Das Metainfo-Element 'mumie:dynamic_data' hat die folgenden Kindelemente:
+
+  5.1. Eine Reihe von Elementen der Form:
+
+         <mumie:param name="NAME" value="VALUE"/>
+
+       Im einzelnen:
+
+    5.1.1. NAME: "is_course_member", VALUE: "yes|no". Gibt an, ob der Benutzer,
+           von dem der Request stammt, Teilnehmer des Kurses ist.
+
+    5.1.2. NAME: "timeframe_relation", VALUE: "before|inside|after". Gibt an,
+           ob der gegenwärtige Zeitpunkt vor, in, oder nach dem
+           Bearbeitungszeitraum des Übungsblatts liegt.
+
+    5.1.3. NAME: "stored_answers", VALUE: "yes|no". Gibt an, ob diese Seite die
+           Response auf einen Upload der Antworten ist. Optional, Default ist
+           "no".
+
+
+
+
+-- ENDE DER DATEI --

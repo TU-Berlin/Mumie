@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:dbh="http://www.mumie.net/xml-namespace/db-helper"
+            targetNamespace="http://www.mumie.net/xml-namespace/db-helper"
+            elementFormDefault="qualified">
+
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      Author: Tilman Rassy &lt;rassy@math.tu-berlin.de&gt;
+      $Id: DbHelper.xsd,v 1.4 2007/11/23 13:00:42 rassy Exp $
+
+      Schema definition for XML documents that control the auto-coding of
+      db helper classes.
+    </xsd:documentation>
+  </xsd:annotation>
+
+  <!--
+    ================================================================================
+    Simple types
+    ================================================================================
+  -->
+
+  <xsd:simpleType name="YesOrNo">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A variant of the boolean type. Can only take the values "yes" or "no".
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="yes"/>
+      <xsd:enumeration value="no"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="MethodName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An unqualified method name in the Java programming language. Must meet
+        the convention that method names start with a lower case letter.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][A-Za-z_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="VariableName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An unqualified variable name in the Java programming language. Must meet
+        the convention that variable names start with a lower case letter.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[a-z][A-Za-z0-9_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ShortClassName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An unqualified class name in the Java programming language. Must meet
+        the convention that class names start with an upper case letter. Names
+        includiong a '$' character (i.e., inner class names) are not allowed.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="[A-Z][A-Za-z_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="ClassName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A (qualified or unqualified) class name in the Java programming language.
+        Must meet the convention that unqualified class names start with an upper
+        case letter. Names includiong a '$' character (i.e., inner class names) are
+        not allowed.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="([a-z_]+\.)*[A-Z][A-Za-z_]*"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="TypeName">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        A type name in the Java programming language. May be a primitive type name
+        or a class name, optionally followed by "[]" to indicate an array. See the
+        "ClassName" type for the restriction on Java class names.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern
+        value="(boolean|char|byte|short|int|long|float|double|void|([a-z_]+\.)*[A-Z][A-Za-z_]*)(\[\])?"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="AccessModifier">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        An access modifier in the Java programming language. May be "public",
+        "protected", or "private". 
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="public"/>
+      <xsd:enumeration value="protected"/>
+      <xsd:enumeration value="private"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="Hint">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Hint for the autocoding process how a variable value should occur in
+        a log message. Possible values and their meanings: "Identifyable" -
+        an object implementing the Identifyable interface, "time" - a long
+        value representing a time (milliseconds since midnight 1970), "array"
+        - an array.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="Identifyable"/>
+      <xsd:enumeration value="time"/>
+      <xsd:enumeration value="array"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!--
+    ================================================================================
+    Complex types
+    ================================================================================
+  -->
+
+  <xsd:complexType name="DbHelper">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        The root element.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="method" type="dbh:Method" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Method">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Describes a method.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="params" type="dbh:Params" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="throws" type="dbh:Throws" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="doc" type="dbh:Doc" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="body" type="dbh:Body" minOccurs="0" maxOccurs="1"/>
+    </xsd:sequence>
+    <xsd:attribute name="name" type="dbh:MethodName" use="required"/>
+    <xsd:attribute name="returnType" type="dbh:TypeName" use="optional"/>
+    <xsd:attribute name="access" type="dbh:AccessModifier" use="optional"/>
+    <xsd:attribute name="static" type="dbh:YesOrNo" use="optional"/>
+    <xsd:attribute name="final" type="dbh:YesOrNo" use="optional"/>
+    <xsd:attribute name="target" type="dbh:ShortClassName" use="optional"/>
+    <xsd:attribute name="logging" type="dbh:YesOrNo" use="optional"/>
+    <xsd:attribute name="toInterface" type="dbh:YesOrNo" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Params">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Specifies the parameters (arguments) of a method.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="param" type="dbh:Param" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Param">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Specifies a single parameter (argument) of a method.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="dbh:VariableName" use="required"/>
+    <xsd:attribute name="type" type="dbh:TypeName" use="required"/>
+    <xsd:attribute name="hint" type="dbh:Hint" use="optional"/>
+    <xsd:attribute name="log" type="dbh:YesOrNo" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Throws">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Specifies the Throwables a method may throw.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:element name="throwable" type="dbh:Throwable" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Throwable">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Specifies a single Throwable a method may throw.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="name" type="dbh:ClassName" use="required"/>
+    <xsd:attribute name="doc" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="Doc" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Contains the API documentation of a method.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:any namespace="http://www.mumie.net/xml-namespace/html-in-javadoc"
+               minOccurs="0"
+               maxOccurs="unbounded"
+               processContents="skip"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="Body" mixed="true">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Contains the body of a method.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:sequence>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element name="sqlComposer" type="dbh:SqlComposer"/>
+        <xsd:element name="log" type="dbh:Log"/>
+      </xsd:choice>
+      <xsd:choice minOccurs="0" maxOccurs="1">
+        <xsd:element name="returnResultSet" type="dbh:ReturnResultSet"/>
+        <xsd:element name="executeInsertAndReturnId" type="dbh:ExecuteInsertAndReturnId"/>
+        <xsd:element name="pgExecuteInsertAndReturnId" type="dbh:PgExecuteInsertAndReturnId"/>
+        <xsd:element name="executeUpdate" type="dbh:ExecuteUpdate"/>
+      </xsd:choice>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="SqlComposer">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Contains a piece of SQL pseudo-code. The latter is converted to Java code
+        at build-time. The (compiled) Java code then creates real SQL code at
+        runtime.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="clear" type="dbh:YesOrNo" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="Log">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Specifies a log message.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:simpleContent>
+      <xsd:extension base="xsd:string">
+        <xsd:attribute name="number" type="xsd:string" use="optional"/>
+        <xsd:attribute name="printParams" type="dbh:YesOrNo" use="optional"/>
+        <xsd:attribute name="linebreak" type="dbh:YesOrNo" use="optional"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="ReturnResultSet">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Represents a Java code fragment that creates the SQL code as a string,
+        prints a log message if desired, executes the query, and returns the
+        ResultSet.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="withLogNumber" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ExecuteInsertAndReturnId">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Represents a Java code fragment that executes an INSERT query and returns
+        the autogenerated id. If disered, log messages are created.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="withLogNumber" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="PgExecuteInsertAndReturnId">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Represents a PostgreSQL-specific Java code fragment that executes an INSERT query
+        and returns the autogenerated id. If disered, log messages are created.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="withLogNumber" type="xsd:string" use="optional"/>
+    <xsd:attribute name="table" type="xsd:string" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="ExecuteUpdate">
+    <xsd:annotation>
+      <xsd:documentation xml:lang="en">
+        Represents a Java code fragment that executes an UPTATE query. If disered,
+        a log messages is created.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="withLogNumber" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+  <!--
+    ================================================================================
+    Root element
+    ================================================================================
+  -->
+
+  <xsd:element name="DbHelper" type="dbh:DbHelper"/>
+
+</xsd:schema>

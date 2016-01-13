@@ -1,0 +1,559 @@
+\documentclass[12pt]{article}
+
+\RequirePackage{../macros/mumie}
+
+\usepackage{xr}
+
+% fuer Referenzen auf die Metainfo-XML-Spezifikation
+\externaldocument[META-]{../metainfo-xml/main} 
+\externaldocument[MTEX-]{../tex/main} 
+% defs für dieses dokument:
+%\def\xml{TreeView XML}
+%\def\xmlhy{TreeView--XML}
+\def\mum{MUMIE}
+\def\checkin{checkin}
+\def\Checkin{Checkin}
+\def\ie{d.\,h.\ }
+\def\Ie{D.\,h.\ }
+\def\zb{z.\,B.\ }
+\def\Zb{Z.\,B.\ }
+
+\newcommand{\unix}[0]{\textsc{unix}}
+
+\newcommand{\note}[1]
+{%
+  \fboxsep3mm%
+  \fbox{%
+    {\Huge!}
+    \hspace{1mm}%
+    \begin{minipage}{12cm}#1\end{minipage}%
+    \hspace{1mm}%
+    {\Huge!}%
+  }%
+}
+
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+\texttt{\Huge mumie} \textsf{\Huge Style Guide}
+\bigskip
+
+\styletitle{Sessions, Authentifizierung und das Userkonzept}
+\phantom.
+\vspace*{3cm}
+\begin{center}
+Uwe Sinha, Fritz Lehmann--Grube%, Nina Dahlmann
+\end{center}
+
+\ifx\pdfoutput\undefined
+  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+\else
+  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Datum:}&
+   \verb+$Date: 2004/08/24 17:05:24 $+\\ % Wird vom cvs eingetragen
+\textsf{CVS-Version:}&
+   \verb+$Revision: 1.8 $+\\            % Wird vom cvs eingetragen
+\textsf{CVS-Source:}&\verb+$Source: /net/mumie/cvs/styles/authuser/main.tex,v $+\\ % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%%
+
+\tableofcontents
+\eject
+\section{Einführung}
+\newpage
+%
+\section{Sessions und Authentifizierung}
+%
+Benutzt wird das Session-- und Authentifizierungsframework, das Cocoon
+mitbringt, siehe:
+\begin{quote}
+\verb|http://cocoon.apache.org/2.1/developing/webapps/session.html| 
+\end{quote}
+
+\subsection{Sessions}
+Session--Verfolgung erfolgt per Cookie. Diese Lösung ist nicht nur lt. der
+o.g.\ URL serverseitig einfacher zu realisieren. Auch clientseitig lassen
+sich Cookies durch Integration des HTTP--Clients aus dem "`Apache
+Commons"'--Projekt problemlos verarbeiten. Benutzer sind darüber zu
+informieren, daß und wofür die \mum{} Cookies verwendet.
+
+\emph{(t.b.c.)}
+%
+\subsubsection{Erzeugen einer Session}
+%
+\emph{(t.b.c.)}
+%
+\subsubsection{Beenden einer Session}
+%
+\emph{(t.b.c.)}
+%
+\subsection{Authentifizierung}
+%
+Das Cocoon--Authentifizierungsframework erwartet, daß die
+authentifizierungsrelevanten Daten in einem bestimmten XML--Format
+vorliegen. Daher ist eine Komponente (Generator) zu implementieren, die aus
+den Benutzerdaten, wie sie in der Datenbank vorliegen, ein entsprechendes
+XML--Fragment generiert.
+
+\emph{(t.b.c.)}
+%
+\newpage
+%
+\section{User- und Rechteverwaltung}
+%
+\label{s:user-rechte}
+%
+Die Idee für die User- und Rechteverwaltung ist den Filesystemen der
+verschiedenen \unix{}--Derivate abgeschaut. User können Lese-- und
+Schreibrechte auf Dokumenten, sowie das Recht, neue Dokumente anzulegen,
+haben. Ausführungsrechte sind bei \mum{}--Dokumenten irrelevant. Analog zum
+\unix{}--Ansatz können auch in der \mum{}  mehrere User zu Usergruppen
+zusammengefaßt werden; alle User, die Mitglied einer Usergruppe sind, haben
+dann die gleichen Zugriffsrechte auf ein Dokument.
+
+Ein grundlegendes Konzept bei der Userverwaltung ist es, User und
+Usergruppen als \emph{Pseudo--Dokumente} -- ähnlich wie Sections oder Themes
+-- zu behandeln. Pseudo--Dokumente haben Meta--Informationen, aber keinen
+Inhalt\footnote{der sitzt im vorliegenden Fall vor dem Rechner
+\texttt{;-)}}.  Usergruppen haben User als Komponenten, \ie die
+Mitgliedschaft in einer Usergruppe kann analog zu "`echten"' Dokumenten über
+die \emph{contained\_in}--Beziehung modelliert werden.
+%
+\subsection{User}
+%
+\label{ss:user}
+%
+Das Pseudo--Dokument "`User"'\footnote{Wenn im folgenden die Rede vom
+  "`User"' ist, ist damit immer das Pseudo--Dokument gemeint. Für
+  menschliche Benutzer wird der deutsche Begriff beibehalten.}  modelliert
+  einen Benutzer der \mum.  Benutzer können sein:
+%
+\begin{itemize}
+\item Studenten(lesen Dokumente) 
+\item Dozenten (erzeugen Kurse aus schon existierenden \mum--Dokumenten) 
+\item Autoren (erzeugen neue \mum--Dokumente)
+\item Administratoren (haben alle Rechte der anderen Benutzerklassen,
+  erzeugen außerdem neue User)
+\end{itemize}
+%
+Weitere Klassen von Benutzern sind vorstellbar. Daher darf bei der
+Implementierung nicht davon ausgegangen werden, daß es nur die eben
+genannten vier Benutzerklassen gibt. Ebenso kann ein Benutzer zu
+verschiedenen Benutzerklassen (\zb Autor und Dozent) gehören. 
+
+Zu einem User werden mindestens folgende Informationen gespeichert:
+%
+\begin{itemize}
+\item Login--Name \emph{(muß eindeutig sein!)}
+\item Vor-- und Nachname
+\item Beschreibung 
+\item E--Mail--Adresse
+\item Gewähltes Theme
+\item Zeitpunkt des letzten Login
+\item Zusätzliche, angepaßte Meta--Information \emph{(custom meta info)}
+\end{itemize}
+%
+Darüber hinaus sollten\footnote{dies ist als "`SHOULD"' im Sinne des
+  RFC\,2119 \cite{rfc2119} zu verstehen} wegen des Grundsatzes der
+  Datensparsamkeit keine weiteren Benutzerdaten gespeichert werden.
+
+Die sich hieraus ergebende XML--Syntax für User (und auch für Usergruppen)
+ist in Abschnitt~\ref{META-sec_user} (Seite \pageref{META-sec_user}\,ff.)
+der Metainfo--XML--Spezifikation \cite{meta} beschrieben.
+%
+\subsubsection{Erzeugen und Bearbeiten von Usern}
+%
+Bei Usern erscheint es im Gegensatz zu Dokumenten nicht sinnvoll, bereits
+geänderte Informationen über einen Benutzer noch
+aufzuheben\footnote{Vermutlich sprechen sogar datenschutzrechtliche
+Gründe dagegen.}; somit entfällt hier die Versionierung. Auch wird die
+Möglichkeit des gleichzeitigen Eincheckens von User(gruppe)n und Dokumenten
+nicht gebraucht, da Autoren von Dokumenten üblicherweise selbst Benutzer der
+\mum{} sind, und sie somit keine ausreichenden Rechte haben, um neue User
+bzw. Usergruppen anzulegen.
+
+Daher sollen --- anders als beim Online--\Checkin{} von Dokumenten --- User
+direkt über ein Web--Formular angelegt und editiert werden.
+
+Folgende Userdaten sollen geändert werden können: 
+%
+\begin{itemize}
+\item Vor-- und Nachname
+\item Beschreibung 
+\item E--Mail--Adresse
+\item Gewähltes Theme
+\end{itemize}
+%
+Möglicherweise gibt es darüber hinaus auch gute Gründe, \textit{custom meta
+infos} zu ändern.
+
+Das Web--Formular soll, soweit sinnvoll, für jedes Userdatum ein
+Text--Eingabefeld enthalten. Für Angaben, die nur eine kleine Anzahl
+bestimmter Werte annehmen dürfen --- \zb{} das Theme ---, sollte statt eines
+Eingabefeldes ein Auswahlmenü angeboten werden. Werden die Daten eines schon
+existierenden Users bearbeitet, so sind die Eingabefelder mit den aktuell zu
+diesem User in der Datenbank gespeicherten Werten vorzubelegen bzw.\ in den
+Auswahlmenüs diese Werte als ausgewählt anzuzeigen.  
+
+\note{Es ist vorstellbar, eine ähnliche Funktionalität auch für
+Meta--Informationen von \emph{Dokumenten} anzubieten. Dazu wäre zu definieren,
+welche Meta--Informationen eines Dokuments geändert werden dürfen, ohne daß
+eine neue Version eingecheckt werden muß. Zu diesen potentiell änderbaren
+Meta--Informationen könnten u.\,a.\ auch die IDs der Gruppen, die bestimmte
+Zugriffsrechte auf dieses Dokument haben, gehören.}
+
+Ebenso wie beim Online--\Checkin{} von Dokumenten sind beim Erzeugen und
+Bearbeiten von Userdaten Zugriffsrechte auf diese Userdaten zu beachten
+(siehe \ref{sss:perms-user}).  Zur Erzeugung von Usern beim
+\emph{Build--\Checkin{}} siehe Abschnitt \ref{ss:build-ci}.
+%
+\subsubsection{Umsetzung JAPS--seitig}
+%
+Bei der Implementierung muß zwischen zwei Situationen unterschieden werden,
+in denen auf Benutzerinformationen zugegriffen wird:
+%
+\begin{enumerate}
+\item \label{enum_session_user} die Überprüfung, ob ein Benutzer
+  authenfiziert ist und bestimmte Zugriffsrechte auf ein Dokument hat 
+\item \label{enum_db_user} das Anlegen und Bearbeiten eines Users
+\end{enumerate}
+%
+Diese beiden Situationen sind mit den \emph{Use-Modes} gewöhnlicher
+\mum--Dokumente (vgl. \cite{meta}, Teil \ref{META-sec_mode}) vergleichbar
+und können --- müssen aber nicht! --- auch damit dargestellt werden.
+
+Java--seitig ergibt sich hieraus, daß die beiden verschiedenen Situationen
+durch verschiedene Klassen zu realisieren sind. Werden \zb nur die
+Informationen über einen User verändert, dann wird kein Verweis auf eine
+Session oder andere Authentifizierungsinformationen benötigt. Umgekehrt
+sollte eine Klasse, die einen authentifizierten User repräsentiert,
+keinesfalls \emph{set}--Methoden anbieten, mit denen grundlegende
+User--Informationen (\zb Vor-- und Nachname) verändert werden können.
+
+User werden als Avalon--Services implementiert, damit sie von anderen
+Komponenten der \mum{} über deren Service--Manager eingebunden und benutzt
+werden können. Aufgrund unserer Erfahrungen mit Avalon--Services empfiehlt
+es sich, neben einem "`Ober--Interface"' \texttt{User} noch zwei
+"`Unter--Interfaces"' zu definieren, die die eben genannten zwei Situationen
+modellieren. 
+%
+\subsubsection{Umsetzung datenbankseitig}
+%
+\emph{(t.b.a.)}
+%
+\subsection{Usergruppen}
+%
+In einer Usergruppe sind User und ihre Zugriffsrechte \emph{(Permissions)}
+auf Dokumente zusammengefaßt. Wie alle Dokumente und Pseudo--Dokumente
+innerhalb der \mum{} haben auch Usergruppen einen Namen und optional eine
+Beschreibung. Darüber hinaus enthält eine Usergruppe keine weiteren
+Informationen (außer natürlich noch einer internen ID). 
+%
+Es ist zu beachten, daß die XML--Syntax für Zugriffsrechte, die in den
+Meta--Informationen der Usergruppe angegeben werden, geringfügig anders ist
+als in den Meta--Informationen der Dokumente. 
+%
+\subsubsection{Erzeugen und Bearbeiten von Usergruppen}
+%
+Dies erfolgt, analog zur Vorgehensweise bei Usern, entweder online über ein
+Web--Formular oder im Rahmen des Build--\Checkin{} (zu Letzterem siehe
+\ref{ss:build-ci}). Änderbare Informationen zu einer Usergruppe sind neben
+dem Gruppennamen nur noch die Typen von \mum{}--Dokumenten, die Mitglieder
+dieser Gruppe erzeugen dürfen 
+sowie die  
+
+%
+\subsubsection{Umsetzung JAPS--seitig}
+%
+Eine Usergruppe ist -- wenn überhaupt -- nur dann durch entsprechende
+Java--Klassen repräsentiert, wenn sie selbst eingecheckt wird. Bei der
+Dokumentenauslieferung sowie beim \Checkin{} von Dokumenten genügt es, durch
+eine Datenbankabfrage zu überprüfen, ob ein Benutzer Mitglied einer Gruppe
+ist, die das nötige Zugriffsrecht auf das entsprechende Dokument hat.
+%
+\subsubsection{Umsetzung datenbankseitig}
+%
+\emph{(t.b.a.)}
+%
+\subsection{Zugriffsrechte}
+%
+Wie schon am Anfang von Abschnitt \ref{s:user-rechte} erwähnt, gibt es drei
+Arten von Zugriffsrechten \emph{(Permissions)}:
+%
+\begin{description}
+%
+\item[Lesen existierender Dokumente:] Hat ein Benutzer dieses Zugriffsrecht
+  auf ein Dokument, so darf das Dokument an seinen Browser ausgeliefert
+  werden.
+%
+\item[Ändern existierender Dokumente:] Hat ein Benutzer dieses Zugriffsrecht
+  auf ein Dokument (genauer: auf den VC--Thread, zu dem ein Dokument gehört,
+  s.\,u.), so darf er online eine neue Version dieses Dokuments einchecken
+  (siehe auch \ref{ss:online-ci}).
+%
+\item[Anlegen neuer Dokumente:] Hat ein Benutzer dieses Zugriffsrecht auf
+  einen Dokument\emph{typ}(!), so darf er beim Online--\Checkin{} (siehe
+  \ref{ss:online-ci}) neue Dokumente dieses Typs hinzufügen. 
+%
+\end{description}
+%
+Zugriffsrechte werden \emph{immer} für ganze Usergruppen und niemals für
+einzelne User vergeben. Sollen Zugriffsrechte auf ein Dokument nur für einen
+einzigen User vergeben werden, so ist für ihn eine eigene Usergruppe
+anzulegen.
+
+Zugriffsrechte können auf Dokumentenebene oder auf Usergruppenebene vergeben
+werden. Da bei der \mum{} das Ändern ("`Schreiben"') eines Dokuments
+gleichbedeutend ist mit dem Einchecken einer neuen Version, beziehen sich
+\emph{Schreib}rechte immer auf einen Versionskontrollthread
+(\emph{VC--Thread}, vgl.\ \cite[Abschn.~\ref{META-sec_vc_thread}]{meta}).
+
+Die XML--Syntax für Zugriffsrechte auf ein Dokument ist in
+ \cite[Abschn.~\ref{META-doc_permission}]{meta} (Seite
+ \pageref{META-doc_permission}\,ff.)  beschrieben. Im Rahmen des
+ Build-\Checkin{} --- und \emph{nur} dort! --- können Zugriffsrechte auch
+ für mehrere Dokumente, \zb alle einzucheckenden, vergeben werden (siehe
+ \ref{ss:build-ci}).
+%
+\subsubsection{Umsetzung JAPS--seitig}
+%
+\emph{(t.b.a.)}
+%
+\subsubsection{Umsetzung datenbankseitig}
+%
+\emph{(t.b.a.)}
+%
+\subsubsection{Zugriffsrechte auf Userdaten}
+%
+\label{sss:perms-user}
+%
+Der Einfachheit halber wird bei Userdaten nicht zwischen Lese-- und
+Schreibrechten unterschieden. D.h., wer Daten über einen Benutzer lesen
+darf, darf sie auch verändern, und umgekehrt. Dies erscheint sinnvoll, da
+--- abgesehen von der Erzeugung eines Authentifizierungskontextes beim Login
+--- ausschließlich lesende Zugriffe auf Userdaten die große Ausnahme
+darstellen. 
+
+Es ist eine Selbstverständlichkeit, daß ein bereits authentifizierter
+Benutzer Daten über sich selbst lesen und verändern können muß. Darüber
+hinaus muß es sinnvollerweise mindestens einen "`Superuser"' geben, der das
+Recht hat, neue User anzulegen. Dieser "`Superuser"' sollte auch die Daten
+anderer User zumindest verändern können: hat \zb  ein Benutzer sein
+Paßwort vergessen, sollte der "`Superuser"' ihm ein neues Paßwort zuteilen
+können. Das Auslesen von Paßwörtern anderer Benutzer (auch durch
+"`Superuser"') \textbf{muß}\footnote{"`MUST"' im Sinne von \cite{rfc2119}}
+verhindert werden. 
+
+Bis auf weiteres wird festgelegt, daß es \emph{genau einen} "`Superuser"'
+gibt, der durch die numerische User--ID 0 (null) gekennzeichnet ist.
+%
+\subsubsection{Systemseiten und spezielle dynamische Inhalte}
+%
+Default--Zugriffsrechte (s.u.)
+
+Zugriffsrecht auf TreeViewXML
+
+\emph{(t.b.c.)}
+%
+\newpage
+%
+\section{Auswirkungen auf andere Komponenten der MUMIE} 
+%
+\subsection{Referenzen}
+%
+\label{ss:referenzen}
+%
+Die Beziehung eines Users zu einer Usergruppe wird über den schon bekannten
+Referenztyp \emph{Container} realisiert (vgl. Abschnitt
+\ref{s:user-rechte}). Wir definieren, daß eine Usergruppe in einen oder
+mehrere User enthält, \ie sie \emph{verweist von der Usergruppe auf den
+User}.
+
+Es kommt jedoch noch ein weiterer Referenztyp hinzu, nämlich \emph{Author}.
+Eine Referenz dieses Typs realisiert die Autorenbeziehung, \ie die Beziehung
+eines oder mehrerer User zu einem Dokument, dessen Autoren diese User
+sind. Da die Information über die Autoren eines Dokuments --- wie auch
+bisher --- beim Dokument vorgehalten werden soll, definieren wir, \emph{daß eine
+Autoren--Referenz vom Dokument auf dessen Autor(en) verweist}.
+
+Aufgrund unseres Konzept zur Sicherung der Qualität des mathematischen
+Inhalts \cite[Abschn.~\ref{MTEX-subsubsection: redaktion}]{mmtex} können
+Autoren verschiedene Rollen innerhalb des Prozesses der Erstellung von
+\mum{}--Dokumenten innehaben. Daher hat ein Dokument üblicherweise mehrere
+Autoren, was zur Folge hat, daß es auch i.\,d.\,R.\ mehrere dieser
+Referenzen zu einem Dokument geben wird. Weiterhin folgt daraus, daß die
+Rolle, die ein Autor bei der Erstellung des Dokuments eingenommen hat, als
+der Referenz als Parameter mitgegeben werden muß. Vgl.\ hierzu wieder
+\cite[Abschn.~\ref{META-sec_authors}\,f.]{meta}.
+
+Man beachte, daß der Begriff "`Referenz"' hier der weiter gefaßten
+Definition aus dem Online--\Checkin{} folgt und einen Verweis von einem
+(Pseudo--)Dokument auf ein anderes beschreibt. Hierbei ist \emph{nicht}
+erforderlich, daß eine Referenz immer durch eine Datenbanktabelle realisiert
+wird, deren Name einer bestimmten Konvention folgt.
+%
+\subsection{URL--Design}
+%
+\label{ss:urls}
+%
+URLs, die auf \mum{}--Dokumente in der Datenbank verweisen, sind bisher nach
+dem Schema\footnote{
+  Namen in spitzen Klammern bezeichnen Variablen; URL--Bestandteile in
+  eckigen Klammern sind optional.
+}
+%
+\begin{quote}
+\small
+\begin{verbatim}
+http://<host>[:<port>]/cocoon/[protected/]document/<dokumententyp>/id/<zahl>
+\end{verbatim}
+\end{quote}
+%
+aufgebaut. Abweichungen existieren, \zb für Dokumente, die über einen
+qualifizierten Namen identifiziert werden können (und sollen), oder für
+spezielle Dokumente, die durch eine feste bzw.\ etwas einfachere URLs
+erreichbar sein sollen. 
+
+Um Daten von Usern und Usergruppen anzusehen und per Webformular bearbeiten
+zu lassen, werden folgende neue URL-Bestandteile eingeführt, die im o.\,g.\
+Schema an die Stelle der Kombination aus "`\verb+document/+"' und dem
+Dokumententyp treten können:
+%
+\begin{description}
+\item[\texttt{user} --] liefert ein Webformular, das mit Informationen über
+  einen User --- sofern die Datenbank-ID eines Users angegeben wurde ---
+  ausgefüllt ist 
+\item[\texttt{user\_group} --] dito für eine Usergruppe
+\item[\texttt{edit\_user} --] Formular--Aktion, die die Speicherung neuer
+  Daten über einen User anstößt
+\item[\texttt{edit\_user\_group} --] dito für eine Usergruppe
+\end{description}
+%
+Ist hinter "`\verb+id/+"' keine Zahl angegeben, so wird ein leeres Formular
+angezeigt, mit dem ein neuer User bzw. eine neue Usergruppe angelegt werden
+kann.
+
+\paragraph{Beispiel:}
+Auf dem Host \verb+mumie.example.net+ sei eine Instanz der \mum{}
+installiert. Dann erhält man die Daten des Users mit der ID 42 unter der URL
+%
+\begin{quote}
+\begin{verbatim}
+http://mumie.example.net/cocoon/protected/user/id/42
+\end{verbatim}
+\end{quote}
+%
+während man unter 
+%
+\begin{quote}
+\begin{verbatim}
+http://mumie.example.net/cocoon/protected/user_group/id
+\end{verbatim}
+\end{quote}
+%
+eine neue Usergruppe anlegen kann.
+
+\emph{(t.b.c.)}
+%
+\subsection{Dokumentenauslieferung}
+%
+\emph{(t.b.a.)}
+%
+\subsection{Online--\Checkin{}}
+%
+\label{ss:online-ci}
+%
+Ein Dokument darf nur dann online eingecheckt werden, wenn 
+%
+\begin{description}
+\item[entweder] das Dokument eine neue Version eine existierenden Dokuments
+  ist \emph{und} der Benutzer einer Benutzergruppe angehört, die das
+  Schreibrecht für den VC--Thread des Dokuments hat, 
+\item[oder] das Dokument "`neu"' ist --- \ie es hat noch keinen VC--Thread
+  -- \emph{und} der Benutzer einer Benutzergruppe angehört, die das Recht
+  hat, neue Dokumente des Typs anzulegen, den auch das aktuell
+  einzucheckende Dokument hat.
+\end{description}
+%
+Ob ausreichende Rechte vorhanden sind, kann nur innerhalb des
+\Checkin{}--Prozesses überprüft werden. Denn für diese Prüfung ist es
+notwendig, beim \Checkin{} Meta--Informationen der einzucheckenden
+Dokumente, wie \zb VC--Thread und Dokumententyp, zu lesen und auszuwerten. 
+
+Hat der Benutzer für mindestens eines der einzucheckenden Dokumente keine
+ausreichenden Zugriffsrechte, so ist der komplette \Checkin{}--Vorgang
+abzubrechen. \Ie es werden nur entweder alle hochgeladenen Dokumente
+eingecheckt, oder keines davon. Dadurch sollen Inkonsistenzen im
+Dokumentenbestand des JAPS vermieden werden. 
+%
+\subsection{Build--\Checkin{}}
+%
+\label{ss:build-ci}
+%
+\subsubsection{Build--\Checkin{} von Usern und Usergruppen}
+%
+Beim Build--\Checkin{} von Usern und Usergruppen bleibt die Vorgehensweise
+gegenüber den Dokumenten unverändert. Initial einzucheckende User und
+Usergruppen müssen entweder in einer der Metainfo--XML--Spezifikation
+entsprechenden XML--Beschreibung \cite[Abschn.~\ref{META-sec_user}]{meta}
+oder "`hart kodiert"' in Skripten, die die Datenbank erzeugen, vorliegen.
+Es sollte dafür gesorgt sein, daß mindestens eine XML-Beschreibung für den
+"`Superuser"' (siehe \ref{sss:perms-user}) sowie XML-Beschreibungen für
+Usergruppen, die den in \ref {ss:user} genannten Rollen entsprechen,
+vorhanden sind.
+%
+\subsubsection{Build--\Checkin{} von Dokumenten}
+%
+Der Build--\Checkin{} anderer Dokumente und Pseudo--Dokumente (\zb
+\emph{sections}) bleibt weitestgehend unverändert, da Zugriffsrechte erst
+bei laufendem JAPS relevant sind.
+
+Die einzige Ausnahme hiervon bilden "`Default--Zugriffsrechte"'. Diese
+können zur Vereinfachung des Build--\Checkin{} in einer speziellen
+XML--Datei gesetzt werden. Die Syntax ist dieselbe wie bei der Vergabe von
+Rechten auf Dokumentenebene \cite[Abschn.~\ref{META-doc_permission}]{meta}.
+Die in der XML--Datei festgelegten Rechte werden automatisch für alle beim
+Build--\Checkin{} einzucheckenden Dokumente vergeben, es sei denn, in den
+Meta--Informationen eines Dokumentes werden andere Zugriffsrechte
+festgelegt. 
+%
+%\subsection{Datenbankschicht}
+%
+\vfill
+\addcontentsline{toc}{section}{Literatur}
+\begin{thebibliography}{9}
+\bibitem{meta}
+D.~Eberlein et~al.: \textit{mumie Style Guide: mumie Metainfo--XML},
+Version~1.37 vom 6.\,7.\,2004
+\bibitem{mmtex}
+T.~Rassy, F.~Meyer und H.~Vieritz: \textit{mumie Style Guide: mumie~\TeX},
+Version~1.60 vom 29.\,6.\,2004
+\bibitem{rfc2119}
+S.~Bradner: \textit{RFC 2119 -- Key words for use in RFCs to Indicate
+  Requirement Levels}, Marina del Rey 1997,
+  \texttt{http://www.faqs.org/rfcs/rfc2119.html}
+\end{thebibliography}
+%
+\end{document}

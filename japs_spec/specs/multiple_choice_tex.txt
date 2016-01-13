@@ -1,0 +1,271 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: multiple_choice_tex.txt,v 1.1 2005/05/19 09:04:54 rassy Exp $
+
+
+                  TEX-SPEZIFIKATION MULTIPLE-CHOICE-AUFGABEN
+
+
+1. Grundsätzliche Struktur
+   =======================
+
+  1.1. Dokumentenklasse "japs.element.problem" mit option "mchoice", also
+
+         \documentclass[mchoice]{japs.element.problem}
+
+  1.2. Alle Multiple-Choice-Aufgaben in einer Umgebung "mchoiceproblems".
+
+  1.3. Darin: Für jede Multiple-Choice-Aufgabe eine Pseudo-Umgebung,
+       eingeleitet durch den Befehl "\mchoiceproblem".
+
+  1.4  Zu Beginn der "mchoiceproblem"-Pseudo-Umgebung dürfen Text mit den
+       üblichen Formatierungen, mathematische Formeln und Multimedia stehen.
+
+  1.5. Danach müssen eine oder mehrere "choices"-Umgebung folgen. Jede
+       definiert eine Gruppe möglicher Antworten. Empfehlung: Nur eine
+       'choices'-Umgebung, von Ausnahmefällen abgesehen.
+
+  1.6. Die "choices"-Umgebung hat ein zwingendes Argument mit folgenden
+       möglichen Werten (s. auch xml_spec_mchoice.txt, 1.6.): 
+
+    1.6.1. "unique"    Genau eine Antwort kann angekreuzt werden.
+
+    1.6.2. "multiple"  Eine oder mehrere Antworten können angekreuzt werden.
+
+    1.6.3. "yesno"     Für jede Antwort muss "ja" oder "nein" angekreuzt werden.
+
+  1.7. Die "choices"-Umgebung enthält eine oder mehrere "choice"-
+       Pseudo-Umgebungen, die jeweils eine Antwort definieren und durch den
+       Befehl "\choice" eingeleitet werden.
+
+  1.8. Jede "choice"-Pseudo-Umgebung enthält folgendes:
+
+    1.8.1. Genau eine "assertion"-Umgebung oder einen gleichnamigen
+           Befehl. Enthält den Wortlaut der zur Wahl stehenden Antwort (im Fall
+           des Befehls als zwingendes Argument). Darf Text mit den üblichen
+           Formatierungen sowie mathematische Formeln und Multimedia enthalten.
+
+    1.8.2. Ein "\solution"-Befehl. Gibt die Lösung an (d.h. ob die Antwort
+           richtig oder falsch ist). Hat ein zwingendes Argument; mögliche
+           Werte: "true" (Antwort ist richtig) und "false" (Antwort ist
+           falsch). Braucht bei "choices" vom Typ "unique" (s.o.) nur bei der
+           richtigen Antwort zu stehen. Sonst zwingend.
+
+    1.8.3. Optional eine "explanation"-Umgebung oder gleichnamigen
+           Befehl. Enthält eine ausführliche Begründung der Lösung (im Fall des
+           Befehls als zwingendes Argument). Darf Text mit den üblichen
+           Formatierungen sowie mathematische Formeln und Multimedia enthalten.
+
+  1.9. Im Anschluss an die "choice"-Pseudo-Umgebungen darf in der
+       "choices"-Umgebung eine "commonexpl"-Umgebung stehen. Sie enthält eine
+       ausführliche Begründung der Lösung. Darf Text mit den üblichen
+       Formatierungen sowie mathematische Formeln und Multimedia
+       enthalten. Empfehlung: Wird die "commonexpl"-Umgebung verwendet, sollten
+       in den einzelnen "choice"-Pseudo-Umgebungen keine
+       "explanation"-Umgebungen verwendet werden.
+
+  
+
+2. Befehle und Umgebungen
+   ======================
+
+  2.1. Umgebung: mchoiceproblems
+
+         \begin{mchoiceproblems}
+           \mchoiceproblem
+             % Erste Multiple-Choice-Aufgabe
+           \mchoiceproblem
+             % Zweite Multiple-Choice-Aufgabe
+           % . . .
+         \end{mchoiceproblems}
+
+       Definiert eine Liste von Multiple-Choice-Aufgaben. Muss in einem
+       "problem"-Element mit der Dokumentenklassenoption "mchoice" genau einmal
+       vorkommen.
+
+  2.2. Befehl: \mchoiceproblem
+
+         \mchoiceproblem
+
+       Leitet innerhalb der "mchoiceproblems"-Umgebung eine neue Multiple-
+       Choice-Aufgabe ein, indem eine "mchoiceproblem"-Pseudo-Umgebung geöffnet
+       wird. Eine eventuell offene  "mchoiceproblem"-Pseudo-Umgebung wird
+       vorher geschlossen.
+
+  2.3. Umgebung: choices
+
+         \begin{choices}{TYPE}
+           \choice
+             % Erste mögliche Antwort
+           \choice
+             % Zweite mögliche Antwort
+           % . . .
+         \end{choices}
+
+       Definiert die Liste der zur Wahl stehenden Antworten. Bzgl. TYPE s. 1.6.
+
+  2.4. Befehl: \choice
+
+         \choice
+
+       Leitet innerhalb der "choices"-Umgebung eine neue mögliche Antwort ein,
+       indem eine "choice"-Pseudo-Umgebung geöffnet wird. Eine eventuell offene
+       "choice"-Pseudo-Umgebung wird vorher geschlossen.
+
+  2.5. Umgebung: assertion
+
+         \begin{assertion}
+           % Text, Formatierungen, Mathematische Formeln, Multimedia
+         \end{assertion}
+
+       Definiert den Wortlaut einer zur Wahl stehenden Antwort. Erlaubt
+       innerhalb der "choice"-Pseudo-Umgebung.
+
+  2.6. Befehl: \assertion
+
+         \assertion{ASSERTION}
+
+       Wie gleichnamige Umgebung.
+
+  2.7. Befehl: \solution
+
+         \solution{VALUE}
+
+       Gibt für eine zur Wahl stehenden Antwort an, ob diese richtig oder
+       falsch ist. VALUE darf die Werte "true" (Antwort ist richtig) oder "false" (Antwort
+       ist falsch) annehemen.
+
+  2.6. Umgebung: explanation
+
+         \begin{explanation}
+           % Text, Formatierungen, Mathematische Formeln, Multimedia
+         \end{explanation}
+
+       Gibt für eine zur Wahl stehenden Antwort eine ausführliche Begründung der Lösung.
+
+  2.7. Befehl: \explanation
+
+         \explanation{EXPLANATION}
+
+       Wie gleichnamige Umgebung.
+
+  2.8. Umgebung: commonexpl
+
+         \begin{commonexpl}
+           % Text, Formatierungen, Mathematische Formeln, Multimedia
+         \end{commonexpl}
+
+       Gibt eine gemeinsame ausführliche Begründung für die Antworten zu allen
+       zur Auswahl stehenden Antworten.
+
+  2.9. Befehl: \commonexpl
+
+         \commonexpl{EXPLANATION}
+
+       Wie gleichnamige Umgebung.
+
+
+
+3. Beispiel
+   ========
+
+\documentclass{japs.element.problem}
+
+\begin{metainfo}
+  \name{Test MChoice}
+  \begin{description}
+    blbla
+  \end{description}
+  \copyrightinfo{(c) MUMIE-Projekt Technische Universitaet Berlin 2003}
+  %\authors{HV}
+  \status{content_complete}
+\end{metainfo}
+
+\begin{content}
+
+\title{Der Titel}
+
+
+\begin{mchoiceproblems}
+  
+  \mchoiceproblem
+
+  Wir kommen nun zu einigen Fragen aus verschiedenen Bereichen des
+  Lebens. Dabei sollten die Fragen beantwortet werden, da dies im Normalfall in
+  der Natur von Fragen liegt. Eine nicht beantwortete Frage fuehlt sich
+  alleingelassen und hat ein gar nicht ausgefuelltes Leben.
+  Vielleicht noch etwas Mathematisches:
+
+\begin{equation}
+6 = 34 * \frac{1}{5} - 6 = 
+\begin{mtable}
+3+4 & 17 & \cos \\
+3+4 & 17 & \cos
+\end{mtable}
+
+\end{equation}
+
+  \begin{choices}{yesno}
+    \choice
+    \assertion{Die Summe aller Winkel in einem Dreieck betraegt 150 Grad}
+    \solution{no}
+    \choice
+    \assertion{Ein Kreis hat normalerweise keine Ecken}
+    \solution{yes}
+    \choice
+    \assertion{Die kuerzeste Verbindung zwischen zwei Punkten ist eine Gerade}
+    \solution{yes}
+    \choice
+    \assertion{Vektoren sind immer 5 Einheiten lang}
+    \explanation{Dies ist eine direkte Erklaerung zu einer Moeglichkeit..}
+    \solution{no}
+    \choice
+    \assertion{Enten schwimmen oft im See, teilweise aber auch in Fluessen}
+    \solution{yes}
+    \commonexpl{Tja die Fragen waren doch jetzt nicht so schwer, oder..}
+  \end{choices}
+
+  \begin{choices}{unique}
+    \choice
+    \assertion{David Hasselhof spielt die Hauptrolle in KnightRider}
+    \solution{yes}
+    \choice
+    \assertion{Hat schon immer blonde Locken}
+    \explanation{Nein, das waere dann Thomas Gottschalk}
+    \choice
+    \assertion{Ist bekannt fuer seinen Doktor in Atomphysik}
+    \choice
+    \assertion{David Hasselhof kann singen}
+  \end{choices}
+
+  \begin{choices}{multiple}
+    \choice
+    \assertion{Blau ist eine der 3 Grundfarben}
+    \solution{yes}
+    \choice
+    \assertion{Die Mehrheit der Bevoelkerung ist weiblich}
+    \solution{yes}
+    \choice
+    \assertion{$5 - 3 + \frac{1}{6} = 89$}
+    \solution{no}
+    \choice
+    \assertion{Bei der Sommerzeit wird die Uhr eine Stunde nach vorn gestellt}
+    \solution{no}
+    \choice
+    \solution{yes}
+    \assertion{Topfpflanzen brauchen Wasser und Sonne um zu wachsen}
+    \choice
+    \solution{yes}
+    \assertion{Fische haben ohne Wasser meist auch so ihre Probleme}
+    \choice
+    \solution{yes}
+    \assertion{Einem Kubikmeter Wueste hingegen ist die Anwesenheit von Wasser
+      recht egal}
+    \commonexpl{Wieder mal waren ein paar treffliche Aussagen aus dem taeglichen
+      Leben gefragt}
+  \end{choices}
+
+\end{mchoiceproblems}
+
+\end{content}
+
+-- ENDE DER DATEI --

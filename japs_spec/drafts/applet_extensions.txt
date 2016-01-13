@@ -1,0 +1,121 @@
+Autor: Markus Gronau
+$Id: applet_extensions.txt,v 1.1 2007/05/23 15:36:51 gronau Exp $
+
+   Spezifikation zu Erweiterungen der MathletFactory-Bibliothek ("Extensions")
+   ===========================================================================
+
+Konzept
+-------
+  Das Konzept der Erweiterungen ("Extensions") für die MathletFactory-Bibliothek
+  erlaubt es externen Entwicklern, die generischen Funktionalitäten 
+  der MathletFactory-Bibliothek zu nutzen und diese somit um eigene Features zu 
+  erweitern.
+  Eine Erweiterung kann aus mehreren einzelnen Teil-Erweiterungen bestehen
+  und wird über einen Namen charakterisiert. Dieser muss der Laufzeitumgebung
+  zum Start mitgeteilt werden, um die Erweiterung zu aktivieren.
+  Der Inhalt der Erweiterung liegt unterhalb eines Verzeichnisses, das den
+  selben Namen trägt, wie die Erweiterung selbst. Alle Teil-Erweiterungen
+  liegen unterhalb dieses Ordners.
+
+
+1. Typen von Erweiterungen
+==========================
+  
+  Eine Erweiterung kann aus einem oder mehreren der folgenden Module bestehen:
+  
+  1.1 Sprache
+      -------
+      - erlaubt Mehrsprachigkeit in eigenen Bibliotheksklassen
+      - erlaubt das Hinzufügen neuer Sprachen zur MathletFactory-Bibliothek
+      - Name: Message-Datei-konform
+      - Format: Properties/Messages
+      - Unter-Pfad: "i18n"
+        
+  1.2 MM-Objekte
+      ----------
+      - neue Visualisierungen müssen als Erweiterung registriert werden
+      - Erweiterungen bestehen aus Transformer(n) für bestehende Drawables oder
+        aus neuen Transformern und den zugehörigen neuen Drawables
+      - Format: Properties/Transformer
+      - Unter-Pfad: "transformer"
+        
+  1.3 Hilfe
+      -----
+      - erlaubt Hilfe für eigene Bibliotheksklassen (auch mehrsprachig)
+      - erlaubt das Hinzufügen neuer Sprachen zur MathletFactory-Hilfe
+      - erlaubt das Hinzufügen neuer Hilfen für MathletFactory-Objekte
+      - Name: Erweiterungsname
+      - Format: Java Help/HTML
+      - Unter-Pfad: "help"
+        
+        
+2. Struktur einer Erweiterung
+=============================
+
+  2.1 Allgemeines
+      -----------
+      - alle benötigten Java-Klassen einer Erweiterung obligen keinen 
+        Restriktionen und können in beliebigen Packages liegen
+      - für Erweiterungen gelten die selben Regeln (Struktur, Format und Syntax)
+        wie für die MathetFactory-Bibliothek
+
+  2.2 Beispiel
+      --------
+      
+      In einem Erweiterungs-Projekt sollten sich die Klassen und 
+      die Erweiterungsdaten im selben Quell-Ordner befinden.
+      In diesem Beispiel trägt die Erweiterung den Namen "mylib".
+      Der Name wird auch für die Benennung der Hilfe benutzt.
+      
+      MyExtProject
+        |- src
+        |   |- <my package>
+        |   |- mylib
+        |        |- help
+        |        |   |- de
+        |        |   |  |- html
+        |        |   |  |   |- <HTML Dateien>
+        |        |   |  |   |- ...
+        |        |   |  |- mylib.hs
+        |        |   |  |- mylibMap.jhm
+        |        |   |  |- mylibTOC.jhm
+        |        |   |- en
+        |        |   |  |- <wie bei "de">
+        |        |   |  |- ...
+        |        |   |- images
+        |        |   |  |- <Bilder für alle Sprachen>
+        |        |   |  |- ...
+        |        |   |- class_ID_Map.properties
+        |        |- i18n
+        |        |   |- Messages_de.properties
+        |        |   |- Messages_en.properties
+        |        |   |- ...
+        |        |- transformer
+        |        |   |- transformer.properties
+        |        |   |- transformer.properties.noc
+        |        |   |- transformer.properties.g2d
+        |        |   |- transformer.properties.j3d
+        |- doc
+
+
+3. Aktivieren einer Erweiterung
+===============================
+
+  Damit eine Erweiterung zur Applet-Laufzeit benutzt werden kann, muss sie sich
+  im Such-Pfad des Applets befinden und vor dessen Initialisierung aktiviert werden.
+  
+  3.1 Aktivierung durch Applet-Parameter
+      ----------------------------------
+      Parameter "plugins" mit Namen der Erweiterung(en) als Wert (durch Kommata getrennt)
+        z.B. <param name="plugins" value="mylib"/>
+        z.B. <param name="plugins" value="mylib1, mylib2"/>
+        
+  3.2 Aktivierung im Applet
+      ---------------------
+      - hart-kodiert im Applet Source-Code
+      - direkte Aktivierung über Extension-Manager-Klasse
+        Befehl: "ExtensionManager.addExtension(String name)"
+      - muss VOR dem "init()"-Aufruf der Mathlet-Basisklasse (i.e. "super.init()") stehen
+        (z.B. vor den Deklarationen der Klassen-Variablen)
+      
+FIN

@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_mmtex_stdlayout.content.xml,v 1.15 2009/11/03 12:22:47 linges Exp $
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="mtx math">
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!--
+  Suffix to append to links if mode is 'mmtex'. Used in the 'href' template.
+-->
+
+<xsl:param name="href-target-suffix">xhtml</xsl:param>
+
+<!--
+  The "strut" image
+-->
+
+<xsl:param name="strut-image"><xsl-ext:url lid="strut-image"/></xsl:param>
+
+
+<!-- width and height for link popup -->
+<xsl:variable name="popup-width">650</xsl:variable>
+<xsl:variable name="popup-height">600</xsl:variable>
+<!-- ================================================================================ -->
+<!-- h1: Auxiliaries                                                                  -->
+<!-- ================================================================================ -->
+
+<!--
+   Sets a "class" attribute if necessary. Expects up to two parameters:
+
+     class       The class. Defaults to the "class" attribute of the current node.
+
+     base-class  An additional class (see below). No default.
+
+  If both $class and $base-class are present, the value of the attribute is
+  "$base-class $class". If only $class or $base-class are present, the value of the
+  attribute is "$class" or "$base-class", repsectively. If neither $class nor $base-class is
+  present, the attribute is not set.
+-->
+
+<xsl:template name="class">
+  <xsl:param name="base-class"/>
+  <xsl:param name="class" select="@class"/>
+  <xsl:attribute name="class">
+    <xsl:choose>
+      <xsl:when test="$base-class and $class">
+        <xsl:value-of select="concat($base-class,' ',$class)"/>
+      </xsl:when>
+      <xsl:when test="$class">
+        <xsl:value-of select="$class"/>
+      </xsl:when>
+      <xsl:when test="$base-class">
+        <xsl:value-of select="$base-class"/>
+      </xsl:when>
+    </xsl:choose>
+  </xsl:attribute>
+</xsl:template>
+
+<!--
+   Sets an "href" attribute of necessary. Expects up to one parameter:
+
+     href  The description of the URI this href attribute should point to. Defaults to the
+           "href" attribute of the current node.
+
+   If $href is not set, nothing is done. Otherwise, a 'href' attribute is created. Its value
+   is obtained as follows:
+
+   $href is expected to have the form
+
+     $mode:[$uri][#$anchor]
+
+   (mmtex always creates links in this form; so the assumption should be always fullfilled.)
+   $mode is keyword that specifies how $href must be processed, $uri the name of the file
+   to where the URI points, and $anchor an anchor within this file. "$uri" and  "#$anchor"
+   are both optional, as indicated by the square brackets. $mode may take the following
+   values:
+
+     normal 
+           The part of $href after "$mode:" is taken as the URI.
+
+     mmtex
+           If $uri is not lacking, the URI is composed of $uri, a dot, the value of the
+           global parameter $href-target-suffix, and, optinally, a "#" and $anchor; i.e.,  
+
+             $uri.$href-target-suffix[#$anchor]
+
+           If $uri is lacking but $anchor is present, the URI is
+
+             #$anchor
+
+           If neither $uri nor $anchor is present, nothing is returned for the URI.
+
+     mailto
+           Indicates that the part of $href after "mailto:" is an email address. Entire
+           $href is returned for the URI.
+-->
+
+<xsl:template name="href">
+  <xsl:param name="href" select="@href"/> 
+  <xsl:if test="$href">
+    <xsl:attribute name="href">
+      <xsl:variable name="mode" select="substring-before($href,':')"/>
+      <xsl:variable name="uri-plus-anchor" select="substring-after($href,':')"/>
+      <xsl:variable name="uri">
+        <xsl:choose>
+          <xsl:when test="contains($uri-plus-anchor,'#')">
+            <xsl:value-of select="substring-before($uri-plus-anchor,'#')"/>
+          </xsl:when>
+          <xsl:otherwise>
+            <xsl:value-of select="$uri-plus-anchor"/>
+          </xsl:otherwise>    
+        </xsl:choose>
+      </xsl:variable>
+      <xsl:variable name="anchor" select="substring-after($uri-plus-anchor,'#')"/>
+      <xsl:choose>
+        <xsl:when test="$mode='normal'">
+          <xsl:value-of select="$uri-plus-anchor"/>
+        </xsl:when>
+        <xsl:when test="$mode='mmtex'">
+          <xsl:choose>
+            <xsl:when test="string-length($uri)&gt;0 and string-length($anchor)&gt;0">
+              <xsl:value-of select="concat($uri,'.',$href-target-suffix,'#',$anchor)"/>
+            </xsl:when>
+            <xsl:when test="string-length($uri)&gt;0">
+              <xsl:value-of select="concat($uri,'.',$href-target-suffix)"/>
+            </xsl:when>
+            <xsl:when test="string-length($anchor)&gt;0">
+              <xsl:value-of select="concat('#',$anchor)"/>
+            </xsl:when>
+          </xsl:choose>
+        </xsl:when>
+        <xsl:when test="$mode='mailto'">
+          <xsl:value-of select="$href"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:attribute>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Attributes                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template match="@id">
+  <xsl:copy/>
+</xsl:template>
+
+<xsl:template match="@class">
+  <xsl:copy/>
+</xsl:template>
+
+<xsl:template match="@onclick|@ondblclick|@onmousedown|@onmouseup|@onmouseover|
+                     @onmousemove|@onmouseout|@onkeypress|@onkeydown|@onkeyup">
+  <xsl:copy/>
+</xsl:template>
+
+<xsl:template match="@balloon">
+  <xsl:attribute name="title">
+    <xsl:value-of select="."/>
+  </xsl:attribute>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Paragraphs                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:par">
+  <p>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </p>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top-level math                                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:displaymath">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="math:math">
+  <xsl:choose>
+    <xsl:when test="@equation-no">
+      <table class="equation">
+        <tr>
+          <td class="left-margin">
+          </td>
+          <td class="all">
+            <math:math>
+              <xsl:copy-of select="@*"/>
+              <xsl:apply-templates mode="math"/>
+            </math:math>
+          </td>
+          <td class="right-margin">
+            <xsl:value-of select="concat('(',@equation-no,')')"/>
+          </td>
+        </tr>
+      </table>
+    </xsl:when>
+    <xsl:otherwise>
+      <math:math>
+        <xsl:copy-of select="@*"/>
+        <xsl:apply-templates mode="math"/>
+      </math:math>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Inline markup                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:emph">
+  <em>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </em>
+</xsl:template>
+
+<xsl:template match="mtx:code">
+  <code>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </code>
+</xsl:template>
+
+<xsl:template match="mtx:keyb">
+  <kbd>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </kbd>
+</xsl:template>
+
+<xsl:template match="mtx:var">
+  <var>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </var>
+</xsl:template>
+
+<xsl:template match="mtx:notion">
+  <span class="notion">
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </span>
+</xsl:template>
+
+<xsl:template match="mtx:mark">
+  <span>
+    <xsl:call-template name="class">
+      <xsl:with-param name="base-class">mark</xsl:with-param>
+    </xsl:call-template> 
+    <xsl:apply-templates select="@*[local-name()!='class']"/>
+    <xsl:apply-templates/>
+  </span>
+</xsl:template>
+
+<xsl:template match="mtx:break">
+  <br/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Links                                                                        -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:elink">
+  <a>
+    <xsl:attribute name="href"><xsl:value-of select="@href"/></xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="@target">
+        <xsl:attribute name="target"><xsl:value-of select="@target"/></xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="target">_blank</xsl:attribute>
+      </xsl:otherwise>
+     </xsl:choose>
+    <xsl:apply-templates/>
+  </a>
+</xsl:template>
+
+<xsl:template match="mtx:link">
+
+  <a>
+
+    <xsl:choose>
+      <xsl:when test="@target">
+        <xsl:attribute name="href"><xsl:call-template name="xsl.resolve-lid"/></xsl:attribute>
+        <xsl:attribute name="target"><xsl:value-of select="@target"/></xsl:attribute>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:attribute name="href">
+          <xsl:call-template name="xsl.resolve-lid"/>
+        </xsl:attribute>  
+        <xsl:attribute name="onclick">
+          return (window.open('<xsl:call-template name="xsl.resolve-lid"/>?as-popup=true' ,'','width=<xsl:value-of select="$popup-width"/>,height=<xsl:value-of select="$popup-height"/>,scrollbars=yes')==null);
+          
+ <!--         return (window.open('<xsl:call-template name="xsl.resolve-lid"/>' ,'',
+          'width=<xsl:value-of select="$popup-width"/>,
+          height=<xsl:value-of select="$popup-height"/>,
+          scrollbars=yes,resizable=yes')==null);-->
+        </xsl:attribute> 
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates/>
+  </a>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Lists                                                                        -->
+<!-- ================================================================================ -->
+
+<!--
+  Numbered lists
+-->
+
+<xsl:template match="mtx:list[@numbering='yes']">
+  <table class="list">
+    <xsl:for-each select="mtx:item">
+      <tr>
+        <td class="list-label">
+          <p>
+            <img src="{$strut-image}" class="strut"/>
+            <xsl:choose>
+              <xsl:when test="mtx:label">
+                <xsl:apply-templates select="mtx:label/node()"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="depth" select="count(ancestor::mtx:list[@numbering='yes'])"/>
+                <xsl:choose>
+                  <xsl:when test="$depth = 1">
+                    <xsl:number value="@no" format="1."/>
+                  </xsl:when>
+                  <xsl:when test="$depth = 2">
+                    <xsl:number value="@no" format="(a)"/>
+                  </xsl:when>
+                  <xsl:when test="$depth = 3">
+                    <xsl:number value="@no" format="i."/>
+                  </xsl:when>
+                  <xsl:when test="$depth = 4">
+                    <xsl:number value="@no" format="A."/>
+                  </xsl:when>
+                </xsl:choose>
+              </xsl:otherwise>
+            </xsl:choose>
+          </p>
+        </td>
+        <td>
+          <xsl:apply-templates select="mtx:content"/>
+        </td>
+      </tr>
+    </xsl:for-each>
+  </table>
+</xsl:template>
+
+<!--
+  Numbered lists
+-->
+
+<xsl:template match="mtx:list[@numbering='no']">
+  <table class="list">
+    <xsl:for-each select="mtx:item">
+      <tr>
+        <td class="list-label">
+          <p>
+            <img src="{$strut-image}" class="strut"/>
+            <xsl:choose>
+              <xsl:when test="mtx:label">
+                <xsl:apply-templates select="mtx:label/node()"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:variable name="depth" select="count(ancestor::mtx:list[@numbering='no'])"/>
+                <xsl:choose>
+                  <xsl:when test="$depth = 1">&#8226;</xsl:when>
+                  <xsl:when test="$depth = 2">&#8211;</xsl:when>
+                  <xsl:when test="$depth = 3">*</xsl:when>
+                  <xsl:when test="$depth = 4">&#183;</xsl:when>
+                </xsl:choose>
+              </xsl:otherwise>
+            </xsl:choose>
+          </p>
+        </td>
+        <td>
+          <xsl:apply-templates select="mtx:content"/>
+        </td>
+      </tr>
+    </xsl:for-each>
+  </table>
+</xsl:template>
+
+<!--
+  Paragraphs in lists:
+-->
+
+<xsl:template match="mtx:list/mtx:item/mtx:content/mtx:par" priority="10">
+  <p>
+    <img src="{$strut-image}" class="strut"/>
+    <xsl:apply-templates/>
+  </p>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Description lists                                                            -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:description-list">
+  <dl>
+    <xsl:apply-templates select="@*[name()!='numbering']"/>
+    <xsl:apply-templates/>
+  </dl>
+</xsl:template>
+
+<xsl:template match="mtx:description-list/mtx:item">
+  <xsl:apply-templates select="mtx:label"/>    
+  <xsl:apply-templates select="mtx:content"/>
+</xsl:template>
+
+<xsl:template match="mtx:description-list/mtx:item/mtx:label">
+  <dt>
+    <xsl:apply-templates/>    
+  </dt>
+</xsl:template>
+
+<xsl:template match="mtx:description-list/mtx:item/mtx:content">
+  <dd>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </dd>
+</xsl:template>
+
+<xsl:template match="mtx:description-list/mtx:item/mtx:content/mtx:par[position()=1]">
+  <p style="margin-top:0px">
+    <xsl:apply-templates/>
+  </p>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Tables                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:table">
+  <table>
+    <xsl:attribute name="class">
+      <xsl:choose>
+        <xsl:when test="@class">
+          <xsl:value-of select="@class"/>
+        </xsl:when>
+        <xsl:otherwise>genuine</xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+    <xsl:copy-of select="@align|@valign"/>
+    <xsl:apply-templates select="./mtx:thead"/>
+    <xsl:apply-templates select="./mtx:tfoot"/>
+    <xsl:apply-templates select="./mtx:tbody"/>
+  </table>
+</xsl:template>
+
+<xsl:template match="mtx:table/mtx:thead">
+  <thead>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </thead>
+</xsl:template>
+
+<xsl:template match="mtx:table/mtx:tbody">
+  <tbody>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </tbody>
+</xsl:template>
+  
+<xsl:template match="mtx:table/mtx:tfoot">
+  <tfoot>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </tfoot>
+</xsl:template>
+
+<xsl:template match="mtx:trow">
+  <tr>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </tr>
+</xsl:template>
+
+<xsl:template match="mtx:tcell/@rowspan|mtx:tcell/@colspan|mtx:tcell/@align|mtx:tcell/@valign">
+  <xsl:copy/>
+</xsl:template>
+
+<xsl:template match="mtx:tcell">
+  <td>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </td>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Preformatted and verbatim text                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mtx:preformatted|mtx:verbatim">
+  <pre>
+    <xsl:call-template name="class">
+      <xsl:with-param name="base-class">block</xsl:with-param>
+    </xsl:call-template>
+    <xsl:apply-templates select="@*[local-name()!='class']"/>
+    <xsl:apply-templates/>
+  </pre>
+</xsl:template>
+
+</xsl:stylesheet>

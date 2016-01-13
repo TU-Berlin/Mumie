@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="japs lib for mathlet factory" default="japs-lib-for-mf" basedir="../../..">
+
+  <!--
+    Properties
+  -->
+
+  <property name="japs.java.dir" value="${basedir}/java"/>
+  <property name="japs.java.src.dir" value="${japs.java.dir}/src"/>
+  <property name="japs.java.classes.dir" value="${japs.java.dir}/classes_for_mf"/>
+  <property name="japs.java.lib.dir" value="${japs.java.dir}/lib"/>
+  <property name="japs.jar.file" value="mumie-japs-for-mf.jar"/>
+  <property name="japs.java.package.path" value="net/mumie/cocoon"/>
+  <property name="japs.webapp.dir" value="${japs.tomcat.dir}/webapps/cocoon"/>
+  <property name="japs.webapp.web-inf.dir" value="${japs.webapp.dir}/WEB-INF"/>
+  <property name="japs.webapp.classes.dir" value="${japs.webapp.web-inf.dir}/classes"/>
+  <property name="japs.webapp.lib.dir" value="${japs.webapp.web-inf.dir}/lib"/>
+  <property name="japs.verbose" value="no"/>
+  <property name="japs.force" value="no"/>
+  <property name="japs.javac.verbose" value="no"/>
+  <property name="japs.javac.deprecation" value="no"/>
+  <property name="japs.javac.debug" value="yes"/>
+  <property name="japs.vendor" value="Berlin University of Technology"/>
+  <property name="japs.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="japs.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="japs.internal.force">
+    <istrue value="${japs.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${japs.install.lib.java.dir}">
+        <include name="mumie-japs-datasheet.jar"/>
+      </fileset>
+      <fileset dir="${japs.webapp.lib.dir}">
+        <include name="excalibur-xmlutil-2.1.jar"/>
+        <include name="excalibur-pool-api-2.1.jar"/>
+        <include name="avalon-framework-api-4.3.jar"/>
+        <include name="cocoon-2.1.8.jar"/>
+      </fileset>
+    </path>
+    <property name="japs.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          depends="classpath"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="japs."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$japs.verbose}" dir="${japs.java.classes.dir}"/>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) japs.internal.force is set, which is
+     equivalent to japs.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="japs.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     japs.internal.force is set, which is equivalent to japs.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <mkdir dir="${japs.java.classes.dir}"/>
+    <javac srcdir="${japs.java.src.dir}"
+           destdir="${japs.java.classes.dir}"
+           classpathref="classpath"
+           listfiles="${japs.verbose}"
+           deprecation="${japs.javac.deprecation}"
+           verbose="${japs.javac.verbose}"
+           debug="${japs.javac.debug}"
+           failonerror="yes">
+      <include name="${japs.java.package.path}/util/ProblemCorrector.java"/>
+      <include name="${japs.java.package.path}/util/ProblemCorrectionException.java"/>
+      <include name="${japs.java.package.path}/util/CocoonEnabledDataSheet.java"/>
+      <include name="${japs.java.package.path}/util/DefaultCocoonEnabledDataSheet.java"/>
+      <include name="${japs.java.package.path}/util/Identifyable.java"/>
+      <include name="${japs.java.package.path}/service/LookupNotifyable.java"/>
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${japs.java.lib.dir}/${japs.jar.file}"> 
+      <manifest>
+        <attribute name="Created" value="${japs.timestamp}"/>
+        <section name="${japs.java.package.path}">
+          <attribute name="Specification-Title" value="Mumie Japs"/>
+          <attribute name="Specification-Version" value="${japs.version}"/>
+          <attribute name="Specification-Vendor" value="${japs.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.japs.build"/>
+          <attribute name="Implementation-Version" value="${japs.version}"/> 
+          <attribute name="Implementation-Vendor" value="${japs.vendor}"/>
+        </section>
+      </manifest>
+      <fileset dir="${japs.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+        <include name="${japs.java.package.path}/**/*.class"/>
+      </fileset>
+    </jar>
+  </target>
+
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if japs.internal.force is set, which is equivalent to japs.force being 
+     true.
+  -->
+
+  <target name="japs-lib-for-mf"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+</project>
+

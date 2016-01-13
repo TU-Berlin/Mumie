@@ -1,0 +1,180 @@
+
+% ------------------------------------------------------------------------------
+% Schriftgroessen
+% ------------------------------------------------------------------------------
+
+\renewcommand{\normalsize}{\fontsize{18}{22}\selectfont}
+\renewcommand{\large}{\fontsize{20}{26}\selectfont}
+\renewcommand{\Large}{\fontsize{22}{30}\selectfont}
+\renewcommand{\small}{\fontsize{14}{16}\selectfont}
+\newcommand{\smaller}{\fontsize{12}{14}\selectfont}
+\newcommand{\verysmall}{\fontsize{6}{6}\selectfont}
+\renewcommand{\footnotesize}{\fontsize{12}{14}\selectfont}
+\newcommand{\tocsize}{\fontsize{12}{16}\selectfont}
+\newcommand{\titlesize}{\fontsize{24}{36}\selectfont}
+
+% ------------------------------------------------------------------------------
+% Texthervorhebungen
+% ------------------------------------------------------------------------------
+
+%\definecolor{emphcolor}{rgb}{0.77,0.00,0.00}
+%\renewcommand{\emph}[1]{\textbf{\textcolor{emphcolor}{#1}}}
+\renewcommand{\emph}[1]{\textbf{#1}}
+
+\newcommand{\term}[1]{\textit{#1}}
+% \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\var}[1]{\textit{#1}}
+
+%\definecolor{headlinecolor}{rgb}{0.77,0.00, 0.00}
+\definecolor{headlinecolor}{rgb}{0.67,0.09, 0.22}
+\newcommand{\headline}[1]{\textbf{\textcolor{headlinecolor}{#1}}}
+
+\definecolor{emphboxbordercolor}{rgb}{0.80,0.36,0.36}
+\definecolor{emphboxcolor}{rgb}{0.98,0.98,0.77}
+\newcommand{\emphbox}[2]{\fcolorbox{emphboxbordercolor}{emphboxcolor}{\parbox{#1}{#2}}}
+
+\definecolor{labelcolor}{rgb}{0.35,0.35, 0.8}
+
+
+% -------------------------------------------------------------------------------
+% Pfeile
+% -------------------------------------------------------------------------------
+
+\newcommand{\myarrow}{{\Large\boldmath$\;\rightarrow\;$}}
+\newcommand{\mylongarrow}{{\Large\boldmath$\;\longrightarrow\;$}}
+
+
+
+% -------------------------------------------------------------------------------
+% Befehle für Abbildungen 
+% -------------------------------------------------------------------------------
+
+\renewcommand{\thefigure}{\thesubsection.\arabic{figure}}
+
+\newcommand{\mycaption}[2]{%
+ \centerline{%
+  \parbox{#1}{%
+   \small \refstepcounter{figure} Figure \thefigure. #2 }}}
+
+
+%---------------------------------------------------------------------------
+% Gliederungsbefehle
+%---------------------------------------------------------------------------
+
+\makeatletter
+
+\renewcommand{\section}{\@startsection
+ {section}%                                   % Name
+ {1}%                                         % Ebene
+ {0pt}%                                       % Einzug
+ {-0.0\baselineskip}%                        % Vorabstand 
+ {0.85\baselineskip}%                         % Nachabstand
+ {\fontsize{20}{24}\selectfont\itshape\bfseries}}%    % Stil
+
+\makeatother
+
+\newcommand{\mysection}[1]{%
+
+\vspace*{-1.2\baselineskip}
+
+{\color{headlinecolor}
+\section{#1}}}
+
+\newcounter{myappendix}
+
+\newcommand{\myappendix}[2]{%
+\hfill\makebox[0cm][l]{\tocref}
+
+\vspace*{-1.2\baselineskip}
+
+\refstepcounter{myappendix}
+\section*{A\arabic{myappendix}\hspace{1em}#1}\hypertarget{#2}{}}
+
+
+
+% -------------------------------------------------------------------------------
+% Inhaltsverzeichnis 
+% -------------------------------------------------------------------------------
+
+\newcommand{\mytoctitle}[1]{\begin{center}\textbf{\hypertarget{inhalt}{#1}}\end{center}}
+
+\newenvironment{mytoc}
+  {\tocsize\textbf{\hypertarget{inhalt}{Inhalt}}\\\begin{enumerate}}
+  {\end{enumerate}}
+
+\newcommand{\mytocitem}[3]{\item[#1]\hyperlink{#3}{#2}}
+
+\newcommand{\tocref}{\verysmall\hyperlink{inhalt}{TOC}\normalsize}
+
+% -------------------------------------------------------------------------------
+% Listen 
+% -------------------------------------------------------------------------------
+
+%\newcommand{\mylabelitemi}{\labelitemi}
+\newcommand{\mylabelitemi}{\raisebox{0.25ex}{{\small $\blacktriangleright$}\hspace{0.1em}}}
+
+%\newcommand{\mylabelitemii}{\labelitemii}
+%\newcommand{\mylabelitemii}{\raisebox{0.25ex}{{\small $\triangleright$}\hspace{0.1em}}}
+\newcommand{\mylabelitemii}{\raisebox{0.1ex}{\large\bfseries-}\hspace{0.075em}}
+
+\newenvironment{mylist}[1][\mylabelitemi]
+  {\begin{list}{{\color{labelcolor}#1}}
+    {\setlength{\itemindent}{0cm}
+     \setlength{\labelwidth}{1em}
+     \setlength{\leftmargin}{0.5cm}
+     \setlength{\rightmargin}{1cm}}}
+  {\end{list}}
+
+\newenvironment{myenum}
+  {\begin{list}{\theenumi}
+    {\usecounter{enumi}
+     \setlength{\itemindent}{0cm}
+     \setlength{\labelwidth}{1em}
+     \setlength{\leftmargin}{0.5cm}
+     \setlength{\rightmargin}{1cm}}}
+  {\end{list}}
+
+\newcommand{\pitem}{\pause\item}
+\newcommand{\itemii}{\item[\mylabelitemii]}
+
+\newcounter{romanlistcounter}
+\newenvironment{romanlist}{\begin{list}%
+ {(\roman{romanlistcounter})\hfill}{\usecounter{romanlistcounter}%
+ \topsep0.05\baselineskip% 
+ \partopsep0.85\baselineskip%
+ \leftmargin2em%
+ \labelwidth2em%
+ \labelsep0pt%
+ \itemindent0pt%
+ \parsep0.15\baselineskip%
+ \itemsep0.0\baselineskip}}%
+ {\end{list}}
+
+\newcounter{alphlistcounter}
+\newenvironment{alphlist}{\begin{list}%
+ {(\alph{alphlistcounter})\hfill}{\usecounter{alphlistcounter}%
+ \topsep0.05\baselineskip% 
+ \partopsep0.85\baselineskip%
+ \leftmargin1.8em%
+ \labelwidth1.8em%
+ \labelsep0pt%
+ \itemindent0pt%
+ \parsep0.15\baselineskip%
+ \itemsep0.0\baselineskip}}%
+ {\end{list}}
+
+\newcounter{arabiclistcounter}
+\newenvironment{arabiclist}{\begin{list}%
+ {(\arabic{arabiclistcounter})\hfill}{\usecounter{arabiclistcounter}%
+ \topsep0.05\baselineskip% 
+ \partopsep0.85\baselineskip%
+ \leftmargin1.8em%
+ \labelwidth1.8em%
+ \labelsep0pt%               
+ \itemindent0pt%
+ \parsep0.15\baselineskip%
+ \itemsep0.0\baselineskip}}%
+ {\end{list}}
+
+
+

@@ -1,0 +1,60 @@
+Autor: Markus Gronau
+$Id: applet_modi.txt,v 1.5 2008/07/15 14:01:30 gronau Exp $
+
+            Applet-Modi
+           ============
+
+Homework-Modus
+--------------
+Unter-Modi:
+Homework Mode
+  |--Local
+  |    |--Preview
+  |    |--Debug
+  |--Remote
+       |--Japs
+       
+Aktiviert wird ein Modus durch Angabe seines Pfades im Parameter
+"homeworkMode"; z.B:
+ - "homeworkMode=local:preview"
+ - "homeworkMode=local:debug"
+ - "homeworkMode=remote:japs"
+
+Jeder dieser Modi besitzt eigene Parameter:
+ - Preview-Modus:
+    - inputDatasheet (Datei oder URL)
+    - outputDatasheet (Datei)
+ - Debug-Modus:
+    - inputDatasheet (Datei oder URL oder "none" [erzwingt manuelle Auswahl])
+    - correctorClass (optional)
+ - Remote-Modus:
+    - urlPrefix
+    - problemRef
+
+Der Homework-Mode besitzt außerdem ein Editierbarkeits-Flag (Applet Parameter "homeworkEditable"), 
+welches standardmäßig auf "true" gesetzt ist und das Bearbeiten und Versenden von Daten im
+Hausaufgaben-Modus verhindern kann (Wert "false").
+Benutzt wird es u.a. für den Japs-seitigen Feedback-Modus von Aufgaben.
+
+"Execution" Modus
+-----------------
+Beschreibt, wie die Anwendung gestartet worden ist (als Applet oder als
+Applikation) und wird nicht über Parameter gesetzt.
+Applikationen werden ein künstlicher "Applet-Kontext" hinzugefügt, um
+das Lesen von Parametern zu ermöglichen (benötigt für Oorange;
+ermöglicht auch Hausaufgaben-Applikationen).
+
+"Embedding" Modus
+-----------------
+Gibt an, wie das Applet in der Website dargestellt werden soll
+(als Button mit Frame, als Label mit Frame oder direkt möglich).
+Parameter: "embeddingMode"
+Werte: 
+  - "applet"
+  - "label"
+  - "button"
+wobei "applet" der default ist und nicht angegeben werden muss.
+Wenn die Parameter "appletWidth" und "appletHeight" gesetzt sind,
+beschreiben diese die Größe des Fensters im "button"-Modus.
+
+FIN

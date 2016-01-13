@@ -1,0 +1,170 @@
+\documentclass{generic}
+
+%\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Repository der Kursdokumente}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+\end{authors}
+\version{$Id: course_class.tex,v 1.1 2007/09/04 17:18:01 lehmannf Exp $}
+
+\tableofcontents
+
+\section{Allgemeines}
+
+Nachdem eine Mumie installiert und die Inhaltsdokumente (z.B. aus dem CVS Repository
+  "linear_algebra_content", ehemals "japs_content") eingecheckt sind, sind zwei Dinge zu
+  tun, um einen Kurs durchführen zu können:
+\begin{itemize}
+\item Die Lehrveranstaltung (Semester, Tutorien) installieren. Siehe dazu die
+Spezifikation (\href{moses_sync.xhtml}{"Synchronisation mit MOSES"}). Dieser
+Schritt kann ausserdem vorbereitet sein durch ein sogenanntes
+\href{\#sync_tarball}{"Sync Tarball"}
+\item Die Kursdokumente installieren
+\end{itemize}
+Beides einzeln ist noch nicht besonders gut beschrieben, jedoch für den nicht mehr ganz
+  blutigen JAPS-Anfänger Heinz unproblematisch.
+Leider sind die beiden Punkte nicht ganz unabhängig.
+
+Es ist wichtig, folgendes zu verstehen:
+
+\subsection{Vom Repository zum Checkin} Die CVS Repositorys sind nicht identisch mit dem Checkin-Verzeichnis, sondern
+ werden da "hinein ge-mountet".
+ %Das sollte man nochmal genauer erklären, aber erstmal genügt es vielleicht, dass
+ %du, Heinz, das wohl schon kennst.
+
+\subsection{Inhalt des Repositorys} Das CVS Repository "linear_algebra_courses" enthält genau die Dokumente
+  fuer den Kurs und seine Komponenten, also die Kursabschnitte und Arbeitsblätter
+  sowie die Summarys.
+\subsection{"Sync" Tarball} Dieses CVS Repository "linear_algebra_courses" enthaelt aber _nicht_ die Pseudodokumente zur Lehrveranstaltung,
+  Semester etc., denn diese sollen ja gar nicht als Masterdateien (*.meta.xml)
+  aus dem CVS kommen, sondern per "sync"-Befehl vom LMS, resp. vom Sync-User erzeugt
+  werden.\\
+\subsection{Referenz vom Kurs zur Lehrveranstaltung} Der Kurs wird später - im CVS ist er (inzwischen) ohne diese Referenz - einer
+  Lehrveranstaltung zugeordnet. 
+\subsection{Ordnung in der Datenbank} Dennoch sollen die Kurs-Dokumente und die Lehrveranstaltung in der Ordnung
+  der Mumie Datenbank "beieinander" liegen. Siehe dazu die Spezifikation
+  (\href{sections.xhtml\#_DEFAULT_ID_20}{"Section-Struktur", Abschnitt 6 "Standard-Gliederungsstruktur"}).
+  Da der Kurs eine Referenz auf die Lehrveranstaltung enthalten wird, müsste eigentlich diese
+  zuerst da sein. Dass es in der Praxis nicht so ist, bringt uns ein gewisses logisches
+  Problem:
+  Beim Bau der Verzeichnisstruktur des CVS Repositorys "linear_algebra_courses" musste
+  _antizipiert_ werden, wie bzw. wohin ins Checkin-Verzeichnis später der Sync-User
+  die Lehrveranstaltung etc. erzeugen wird. Im vorliegenden Fall "linear_algebra_courses"
+  wurde durch die Wahl
+  "org/uni/ws_07_08/courses/crs_..."
+  insbesondere folgendes antizipiert:
+\begin{itemize}
+\item A: Das sync_home des Sync Users, der das LMS vertritt (in Berlin: Moses, in Zürich:
+  Lemuren resp. ac) ist "org/uni"
+\item B: Das vom Sync User anzulegende Semester hat einen Namen, aus dem von vom zuständigen
+  Programmstück im JAPS (NewSemesterSyncCommand.java %oder so ähnlich%) der Section-pure_name
+  "ws_07_08" erzeugt wird.\\\\
+  Ausserdem muss
+\item C: Im Kursdokument die Referenz auf die Lehrveranstaltung erzeugt werden.
+\end{itemize}
+\subsection{ToDo für den Admin} Diese Punkte A, B und C ziehen gewisse "ToDo"s für den Administrator nach sich, die
+  über das einfache 
+sync-tarball aufrufen sowie cvs-auschecken >> mounten >> japs-einchecken
+  hinausgehen. Darum geht es in der Bedienungsanleitung.\\
+ Man muss also entweder den sync-tarball an das CVS Repository anpassen oder \href{\#cvs-anpassung}{umgekehrt}.
+
+
+\section{"Sync" Tarball}\label{sync_tarball}
+  Zunächst muss vom Administrator des JAPS ein Sync-Benutzer und sein Sync-Home
+  eingecheckt werden. Er braucht dazu zwei Masterdateien
+\begin{preformatted}[code]%
+<MM_CHECKIN_ROOT/>org/\var{sync_home}/.meta.xml
+<MM_CHECKIN_ROOT/>org/users/usr_\var{sync}.meta.xml
+\end{preformatted}, wobei zu beachten sit, dass letztere eine Referenz auf erstere der Form
+\begin{preformatted}[code]%
+  <mumie:sync_home path="org/\var{sync}/.meta.xml"/>
+\end{preformatted}
+enthält.
+ Dieser so erzeugte Sync-Benutzer soll benutzt werden um die Teilnehmer
+ (Studenten), die Tutorien, die Lehrveranstaltung und die Semester zu verwalten.
+ Für ihn ein MMCDK-\var{alias} erzeugt. Schreibe dazu eine entsprechende Zeile
+ in \$HOME/.mmjvmd/mmjvmd.init
+ Dann wird zunächst das Semester erzeugt. Dabei entsteht implizit eine neue
+ Section, in welche das Semester und später die zugehörigen Lehrveranstaltungen
+ und Tutorien einsortiert werden
+ 
+\begin{preformatted}[code]%
+  mmsrv -p sync-id=\var{semester-sync-id} -p name=\var{"Semester Name"} -a \var{alias} protected/sync/new-semester
+\end{preformatted}
+ 
+tbc.
+
+\section{(empfohlen) Bedienungsanleitung zur Anpassung des CVS Repository "linear_algebra_courses"
+    an den tarball}\label{cvs-anpassung}
+\begin{itemize}
+\item Zu A: Wenn die sync_home Section nicht "uni" heisst, sondern z.B. "sync", so wird
+    _nach_ dem cvs checkout, aber _vor_ dem mounten "./build.sh mount-checkin" das entsprechende
+    Verzeichnis umbenannt: z.B. in der shell:
+\begin{preformatted}[code]%
+cd <cvs/>linear_algebra_courses/checkin/org/
+mv uni sync
+\end{preformatted}
+    Ausserdem muss dann das build-Script angepasst werden. Editiere dazu die Datei
+\begin{preformatted}[code]%
+<cvs/>linear_algebra_courses/build.sh
+\end{preformatted}
+    Etwa um Zeile 49 ändere
+\begin{preformatted}[code]%
+\# Subdirectories of the 'org' checkin directory:
+org_dirs="
+  uni"
+\end{preformatted}
+    zu
+\begin{preformatted}[code]%
+\# Subdirectories of the 'org' checkin directory:
+org_dirs="
+  sync"
+\end{preformatted}
+Nun müssen noch in alle Dokumenten die Pfade der Referenzen ausgetauscht
+werden. Dazu steht der MMCDK-Befehl "mmrpl" bereit, der reguläre Ausdrücke in
+Dateien umwandelt. Er muss auf alle Masterdateien angewandt werden:
+\begin{preformatted}[code]%
+mmrpl -h
+mmrpl 'path=\backslash"org\backslash/uni\backslash/' 'path="org\backslash/sync\backslash/' *.meta.xml
+\end{preformatted}
+
+\item Zu B: Wenn das Semester nicht "WS 07/08" heisst, sondern z.B. "Herbstsemester 07", so sollte
+    beim ausführen des tarballs eine Section "/org/<sync_home>/herbstsemester_07" entstanden sein.
+    Diesen Verzeichnisnamen muss man nun übernehmen!!
+\begin{preformatted}[code]%
+cd <cvs/>linear_algebra_courses/checkin/org/<sync_home>/
+mv ws_07_08 herbstsemester_07
+\end{preformatted}
+Wieder müssen in alle Dokumenten die Pfade der Referenzen ausgetauscht
+werden.
+\begin{preformatted}[code]%
+mmrpl 'path=\backslash"org\backslash/sync\backslash/ws_07_08\backslash/' 'path="org\backslash/sync\backslash/herbstsemester_07\backslash/' *.meta.xml
+\end{preformatted}
+
+    Hiernach muss nicht mehr das build-Script geändert werden.
+
+Jetzt kann ge-mountet werden:
+\begin{preformatted}[code]%
+cd <cvs/>linear_algebra_courses/
+./build.sh mount-checkin
+\end{preformatted}
+
+\item Zu C: Wenn es schnell gehen soll, kann man im Kursdokument
+\begin{preformatted}[code]%
+<cvs/>linear_algebra_courses/checkin/org/<sync_home>/<herbstsemester_07>/courses/crs_lineare_algebra.meta.xml
+\end{preformatted}
+einfach von Hand die Referenz auf die Lehrveranstaltung einfügen, z.B.
+\begin{preformatted}[code]%
+<mumie:course ...>
+ <mumie:class path="org/sync/herbstsemester_07/cls_XX.meta.xml"/>
+\end{preformatted}
+Eigentlich aber soll der Kurs mit dem CourseCreator bearbeitet werden, und das empfehle ich auch, da der
+ Umgang damit ohnehin gelernt werden sollte.
+\end{itemize}
+
+-- ENDE DER DATEI --
+\end{document}

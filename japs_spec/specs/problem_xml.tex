@@ -1,0 +1,673 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Problem-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: problem_xml.tex,v 1.15 2006/08/11 16:18:23 rassy Exp $}
+
+Der Content von Aufgaben (Dokumente vom Typ \code{problem}) besteht im
+Wesentlichen aus einem für diesen Dokumententyp spezifischen XML, genannt
+\emph{Problem-XML}. Dieses XML wird ergänzt durch das
+\href{data_sheet_xml.xhtml\#extraction_xml}{Extraction-XML}, mit dessen Hilfe das
+Data-Sheet der Aufgabe erstellt wird, und das
+\href{pers_aufgaben.xhtml\#ppd_xml}{PPD-XML}, mit dem die Aufgaben
+personalisiert werden können.
+
+Die vorliegende Spezifikation beschreibt das Problem-XML sowie allgemeine
+Regeln für die Verwendung des Extraction- und PPD-XMLs.
+
+\tableofcontents
+
+\section{Namensraum}
+
+Der Namensraum des Problem-XMLs ist
+
+\begin{preformatted}
+  \val{http://www.mumie.net/xml-namespace/document/content/problem}.
+\end{preformatted}
+
+Das Problem-XML wird normalerweise ohne Prefixes geschrieben.
+
+\section{Grundsätzliche Struktur}
+
+Das Root-Element des Problem-XMLs ist \element{problem}. Es hat keine
+Attribute. Die Struktur darunter hängt von der Kategorie ab.
+
+\subsection{Kategorie ''applet''}
+
+\begin{enumerate}
+\item Das \element{problem}-Element hat bis zu drei Kindelemente:
+  \element{title}, \element{input}, \element{task} und \element{execute}.
+\item \label{applet_title} Das \element{title}-Element muss genau einmal vorkommen. Es enthält den
+  Titel der Aufgabe. Keine Attribute, Inhalt ist beliebiger Inline-Text mit
+  mathematischen Inline-Formeln. 
+\item \label{input} Das \element{input}-Element darf maximal einmal vorkommen.
+  Es enthält die mathematischen Daten der Aufgabe, z.B. die zu
+  multiplizierenden Matrizen. Keine Attribute. Darf Text mit den üblichen
+  Formatierungen sowie mathematische Formeln und Multimedia enthalten, ferner
+  Elemente des \href{data_sheet_xml.xhtml\#extraction_xml}{Extraction-XMLs} (um
+  Teile als Daten für das Data-Sheet auszuzeichnen), des
+  \href{pers_aufgaben.xhtml\#ppd_xml}{PPD-XMLs} (für personalisierte Aufgaben)
+  und \element{hidden}-Elemente. 
+\item \label{task} Das \element{task}-Element das maximal einmal vorkommen. Es enthält die
+  Aufgabenstellung. Keine Attribute. Darf Text mit den üblichen Formatierungen
+  sowie mathematische Formeln und Multimedia enthalten.
+\item \label{execute} Das \element{execute}-Element muss genau einmal vorkommen. Es hat keine
+  Attribute und genau ein Kindelement: \element{applet}. Gibt das Applet an,
+  das als ''Bearbeitungsengine'' fungieren soll. Struktur wie bei den
+  Dokumenttypen \code{element} und \code{subelement}.
+\item Die Elemente \element{input} und \element{task} sind beide optional.
+  Sinnvollerweise sollte aber mindestens eines von beiden vorhanden sein. Sind
+  beide vorhanden, so darf sowohl \element{input} vor \element{task} als auch
+  \element{task} vor \element{input} auftreten. Diese Reihenfolge wird beim
+  Rendern berücksichtigt.
+\item \label{applet_hidden} Das \element{hidden}-Element wird bei der
+  Transformation nach XHTML ignoriert. Dort können mit Hilfe des
+  Extraction-XMLs Daten für das Data-Sheet untergebracht werden, die sich nicht
+  in den ''sichtbaren'' Inhalt einbauen lassen.
+\end{enumerate}
+
+\subsection{Kategorie ''mchoice''}
+
+\begin{enumerate}
+\item Das \element{problem}-Element hat ein \element{title}-, ein
+  \element{mchoiceproblems}- und ein \element{hidden}-Kindelement.
+\item \label{mchoice_title} Das \element{title}-Element muss genau einmal
+  vorkommen. Es enthält den Titel der Aufgabe. Keine Attribute, Inhalt ist
+  beliebiger Inline-Text mit mathematischen Inline-Formeln.
+\item \label{mchoiceproblems} Das \element{mchoiceproblems}-Element muss genau
+  einmal vorkommen. Keine Attribute. Kinder: Ein oder mehrere
+  \element{mchoiceproblem}-Elemente.
+\item \label{mchoiceproblem} Jedem \element{mchoiceproblem}-Element entspricht
+  eine Multiple-Choice-Aufgabe.
+\item Das \element{mchoiceproblem}-Element darf Text mit den üblichen
+  Formatierungen (Absätze, Listen, Tabellen usw.) sowie mathematische Formeln
+  und Multimedia (Bilder usw.) enthalten, ferner
+  Elemente des \href{data_sheet_xml.xhtml\#extraction_xml}{Extraction-XMLs} (um
+  Teile als Daten für das Data-Sheet auszuzeichnen), des
+  \href{pers_aufgaben.xhtml\#ppd_xml}{PPD-XMLs} (für personalisierte Aufgaben)
+  und \element{hidden}-Elemente.
+\item \label{choices} Das \element{mchoiceproblem}-Element muss ein oder
+  mehrere Elemente \element{choices} enthalten. Jedes definiert eine Gruppe
+  möglicher Antworten.  Empfehlung: In jedem \element{mchoiceproblem}-Element
+  nur ein \element{choices}-Element, von Ausnahmefällen abgesehen.
+\item \label{choices_type} \element{choices} hat ein \attrib{type}-Attribut mit
+  folgenden möglichen Werten:
+  \begin{enumerate}
+  \item \val{unique} Genau eine Antwort kann angekreuzt werden.
+  \item \val{multiple} Eine oder mehrere Antworten können angekreuzt werden.
+  \item \val{yesno} Für jede Antwort muss ''ja'' oder ''nein'' angekreuzt werden.
+  \end{enumerate}
+  Der Wert wird auch kurz der \emph{Typ} des \element{choices}-Elements
+  bzw. der entsprechenden Multiple-Choice-Aufgabe genannt.
+\item \label{choice} \element{choices} hat ein oder mehrere \element{choice}-Kindelemente.
+  Jedes entspricht einer Antwort.
+\item Jedes \element{choice}-Element hat folgende Kinder:
+  \begin{enumerate}
+  \item \label{assertion} Genau ein \element{assertion}-Element. Enthält den
+    Wortlaut der zur Wahl stehenden Antwort. Darf Text mit den üblichen
+    Formatierungen sowie mathematische Formeln und Multimedia enthalten, ferner
+    Elemente des \href{data_sheet_xml.xhtml\#extraction_xml}{Extraction-XMLs}, des
+    \href{pers_aufgaben.xhtml\#ppd_xml}{PPD-XMLs} und \element{hidden}-Elemente.
+  \item \label{solution} Ein \element{solution}-Element. Gibt die Lösung an
+    (d.h. ob die Antwort richtig oder falsch ist). Kein Inhalt, ein Attribut:
+    \attrib{value}; mögliche Werte:
+    \begin{itemize}
+      \item \val{true} - Antwort ist richtig
+      \item \val{false}- Antwort ist falsch
+      \item \val{compute} - Die Richtigkeit der Antwort hängt von
+        den personalisierten Daten ab und kann erst später ermittelt werden
+    \end{itemize}
+    Braucht bei \element{choices} mit \attrib{type}=''\val{unique}'' nur bei der
+    richtigen Antwort zu stehen. Sonst zwingend.
+  \item \label{explanation} Ein optionales \element{explanation}-Element.
+    Enthält eine ausführliche Begründung der Lösung. Darf Text mit den üblichen
+    Formatierungen sowie mathematische Formeln und Multimedia enthalten, ferner
+    Elemente des \href{data_sheet_xml.xhtml\#extraction_xml}{Extraction-XMLs}, des
+    \href{pers_aufgaben.xhtml\#ppd_xml}{PPD-XMLs} und \element{hidden}-Elemente.
+  \end{enumerate}
+\item \label{commonexpl} Im Anschluss an die \element{choice}-Elemente kann
+  \element{choices} ein \element{commonexpl}-Kindelement haben. Enthält eine
+  ausführliche Begründung der Lösung. Darf Text mit den üblichen Formatierungen
+  sowie mathematische Formeln und Multimedia enthalten, ferner Elemente des
+  \href{data_sheet_xml.xhtml\#extraction_xml}{Extraction-XMLs}, des
+  \href{pers_aufgaben.xhtml\#ppd_xml}{PPD-XMLs} und \element{hidden}-Elemente.
+  Empfehlung: Existiert dieses Element, so sollten die
+  \element{chioce}-Elemente keine \element{explanation}-Kinder haben.
+\item \label{choices_key} Jedes \element{choices}-Element hat ein Attribut
+  \attrib{key}, das dieses Element eindeutig identifiziert. Der Wert ist eine
+  ganze Zahl, welche die Nummer des \element{choices}-Elements angibt. Dazu
+  denke man sich die \element{chioces}-Elemente von 1 beginnend im XML-Code
+  fortlaufend numeriert. Der Wert wird auch kurz der \emph{Key} des
+  \element{choices}-Elements bzw. der Multiple-Choice-Aufgabe genannt.
+\item \label{choice_key} Jedes \element{choice}-Element hat ein Attribut
+  \attrib{key}, das dieses Element innerhalb des umschliessenden
+  \element{choices}-Elements eindeutig indentifiziert. Der Wert ist eine ganze
+  Zahl, welche die Nummer des \element{choice}-Elements angibt. Dazu denke man
+  sich die \element{choice}-Kindelemente des umschliessenden
+  \element{choices}-Elements von 1 beginnend fortlaufend numeriert. Der Wert
+  wirtd auch kurz der \emph{Key} des \element{choice}-Elements bzw. der
+  möglichen Antwort genannt.
+\item \label{mchoice_hidden} Das \element{hidden}-Element wird bei der
+  Transformation nach XHTML ignoriert. Es enthält die Extraction-XML-Elemente,
+  die zur Erzeugung des Datasheets notwendig sind. Dies sollten
+  \element{dsx:data}-Elemente mit den folgenden Pfaden und Inhalten sein:
+  \begin{enumerate}
+  \item Für jedes \element{choices}-Element ein \element{dsx:data}-Element mit
+    dem Pfad
+    \begin{preformatted}%
+  common/problem/choices-\var{key}/type%
+    \end{preformatted}
+    und dem Inhalt \var{type}, wobei \var{key} und \var{type} der Key bzw. der
+    Typ des \element{choices}-Elements sind.
+  \item\label{pfad_solution} Für jedes \element{choice}-Element ein
+    \element{dsx:data}-Element mit dem Pfad
+    \begin{preformatted}%
+  common/solution/choices-\var{key}/choice-\var{key'}%
+    \end{preformatted}
+    wobei \var{key'} bzw. \var{key} der Key des \element{choice}-Elements bzw.
+    des \element{choices}-Elternelements ist. Der Inhalt ist \val{true},
+    \val{false} oder \val{compute}; Bedeutung s. \ref{solution}.
+    Bei Aufgaben vom Typ \val{unique} braucht 
+    dieses \element{dsx:data}-Element nur für die richtige Antwort zu existieren.
+  \end{enumerate}
+\end{enumerate}
+
+\section{XML-Elemente}
+
+Alle XML-Elemente in alphabetischer Reihenfolge.
+
+
+\subsection{assertion} \label{element_assertion}
+
+Enthält den Wortlaut einer zur Wahl stehenden Multiple-Choice-Antwort
+(s. \ref{assertion}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <assertion>
+    <!-- Content: \href{\#abbrev_misc}{MISC} -->
+  </assertion>
+\end{preformatted}
+
+
+\subsection{choice} \label{element_choice}
+
+Entspricht einer möglichen Antwort (s. \ref{choice}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <choice
+    key="\href{\#abbrev_num}{NUM}">
+    <!-- Content: \href{\#element_assertion}{assertion} \href{\#element_solution}{solution} \optional{\href{\#element_explanation}{explanation}} -->
+  </choice>
+\end{preformatted}
+
+Das \element{solution}-Kindelement darf im Fall von \element{choices} mit
+\attrib{type}=''\val{unique}'' bei falschen Antworten weggelassen werden.
+
+
+\subsection{choices} \label{element_choices}
+
+Definiert eine Gruppe möglicher Antworten (s. \ref{choices}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <choices
+    key="\href{\#abbrev_num}{NUM}"
+    type="\alt{{unique}{multiple}{yesno}}>
+    <!-- Content: \href{\#element_choice}{choice}+ \optional{\href{\#element_commonexpl}{commonexpl}}-->
+  </choices>
+\end{preformatted}
+
+
+\subsection{commonexpl} \label{element_commonexpl}
+
+Enthält für eine durch ein \element{choices}-Element definierte Gruppe von
+Multiple-Choice-Antworten eine ausführliche Begründung, warum die Antworten wahr
+bzw. falsch sind (s. \ref{commonexpl}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <commonexpl>
+    <!-- Content: \href{\#abbrev_misc}{MISC} -->
+  </commonexpl>
+\end{preformatted}
+
+
+\subsection{explanation} \label{element_explanation}
+
+Enthält eine ausführliche Begründung, warum eine Multiple-Choice-Antwort wahr
+bzw. falsch ist (s. \ref{explanation}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <explanation>
+    <!-- Content: \href{\#abbrev_misc}{MISC} -->
+  </explanation>
+\end{preformatted}
+
+
+\subsection{hidden} \label{element_hidden}
+
+Enthält Code, der bei der Transformation nach XHTML ignoriert werden soll. Wird
+meist für Angaben verwendet, aus denen das Data-Sheet generiert wird
+(s. \ref{applet_hidden} und \ref{mchoice_hidden}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <hidden>
+    <!-- Content: Beliebig -->
+  </hidden>
+\end{preformatted}
+
+
+\subsection{input} \label{element_input}
+
+Enthält die mathematischen Daten der Aufgabe, z.B. die zu multiplizierenden
+Matrizen (s. \ref{input}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <input>
+    <!-- Content: \href{\#abbrev_misc}{MISC} \href{\#abbrev_extr}{EXTR} \href{\#element_hidden}{hidden} -->
+  </input>
+\end{preformatted}
+
+
+\subsection{mchoiceproblem} \label{element_mchoiceproblem}
+
+Entspricht einer Mutiple-Choice-Aufgabe (s. \ref{mchoiceproblem}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mchoiceproblem>
+    <!-- Content: \href{\#abbrev_misc}{MISC} \href{\#element_choices}{choices}+ -->
+  </mchoiceproblem>
+\end{preformatted}
+
+
+\subsection{mchoiceproblems} \label{element_mchoiceproblems}
+
+Container für Mutiple-Choice-Aufgaben (s. \ref{mchoiceproblems}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mchoiceproblems>
+    <!-- Content: \href{\#element_mchoiceproblem}{mchoiceproblem}+ -->
+  </mchoiceproblems>
+\end{preformatted}
+
+
+\subsection{problem} \label{element_problem}
+
+Root-Element.
+
+Prototyp im Fall Kategorie=''applet'':
+
+\begin{preformatted}[code]%
+  <problem>
+    <!-- Content: \href{\#element_title}{title} \optional{\href{\#element_input}{input}} \optional{\href{\#element_task}{task}} \href{\#element_execute}{execute} -->
+  </problem>
+\end{preformatted}
+
+Prototyp im Fall Kategorie=''mchoice'':
+
+\begin{preformatted}[code]%
+  <problem>
+    <!-- Content: \href{\#element_title}{title} \href{\#element_mchoiceproblems}{mchoiceproblems} -->
+  </problem>
+\end{preformatted}
+
+
+\subsection{solution} \label{element_solution}
+
+Gibt an ob eine eine Multiple-Choice-Antwort richtig oder falsch ist
+(s. \ref{solution}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <solution
+    value="\alt{{true}{false}{compute}}"/>
+\end{preformatted}
+
+
+\subsection{task} \label{element_task}
+
+Enthält die Aufgabenstellung (s. \ref{task}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <task>
+    <!-- Content: \href{\#abbrev_misc}{MISC} -->
+  </task>
+\end{preformatted}
+
+
+\subsection{title} \label{element_title}
+
+Enthält den Titel des Dokuments (s. \ref{applet_title} und \ref{mchoice_title}). 
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <title>
+    <!-- Content: \href{\#abbrev_misc_inline}{MISC_INLINE} -->
+  </title>
+\end{preformatted}
+
+
+
+\section{Beispiele}
+
+\subsection{Kategorie ''applet''}
+
+\begin{preformatted}[code]%
+<problem xmlns="http://www.mumie.net/xml-namespace/document/content/problem"
+         xmlns:dsx="http://www.mumie.net/xml-namespace/data-sheet/extract">
+  <title>Der Titel</title>
+  <task>
+    <par>
+      Multiplizieren Sie die beiden folgenden Matrizen:
+    </par>
+  </task>
+  <input>
+    <displaymath>
+      <math mode="display" xmlns="http://www.w3.org/1998/Math/MathML">
+        <dsx:data path="common/problem/matrix-1">
+          <mtable class="bmatrix">
+            <!-- erste Matrix -->
+          </mtable>
+        </dsx:data>
+        <mspace width="1em"/>
+        <html xmlns="http://www.w3.org/1999/xhtml" style="display:inline">
+          und
+        </html>
+        <dsx:data path="common/problem/matrix-2">
+          <mtable class="bmatrix">
+            <!-- erste Matrix -->
+          </mtable>
+        </dsx:data>
+        <mspace width="1em"/>
+      </math>
+    </displaymath>
+  </input>
+  <execute>
+    <applet lid="engine"/>
+  </execute>
+</problem>
+\end{preformatted}
+
+
+\subsection{Kategorie "mchoice"}
+
+\begin{preformatted}[code]%
+<element xmlns="http://www.mumie.net/xml-namespace/document/content/element"
+         xmlns:dsx="http://www.mumie.net/xml-namespace/data-sheet/extract">
+  <title>Der Titel</title>
+  <mchoiceproblems>
+    <mchoiceproblem>
+      <par>
+        Gegeben sei folgende Matrix:
+      </par>
+      <!--
+        die Matrix
+      -->
+      <par>
+        Entscheiden Sie, ob die folgenden Aussagen richtig oder falsch sind:
+      </par>
+      <choices key="1" type="yesno">
+        <choice key="1">
+          <assertion>
+            Die Matrix ist symmetrisch
+          </assertion>
+          <solution value="true"/>
+          <explanation>
+            <!-- Naehere Erklaerung -->
+          </explanation>
+        </choice>
+        <choice key="2">
+          <assertion>
+            Die Matrix ist eine Dreiecksmatrix
+          </assertion>
+          <solution value="false"/>
+          <explanation>
+            <!-- Naehere Erklaerung -->
+          </explanation>
+        </choice>
+      </choices>
+    </mchoiceproblem>
+  </mchoiceproblems>
+  <hidden>
+    <dsx:data path="common/problem/choices-1/type">yesno<dsx:data>
+    <dsx:data path="common/solution/choices-1/choice-1">true<dsx:data>
+    <dsx:data path="common/solution/choices-1/choice-2">false<dsx:data>
+  </hidden>
+</element>
+\end{preformatted}
+
+\section{Daten im 'mumie:dynamic_data'-Element}
+
+Das Metainfo-Element \element{mumie:dynamic_data}, auch
+\emph{Dynamic-Data-Abschnitt} genannt, enthält Zusatzinformationen
+für die Benutzer-Darstellung der Aufgabe (dies ist normalerweise die
+XHTML-Darstelllung). 
+
+\subsection{Parameter}
+
+Jeder Parameter wird in Form eines \element{mumie:param}-Kindelements des
+\element{mumie:dynamic_data}-Elements abgegeben. Diese Elemente haben die Form
+
+\begin{preformatted}[code]%
+  <mumie:param name="\var{name}" value="\var{value}"/>
+\end{preformatted}
+
+dabei sind \var{name} und \var{value} der Name bzw. Wert des
+Parameters.
+
+Die folgende Tabelle fasst die mögliche Parameter zusammen:
+
+\begin{table}
+  \head
+    Name & Wert & Bedeutung & Zwingend \\
+  \body
+    \val{is_staff_member} &
+    \val{\alt{{yes}{no}}} &
+    Ob der Benutzer eine Lehrperson (Tutor, Dozent oder Administrator) ist &
+    Nein, Default ist \val{no}
+    \\
+    \val{tutor_view} &
+    \val{\alt{{yes}{no}}} &
+    Ob im "Tutor-View" oder nicht (s.u.) &
+    Nein. Default ist \val{no}
+    \\
+    \val{is_course_member} &
+    \val{\alt{{yes}{no}}} &
+    Ob der Benutzer (s. \ref{benutzer}) Teilnehmer der
+    Lehrveranstaltung ist &
+    Ja
+    \\
+    \val{timeframe_relation} &
+    \val{\alt{{inside}{after}}} &
+    Ob der gegenwärtige Zeitpunkt vor, in,
+    oder nach dem Bearbeitungszeitraum des Übungsblatts liegt & 
+    Ja
+    \\
+    \val{student_selection_failed} &
+    \val{\alt{{yes}{no}}} &
+    Ob dies die Antwortseite nach einer fehlgeschlagenen Auswahl eines
+    Studenten ist &
+    Nein. Default ist \val{no}
+    \\
+    \val{student_selection_error_message} &
+    Text &
+    Fehlermeldung einer fehlgeschlagenen Auswahl eines Studenten &
+    Nein
+\end{table}
+
+Zum "Tutor-View": Ist der Benutzer eine Lehrperson, und betrachtet der
+Benutzer die Aufgabe mit den personalisierten Daten und Lösungen eines
+Studenten, so sagen wir, die Aufgabe werde im "Tutor-View" betrachtet.
+
+Von den ersten vier Parametern sind nur folgende Wertekombinationen möglich:
+
+\begin{table}
+  \head
+     is_staff_member & tutor_view & is_course_member & timeframe_relation
+  \body
+     \val{yes}  & \val{no}        & \val{no}         & \val{\alt{{inside}{after}}} \\
+     \val{yes}  & \val{yes}       & \val{no}         & \val{after}  \\
+     \val{no}   & \val{no}        & \val{yes}        & \val{\alt{{inside}{after}}}
+\end{table}
+
+\subsection{Benutzer}\label{benutzer}
+
+Der Benutzer-Darstellung einer Aufgabe ist immer ein Benutzer zugeordnet. Dies
+ist der Benutzer, der die Aufgabe bearbeitet und von dem auch die Lösungen
+(s. \ref{loesungen}) stammen.
+
+Der Benutzer wird durch ein \element{mumie:store}-Kindelement des
+\element{mumie:dynamic_data}-Elements angegeben, das wiederum die
+XML-Darstellung des Benutzers im Use-Mode \val{component} enthält:
+
+\begin{preformatted}[code]%
+  <mumie:store name="user">
+    <mumie:user id="\var{id}">
+      <mumie:login_name>\var{login_name}</mumie:login_name>
+      <mumie:first_name>\var{first_name}</mumie:first_name>
+      <mumie:surname>\var{surname}</mumie:surname>
+      <mumie:email>\var{email}</mumie:email>
+      <mumie:theme id="\var{theme_id}"/>
+    </mumie:user>
+  </mumie:store>
+\end{preformatted}
+
+Hierbei ist \var{id} die Id des Benutzers, \var{login_name} sein
+Login-Name, \var{first_name} sein Vorname,\var{surname} sein Nachname,
+\var{email} seine E-Mail-Adresse und \var{theme_id} die Id seines Themes. Der
+Name des \element{mumie:store}-Elements (Wert des \attrib{name}-Attributs) ist
+stets \val{user} (vgl. oben).
+
+
+
+\subsection{Datasheet}\label{datasheet}
+
+Zu jeder Aufgabe und jedem Benutzer gibt es ein \emph{Datasheet}. Daraus werden
+folgende Teile für die Benutzer-Darstellung benötigt:
+
+\begin{enumerate}
+  \item Die personalisierten Daten
+  \item Nur bei Kategorie \val{mchoice}: Die Antworten
+  \item Nur bei Kategorie \val{mchoice} und nach Ablauf des
+    Bearbeitungszeitraums: Die Korrektur und die gemeinsamen Aufgabendaten
+    [letztere enthalten die richtigen Antworten und werden deshalb benötigt]
+\end{enumerate}
+
+Ein Datasheet mit diesen Teilen wird daher in den Dynamic-Data-Abschnitt
+eingebunden. Dies geschieht mit Hilfe eines \element{mumie:store}-Kindelements 
+des \element{mumie:dynamic_data}-Elements, das wiederum das Datasheet
+enthält. Das \attrib{name}-Attribut des \element{mumie:store}-Elements hat den
+Wert \val{data}. Die personalisierten Daten liegen in der Unit mit dem Pfad
+\val{user/problem}, die Antworten (falls vorhanden) in der Unit mit dem Pfad
+\val{user/answer}. Letztere Unit hat folgende Struktur:
+
+Für jede Antwort, bei der der Student ein Kreuz gemacht hat, gibt es im
+Datasheet genau einen Eintrag mit dem Pfad
+
+\begin{preformatted}%
+  user/answer/choices-\var{key}/choice-\var{key'}%
+\end{preformatted}
+
+wobei \var{key'} bzw. \var{key} der Key des \element{choice}-Elements bzw.
+des \element{choices}-Elternelements der Antwort ist.
+
+[Man beachte die Analogie
+zu den Pfaden in \ref{pfad_solution}.]
+
+Der Inhalt des Eintrags
+ist stets ein Textknoten. Ist der Typ der Multiple-Choice-Frage, zu der die
+Antwort gehört, \val{unique} oder \val{multiple}, so hat der Textknoten den
+Wert \val{true}. Ist der Typ der Multiple-Choice-Frage \val{yesno}, so hat der
+Textknoten der Wert \val{true} bzw. \val{false}, je nachdem, ob der Student die
+"Ja"- oder "Nein"-Antwort angekreutzt hat.
+
+Beispiel für Kategorie \val{applet}:
+
+\begin{preformatted}[code]%
+  <mumie:store name="data">
+    <data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+      <unit name="user">
+        <unit name="problem">
+          <!-- Personalisierte Daten -->
+        </unit>
+    </data_sheet>
+  </mumie:store>
+\end{preformatted}
+
+Beispiel für Kategorie \val{mchoice}:
+
+\begin{preformatted}[code]%
+  <mumie:store name="data">
+    <data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+      <unit name="user">
+        <unit name="problem">
+          <!-- Personalisierte Daten -->
+        </unit>
+        <unit name="answer">
+          <unit name="choices-1"> <!-- Type "yesno" -->
+            <data name="choice-1">false</data>
+            <data name="choice-2">true</data>
+            <data name="choice-4">false</data>
+          </unit>
+          <unit name="choices-2"> <!-- Type "unique" -->
+            <data name="choice-2">true</data>
+          </unit>
+          <unit name="choices-3"> <!-- Type "multiple" -->
+            <data name="choice-1">true</data>
+            <data name="choice-2">true</data>
+            <data name="choice-5">true</data>
+          </unit>
+        </unit>
+      </unit>
+    </data_sheet>
+  </mumie:store>
+\end{preformatted}
+
+
+\section{Verwendete Abkürzungen}
+
+\begin{description}
+\item[\var{MISC}\label{abbrev_misc}] Text mit den üblichen Formatierungen sowie mathematische
+  Formeln und Multimedia.
+\item[\var{NUM}\label{abbrev_num}] Ganze Zahl $\ge 1$.
+\item[\var{EXTR}\label{abbrev_extr}] Extraction-XML.
+\item[\var{MISC_INLINE}\label{abbrev_misc_inline}] Text mit den üblichen
+  Formatierungen sowie mathematische Formeln, inline.
+\end{description}
+
+
+
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

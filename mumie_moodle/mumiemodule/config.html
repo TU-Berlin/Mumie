@@ -1,0 +1,42 @@
+<form method="post" action="module.php" id="form">
+<input type="hidden" name="sesskey" value="<?php echo $USER->sesskey ?>">
+
+<table cellpadding="9" cellspacing="0">
+<tr valign="top">
+    <td align="right">syncServer:</td>
+    <td> <input name="syncServer" type="text" size="50" value="<?php if (isset($CFG->syncServer)) p($CFG->syncServer) ?>" /></td>
+    <td>
+    <?php print_string('syncServer', 'mumiemodule') ?>
+    </td>
+</tr>
+<!--
+<tr valign="top">
+    <td align="right">syncServer:</td>
+    <td> <input name="syncServer" type="text" size="50" value="<?php if (isset($CFG->syncServer)) p($CFG->syncServer) ?>" /></td>
+    <td>
+    <?php /*print_string('syncServer', 'mumiemodule')*/ ?>
+    </td>
+</tr>
+-->
+<tr valign="top">
+    <td align="right">syncUser:</td>
+    <td> <input name="syncUser" type="text" size="50" value="<?php if (isset($CFG->syncUser)) p($CFG->syncUser) ?>" />    </td>
+    <td>
+    <?php print_string('syncUser', 'mumiemodule') ?>
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right">syncPassword:</td>
+    <td> <input name="syncPassword" type="password" size="50" value="<?php if (isset($CFG->syncPassword)) p($CFG->syncPassword) ?>" />    </td>
+    <td>
+    <?php print_string('syncPassword', 'mumiemodule') ?>
+    </td>
+</tr>
+
+<tr>
+    <td colspan="3" align="center">
+    <input type="submit" value="<?php print_string("savechanges") ?>"></td>
+</tr>
+</table>
+
+</form>

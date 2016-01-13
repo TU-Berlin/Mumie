@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Tree</title>
+    <link rel="stylesheet" type="text/css" href="tree.css"/>
+    <style type="text/css">
+    </style>
+    <script type="text/javascript">
+      function toggleNode (id)
+        {
+          var handle = document.getElementById("HANDLE_" + id);
+          var subtree = document.getElementById("SUBTREE_" + id);
+          var state = subtree.style.visibility;
+
+          if ( state == 'visible' )
+            {
+              subtree.style.visibility = "collapse";
+              handle.firstChild.nodeValue = "[+]";
+            }
+          else
+            {
+              subtree.style.visibility = "visible";
+              handle.firstChild.nodeValue = "[-]";
+            }
+        }
+
+    </script>
+  </head>
+  <body>
+    <table class="tree">
+      <tr class="node">
+        <td>
+          <span class="handle" id="HANDLE_1" onclick="javascript:toggleNode('1')">[+]</span>
+          <span class="label">&#220;berblick</span>
+        </td>
+      </tr>
+      <tr class="subtree" id="SUBTREE_1">
+        <td>
+          <table class="tree">
+            <tr><td class="leaf">Addition von Bildern</td></tr>            
+            <tr><td class="leaf">Gechichte der Linearen Algebra</td></tr>            
+            <tr><td class="leaf">R&#252;ckblick</td></tr>            
+            <tr><td class="leaf">Zusammenfassung</td></tr>            
+          </table>
+        </td>
+      </tr>
+      <tr class="node">
+        <td>
+          <span class="handle" id="HANDLE_2" onclick="javascript:toggleNode('2')">[+]</span>
+          <span class="label">Ohne geometrische Struktur</span>
+        </td>
+      </tr>
+      <tr class="subtree" id="SUBTREE_2">
+        <td>
+          <table class="tree">
+            <tr class="node">
+              <td>
+                <span class="handle" id="HANDLE_3" onclick="javascript:toggleNode('3')">[+]</span>
+                <span class="label">Vektorr&#228;ume und der K<sup>n</sup></span>
+              </td>
+            </tr>
+            <tr class="subtree" id="SUBTREE_3">
+              <td>
+                <table class="tree">
+                  <tr class="node">
+                    <td>
+                      <span class="handle" id="HANDLE_4" onclick="javascript:toggleNode('4')">[+]</span>
+                      <span class="label">Vektorr&#228;ume</span>
+                    </td>
+                  </tr>
+                  <tr class="subtree" id="SUBTREE_4">
+                    <td>
+                      <table class="subtree">
+                        <tr><td class="leaf">Grundlagen</td></tr>            
+                        <tr><td class="leaf">Teilr&#228;ume</td></tr>            
+                        <tr><td class="leaf">Direkte Summe, direktes Produkt</td></tr>            
+                        <tr><td class="leaf">Quotientenr&#228;ume</td></tr>            
+                      </table>
+                    </td>
+                  </tr>
+                  <tr class="node">
+                    <td>
+                      <span class="handle" id="HANDLE_5" onclick="javascript:toggleNode('5')">[+]</span>
+                      <span class="label">Duale Vektorr&#228;ume</span>
+                    </td>
+                  </tr>
+                  <tr class="subtree" id="SUBTREE_5">
+                    <td>
+                      <table class="subtree">
+                        <tr><td class="leaf">Grundlagen</td></tr>            
+                        <tr><td class="leaf">Teilr&#228;ume</td></tr>            
+                        <tr><td class="leaf">Direkte Summe, direktes Produkt</td></tr>            
+                        <tr><td class="leaf">Quotientenr&#228;ume</td></tr>            
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr class="node">
+              <td>
+                <span class="handle" id="HANDLE_6" onclick="javascript:toggleNode('6')">[+]</span>
+                <span class="label">Vektorr&#228;ume und der K<sup>n</sup></span>
+              </td>
+            </tr>
+            <tr class="subtree" id="SUBTREE_6">
+              <td>
+                <table class="tree">
+                  <tr class="node">
+                    <td>
+                      <span class="handle" id="HANDLE_7" onclick="javascript:toggleNode('7')">[+]</span>
+                      <span class="label">Vektorr&#228;ume</span>
+                    </td>
+                  </tr>
+                  <tr class="subtree" id="SUBTREE_7">
+                    <td>
+                      <table class="subtree">
+                        <tr><td class="leaf">Grundlagen</td></tr>            
+                        <tr><td class="leaf">Teilr&#228;ume</td></tr>            
+                        <tr><td class="leaf">Direkte Summe, direktes Produkt</td></tr>            
+                        <tr><td class="leaf">Quotientenr&#228;ume</td></tr>            
+                      </table>
+                    </td>
+                  </tr>
+                  <tr class="node">
+                    <td>
+                      <span class="handle" id="HANDLE_8" onclick="javascript:toggleNode('8')">[+]</span>
+                      <span class="label">Duale Vektorr&#228;ume</span>
+                    </td>
+                  </tr>
+                  <tr class="subtree" id="SUBTREE_8">
+                    <td>
+                      <table class="subtree">
+                        <tr><td class="leaf">Grundlagen</td></tr>            
+                        <tr><td class="leaf">Teilr&#228;ume</td></tr>            
+                        <tr><td class="leaf">Direkte Summe, direktes Produkt</td></tr>            
+                        <tr><td class="leaf">Quotientenr&#228;ume</td></tr>            
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

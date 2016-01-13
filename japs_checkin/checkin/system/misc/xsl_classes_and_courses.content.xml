@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_classes_and_courses.content.xml,v 1.29 2009/12/15 10:14:30 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title><xsl:value-of select="$i18n-title"/></title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar">
+        <xsl:with-param name="checked">courses</xsl:with-param>
+      </xsl:call-template>
+      <div class="main-bounded-width">
+      <h1><xsl:value-of select="$i18n-headline"/></h1> 
+      <xsl:choose>        
+        <xsl:when test="$user-is-staff = 'yes'">
+          <xsl:for-each select="/*/mumie:class">
+            <xsl:sort select="mumie:name"/>
+            <h2><xsl:value-of select="mumie:name"/></h2>
+            <xsl:call-template name="display-course"/>
+          </xsl:for-each>   
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:for-each select="/*/mumie:dynamic_data/mumie:store/mumie:user/mumie:tutorials/*/mumie:class">
+            <xsl:variable name="user-class-id" select="@id"/>
+            <xsl:for-each select="/*/mumie:class[@id=$user-class-id]">
+              <xsl:sort select="mumie:name"/>
+              <h2><xsl:value-of select="mumie:name"/></h2>
+              <xsl:call-template name="display-course"/>
+            </xsl:for-each>          
+          </xsl:for-each>
+        </xsl:otherwise>
+       </xsl:choose> 
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+<xsl:template name="course-url">
+  <xsl:param name="class"/>
+  <xsl-ext:url lid="frameset"/><xsl:text>?nav.type-name=course</xsl:text>
+  <xsl:text>&amp;nav.id=</xsl:text><xsl:value-of select="@id"/>
+  <xsl:text>&amp;nav.context=nav</xsl:text>
+  <xsl:text>&amp;main.type-name=course</xsl:text>
+  <xsl:text>&amp;main.id=</xsl:text><xsl:value-of select="@id"/>
+  <xsl:text>&amp;class=</xsl:text><xsl:value-of select="$class"/>
+  <xsl:text>&amp;main.context=homework</xsl:text>
+</xsl:template>
+
+<xsl:template name="display-course">
+  <xsl:variable name="class-id" select="@id"/>
+  <table class="list">
+    <tr>
+      <td class="list-label"><xsl:value-of select="$i18n-courses"/>:</td>
+      <td>
+        <p> 
+          <table class="enum"> 
+            <xsl:for-each select="/*/mumie:course[mumie:class/@id=$class-id]">
+              <xsl:sort select="mumie:name"/>
+              <tr>
+                <td>
+                  <a>
+                    <xsl:attribute name="href">
+                      <xsl:call-template name="course-url">
+                        <xsl:with-param name="class" select="$class-id" />
+                      </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:value-of select="mumie:name"/>
+                  </a>
+                </td>
+              </tr>
+            </xsl:for-each>
+          </table>
+        </p>
+      </td>
+    </tr>
+    <xsl:choose>        
+    <xsl:when test="$user-is-staff='yes'">
+      <tr>
+        <td class="list-label"><xsl:value-of select="$i18n-tutorials"/>:</td>
+        <td>
+          <p>
+            <a class="button-inline">
+              <xsl:attribute name="href">
+                <xsl:value-of select="concat($xsl.url-prefix,
+                              '/protected/view/tutorials-for-class',
+                              '?class=',$class-id)"/>
+              </xsl:attribute>
+              <xsl:value-of select="$i18n-show"/>
+            </a>
+          </p>
+        </td>
+    </tr>
+      <tr>
+        <td class="list-label"><xsl:value-of select="$i18n-members"/>:</td>
+        <td>
+          <p>
+            <a class="button-inline">
+              <xsl:attribute name="href">
+                <xsl:value-of select="concat($xsl.url-prefix,
+                              '/protected/view/class-members',
+                              '?class=',$class-id)"/>
+              </xsl:attribute>
+              <xsl:value-of select="$i18n-show"/>
+            </a>
+          </p>
+        </td>
+      </tr>
+       <xsl:if test="$user-is-admin='yes'">
+        <tr>
+         <td class="list-label"><xsl:value-of select="$i18n-grades"/>:</td>
+          <td>
+            <p>
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="concat($xsl.url-prefix,
+                                '/protected/view/class-user-problem-grades-csv',
+                                '?class=',$class-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-csv-export"/>
+              </a>
+            </p>
+          </td>
+        </tr>
+      </xsl:if>
+    </xsl:when>
+    <xsl:otherwise>       
+      <xsl:for-each select="//mumie:tutorial[mumie:class/@id=$class-id]">
+
+      <tr>
+          <!-- Tutorial name: -->
+          <td class="list-label"><xsl:value-of select="$i18n-tutorial"/>:</td>
+          <td><xsl:value-of select="mumie:name"/></td> 
+          <!-- Tutor: -->
+          <td class="list-label">(<xsl:value-of select="$i18n-tutor"/>: </td>
+          <td><xsl:value-of select="concat(mumie:tutor/mumie:user/mumie:surname, ',&#160;', mumie:tutor/mumie:user/mumie:first_name)"/>)</td>  
+  
+       </tr>
+      </xsl:for-each>
+    </xsl:otherwise>
+   </xsl:choose> 
+  </table>
+</xsl:template>
+
+</xsl:stylesheet>

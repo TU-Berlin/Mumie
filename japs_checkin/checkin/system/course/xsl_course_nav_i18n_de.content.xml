@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-previous-elem-of-thread">Zum vorigen Element des roten Fadens</xsl:param>
+<xsl:param name="i18n-next-elem-of-thread">Zum n&#228;chsten Element des roten Fadens</xsl:param>
+<xsl:param name="i18n-parent-unit">Zur &#252;bergeordneten Kurseinheit</xsl:param>
+<xsl:param name="i18n-show-labels">Beschriftungen einblenden</xsl:param>
+<xsl:param name="i18n-hide-labels">Beschriftungen ausblenden</xsl:param>
+<xsl:param name="i18n-problem-short">Aufg.</xsl:param>
+<xsl:param name="i18n-worksheet-homework-short">HA</xsl:param>
+<xsl:param name="i18n-worksheet-prelearn-short">PL</xsl:param>
+<xsl:param name="i18n-worksheet-pretest-short">VT</xsl:param>
+<xsl:param name="i18n-worksheet-selftest-short">ST</xsl:param>
+<xsl:param name="i18n-course_section-short">VL</xsl:param>
+<xsl:param name="i18n-summary">Zusammenfassung</xsl:param>
+<xsl:param name="i18n-show-summary">Zusammenfssg. in rechtem Frame anzeigen</xsl:param>
+<xsl:param name="i18n-show">In rechtem Frame anzeigen</xsl:param>
+<xsl:param name="i18n-toc">Inhalt</xsl:param>
+<xsl:param name="i18n-course">Kurs</xsl:param>
+<xsl:param name="i18n-course_section">Vorlesung</xsl:param>
+<xsl:param name="i18n-worksheet">Aufgabenblatt</xsl:param>
+<xsl:param name="i18n-see-right">s. rechts</xsl:param>
+<xsl:param name="i18n-show-course">Kurs anzeigen</xsl:param>
+</xsl:stylesheet>

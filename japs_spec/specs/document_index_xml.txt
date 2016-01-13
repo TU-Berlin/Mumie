@@ -1,0 +1,318 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: document_index_xml.txt,v 1.2 2005/05/30 12:06:34 rassy Exp $
+
+
+                       SPEZIFIKATION DOKUMENT-INDEX-XML
+
+
+1. Grundsätzliche Struktur
+   =======================
+
+  1.1. Namensraum ist der des Meta-XML, also:
+         http://www.mumie.net/xml-namespace/document/metainfo
+       Üblicher Prefix: mumie
+
+       Das XML wird normalerweise mit Prefixes geschrieben.
+
+  1.2. Root-Element: 'mumie:document_index'. Dieses kann Attribute haben, die
+       weiter unten (1.6.) spezifiziert werden.
+
+  1.3. Darunter: genau ein 'mumie:documents'- und ggf. (s.u.) ein
+       'mumie:vc_threads'-Kindelement.
+
+  1.4. In 'mumie:documents: Für jedes Dokument ein Kindelement mit dem Namen
+       'mumie:DOCUMENT_TYPE', dabei ist DOCUMENT_TYPE der Name des
+       Dokumenttyps. Dieses Element hat ein Attribut 'id', das die DB-Id des
+       Dokuments enthält. - Beispiel:
+
+         <mumie:course id="23"> ... </mumie:course>
+
+       Das 'mumie:DOCUMENT_TYPE'-Element hat folgende Kindelemente:
+
+    1.4.1. Ein Element 'mumie:name'. Enthalt den Namen des Dokuments als
+           Textknoten. 
+
+    1.4.2. Ein Element 'mumie:description'. Enthalt die Beschreibung des
+           Dokuments als Textknoten.
+
+       Ist das Dokument kein generisches Dokument, so kommen folgende
+       Kindelemente hinzu:
+
+    1.4.3. Ein Element 'mumie:last_modified'. Leer, ein Attribut: 
+           'value'. Enthält den Zeitpunkt der letzten Änderung im Format
+           "dd-MM-yyyy HH:mm:ss" (abhängig von der Einstellung in config.xml).
+
+    1.4.4. Ein Element 'mumie:status'. Gibt den Status des Dokuments an. Leer,
+           zwei Attribute: 'id' - der numerische Code des Status, 'name' - der
+           Name des Status.
+
+    1.4.5. Ein Element 'mumie:content_type'. Gibt den Internet-Media-Type des
+           Dokuments (Mime-Type) an. Leer, zwei Attribute: 'id' - der
+           numerische Code des Media-Typs, 'name' - der Name des Media-Typs
+           (z.B. "text/xml").
+
+    1.4.6. Falls das Dokument eine Kategorie hat: Ein Element
+           'mumie:category'. Gibt die Kategorie an. Leer, zwei Attribute: 'id'
+           - der numerische Code der Kategorie, 'name' - der Name der Kategorie
+           (z.B. "theorem").
+
+    1.4.7. Falls das Dokument eine Breite hat (z.B. bei Bildern und Applets):
+           Ein Element 'mumie:width'. Leer, ein Attribut: 'value' - die Breite.
+
+    1.4.8. Falls das Dokument eine Höhe hat (z.B. bei Bilden und Applets): Ein
+           Element 'mumie:height'. Leer, ein Attribut: 'value' - die Höhe.
+
+    1.4.9. Falls das Dokument einen Thumbnail hat (kann z.B. bei Bilden und
+           Applets der Fall sein): Ein Element 'mumie:thumbnail'. Leer, ein
+           Attribut: 'id' - die DB-Id des Bildes, das als Thumbnail fungiert.
+
+  1.5.  Das 'mumie:vc_threads'-Element enthält eine Liste aller im Index
+        vorkommenden VC-Threads und die zugehörigen maximalen Versionsnummern.
+        Es kann fehlen, wenn im Index nur generische Dokumente vorkommen
+        (solche haben keinen VC-Thread). 
+
+         Für jeden VC-Thread existiert ein 'mumie:vc_thread'-Kindelement. Es
+         hat ein Attribut: 'id' - die Id des VC-Threads - und folgende
+         Kindelemente:
+
+    1.5.1. Ein 'mumie:index_max_version'-Element. Leer, ein Attribut: 'value' -
+           die maximale Versionsnummer dieses VC-Threads unter den in diesem
+           Index vorkommenden Dokumenten.
+
+    1.5.2. Optional: Ein 'mumie:max_version'-Element. Ein Attribut: 'value' -
+           die maximale Versionsnummer in diesem Thread - und ein Kindelement:
+
+      1.5.2.1. 'mumie:DOCUMENT_TYPE', dabei ist DOCUMENT_TYPE der Dokumenttyp
+               des Dokuments mit der maximalen Versionsnummer. Leer, ein
+               Attribut: 'id' - die Id des Dokuments.
+
+  1.6. Das Root-Element ('mumie:document_index') kann die folgenden Attribute
+       haben:
+
+    1.6.1. 'text_formats_only'. Gibt an, ob nur Dokumente mit Text-Inhalt im
+           Index vorkommen. Mögliche Werte: "yes" und "no" (selbsterklärend).
+
+    1.6.2. 'binary_formats_only'. Gibt an, ob nur Dokumente mit Binär-Inhalt im
+           Index vorkommen. Mögliche Werte: "yes" und "no" (selbsterklärend).
+
+    1.6.3. 'categories'. Gibt an, ob die Dokumente des Index eine Kategorie
+           haben können oder nicht. Mögliche Werte: "yes" und "no"
+           (selbsterklärend).
+
+    1.6.4. 'widths_and_heights'. Gibt an, ob die Dokumente des Index Breite
+           und Höhe haben können oder nicht.  Mögliche Werte: "yes" und "no"
+           (selbsterklärend).
+
+    1.6.5. 'thumbnails'. Gibt an, ob die Dokumente des Index einen Thumbnail
+           haben können oder nicht. Mögliche Werte: "yes" und "no"
+           (selbsterklärend).
+           
+
+
+
+2. XML-Elemente
+   ============
+
+Root-Element:
+<mumie:document_index
+  text_formats_only="yes|no"
+  binar_formats_only="yes|no"
+  categories="yes|no"
+  widths_and_heights="yes|no"
+  thumbnails="yes|no">
+  <!-- Content: mumie:documents mumie:vc_threads -->
+</mumie:document_index>
+
+<mumie:documents>
+  <?-- Content: mumie:DOCUMENT_TYPE* -->
+</mumie:documents>
+
+<mumie:vc_threads>
+  <?-- Content: mumie:vc_thread* -->
+</mumie:vc_threads>
+
+In mumie:documents:
+<mumie:DOCUMENT_TYPE
+  id="ID">
+  <!-- Content: mumie:name mumie:description mumie:last_modified mumie:status
+                mumie:content_type mumie:category? mumie:width? mumie:height?
+                mumie:thumbnail? -->
+</mumie:DOCUMENT_TYPE>
+
+In mumie:DOCUMENT_TYPE:
+<mumie:name>
+  <!-- Content: PCDATA -->
+</mumie:name>
+
+<mumie:description>
+  <!-- Content: PCDATA -->
+</mumie:description>
+
+<mumie:vc_thread
+  id="ID"/>
+
+<mumie:version
+  value="NUMBER"/>
+
+<mumie:last_modified
+  value="TIMESTAMP"/>
+
+<mumie:status
+  id="ID"
+  name="NAME"/>
+
+<mumie:content_type
+  id="ID"
+  name="NAME"/>
+
+<mumie:category
+  id="ID"
+  name="NAME"/>
+
+<mumie:width
+  value="NUMBER"/>
+
+<mumie:height
+  value="NUMBER"/>
+
+<mumie:thumbnail
+  id="ID"/>
+
+In mumie:vc_threads:
+<mumie:vc_thread
+  id="ID">
+  <!-- Content: mumie:index_max_version mumie:max_version? -->
+</mumie:vc_thread>
+
+In mumie:vc_thread:
+<mumie:index_max_version
+  value="NUMBER"/>
+
+<mumie:max_version
+  value="NUMBER">
+  <!-- Content: mumie:DOCUMENT_TYPE -->
+</mumie:max_version>
+
+In mumie:max_version:
+<mumie:DOCUMENT_TYPE
+  id="ID"/>
+
+
+Abkürzungen/Platzhalter:
+
+  DOCUMENT_TYPE
+      Ein Mumie-Dokumenttyp-Name
+
+  PCDATA
+      Text ohne Formatierungen
+
+  ID
+      DB-Id
+
+  NUMBER
+      Ganze Zahl
+
+  TIMESTAMP
+      Zeitpunkt
+
+
+
+3. Beispiel
+   ========
+
+<mumie:document_index
+  xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  text_formats_only="yes"
+  categories="yes"
+  widths_and_heights="no"
+  thumbnails="no">
+
+  <mumie:documents>
+
+    <mumie:element id="0">
+      <mumie:name>Erzeugendensystem</mumie:name>
+      <mumie:description>Definition des Erzeugendensystems</mumie:description>
+      <mumie:vc_thread value="75"/>
+      <mumie:version value="1"/>
+      <mumie:last_modified value="25-02-2005 00:00:00"/>
+      <mumie:status id="3" name="content_complete"/>
+      <mumie:content_type id="11" name="text/xml"/>
+      <mumie:category id="0" name="definition"/>
+    </mumie:element>
+
+    <mumie:element id="1">
+      <mumie:name>lineare Huelle</mumie:name>
+      <mumie:description>Definition der linearen Huelle</mumie:description>
+      <mumie:vc_thread value="76"/>
+      <mumie:version value="1"/>
+      <mumie:last_modified value="25-02-2005 00:00:00"/>
+      <mumie:status id="3" name="content_complete"/>
+      <mumie:content_type id="11" name="text/xml"/>
+      <mumie:category id="0" name="definition"/>
+    </mumie:element>
+
+    <mumie:element id="3">
+      <mumie:name>Erzeugendensystem</mumie:name>
+      <mumie:description>Definition des Erzeugendensystems</mumie:description>
+      <mumie:vc_thread value="75"/>
+      <mumie:version value="2"/>
+      <mumie:last_modified value="25-02-2005 00:00:00"/>
+      <mumie:status id="3" name="content_complete"/>
+      <mumie:content_type id="11" name="text/xml"/>
+      <mumie:category id="0" name="definition"/>
+    </mumie:element>
+
+    <mumie:subelement id="0">
+      <mumie:name>Boot auf Fluss</mumie:name>
+      <mumie:description>Zwei Beispielbilder zur Veranschaulichung des
+        Vektorpfeils</mumie:description>
+      <mumie:vc_thread value="77"/>
+      <mumie:version value="1"/>
+      <mumie:last_modified value="25-02-2005 00:00:00"/>
+      <mumie:status id="2" name="content_ok"/>
+      <mumie:content_type id="11" name="text/xml"/>
+      <mumie:category id="11" name="example"/>
+    </mumie:subelement>
+
+    <mumie:subelement id="1">
+      <mumie:name>Multiplikation mit Skalaren</mumie:name>
+      <mumie:description>Beispiele zur Multiplikation mit Skalaren im R^2 und
+        R^3</mumie:description>
+      <mumie:vc_thread value="78"/>
+      <mumie:version value="1"/>
+      <mumie:last_modified value="25-02-2005 00:00:00"/>
+      <mumie:status id="3" name="content_complete"/>
+      <mumie:content_type id="11" name="text/xml"/>
+      <mumie:category id="11" name="example"/>
+    </mumie:subelement>
+
+    <!-- Weitere Einträge -->
+
+  </mumie:documents>
+
+  <mumie:vc_threads>
+
+    <mumie:vc_thread id="75">
+      <mumie:index_max_version value="2"/>
+    </mumie:vc_thread>
+
+    <mumie:vc_thread id="76">
+      <mumie:index_max_version value="1"/>
+    </mumie:vc_thread>
+
+    <mumie:vc_thread id="77">
+      <mumie:index_max_version value="1"/>
+    </mumie:vc_thread>
+
+    <mumie:vc_thread id="78">
+      <mumie:index_max_version value="1"/>
+    </mumie:vc_thread>
+
+  </mumie:vc_threads>
+
+</mumie:document_index>
+
+
+
+
+-- ENDE DER DATEI --

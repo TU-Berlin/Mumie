@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+
+function ProblemAnswers (_problemRef, _problemId, _worksheetId, _courseId, _worksheetCategory)
+{
+
+
+  /**
+   * The URL prefix of the Mumie server.
+   */
+
+  const URL_PREFIX = "<txt:url-prefix/>";
+
+  /**
+   * Path from where to download the datasheet
+   */
+
+  const LOAD_PATH = "protected/data/problem";
+
+  /**
+   * Path of the page to display in the "Save answers" window.
+   */
+
+  const STORE_ANSWERS_DIALOG_PATH = "protected/store/problem-answers-dialog";  
+  
+  /**
+  * Data sheet path of the unit with the user answers.
+  */
+  
+  const USER_ANSWER_PATH = "user/answer";
+  
+  /**
+   * The id of the worksheet-generic-problem reference
+   */
+
+  const problemRef = _problemRef;
+
+  /**
+   * The id of the problem.
+   */
+
+  const problemId = _problemId;
+
+  /**
+   * The category of the worksheet
+   */
+
+  const worksheetCategory = _worksheetCategory;
+  
+  /**
+  * A reference to this object.
+  */
+  
+  const self = this;
+
+  // --------------------------------------------------------------------------------
+  // h1: Get methods for various information
+  // --------------------------------------------------------------------------------
+  
+  /**
+  * Returns the id of the worksheet-generic-problem reference
+  */
+  
+  this.getProblemRef = function ()
+  {
+    return _problemRef;
+  };
+  
+  /**
+  * Returns the id of the problem.
+  */
+  
+  this.getProblemId = function ()
+  {
+    return _problemId;
+  };
+  
+  /**
+  * Returns the category of the worksheet
+  */
+  
+  this.getWorksheetCategory = function ()
+  {
+    return _worksheetCategory;
+  }
+  
+  /**
+  * Returns the id of the worksheet.
+  */
+  
+  this.getWorksheetId = function ()
+  {
+    return _worksheetId;
+  };
+  
+  /**
+  * Returns the id of the course.
+  */
+  
+  this.getCourseId = function ()
+  {
+    return _courseId;
+  };
+  
+  /**
+  * Returns the id of the course.
+  */
+  
+  this.getUserAnswerPath = function ()
+  {
+    return USER_ANSWER_PATH;
+  };
+  
+  /**
+  * Returns the path where to upload the answers 
+  */
+  
+  this.getStoreAnswersPath = function ()
+  {
+    if ( _worksheetCategory == "selftest" )
+      return "protected/store/selftest-problem-answers";
+    else
+      return "protected/store/problem-answers";
+   };
+     
+     
+  /**
+   * Loads the datasheet from the server.
+   */
+      
+
+  this.load = function ()
+    {
+      var request = new MmHttpRequest();
+      var handler = function ()
+        {
+          if ( request.getReadyState() == 4 )
+            {
+              if ( request.getStatus() == 200 )
+              self.readDataSheet(new DataSheet(request.getResponseXML()));
+              else
+                _error("Download of problem data failed: " + request.getStatusText());
+
+              // if ( onAnswersLoadedHandler ) onAnswersLoadedHandler();
+            }
+        };
+      var path = LOAD_PATH + "?ref=" + _problemRef + "&amp;problem=" + _problemId;
+      request.init("GET", path, false);
+      request.setHandler(handler);
+      request.send();
+    };
+
+  /**
+   * Opens a popup window which performs the actual saving.
+   */
+
+  this.save = function ()
+    {
+      // Configure window:
+      var width = 500;
+      var height = 300;
+      var left = (screen.width - width)/2;
+      var top = (screen.height - height)/2;
+      var settings=
+        "dependent=yes," +
+        "location=false," +
+        "height=" + height + "," +
+        "width=" + width + "," +
+        "left=" + left + "," +
+        "top=" + top;
+      var url = URL_PREFIX + "/" + STORE_ANSWERS_DIALOG_PATH;
+      window.open(url, "Save Answers", settings);
+    };
+
+  /**
+   * Returns the XML code of the datasheet as a string.
+   */
+
+  this.getAsString = function ()
+    {
+      return this.toDataSheet().toXMLCode();
+    };
+}
+
+</txt:document>

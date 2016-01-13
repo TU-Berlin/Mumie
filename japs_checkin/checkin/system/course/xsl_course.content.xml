@@ -1,0 +1,114 @@
+<?xml version="1.0"  encoding = "ISO-8859-1"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!-- xhtml for course listing -->
+
+<xsl:stylesheet version="1.0" xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:math-ext="http://www.mumie.net/xml-namespace/mathml-ext"
+                xmlns:crs="http://www.mumie.net/xml-namespace/document/content/course"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+                exclude-result-prefixes="xsl xsl-ext mtx crs math math-ext">
+
+<xsl-ext:import lid="xsl-mmtex-stdlayout" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-struct" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-math" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-media" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!--
+   Context of the URL of the main frame of the frameset loaded by the load button.
+-->
+
+<xsl:variable name="default-load-main-frame-context">view</xsl:variable>
+<xsl:variable name="name"><xsl:value-of select="/*/mumie:name"/></xsl:variable>
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="$name"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmtex-stdlayout"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmtex-struct"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+        <h1><xsl:value-of select="$name"/></h1>
+      <div class="main-bounded-width">
+        <xsl:apply-templates select="//mtx:abstract/*"/>
+      </div>
+      <div>
+        <xsl:variable name="doctype" select="local-name(/*)"/>
+        <xsl:variable name="load-main-frame-context">
+          <xsl:choose>
+            <xsl:when test="$doctype='course'">homework</xsl:when>
+            <xsl:when test="$doctype='course_section'">view</xsl:when>
+            <xsl:when test="$doctype='worksheet'">homework</xsl:when>
+            <xsl:otherwise><xsl:value-of select="$default-load-main-frame-context"/></xsl:otherwise>
+          </xsl:choose>
+        </xsl:variable>
+        <xsl:variable name="id" select="/*/@id"/>
+        <a>
+          <xsl:attribute name="class">button</xsl:attribute>
+          <xsl:attribute name="target">_parent</xsl:attribute>
+          <xsl:attribute name="href"><mumie:url lid="frameset"/><xsl:text>?nav.type-name=</xsl:text>
+          <xsl:value-of select="$doctype"/>
+          <xsl:text>&amp;nav.id=</xsl:text>
+          <xsl:value-of select="$id"/>
+          <xsl:text>&amp;nav.context=</xsl:text>
+          <xsl:value-of select="'nav'"/>
+          <xsl:text>&amp;view.type-name=</xsl:text>
+          <xsl:value-of select="$doctype"/>
+          <xsl:text>&amp;view.context=</xsl:text>
+          <xsl:value-of select="$load-main-frame-context"/>
+          <xsl:text>&amp;view.id=</xsl:text>
+          <xsl:value-of select="$id"/>
+          </xsl:attribute>
+          <xsl:text>Laden</xsl:text>
+        </a>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

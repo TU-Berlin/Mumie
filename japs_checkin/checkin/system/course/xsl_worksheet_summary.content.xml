@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_worksheet_summary.content.xml,v 1.43 2009/10/16 18:19:50 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:sum="http://www.mumie.net/xml-namespace/document/summary"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:math-ext="http://www.mumie.net/xml-namespace/mathml-ext"
+                xmlns:grades="http://www.mumie.net/xml-namespace/grades"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie sum mtx math math-ext">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-stdlayout" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-struct" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-math" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-media" internal="yes"/>
+<xsl-ext:import lid="xsl-summary-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ============================================================================= -->
+<!-- h1: Global variables                                                          -->
+<!-- ============================================================================= -->
+
+<!-- h2: Parameters in the dynamic data section -->
+<!--
+
+    worksheet
+        Id of the worksheet
+
+    worksheet-category
+        Category of the worksheet
+    
+    worksheet-label
+        Label of the worksheet
+
+    timeframe-start
+        Time when the timeframe starts. Only if worksheet category is 'homework'.
+
+    timeframe-start
+        Time when the timeframe ends. Only if worksheet category is 'homework'.
+
+    timeframe-relation
+        The timeframe relation, i.e., "before", "inside", or "after. Only if worksheet
+        category is 'homework'.
+
+    worksheet-state
+        The state of the worksheet, i.e., "work" or "feedback". Only if worksheet
+        category is 'selftest'.
+
+    is-staff-member
+        Whether the user is a member of the staff. Default: "no".
+
+    is-course-member                | 
+        Whether the user is a member of the course. Default: "no".
+
+    tutor-view
+        Whether tutor view is enabled. Default: "no".
+
+    student-selection-failed
+        Whether this is the respose after a failed selection of a student. Default:
+        "no".
+
+    student-selection-error-message
+        Contains the corresponding error message if this is the respose after a failed
+        selection of a student. Otherwise empty.
+  
+    as-frame
+        Whether displayed in a frame. Default: "no".
+-->
+
+<!-- HTML id of the main element, ie. the "table" element containing all the content -->
+<xsl:variable name="main-element-html-id">_MAIN_</xsl:variable>
+
+<!-- Id of the user: -->
+<xsl:variable name="user-id">
+  <xsl:value-of select="/*/mumie:dynamic_data/mumie:store[@name = 'user']/mumie:user/@id"/>
+</xsl:variable>
+
+<!-- Id of the course: -->
+<xsl:variable name="course-id">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">course</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Id of the worksheet: -->
+<xsl:variable name="worksheet-id">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Category  of the worksheet: -->
+<xsl:variable name="worksheet-category">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet-category</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Label of the worksheet: -->
+<xsl:variable name="worksheet-label">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet-label</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Timeframe start: -->
+<xsl:variable name="timeframe-start">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">timeframe-start</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Timeframe end: -->
+<xsl:variable name="timeframe-end">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">timeframe-end</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Timeframe relation: -->
+<xsl:variable name="timeframe-relation">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">timeframe-relation</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- State of the worksheet: -->
+<xsl:variable name="worksheet-state">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">worksheet-state</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the user is a member of the course -->
+<xsl:variable name="is-course-member">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">is-course-member</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the user is a member of the staff -->
+<xsl:variable name="is-staff-member">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">is-staff-member</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether tutor view is enabled -->
+<xsl:variable name="tutor-view">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">tutor-view</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the student selection is enabled -->
+<xsl:variable name="with-student-selection">
+  <xsl:choose>
+    <xsl:when test="$worksheet-category != 'selftest' and $is-staff-member='yes' and $timeframe-relation='after'">yes</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether this is the response after a failed selection of a student
+     (tutor view only) -->
+<xsl:variable name="student-selection-failed">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">student-selection-failed</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether this content is shown in a frame -->
+<xsl:variable name="as-frame">
+<xsl:call-template name="xsl.boolean-to-yes-or-no">
+  <xsl:with-param name="boolean">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name">as-frame</xsl:with-param>
+      <xsl:with-param name="default">no</xsl:with-param>
+    </xsl:call-template>
+  </xsl:with-param>
+</xsl:call-template>
+</xsl:variable>
+
+<!-- Error message, in case the student selection failed (tutor view only)-->
+<xsl:variable name="student-selection-error-message">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">student-selection-error-message</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether the results button should be displayed: -->
+<xsl:variable name="with-results-button">
+  <xsl:choose>
+    <xsl:when test="( $is-course-member = 'yes' or $is-staff-member = 'yes' )">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether not all problems could be corrected  (specific to worksheet
+  category 'selftest')-->
+<xsl:variable name="errors-in-correction">
+  <xsl:choose>
+    <xsl:when test="//mumie:correction_reports/mumie:correction_report[@status='failed']">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- The URL of this page -->
+<xsl:variable name="this-url">
+  <xsl:variable name="context">
+    <xsl:choose>
+      <xsl:when test="$worksheet-category = 'selftest'">selftest</xsl:when>
+      <xsl:otherwise>homework</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:call-template name="xsl.document-url">
+    <xsl:with-param name="context" select="$context"/>
+    <xsl:with-param name="document-type.name">worksheet</xsl:with-param>
+    <xsl:with-param name="id" select="$worksheet-id"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Root element of the grades section (non-void only if the grades have been passed
+  to the summary) -->
+<xsl:variable name="grades"
+              select="/*/mumie:dynamic_data/mumie:store[@name='user-worksheet-grades']/grades:worksheet_user_problem_grades"/>
+
+<!-- Total number of points achieved by the user, not rounded (only if the grades have been
+  passed to the summary) -->
+<xsl:variable name="total-grade-raw" select="sum($grades/grades:user_problem_grade/@result)"/>
+
+<!-- Total number of points achieved by the user, rounded to 10th points (only if the grades
+ have been passed to the summary) -->
+<xsl:variable name="total-grade" select="round($total-grade-raw * 10) div 10"/>
+
+<!-- Maximum number of points in the worksheet (only if the grades have been passed
+  to the summary) -->
+<xsl:variable name="total-points" select="sum($grades/grades:problem/@points)"/>
+
+<!-- Number of achieved points divided by the total number of points (only if the grades have
+  been passed to the summary) -->
+<xsl:variable name="total-score">
+  <xsl:choose>
+    <xsl:when test="$grades and ( $total-points &gt; 0 )">
+      <xsl:value-of select="$total-grade div $total-points"/>
+    </xsl:when>
+    <xsl:otherwise>0</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- The HTML id of the 'div' element representing the change-student dialog. -->
+<xsl:variable name="change-student-html-id">_CHANGE_STUDENT_</xsl:variable>
+
+<!-- The HTML id of the 'div' element representing the error message dialog. -->
+<xsl:variable name="error-html-id">_ERROR_</xsl:variable>
+
+<!-- The HTML id of the 'div' element representing the error message dialog. -->
+<xsl:variable name="correction-error-html-id">_CORRECTION_ERROR_</xsl:variable>
+
+<!-- The HTML id of the 'div' element representing the confirfmation dialog
+  for setting the state to 'feedback'. -->
+<xsl:variable name="set-state-feedback-html-id">_SET_STATE_FEEDBACK_</xsl:variable>
+
+<!-- The HTML id of the 'div' element representing the confirfmation dialog
+  for setting the state to 'work'. -->
+<xsl:variable name="set-state-work-html-id">_SET_STATE_WORK_</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript">
+
+  <!--
+    Shows a dialog. 'id' id the HTML id of the root element of the dialog.
+  -->
+
+  function showDialog (id)
+    {
+      document.getElementById(id).style.visibility = "visible";
+    }
+
+  <!--
+    Closes a the dialog. 'id' id the HTML id of the root element of the dialog.
+  -->
+
+  function closeDialog (id)
+    {
+      document.getElementById(id).style.visibility = "hidden";
+    }
+
+  <!--
+    Popup "windows"
+  -->
+    
+  <xsl:call-template name="popup-javascript">
+    <xsl:with-param name="main" select="$main-element-html-id"/>
+  </xsl:call-template>
+
+  <!-- 
+    Initializes the page. This function is called by the 'onload' handler of the
+    'body' element.
+  -->
+
+  function initPage ()
+  {
+    <xsl:if test="$student-selection-failed='yes'">
+    popupCentered("<xsl:value-of select="$error-html-id"/>");
+    </xsl:if>
+
+    <!-- Currently disabled:
+    popupCentered("<xsl:value-of select="$init-applet-msg-html-id"/>");
+    waitForApplet(); -->
+  }   
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Header                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="header">
+  <table class="header">
+    <tr>
+      <td>
+        <div class="doctype">
+          <xsl:value-of select="$i18n-worksheet"/>
+          <xsl:text> </xsl:text>
+          <xsl:value-of select="$worksheet-label"/>
+        </div>
+      </td>
+      <td>
+        <div class="title">
+          <xsl:variable name="title" select="/*/mumie:content/sum:summary/mtx:title"/>
+          <xsl:choose>
+            <xsl:when test="$title">
+              <xsl:apply-templates select="$title" mode="header"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <!-- TODO: course section name as fallback -->
+            </xsl:otherwise>
+          </xsl:choose>
+        </div>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template match="mtx:title" mode="header">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="mtx:title">
+  <!-- Ignored in normal processing -->
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Student selection                                                            -->
+<!-- ================================================================================ -->
+
+<!-- Popup-"window" informing the user that a previeous student selection failed -->
+
+<xsl:template name="student-selection-failed-msg">
+  <div id="{$error-html-id}" class="dialog">
+    <table class="dialog">
+      <thead>
+        <tr>
+          <td class="error">
+            <xsl:value-of select="$i18n-error"/>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-error-in-student-selection"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <xsl:value-of select="$student-selection-error-message"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-try-again"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="button"
+                    onclick="javascript:closeWindow('{$error-html-id}')">
+              <xsl:value-of select="$i18n-close-window"/>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</xsl:template>
+
+<!-- Popup-"window" for selecting a student -->
+
+<xsl:template name="select-student-dialog">
+  <div id="{$change-student-html-id}" class="dialog">
+    <form method="get" action="{$this-url}">
+      <table class="dialog">
+        <thead>
+          <tr>
+            <td colspan="2">
+              <xsl:value-of select="$i18n-change-student"/>
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td colspan="2">
+              <xsl:value-of select="$i18n-new-student"/>
+              <xsl:text>: Id = </xsl:text>
+              <input type="text" name="student" size="5"/>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <a class="button">
+                <xsl:attribute name="href">
+                  <xsl:value-of select="concat($this-url,'?student=clear')"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-clear-student"/>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button type="submit">Ok</button>
+            </td>
+            <td>
+              <button type="button"
+                      onclick="javascript:closeWindow('{$change-student-html-id}')">
+                <xsl:value-of select="$i18n-cancel"/>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+  </div>  
+</xsl:template>
+
+<!-- Student selection panel -->
+
+<xsl:template name="student-selection">
+  <table class="meta">
+    <tr>
+      <td class="left">
+        <xsl:choose>
+          <xsl:when test="$tutor-view='yes'">
+            <xsl:variable name="student" select="//mumie:store[@name='user']/mumie:user"/>
+            <!-- Name: -->
+            <span class="label"><xsl:value-of select="$i18n-student"/>:</span>
+            <span class="value">
+              <xsl:value-of select="$student/mumie:first_name"/>
+              <xsl:text> </xsl:text>
+              <xsl:value-of select="$student/mumie:surname"/>        
+            </span>
+            <!-- Account: -->
+            <span class="label"><xsl:value-of select="$i18n-account"/>:</span>
+            <span class="value"><xsl:value-of select="$student/mumie:login_name"/></span>
+            <!-- Id: -->
+            <span class="label"><xsl:value-of select="$i18n-id"/>:</span>
+            <span class="value"><xsl:value-of select="$student/@id"/></span>
+          </xsl:when>
+          <xsl:otherwise>
+            <span class="label"><xsl:value-of select="$i18n-student"/>:</span>
+            <span class="value"><xsl:value-of select="$i18n-no-student-selected"/></span>
+          </xsl:otherwise>
+        </xsl:choose>
+      </td>
+      <td class="right">
+        <!-- "Change" button: -->
+        <button type="button" class="inline"
+                onclick="javascript:popupAtMouse('{$change-student-html-id}', event)">
+          <xsl:value-of select="$i18n-change"/>
+        </button>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Status                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="status">
+  <table class="meta">
+    <tr>
+      <!-- Timeframe: -->
+      <td class="left">
+        <!-- Label: -->
+        <span class="label">
+          <xsl:value-of select="$i18n-timeframe"/>
+          <xsl:text>:</xsl:text>
+        </span>
+        <!-- Value: -->
+        <span class="value">
+          <xsl:value-of select="$timeframe-start"/>
+          <xsl:text> &#8211; </xsl:text>
+          <xsl:value-of select="$timeframe-end"/>
+          <!-- TODO: Localize -->
+        </span>
+      </td>
+      <!-- Not accessable | editable | feedback | not editable: -->
+      <td class="right">
+        <xsl:choose>
+          <xsl:when test="$timeframe-relation = 'before'">
+            <xsl:value-of select="$i18n-not-accessible"/>
+          </xsl:when>
+          <xsl:when test="$timeframe-relation = 'inside'">
+            <xsl:choose>
+              <xsl:when test="$worksheet-category = 'selftest'">
+                <xsl:choose>
+                  <xsl:when test="$worksheet-state = 'work'">
+                    <xsl:value-of select="$i18n-editable"/>
+                  </xsl:when>
+                  <xsl:when test="$worksheet-state = 'feedback'">
+                    <xsl:value-of select="$i18n-feedback"/>
+                  </xsl:when>
+                </xsl:choose>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$i18n-editable"/>
+              </xsl:otherwise>
+           </xsl:choose>
+          </xsl:when>
+          <xsl:when test="$timeframe-relation = 'after'">
+            <xsl:value-of select="$i18n-not-editable"/>
+          </xsl:when>
+        </xsl:choose>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Controlling the state                                                        -->
+<!-- ================================================================================ -->
+
+<!-- Popup-"window" asking the user for confirmation to change the state to
+   "feedback" -->
+
+<xsl:template name="set-state-feedback-dialog">
+  <div id="{$set-state-feedback-html-id}" class="dialog">
+    <table class="dialog">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <xsl:value-of select="$i18n-set-state-feedback"/>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="2">
+            <xsl:value-of select="$i18n-set-state-feedback-expl"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a class="button" href="{concat($this-url, '?new-state=feedback', '&amp;as-frame=yes')}">Ok</a>
+          </td>
+          <td>
+            <a class="button"
+               onclick="javascript:closeWindow('{$set-state-feedback-html-id}')">
+              <xsl:value-of select="$i18n-cancel"/>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>  
+</xsl:template>
+
+<!-- Popup-"window" asking the user for confirmation to change the state to
+   "work" -->
+
+<xsl:template name="set-state-work-dialog">
+  <div id="{$set-state-work-html-id}" class="dialog">
+    <table class="dialog">
+      <thead>
+        <tr>
+          <td colspan="2">
+            <xsl:value-of select="$i18n-set-state-work"/>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="2">
+            <xsl:value-of select="$i18n-set-state-work-expl"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a class="button" href="{concat($this-url, '?new-state=work', '&amp;as-frame=yes')}">Ok</a>
+          </td>
+          <td>
+            <a class="button"
+               onclick="javascript:closeWindow('{$set-state-work-html-id}')">
+              <xsl:value-of select="$i18n-cancel"/>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>  
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Message if problems could not be corrected                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="correction-error-message">
+  <div id="{$correction-error-html-id}" class="dialog">
+    <table class="dialog">
+      <thead>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-errors-in-correction"/>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <xsl:value-of select="$i18n-errors-in-correction-expl"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <a class="button"
+               onclick="javascript:closeWindow('{$correction-error-html-id}')">
+              <xsl:value-of select="$i18n-close-window"/>
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>  
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Buttons                                                                      -->
+<!-- ================================================================================ -->
+
+<!--
+  'Results' button
+-->
+
+<xsl:template name="results-button">
+  <a>
+    <xsl:attribute name="class">button</xsl:attribute>
+    <xsl:attribute name="target">main</xsl:attribute>
+    <xsl:attribute name="href">
+      <xsl:value-of select="concat($xsl.url-prefix, '/protected/view/worksheet-user-problem-grades?course=', $course-id, '&amp;worksheet=', $worksheet-id, '&amp;as-frame=yes')"/>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-results"/>
+  </a>
+</xsl:template>
+
+<!--
+  'Evaluate' button
+-->
+
+<xsl:template name="evaluate-button">
+  <a class="button" onclick="popupAtMouse('{$set-state-feedback-html-id}', event)">
+    <xsl:value-of select="$i18n-evaluate"/>
+  </a>
+</xsl:template>
+
+<!--
+  'New' button
+-->
+
+<xsl:template name="new-button">
+  <a class="button" onclick="popupAtMouse('{$set-state-work-html-id}', event)">
+    <xsl:value-of select="$i18n-new"/>
+  </a>
+</xsl:template>
+
+<!--
+  Button-area
+-->
+
+<xsl:template name="buttons">
+  <div class="buttons">
+    <!-- 'Results' button: -->
+    <xsl:if test="$with-results-button='yes'">
+      <xsl:call-template name="results-button"/>
+    </xsl:if>
+    <xsl:if test="$worksheet-category='selftest' and
+                  ( $timeframe-relation='inside' or $is-staff-member='yes' )">
+      <xsl:choose>
+        <xsl:when test="$worksheet-state='work'">
+          <!-- 'Work' button -->
+          <xsl:call-template name="evaluate-button"/>
+        </xsl:when>
+        <xsl:when test="$worksheet-state='feedback'">
+          <!-- 'New' button -->
+          <xsl:call-template name="new-button"/>
+        </xsl:when>
+      </xsl:choose>
+    </xsl:if>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Elements in the "sum" namespace                                              -->
+<!-- ================================================================================ -->
+
+<xsl:template match="sum:ifpoints">
+  <xsl:variable name="max">
+    <xsl:choose>
+      <xsl:when test="@max = 'max'">
+        <xsl:value-of select="$total-points"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="@max"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:if test="( @min &lt;= $total-grade ) and ( $total-grade &lt;= $max )">
+    <xsl:apply-templates/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="sum:ifscore">
+  <xsl:if test="( @min &lt;= $total-score ) and ( $total-score &lt;= @max )">
+    <xsl:apply-templates/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="sum:iftimeframe">
+  <xsl:if test="@relation = $timeframe-relation">
+    <xsl:apply-templates/>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template match="sum:ifstate">
+  <xsl:if test="@state = $worksheet-state">
+    <xsl:apply-templates/>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Auxiliaries                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template name="debug">
+  <pre>
+    $worksheet-category  = <xsl:value-of select="$worksheet-category"/>
+    $worksheet-state     = <xsl:value-of select="$worksheet-state"/>
+    $timeframe-relation  = <xsl:value-of select="$timeframe-relation"/>
+    $total-grade-raw     = <xsl:value-of select="$total-grade-raw"/>
+    $total-grade         = <xsl:value-of select="$total-grade"/>
+    $total-points        = <xsl:value-of select="$total-points"/>
+    $student-selection-failed = 
+                          <xsl:value-of select="$student-selection-failed"/>
+    $student-selection-error-message = 
+                          <xsl:value-of select="$student-selection-error-message"/>
+  </pre>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top-level structure                                                          -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="/*/mumie:name"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmtex-stdlayout"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-element"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-summary"/></xsl:attribute>
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body onload="javascript:initPage()">
+      <table id="{$main-element-html-id}" class="root">
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <xsl:if test="$with-student-selection = 'yes'">
+          <tr>
+            <td>
+              <!-- Student selection: -->
+              <xsl:call-template name="student-selection"/>
+            </td>
+          </tr>
+        </xsl:if>
+        <tr>
+          <td>
+            <!-- Status: -->
+            <xsl:call-template name="status"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Main: -->
+            <div class="plain">
+              <xsl:apply-templates select="/*/mumie:content/sum:summary/*"/>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Buttons: -->
+            <xsl:call-template name="buttons"/>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <!-- Footer: -->
+            <xsl:call-template name="footer"/>
+          </td>
+        </tr>
+      </table>
+      <xsl:if test="$worksheet-category='selftest'">
+        <xsl:call-template name="set-state-feedback-dialog"/>
+        <xsl:call-template name="set-state-work-dialog"/>
+      </xsl:if>
+      <xsl:if test="$with-student-selection='yes'">
+        <!-- The student-selection dialog: -->
+        <xsl:call-template name="select-student-dialog"/>
+        <xsl:if test="$student-selection-failed='yes'">
+          <!-- The message saying that the student selection failed: -->
+          <xsl:call-template name="student-selection-failed-msg"/>
+        </xsl:if>
+      </xsl:if>
+      <xsl:if test="$errors-in-correction='yes'">
+        <!-- Message saying that not all problems could be corrected (specific to worksheet
+        category 'selftest') -->
+        <xsl:call-template name="correction-error-message"/>
+      </xsl:if>
+      <!-- <xsl:call-template name="debug"/> -->
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

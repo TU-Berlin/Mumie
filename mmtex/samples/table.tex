@@ -1,0 +1,195 @@
+\documentclass{generic}
+
+
+\begin{document}
+\title{MMTex table samples}
+\subtitle{Several samples of the table enviroment}
+
+
+\tableofcontents
+
+\section{A simple table}
+
+
+\subsection{Source Code}
+\verbatim
+\begin{table}[\cellaligns{lrc}]
+\head
+animal & color & number of legs 
+\body
+cat    & brown & 4    \\
+fish   & blue  & 0    \\
+dog    & white & 4    \\
+duck   & white & 2 
+\foot
+foot   & foot  & foot \\
+\end{table}
+\endverbatim
+
+
+
+\subsection{Result}
+\begin{table}[\cellaligns{lrc}]
+\head
+animal & color & number of legs 
+\body
+cat    & brown & 4    \\
+fish   & blue  & 0    \\
+dog    & white & 4    \\
+duck   & white & 2 
+\foot
+foot   & foot  & foot \\
+\end{table}
+
+
+
+
+
+
+\section{Colspan testing}
+
+
+\subsection{Source Code}
+\verbatim
+\begin{table}[\cellaligns{rclr}]
+\head
+a cell       & b cell             & c cell & d cell \\
+\body
+a            & b                  & c      & d      \\
+a            & b                  & c      & d      \\
+a            & \colspan{2} b+c             & d      \\
+a            & b                  & c      & d      \\
+a            & b                  & c      & d      \\
+a            & \colspan{3} b+c+d                    \\
+a            & b                  & c      & d      \\
+a            & b                  & c      & d      \\
+\colspan{4} a+b+c+d                                 \\
+a            & b                  & c      & d      \\
+\end{table}
+\endverbatim
+
+
+
+\subsection{Result}
+\begin{table}[\cellaligns{rclr}]
+\head
+a cell       & b cell             & c cell & d cell \\
+\body
+a            & b                  & c      & d      \\
+a            & b                  & c      & d      \\
+a            & \colspan{2} b+c             & d      \\
+a            & b                  & c      & d      \\
+a            & b                  & c      & d      \\
+a            & \colspan{3} b+c+d                    \\
+a            & b                  & c      & d      \\
+a            & b                  & c      & d      \\
+\colspan{4} a+b+c+d                                 \\
+a            & b                  & c      & d      \\
+\end{table}
+
+
+
+
+
+
+\section{Rowspan testing}
+
+
+\subsection{Source Code}
+\verbatim
+\begin{table}[\cellaligns{rccr}]
+\head
+a cell       & b cell               & c cell & d cell \\
+\body
+a            & b                    & c      & d      \\
+a            & b                    & c      & d      \\
+a            & \rowspan[][r][m]{4}b & c      & d      \\
+a                                   & c      & d      \\
+a                                   & c      & d      \\
+a                                   & c      & d      \\
+a            & b                    & c      & d      \\
+a            & b                    & c      & d      \\
+\rowspan{3}a & b                    & c      & d      \\
+               b                    & c      & d      \\
+               b                    & c      & d      \\
+a            & b                    & c      & d      \\
+a            & \rowspan[][][t]{2} b & c      & d      \\
+a                                   & c      & d      \\
+a            & b                    & c      & d      \\
+a            & b                    & c      & d      \\
+\end{table}
+\endverbatim
+
+
+
+\subsection{Result}
+
+\begin{table}[\cellaligns{rccr}]
+\head
+a cell       & b cell               & c cell & d cell \\
+\body
+a            & b                    & c      & d      \\
+a            & b                    & c      & d      \\
+a            & \rowspan[][r][m]{4}b & c      & d      \\
+a                                   & c      & d      \\
+a                                   & c      & d      \\
+a                                   & c      & d      \\
+a            & b                    & c      & d      \\
+a            & b                    & c      & d      \\
+\rowspan{3}a & b                    & c      & d      \\
+               b                    & c      & d      \\
+               b                    & c      & d      \\
+a            & b                    & c      & d      \\
+a            & \rowspan[][][t]{2} b & c      & d      \\
+a                                   & c      & d      \\
+a            & b                    & c      & d      \\
+a            & b                    & c      & d      \\
+\end{table}
+
+
+
+
+\section{Single Cell Alignment Workaround}
+
+
+\subsection{Source Code}
+\verbatim
+\begin{table}[\cellaligns{cccc}]
+\head
+a cell       & b cell             & c cell & d cell \\
+\body
+\colspan{4} Workaround for single cell alignment    \\
+\colspan{4} \verb/\rowspan[][r]{1}b/                \\
+\colspan{4} ----------                              \\
+a            & b                  & c      & d      \\
+a            & \rowspan[][r]{1}b  & c      & d      \\
+a            & b                  & c      & d      \\
+\end{table}
+\endverbatim
+
+
+
+\subsection{Result}
+\begin{table}[\cellaligns{cccc}]
+\head
+a cell       & b cell             & c cell & d cell \\
+\body
+\colspan{4} Workaround for single cell alignment    \\      
+\colspan{4} \verb/\rowspan[][r]{1}b/                \\      
+\colspan{4} ----------                              \\      
+a            & b                  & c      & d      \\
+a            & \rowspan[][r]{1}b  & c      & d      \\
+a            & b                  & c      & d      \\
+\end{table}
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

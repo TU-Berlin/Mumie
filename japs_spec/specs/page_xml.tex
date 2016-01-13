@@ -1,0 +1,813 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Page-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: page_xml.tex,v 1.11 2006/12/11 11:40:40 rassy Exp $}
+
+Der Inhalt von Dokumenten vom Typ \code{page} besteht aus XHTML plus MathML
+plus einem Mumie-spezifischen XHTML-Erweiterungs-XML, genannt \emph{Page-XML}.
+Bei der XSL-Transformation wird Page-XML nach XHTML plus MathML übersetzt.
+
+\tableofcontents
+
+\section{Namensraum}
+
+Der Namensraum des Page-XMLs ist:
+
+\begin{preformatted}%
+  \val{http://www.mumie.net/xml-namespace/xhtml-extension}.
+\end{preformatted}%
+
+Der übliche Prefix ist \val{mmx}. Page-XML wird normalerweise mit
+Prefixes geschrieben.
+
+\section{Automatische Generierung von URLs}\label{url_erzeugung}
+
+Die Page-XML-Elemente \href{\#url_element}{mmx:url},
+\href{\#href_element}{mmx:href}, \href{\#src_element}{mmx:src}, und
+\href{\#action_element}{mmx:action} generieren automatisch URLs.
+Diese URLs werden durch das  \attrib{rel-url}-, \attrib{lid}- oder
+\attrib{from-params}-Attribut bestimmt. Details s.u.
+
+Die automatisch generierten URLs lassen sich mit Request-Parametern versehen,
+und zwar mit Hilfe von \element{mmx:request-param}-Kindelementen. Details s.u.
+
+Als Kurzformen der \href{\#href_element}{mmx:href}-, \href{\#src_element}{mmx:src}-, und
+\href{\#action_element}{mmx:action}-Elemente stehen gleichnamige Attribute
+bereit. In der Funkionalität gibt es gegebnüber den entsprechenden Elementen
+kleinere Einschränkungen, insbesondere können keine Request-Parameter gesetzt
+werden. Details s.u.
+
+\subsection{Das rel-url-Attribut}\label{rel_url_attribut}
+
+Dieses Attribut muss eine relative Japs-URL enthalten (s.
+\href{urls.xhtml\#rel_japs_url}{Spezifikation URLs}). Die generierte URL
+entsteht durch Kombination des Japs-URL-Prefix mit dieser relativen URL.
+
+\subsection{Das lid-Attribut}\label{from_lid_attribut}
+
+Dieses Attribut muss eine Binnen-Id enthalten. Die generierte URL ist die URL
+des Dokuments, auf das die Binnen-Id zeigt. Es darf ein weiteres Attribut
+auftreten:
+\begin{enumerate}
+\item \attrib{context} : der Kontext der URL (vgl.
+  \href{url_design.txt}{url_design}). Default ist \val{"view"}.
+\end{enumerate}
+
+\subsection{Das from-params-Attribut}\label{from_params_attribut}
+
+In diesem Fall wird die URL aus folgenden Parametern des Dynamic-Data-Abschnitts
+zusammengesetzt:
+\begin{enumerate}
+\item \code{\var{prefix}\code{.id}} : Die Id des Dokuments.
+\item \code{\var{prefix}\code{.type-name}} : Der Dokumenttyp, als Name.
+\item \code{\var{prefix}\code{.context}} : der Kontext der URL
+  (vgl. \href{urls.xhtml}{Spezifikation URLs}). Default ist \val{"view"}.
+\end{enumerate}
+
+Dabei ist \var{prefix} der Wert des \attrib{params_prefix}-Attributs.
+
+\subsection{Request-Parameter: mmx:request-param-Element}\label{param_element}
+
+Jedes \element{mmx:request-param}-Element entspricht einem Request-Parameter. Das Element
+hat stets zwei Attribute. Das erste ist \attrib{name}, der Name des
+Parameters. Für das zweite gibt es folgende Möglichkeiten:
+
+\begin{enumerate}
+\item \attrib{value} : Der Wert des Request-Parameters.
+\item \attrib{value-of-lid} : Eine Binnen-Id. Der Wert des Request-Parameters
+  ist die URL des Dokuments, auf das die Binnen-Id zeigt. Wie in
+  \ref{from_lid_attribut} darf auch hier das Zusatz-Attribut \attrib{context}
+  auftreten, mit der gleichen Bedeutung wie dort.
+\item \attrib{value-of-param} : Name eines Parameters im
+  Dynamic-Data-Abschnitt. Der Wert des Request-Parameters ist der Wert dieses
+  Parameters. 
+\end{enumerate}
+
+Prototypen des \element{mmx:request-param}-Elements:
+
+\begin{preformatted}[code]%
+  <mmx:request-param name="\var{name}" value="\var{value}"/>
+
+  <mmx:request-param name="\var{name}" value-of-lid="\var{lid}"/>
+
+  <mmx:request-param name="\var{name}" value-of-param="\var{param}"/>
+\end{preformatted}
+
+Hierbei sind \var{name} der Name des Request-Parameters, \var{value} sein Wert,
+\var{lid} eine Binnen-Id und \var{param} der Name eines Parameters aus dem
+Dynamic-Data-Abschnitt.
+
+\subsection{Die Attribute mmx:action, mmx:href, mmx:src}\label{mmx_ref_attribs}
+
+Der Wert eines solchen Attributs kann die folgenden Werte annehmen, die dann in
+der jeweils angegebenen Weise die URL bestimmen:
+
+\begin{enumerate}
+
+\item \code{rel-url=\var{rel_url}}
+
+  Die URL wird aus dem Japs-URL-Prefix und \var{rel_url} zusammengesetzt.
+  \var{rel_url} muss eine relative Japs-URL sein (s.
+  \href{urls.xhtml\#rel_japs_url}{Spezifikation URLs}).
+
+\item \code{lid=\var{lid}}
+
+  \var{lid} muss eine Binnen-Id sein. Die generierte URL ist die des Dokuments,
+  auf das die Binnen-Id zeigt.
+
+\item \code{from-params=\var{prefix}}
+
+  Die URL wird aus den Parametern \code{\var{prefix}\code{.id}},
+  \code{\var{prefix}\code{.type-name}}, \code{\var{prefix}\code{.context}} des
+  Dynamic-Data-Abschnitts zusammengesetzt, und zwar in der gleichen Weise wie
+  unter \ref{from_params_attribut} beschrieben.
+
+\end{enumerate}
+
+
+\section{Die XHTML-Attribute action, href und src}\label{sonstige_urls}
+
+Die XHTML-Attribute \attrib{action}, \attrib{href} und \attrib{src} (nicht zu
+verwechseln mit den \emph{Page-XML-Attributen} \attrib{mmx:action},
+\attrib{mmx:href} bzw. \attrib{mmx:src}) werden bei der XSL-Transformation
+normalerweise einfach kopiert. Beginnt ihr Wert jedoch mit dem Ausdruck
+
+\begin{preformatted}%
+  \%{prefix}
+\end{preformatted}
+
+so wird dieser durch den Japs-URL-Prefix ersetzt. Es lassen sich so auf
+einfache Weise Japs-URLs einfügen, deren relativer Teil (Teil nach dem Prefix)
+fest ist, d.h. nicht dynamisch erzeugt werden muss.
+
+
+\section{Page-XML-Elemente}
+
+Dieser Abschnitt enthält alle Page-XML-Elemente in alphabetischer
+Reihenfolge.
+
+
+\subsection{mmx:action}\label{action_element}
+
+Fügt ein \attrib{action}-Attribut in das Eltern-Element ein. Die URL wird durch
+das \attrib{rel-url}-, \attrib{lid}- oder \attrib{from-params}-Attribut
+wie in \ref{rel_url_attribut} bzw. \ref{from_lid_attribut}
+bzw. \ref{from_params_attribut} beschrieben festgelegt.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:action rel-url="\var{rel_url}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:action>
+
+  <mmx:action lid="\var{lid}" \optional{context="\var{context}"}>
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:action>
+
+  <mmx:action from-params="\var{params_prefix}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:action>
+\end{preformatted}
+
+Erzeugter XHTML-Code in allen Fällen:
+
+\begin{preformatted}[code]%
+  action="\var{url_plus_params}"
+\end{preformatted}
+
+Dabei ist \var{url_plus_params} die durch die entsprechenden Attribute und (falls
+vorhanden) durch die \element{mmx:request-param}-Kindelemente bestimmte URL.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  <form method="post">
+    <mmx:action lid="{}answer"/>
+    . . .
+  </form>
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  <form action="\var{url}" method="post">
+    . . .
+  </form>
+\end{preformatted}
+
+wobei \var{url} die URL des Dokuments mit der Binnen-Id \code{answer} ist.
+
+S.auch Elemente
+ \href{\#href_element}{mmx:href},
+ \href{\#src_element}{mmx:src},
+ \href{\#url_element}{mmx:url}
+und Attribute
+ \href{\#href_attrib}{mmx:href},
+ \href{\#src_attrib}{mmx:src}.
+
+
+\subsection{mmx:applet}\label{mmx_applet}
+
+Fügt ein \element{applet}- oder \element{object}-Element zum Einbinden eines
+Java-Applets ein. Benötigt ein Attribut: \attrib{lid}, die Binnen-Id des
+Applets. 
+
+Ob das \element{applet}- oder \element{object}-Element verwendet wird, legt das
+XSL-Stylesheet fest, das die Transformation nach XHTML+MathML vornimmt.
+
+Das \attrib{archive}-Attribut des \element{applet}- bzw.
+\element{object}-Elements wird automatisch generiert. Dabei wird nicht nur das
+Applet selbst, sondern auch alle direkt oder indirekt vom Applet als
+Komponenten referenzierten Jar- und Applet-Dokumente berücksichtigt.
+
+Höhe und/oder Breite des Applets können explizit mit den Attributen \attrib{width}
+bzw. \attrib{height} gesetzt werden; geschieht dies nicht, werden sie
+automatisch gesetzt.
+
+Kann als Kinder beliebig viele \element{param}-Elemente enthalten. Diese werden
+einfach kopiert.
+
+Im Gegensatz zu anderen Erweiterungs-Elementen, die das \attrib{lid}-Attribut
+benutzen, ist bei \element{mmx:applet} das \attrib{context}-Attribut und
+\element{request-param}-Kindelemente nicht zugelassen.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:applet lid="\var{lid}" \optional{width="\var{width}"} \optional{height="\var{height}"}>
+    <!-- Content: param* -->
+  </mmx:image>
+\end{preformatted}
+
+Erzeugter XHTML-Code bei Verwendung des \element{applet}-Elements:
+
+\begin{preformatted}[code]%
+  <applet
+    code="\var{qname}" archive="\var{urls}"
+    width="\var{width}" height="\var{height}">
+    <param name="\var{name1}" value="\var{value1}"/>
+                        .
+                        .
+                        .
+    <param name="\var{nameN}" value="\var{valueN}"/>
+  </applet>
+\end{preformatted}
+
+Erzeugter XHTML-Code bei Verwendung des \element{object}-Elements:
+
+\begin{preformatted}[code]%
+  <object
+    type="{}application/x-java-applet" classid="java:\var{qname}"
+    archive="\var{urls}"
+    width="\var{width}" height="\var{height}">
+    <param name="\var{name1}" value="\var{value1}"/>
+                        .
+                        .
+                        .
+    <param name="\var{nameN}" value="\var{valueN}"/>
+  </object>
+\end{preformatted}
+
+Dabei ist \var{qname} der Full Qualified Name des Applets als Java-Klasse,
+\var{urls} die Liste der URLs der benötigten Jar-Archive, \var{width} die
+Breite und \var{height} die Höhe des Applets.
+
+
+\subsection{mmx:css-stylesheet}
+
+Fügt ein \element{link}-Element zum Einbinden eines CSS-Stylesheets ein. Festlegung
+der URL durch das \attrib{lid}-Attribut wie in
+Abschnitt \ref{from_lid_attribut} beschrieben. Fehlt das Attribut, wird das
+Default-CSS-Stylesheet eingebunden. Dieses wird im XSL-Stylesheet festgelegt, das
+die Transformation nach XHTML+MathML vornimmt.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:css_stylesheet lid="\var{lid}" \optional{context="\var{context}"}>
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:css_stylesheet>
+
+  <mmx:css_stylesheet/>
+\end{preformatted}
+
+Erzeugter XHTML-Code beiden Fällen:
+
+\begin{preformatted}[code]%
+  <link rel="stylesheet" type="text/css" href="\var{url}/>"
+\end{preformatted}
+
+Für \var{lid} und \var{context} s. Abschnitt \ref{from_lid_attribut}.  \var{url} ist
+die durch die Attribute bestimmte URL bzw.  die URL des
+Default-CSS-Stylesheets.
+
+
+\subsection{mmx:case-param}\label{case_param_element}
+
+Ein Case-Block innerhalb eines Switch-case-Konstrukts. Hat ein Attribut: \attrib{value}.
+Der Inhalt des Elements wird verarbeitet, wenn der Wert dieses Attributs gleich
+dem Wert des Parameters ist, der im umschliessenden
+\element{mmx:switch-param}-Element angegeben wird (s. \ref{switch_param_element}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:case-param value="\var{value}">
+    <!-- Content: ANY -->
+  </mmx:case-parm>
+\end{preformatted}
+
+
+\subsection{mmx:else}\label{else_element}
+
+Der "else"-Block eines If-then-else-Konstrukts. Sein Inhalt wird verarbeitet,
+wenn die Bedingung des If-then-else-Konstrukts falsch ist.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:else>
+    <!-- Content: ANY -->
+  </mmx:else>
+\end{preformatted}
+
+S. auch \href{\#if_param_element}{mmx:if-param} und
+\href{\#if_group_element}{mmx:if-group}. 
+
+
+\subsection{mmx:href}\label{href_element}
+
+Fügt ein \attrib{href}-Attribut in das Eltern-Element ein. Die URL wird durch
+das \attrib{rel-url}-, \attrib{lid}- oder \attrib{from-params}-Attribut
+wie in \ref{rel_url_attribut} bzw. \ref{from_lid_attribut}
+bzw. \ref{from_params_attribut} beschrieben festgelegt.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:href rel-url="\var{rel_url}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:href>
+
+  <mmx:href lid="\var{lid}" \optional{context="\var{context}"}>
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:href>
+
+  <mmx:href from-params="\var{params_prefix}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:href>
+\end{preformatted}
+
+Erzeugter XHTML-Code in allen Fällen:
+
+\begin{preformatted}[code]%
+  href="\var{url_plus_params}"
+\end{preformatted}
+
+Dabei ist \var{url_plus_params} die durch die entsprechenden Attribute und (falls
+vorhanden) durch die \element{mmx:request-param}-Kindelemente bestimmte URL.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  <a>
+    <mmx:href lid="help-page">
+      <mmx:request-param name="item" value="general"/>
+    </mmx:href>
+    Hilfe
+  </a>
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  <a href="\var{url}?item=general">Hilfe</a>
+\end{preformatted}
+
+wobei \var{url} die URL des Dokuments mit der Binnen-Id \code{help-page} ist.
+
+S.auch Elemente
+ \href{\#action_element}{mmx:action},
+ \href{\#src_element}{mmx:src},
+ \href{\#url_element}{mmx:url}
+und Attribute
+ \href{\#action_attrib}{mmx:action},
+ \href{\#src_attrib}{mmx:src}.
+
+
+\subsection{mmx:if-group}\label{if_group_element}
+
+If-then-else-Konstrukt: Fügt Code ein in Abhängigkeit davon, ob der Benutzer in
+einer bestimmten Gruppe ist oder nicht.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:if-group name="\var{name}">
+    <!-- Content: \optional{\href{\#then_element}{mmx:then}} \optional{\href{\#else_element}{mmx:else}} -->
+  </mmx:if-group>
+
+  <mmx:if-group or="\{\var{name1}\}\{\var{name2}\}...\{\var{nameN}\}">
+    <!-- Content: \optional{\href{\#then_element}{mmx:then}} \optional{\href{\#else_element}{mmx:else}} -->
+  </mmx:if-group>
+\end{preformatted}
+
+Ist der Benutzer Mitglied der Gruppe \var{name} (erste Form) bzw. in mindestens
+einer der Gruppen \var{name1} \ldots \var{nameN} (zweite Form), so wird der
+Code im Element \element{mmx:then} verarbeitet, sonst der im Element
+\element{mmx:else}. Beide Elemente dürfen fehlen. (\var{name}, \var{name1}
+usw. sind die Namen der Gruppen.)
+
+
+\subsection{mmx:if-param}\label{if_param_element}
+
+If-then-else-Konstrukt: Fügt Code ein in Abhängigkeit davon, ob ein bestimmter
+Parameter (im Dynamic-Data-Abschnitt) einen bestimmten Wert hat oder nicht.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:if-param name="\var{name}" value="\var{value}">
+    <!-- Content: \optional{\href{\#then_element}{mmx:then}} \optional{\href{\#else_element}{mmx:else}} -->
+  </mmx:if-param>
+\end{preformatted}
+
+Hat der Parameter \var{name} den Wert \var{value}, so wird der Code im
+\element{mmx:then} - Element verarbeitet, sonst der im \element{mmx:else} -
+Element. Beide Elemente dürfen fehlen.
+
+
+\subsection{mmx:if-user-sync-id}\label{if_user_sync_id_element}
+
+If-then-else-Konstrukt: Fügt Code ein in Abhängigkeit davon, ob der Benutzer
+eine Synchronisations-Id bzw. eine Synchronisations-Id mit einem bestimmten
+Wert hat oder nicht.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:if-user-sync-id>
+    <!-- Content: \optional{\href{\#then_element}{mmx:then}} \optional{\href{\#else_element}{mmx:else}} -->
+  </mmx:if-user-sync-id>
+
+  <mmx:if-user-sync-id value="\var{value}">
+    <!-- Content: \optional{\href{\#then_element}{mmx:then}} \optional{\href{\#else_element}{mmx:else}} -->
+  </mmx:if-user-sync-id>
+\end{preformatted}
+
+In der ersten Form wird der Code im Element \element{mmx:then} verarbeitet,
+wenn der Benutzer eine Synchronisations-Id beseitzt, sonst der Code im Element
+\element{mmx:else}. In der zweiten Form wird der Code im Element
+\element{mmx:then} verarbeitet, wenn der Benutzer eine Synchronisations-Id
+beseitzt und diese den Wert \var{value} hat, sonst der Code im Element
+\element{mmx:else}. In beiden Fällen dürfen beide Elemente fehlen.
+
+
+\subsection{mmx:image}
+
+Fügt ein \element{img}-Element zum Einbinden eines Bildes ein. Festlegung der
+URL durch das \attrib{lid}-Attribut wie in Abschnitt \ref{from_lid_attribut}
+beschrieben. Höhe und/oder Breite können explizit mit den Attributen
+\attrib{width} bzw. \attrib{height} gesetzt werden; geschieht dies nicht,
+werden sie automatisch gesetzt. Weitere Attribute sind erlaubt, diese werden
+in das \element{img}-Element kopiert.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:image lid="\var{lid}" \optional{context="\var{context}"} \optional{width="\var{width}"} \optional{height="\var{height}"}
+             \optional{\var{more_attributes}}>
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:image>
+\end{preformatted}
+
+Erzeugter XHTML-Code:
+
+\begin{preformatted}[code]%
+  <img href="\var{url}" width="\var{width}" height="\var{height}" \optional{\var{more_attributes}}/>
+\end{preformatted}
+
+Für \var{lid} und \var{context} s. Abschnitt \ref{from_lid_attribut}.  \var{url} ist
+die durch diese Attribute und (falls vorhanden) die
+\element{mmx:request-param}-Kindelemente bestimmte URL. \var{width} und
+\var{height} sind die Breite bzw. Höhe des Bildes. \var{more_attributes}
+steht für die oben erwähnten zusätzlichen Attribute, die einfach kopiert
+werden..
+
+
+
+\subsection{mmx:otherwise}\label{otherwise_element}
+
+Der "otherwise"-Block eines Switch-case-Konstrukts. Sein Inhalt wird verarbeitet,
+wenn es keinen "case"-Block gibt, dessen Bedingung zutrifft.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:otherwise>
+    <!-- Content: ANY -->
+  </mmx:otherwise>
+\end{preformatted}
+
+S. auch \href{\#switch_param_element}{mmx:switch-param}. 
+
+
+\subsection{mmx:server-name}\label{server_name_element}
+
+Fügt der Server-Namen ein.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:server-name/>
+\end{preformatted}
+
+Es wird die URL des Servers ohne Protokoll und ohne lokalen Pfad (aber ggf. mit
+Port) ausgegeben. Beispiel: Ist der URL-Prefix
+\code{http://www.foo.net/cocoon}, so wird \code{www.foo.net} ausgegeben.
+
+
+\subsection{mmx:src}\label{src_element}
+
+Fügt ein \attrib{src}-Attribut in das Eltern-Element ein. Die URL wird durch
+das \attrib{rel-url}-, \attrib{lid}- oder \attrib{from-params}-Attribut
+wie in \ref{rel_url_attribut} bzw. \ref{from_lid_attribut}
+bzw. \ref{from_params_attribut} beschrieben festgelegt.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:src rel-url="\var{rel_url}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:src>
+
+  <mmx:src lid="\var{lid}" \optional{context="\var{context}"}>
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:src>
+
+  <mmx:src from-params="\var{params_prefix}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:src>
+\end{preformatted}
+
+Erzeugter XHTML-Code in allen Fällen:
+
+\begin{preformatted}[code]%
+  src="\var{url_plus_params}"
+\end{preformatted}
+
+Dabei ist \var{url_plus_params} die durch die entsprechenden Attribute und (falls
+vorhanden) durch die \element{mmx:request-param}-Kindelemente bestimmte URL.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  <frame id="left" name="Left Frame">
+    <mmx:src lid="help-page">
+      <mmx:request-param name="item" value="general"/>
+    </mmx:src>
+    Hilfe
+  </frame>
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  <frame id="left" name="Left Frame" src="\var{url}?item=general"/>
+\end{preformatted}
+
+wobei \var{url} die URL des Dokuments mit der Binnen-Id \code{help-page} ist.
+
+S.auch Elemente
+ \href{\#action_element}{mmx:action},
+ \href{\#href_element}{mmx:href},
+ \href{\#url_element}{mmx:url}
+und Attribute
+ \href{\#action_attrib}{mmx:action},
+ \href{\#href_attrib}{mmx:href}.
+
+
+\subsection{mmx:switch-param}\label{switch_param_element}
+
+Switch-case-Konstrukt: Fügt Code ein in Abhängigkeit davon, welchen Wert ein bestimmter
+Parameter (im Dynamic - Data - Abschnitt) hat.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:switch-param name="\var{name}">
+    <!-- Content: \href{\#case_param_element}{mmx:case-param}* \optional{\href{\#otherwise_element}{mmx:otherwise}} -->
+  </mmx:switch-param>
+\end{preformatted}
+
+Es wird der Code im ersten \element{mmx:case-param}-Element verarbeitet, dessen
+Bedingung zutrifft, sofern es ein solches Element gibt, sonst der Code im
+\element{mmx:otherise}-Element, sofern dieses existiert. Die Bedingung eines
+\element{mmx:case-param}-Element trifft zu, wenn der Wert seines
+\attrib{value}-Attributs gleich dem Wert des Parameters \var{name} ist
+(s. \href{\#case_param_element}{mmx:case-param}). 
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  <mmx:switch-param name="nav.type-name">
+    <mmx:case-param value="course">
+      <p>Ein Kurs</p>
+    </mmx:case-param>
+    <mmx:case-param value="course_section">
+      <p>Ein Kurs-Abschnitt</p>
+    </mmx:case-param>
+    <mmx:case-param value="course_section">
+      <p>Nochmal: Ein Kurs-Abschnitt</p>
+    </mmx:case-param>
+    <mmx:case-param value="course_subsection">
+      <p>Ein Kurs-Unterabschnitt</p>
+    </mmx:case-param>
+    <mmx:otherwise>
+      <p><em>Unbekannt</em></p>
+    </mmx:otherwise>
+  </mmx:switch-param>
+\end{preformatted}
+
+Existiert der Parameter \code{nav.type-name} und hat er den Wert
+\code{"course_section"}, so wird der Code
+
+\begin{preformatted}%
+  <p>Ein Kurs-Abschnitt</p>
+\end{preformatted}
+
+in das Dokument eingefügt. Man beachte, dass es zwei
+\element{mmx:case-param}-Elemente gibt, deren \attrib{value}-Attribute mit dem
+Wert des Parameters übereinstimmen. Gemäß obiger Spezifikation wird nur das
+erste berücksichtigt. 
+
+
+\subsection{mmx:then}\label{then_element}
+
+Der "then"-Block eines If-then-else-Konstrukts. Sein Inhalt wird verarbeitet,
+wenn die Bedingung des If-then-else-Konstrukts wahr ist.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:then>
+    <!-- Content: ANY -->
+  </mmx:then>
+\end{preformatted}
+
+S. auch \href{\#if_param_element}{mmx:if_param} und
+\href{\#if_group_element}{mmx:if-group}. 
+
+
+
+\subsection{mmx:top-bar}\label{top_bar_element}
+
+Erzeugt die Top-Bar (Leiste mit Logos, Projektname, Links usw.).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:top-bar
+    \optional{account-link="\alt{{yes}{no}}}
+    \optional{admin-link="\alt{{yes}{no}}}/>
+\end{preformatted}
+
+\attrib{account-link} legt fest, ob die Top-Bar einen Link zur
+Bearbeitungsseite für das Konto enthält. Default:
+\val{yes}. \attrib{admin-link} left fest, ob die Top-Bar eine Link zur
+Administrator-Seite enthält. Default: \val{no}.
+
+Die Top-Bar sollte vor jeden anderen Inhalt der Seite plaziert werden.
+
+
+\subsection{mmx:url}\label{url_element}
+
+Fügt eine URL ein (als Text). Die URL wird durch das \attrib{rel-url}-,
+\attrib{lid}- oder \attrib{from-params}-Attribut wie in
+\ref{rel_url_attribut} bzw. \ref{from_lid_attribut} bzw.
+\ref{from_params_attribut} beschrieben festgelegt.
+
+Prototypen:
+
+\begin{preformatted}[code]%
+  <mmx:url rel-url="\var{rel_url}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:url>
+
+  <mmx:url lid="\var{lid}" \optional{context="\var{context}"}>
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:url>
+
+  <mmx:url from-params="\var{params_prefix}">
+    <!-- Content: \href{\#param_element}{mmx:request-param}* -->
+  </mmx:url>
+\end{preformatted}
+
+Erzeugter XHTML-Code in allen Fällen:
+
+\begin{preformatted}[code]%
+  \var{url}
+\end{preformatted}
+
+Dabei ist \var{url} die durch die entsprechenden Attribute und (falls
+vorhanden) durch die \element{mmx:request-param}-Kindelemente bestimmte URL.
+
+
+\subsection{mmx:user-first-name}\label{user_first_name_element}
+
+Gibt den Vornamen des Benutzers aus.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:user-first-name/>
+\end{preformatted}
+
+
+\subsection{mmx:user-surname}\label{user_surname_element}
+
+Gibt den Nachnamen des Benutzers aus.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:user-surname/>
+\end{preformatted}
+
+
+\subsection{mmx:user-id}\label{user_id_element}
+
+Gibt die Id des Benutzers aus.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  <mmx:user-id/>
+\end{preformatted}
+
+
+
+\section{Page-XML-Attribute}
+
+Dieser Abschnitt enthält alle Page-XML-Attribute in alphabetischer
+Reihenfolge.
+
+
+\subsection{mmx:action}\label{action_attrib}
+
+Erzeugt ein XHTML-\attrib{action}-Attribut. Prototypen:
+
+\begin{preformatted}[code]%
+  mmx:action="rel-url=\var{rel_url}"
+
+  mmx:action="lid=\var{lid}"
+
+  mmx:action="from-params=\var{prefix}"
+\end{preformatted}
+
+Beschreibung s. \ref{mmx_ref_attribs}.
+
+
+\subsection{mmx:href}\label{href_attrib}
+
+Erzeugt ein XHTML-\attrib{href}-Attribut. Prototypen:
+
+\begin{preformatted}[code]%
+  mmx:href="rel-url=\var{rel_url}"
+
+  mmx:href="lid=\var{lid}"
+
+  mmx:href="from-params=\var{prefix}"
+\end{preformatted}
+
+Beschreibung s. \ref{mmx_ref_attribs}.
+
+
+\subsection{mmx:src}\label{src_attrib}
+
+Erzeugt ein XHTML-\attrib{src}-Attribut. Prototypen:
+
+\begin{preformatted}[code]%
+  mmx:src="rel-url=\var{rel_url}"
+
+  mmx:src="lid=\var{lid}"
+
+  mmx:src="from-params=\var{prefix}"
+\end{preformatted}
+
+Beschreibung s. \ref{mmx_ref_attribs}.
+
+
+-- ENDE DER DATEI --
+
+\end{document}

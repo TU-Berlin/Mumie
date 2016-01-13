@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-close-window">Fenster schlie&#223;en</xsl:param>
+<xsl:param name="i18n-cancel">Abbrechen</xsl:param>
+<xsl:param name="i18n-errors-in-correction">Fehler bei Korrektur</xsl:param>
+<xsl:param name="i18n-errors-in-correction-expl">
+  Das System konnte nicht alle Aufgaben korrigieren.
+  Die Administratoren bem&#252;hen sich, das Problem so bald wie m&#246;glich zu l&#246;sen.
+</xsl:param>
+<xsl:param name="i18n-account">Konto</xsl:param>
+<xsl:param name="i18n-change">&#196;ndern</xsl:param>
+<xsl:param name="i18n-feedback">feedback</xsl:param>
+<xsl:param name="i18n-new-student">Neuer Student</xsl:param>
+<xsl:param name="i18n-id">Id</xsl:param>
+<xsl:param name="i18n-worksheet">Aufgabenblatt</xsl:param>
+<xsl:param name="i18n-course-section">Kursabschnitt</xsl:param>
+<xsl:param name="i18n-course">Kurs</xsl:param>
+<xsl:param name="i18n-summary">Zusammenfassung</xsl:param>
+<xsl:param name="i18n-timeframe">Bearbeitungszeitraum</xsl:param>
+<xsl:param name="i18n-not-accessible">noch nicht aufrufbar</xsl:param>
+<xsl:param name="i18n-editable">bearbeitbar</xsl:param>
+<xsl:param name="i18n-not-editable">nicht mehr bearbeitbar</xsl:param>
+<xsl:param name="i18n-load-worksheet">Aufgabenblatt laden</xsl:param>
+<xsl:param name="i18n-load-course-section">Kursabschnitt laden</xsl:param>
+<xsl:param name="i18n-load-course">Kurs laden</xsl:param>
+<xsl:param name="i18n-results">Ergebnisse</xsl:param>
+<xsl:param name="i18n-summary">Zusammenfassung</xsl:param>
+<xsl:param name="i18n-problem">Aufgabe</xsl:param>
+<xsl:param name="i18n-result">Ergebnis</xsl:param>
+<xsl:param name="i18n-set-state-feedback">Auswerten</xsl:param>
+<xsl:param name="i18n-set-state-feedback-expl">
+  Wenn Sie fortfahren, werden alle Aufgaben korrigiert und und die Auswertung wird
+  angezeigt. Danach k&#246;nnen die Aufgaben nicht mehr bearbeitet werden.
+</xsl:param>
+<xsl:param name="i18n-set-state-work">Neue Bearbeitung</xsl:param>
+<xsl:param name="i18n-set-state-work-expl">
+  Wenn Sie fortfahren, wird die Auswertung gel&#246;scht und Sie k&#246;nnen die
+  Aufgaben erneut bearbeiten. Die Aufgaben erhalten ggf. andere Zahlen.
+</xsl:param>
+<xsl:param name="i18n-to">bis</xsl:param>
+<xsl:param name="i18n-no-student-selected">&#8211; kein Student ausgew&#228;hlt &#8211;</xsl:param>
+<xsl:param name="i18n-not-edited">n.b.</xsl:param>
+<xsl:param name="i18n-not-corrected">n.k.</xsl:param>
+<xsl:param name="i18n-change-student">Student ausw&#228;hlen</xsl:param>
+<xsl:param name="i18n-clear-student">Student-Auswahl&#160;l&#246;schen</xsl:param>
+<xsl:param name="i18n-close-window">Fenster schlie&#223;en</xsl:param>
+<xsl:param name="i18n-error">FEHLER</xsl:param>
+<xsl:param name="i18n-error-in-student-selection">Bei der Studentenauswahl ist ein Fehler aufgetreten</xsl:param>
+<xsl:param name="i18n-try-again">Bitte versuchen Sie es erneut</xsl:param>
+<xsl:param name="i18n-student">Student</xsl:param>
+<xsl:param name="i18n-state">Status</xsl:param>
+<xsl:param name="i18n-total">Gesamt</xsl:param>
+<xsl:param name="i18n-evaluate">Auswertung</xsl:param>
+<xsl:param name="i18n-new">Neu</xsl:param>
+<xsl:param name="i18n-change-timeframe">Bearbeitungszeitraum &#228;ndern</xsl:param>
+<xsl:param name="i18n-start">Beginn</xsl:param>
+<xsl:param name="i18n-end">Ende</xsl:param>
+
+<!-- Info page link: -->
+<xsl:param name="i18n-info">Metainfos</xsl:param>
+<xsl:param name="i18n-info-expl">Seite mit Metainformationen zu diesem Dokument</xsl:param>
+</xsl:stylesheet>

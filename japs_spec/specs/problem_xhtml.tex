@@ -1,0 +1,361 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Problem-XHTML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: problem_xhtml.tex,v 1.3 2006/11/14 16:35:06 rassy Exp $}
+
+Diese Spezifikation beschreibt Regeln für die XHTML-Darstellung von Aufgaben
+(Dokumente vom Typ "problem"). Einzelheiten der XHTML-Darstellung wie Farben,
+Fonts usw. hängen vom Theme ab und sind nicht Gegenstand dieser
+Spezifikation. Hier werden nur die grundsätzliche Struktur und die
+Funktionalitäten der XHTML-Darstellung beschrieben.
+
+\tableofcontents
+
+\section{Einleitung}
+
+Die XHTML-Darstellung variiert in Abhängigkeit der folgenden Faktoren:
+
+\begin{enumerate}
+\item Ob der Benutzer ein Student ist oder zum "Staff" gehört. Letzteres ist
+  der Fall, wenn der Benutzer in einer der Gruppen \code{tutor},
+  \code{lecturer} oder \code{admins} ist.
+\item Bei "Staff"-Mitgliedern: Ob der Benutzer einen Studenten ausgewählt hat oder nicht
+  ["Staff"-Mitglieder können einen Studenten auswählen, um dessen Lösungen zu
+  betrachten].
+\item Verhältnis zum Bearbeitungszeitraum des Übungsblatts (vor bzw. im
+  bzw. nach dem Bearbeitungszeitraum).
+\end{enumerate}
+
+Die folgende Liste fasst die möglichen Varianten der XHTML-Darstelllung
+zusammen:
+
+\begin{enumerate}
+\setcounter{enumi}{3}
+\item\label{stud_im_bearb} \emph{Benutzer: Student, im Bearbeitungszeitraum:}
+  Darstellung der Aufgabe mit Bearbeitungsmöglichkeit.
+\item\label{stud_nach_bearb} \emph{Benutzer: Student, nach
+    Bearbeitungszeitraum:} Darstellung der Aufgabe mit Ansichtsmöglichkeit der
+  Lösung und Korrektur.
+\item\label{staff_ohne_stud} \emph{Benutzer: Staff, kein Student ausgewählt,
+    unabhängig vom Bearbeitungszeitraum:} Darstellung der Aufgabe mit
+  Bearbeitungsmöglichkeit, Korrektormöglichkeit, Ansichtsmöglichkeit der Lösung
+  und Korrektur, und der Möglichkeit, sich neue personalisierte Daten geben zu
+  lassen.
+\item\label{staff_mit_stud} \emph{Benutzer: Staff, Student ausgewählt, nach
+    Bearbeitungszeitraum:} Darstellung der Aufgabe mit Ansichtsmöglichkeit der
+  Lösung und Korrektur; personalisierte Daten und Lösungen beziehen sich auf
+  den ausgewählten Studenten.
+\end{enumerate}
+
+Für folgende Kombinationen gibt es keine Darstellung:
+
+\begin{enumerate}
+\item \emph{Benutzer: Student, vor Bearbeitungszeitraum:} Studenten dürfen die
+  Aufgaben erst nach Begimm des Bearbeitungszeitraums sehen.
+\item \emph{Benutzer: Staff, Student ausgewählt, vor und während des
+    Bearbeitungszeitraums:} Staff-Mitglieder können die Arbeit eines Studenten
+  erst nach Ende des Bearbeitungszeitraums einsehen.
+\end{enumerate}
+
+\section{Kontrollelemente}
+
+Die XHTML-Darstelllung einer Aufgabe besteht aus der eigentlichen Aufgabe und
+gewissen Kontrollelementen. Letztere sind:
+
+\subsection{"Bearbeiten"-Button}
+
+Ein Button, der das Applet zum Bearbeiten der Aufgabe öffnet. Existiert bei
+Aufgaben der Kategorie \val{applet} in den Fällen \ref{stud_im_bearb} und
+\ref{staff_ohne_stud}.
+
+[Bei Aufgaben der Kategorie \val{mchoice} findet die Bearbeitung direkt auf der
+XHTML-Seite statt; der Button entfällt daher.]
+
+\subsection{"Lösung"-Button}
+
+Ein Button, der die Seite mit den korrigierten Lösungen aufruft. Existiert bei
+Aufgaben der Kategorie \val{applet} in den Fällen \ref{stud_nach_bearb},
+\ref{staff_ohne_stud} und \ref{staff_mit_stud}.
+
+[Bei Aufgaben der Kategorie \val{mchoice} wird die korrigierte Lösung direkt auf der
+XHTML-Seite angezeigt; der Button entfällt daher.]
+
+Die URL, die bei Betätigung des Buttons angezeigt werden soll, lautet
+
+\begin{preformatted}[code]%
+  \var{prefix}/protected/homework/problem-correction
+\end{preformatted}
+
+wobei \var{prefix} der gemeinsame Prefix aller JAPS-URLs ist, also
+z.B. \val{http://japs.mumie.net/cocoon}. [Dem XSL-Stylesheet steht dieser
+Prefix als Parameter
+\href{japs_xsl_bibliothek.xhtml\#xsl_url_prefix}{xsl.url-prefix} zur Verfügung,
+sofern dieses die 
+\href{japs_xsl_bibliothek.xhtml}{Japs-XSL-Bibliothek} einbindet.]
+Die URL muss mit folgendem Request-Parameter versehen werden:
+
+\begin{enumerate}
+\item \val{ref} -- die Id der \code{course_subsection}-\code{problem}-Referenz
+  (ist im \attrib{ref}-Attribut des Metainfo-Rootelements enthalten),
+\end{enumerate}
+
+\subsection{"Speichern"-Button}
+
+Ein Button, der die eingegebenen Lösungen auf dem Server speichert. Existiert
+bei Aufgaben der Kategorie \val{mchoice} in den Fällen \ref{stud_im_bearb} und
+\ref{staff_ohne_stud} 
+
+[Bei Aufgaben der Kategorie \val{applet} befindet sich dieser Button im
+Bearbeitungs-Applet.]
+
+Bei Betätigung des "Speichern"-Buttons werden die Formulardaten der
+Multiple-Choice-Aufgabe an den Server geschickt, und zwar an die URL, die unter
+\ref{upload_der_formulardaten} angegeben ist.
+
+\subsection{Studenten-Anzeige/Auswahl}
+
+Zeigt den vom Staff-Mitglied ausgewählten Studenten an und ermöglicht diese Auswahl
+zu ändern. Existiert in den Fällen \ref{staff_ohne_stud} und
+\ref{staff_mit_stud}
+
+Im letzten Fall (\ref{staff_mit_stud}) hat die Studenten-Anzeige/Auswahl in etwa
+folgende Gestalt:
+
+\image{studenten\_anzeige\_auswahl.png}
+
+Nach Eingabe einer Studenten-Id und Klicken von "{}Auswählen" wird die Aufgabe
+für den neu ausgewählten Studenten angezeigt. Bei Klicken von "Keine Auswahl"
+zum ersten Fall (\ref{staff_ohne_stud}) gewechselt. In diesem Fall hat
+die Studenten-Anzeige/Auswahl in etwa folgende Gestalt:
+
+\image{studenten\_anzeige\_auswahl\_nichts_ausgew.png}
+
+Trat bei der Auswahl des Studenten ein Fehler auf, so wird dieselbe Seite
+angezeigt wie vorher, aber mit einer Fehlermeldung. Die
+Studenten-Anzeige/Auswahl hat dann in etwa folgende Gestalt:
+
+\image{studenten\_anzeige\_auswahl\_fehler.png}
+
+\subsection{Status}
+
+Zeigt folgende Informationen an:
+
+\begin{enumerate}
+\item Die erreichte Punktzahl, sofern bereits vorhanden
+\item Die maximal erreichbare Punktzahl
+\item\label{zeitp_speich} Zeitpunkt, wann der Benutzer das letzte Mal Antworten zu dieser Aufgabe
+  gespeichert hat
+\end{enumerate}
+
+Da nach dem Laden der XHTML-Seite weitere Speicherungen stattdefunden haben
+können, ist die Angabe \ref{zeitp_speich} möglicherweise veraltet. Es sollte
+daher ein entsprechender Hinweis und ein "{}Aktualisieren"-Button vorhanden sein,
+mit dem die Seite neu geladen wird (unmittelbar nach dem Neu-Laden ist die
+Angabe wieder aktuell). Damit hat die Bearbeitungs-Status-Anzeige in etwa
+folgende Gestalt:
+
+\image{status\_anzeige.png}
+
+Sind noch keine Antworten gespeichert worden, steht statt der Zeit ein
+entsprechender Hinweis:
+
+\image{status\_anzeige_keine_lsg.png}
+
+\section{Varianten der XHTML-Darstellung}
+
+Diser Abschnitt fasst noch einmal die Charakteristika jeder Variante der
+XHTML-Darstellung zusammen.
+\subsection{Benutzer: Student, im Bearbeitungszeitraum}
+
+Darstellung der Aufgabe mit Bearbeitungsmöglichkeit. Die Struktur der Seite und die
+enthaltenen Kontrollelemente ergeben sich aus folgender Abbildung:
+
+\image{problem_student_in_timefr.png}
+
+Diese Abbilding gilt für die Kategorie \val{applet}. Für die Kategorie
+\val{mchoice} ist der "Bearbeiten"-Button durch den "Speichern"-Button
+zu ersetzen.
+
+\subsection{Benutzer: Student, nach Bearbeitungszeitraum}
+
+Darstellung der Aufgabe mit Ansichtsmöglichkeit der Lösung und Korrektur. Die
+Struktur der Seite und die enthaltenen Kontrollelemente ergeben sich aus
+folgender Abbildung:
+
+\image{problem_student_after_timefr.png}
+
+Diese Abbilding gilt für die Kategorie \val{applet}. Für die Kategorie
+\val{mchoice} fehlt der "Lösung"-Button (bei Multiple-Choice-Aufgaben werden
+Lösung und Korrektur in der Aufgabe dargestellt).
+
+\subsection{Benutzer: Staff, kein Student ausgewählt}
+
+Darstellung der Aufgabe mit Bearbeitungsmöglichkeit, Korrektormöglichkeit,
+Ansichtsmöglichkeit der Lösung und Korrektur, und der Möglichkeit, sich neue
+personalisierte Daten geben zu lassen. Die Struktur der Seite und die
+enthaltenen Kontrollelemente ergeben sich aus folgender Abbildung:
+
+\image{problem_staff.png}
+Diese Abbilding gilt für die Kategorie \val{applet}. Für die Kategorie
+\val{mchoice} ist der "Bearbeiten"-Button durch den "Speichern"-Button
+zu ersetzen.
+
+\subsection{Benutzer: Staff, Student ausgewählt, nach Bearbeitungszeitraum}
+
+Darstellung der Aufgabe mit Ansichtsmöglichkeit der Lösung und Korrektur;
+personalisierte Daten und Lösungen beziehen sich auf den ausgewählten
+Studenten. Die Struktur der Seite und die enthaltenen Kontrollelemente ergeben
+sich aus folgender Abbildung:
+
+\image{problem_staff_stud_ausgew.png}
+
+\section{Multiple-Choice-Fragen als XHTML-Formulare}\label{xhtml_formularelemente}
+
+\subsection{XHTML-Formularelemente}
+
+Die Multiple-Choice-Fragen werden in der XHTML-Darstellung zweckmäßigerweise durch
+Formularelemente realisiert. Dabei sollen folgende Regeln gelten (mit dem Typ eines
+\element{input}-Elements ist stets der Wert seines \attrib{type}-Attributs
+gemeint):
+
+\begin{enumerate}
+  
+\item Alle Request-Parameter, die einem Formular-Element zu einer möglichen
+  Antwort entsprechen, haben den gemeinsamen Prefix "\val{answer.}".
+  
+\item \label{choices_unique} \element{choices}-Elemente vom Typ \val{unique}
+  werden durch \element{input}-Elemente vom Typ \val{radio} dargestellt. Für
+  jedes \element{choice}-Kindelement gibt es genau ein \element{input}-Element.
+  Dessen \attrib{name}- und \attrib{value}-Attribute sind gegeben durch
+       
+  \begin{preformatted}[code]%
+    name="{}answer.unique.\var{CHOICES-KEY}" value="\var{CHOICE-KEY}"%
+  \end{preformatted}
+
+  Hierbei ist \var{CHOICES-KEY} der Wert des \attrib{key}-Attributs des umschliessenden
+  \element{choices}-Elements und \var{CHOICE-KEY} der Wert des \attrib{key}-Attributs des
+  \element{choice}-Elements. (Es haben also alle \element{input}-Elemente, die zum selben
+  \element{choices}-Element gehören, dasselbe \attrib{name}-Attribut.)
+  
+  Beispiel:
+
+  \begin{preformatted}[code]%
+    <choices key="5" type="{}unique">
+      <!-- Drei 'choice'-Kindelemente -->
+    <choices>
+  \end{preformatted}
+
+  entspricht
+    
+  \begin{preformatted}[code]%
+    <input type="radio" name="{}answer.unique.5" value="1"/>
+    <input type="radio" name="{}answer.unique.5" value="2"/>
+    <input type="radio" name="{}answer.unique.5" value="3"/>
+  \end{preformatted}
+    
+\item \element{choices}-Elemente vom Typ \val{multiple} werden durch
+  \element{input}-Elemente vom Typ \val{checkbox} dargestellt. Für
+  jedes \element{choice}-Kindelement gibt es genau ein \element{input}-Element.
+  Dessen \attrib{name}- und \attrib{value}-Attribute sind gegeben durch
+
+  \begin{preformatted}[code]%
+    name="{}answer.multiple.\var{CHOICES-KEY}.\var{CHOICE-KEY}" value="{}selected"%
+  \end{preformatted}
+
+  Hierbei sind \var{CHOICES-KEY} und \var{CHOICE-KEY} wie in \ref{choices_unique} definiert.
+
+  Beispiel:
+
+  \begin{preformatted}[code]%
+    <choices key="5" type="multiple">
+      <!-- Drei 'choice'-Kindelemente -->
+    <choices>
+  \end{preformatted}
+
+  entspricht
+
+  \begin{preformatted}[code]%
+    <input type="checkbox" name="{}answer.multiple.5.1" value="{}selected"/>
+    <input type="checkbox" name="{}answer.multiple.5.2" value="{}selected"/>
+    <input type="checkbox" name="{}answer.multiple.5.3" value="{}selected"/>
+  \end{preformatted}
+  
+\item \element{choices}-Elemente vom Typ \val{yesno} werden durch
+  Paare von \element{input}-Elementen vom Typ \val{radio}
+  dargestellt. Für jedes \element{choice}-Kindelement gibt es genau zwei
+  \element{input}-Elemente, eins für die "Ja"-Antwort und eins für die
+  "Nein"-Antwort. Deren \attrib{name}- und \attrib{value} Attribute sind gegeben durch
+
+  \begin{preformatted}[code]%
+    name="{}answer.yesno.\var{CHOICES-KEY}.\var{CHOICE-KEY}" value="yes"  \mbox{\meta{("Ja"-Antwort)}}
+    name="{}answer.yesno.\var{CHOICES-KEY}.\var{CHOICE-KEY}" value="no"   \mbox{\meta{("Nein"-Antwort)}}%
+  \end{preformatted}
+  
+  \var{CHOICES-KEY} und \var{CHOICE-KEY} sind wie in \ref{choices_unique}
+  definiert.
+    
+  Beispiel:
+    
+  \begin{preformatted}[code]%
+    <choices key="5" type="yesno">
+      <!-- Drei 'choice'-Kindelemente -->
+    <choices>
+  \end{preformatted}
+    
+  entspricht
+    
+  \begin{preformatted}[code]%
+    <input type="radio" name="{}answer.yesno.5.1" value="yes"/>
+    <input type="radio" name="{}answer.yesno.5.1" value="no"/>
+    <input type="radio" name="{}answer.yesno.5.2" value="yes"/>
+    <input type="radio" name="{}answer.yesno.5.2" value="no"/>
+    <input type="radio" name="{}answer.yesno.5.3" value="yes"/>
+    <input type="radio" name="{}answer.yesno.5.3" value="no"/>
+  \end{preformatted}
+
+\end{enumerate}
+
+
+\subsection{Upload der Formulardaten}\label{upload_der_formulardaten}
+
+Der Upload erfolgt an die URL
+
+\begin{preformatted}[code]%
+  \var{prefix}/protected/homework/store-mchoice-problem-answers
+\end{preformatted}
+
+wobei \var{prefix} der gemeinsame Prefix aller JAPS-URLs ist, also
+z.B. \val{http://japs.mumie.net/cocoon}. [Dem XSL-Stylesheet steht dieser
+Prefix als Parameter
+\href{japs_xsl_bibliothek.xhtml\#xsl_url_prefix}{xsl.url-prefix} zur Verfügung,
+sofern dieses die 
+\href{japs_xsl_bibliothek.xhtml}{Japs-XSL-Bibliothek} einbindet.]
+
+Beim Upload müssen zwei weitere Request-Parameter hinzugefügt werden:
+
+\begin{enumerate}
+\item \val{ref} -- die Id der \code{course_subsection}-\code{problem}-Referenz
+  (ist im \attrib{ref}-Attribut des Metainfo-Rootelements enthalten),
+\item \val{problem} -- die Id dieses \code{problem}-Dokuments (ist im
+  \attrib{id}-Attribut des Metainfo-Rootelements enthalten). 
+\end{enumerate}
+
+Diese werden zweckmäßigerweise durch \element{input}-Elemente mit
+\attrib{type}="\val{hidden}" erzeugt.
+
+Der Upload sollte mit \val{POST} erfolgen.
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

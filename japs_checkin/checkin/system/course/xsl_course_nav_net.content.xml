@@ -1,0 +1,1480 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Authors:  Tilman Rassy
+   $Id: xsl_course_nav_net.content.xml,v 1.14 2009/10/23 13:49:33 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:data="http://www.mumie.net/xml-namespace/data"
+                xmlns:crs="http://www.mumie.net/xml-namespace/document/content/course"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie data crs">
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The CSS stylesheet -->
+<xsl:variable name="net.css-stylesheet"><xsl-ext:url lid="css-stylesheet"/></xsl:variable>
+
+<!-- Z-indexes: -->
+<xsl:param name="net.thread-z-index">1000</xsl:param>
+<xsl:param name="net.line-z-index">2000</xsl:param>
+<xsl:param name="net.icon-z-index">3000</xsl:param>
+<xsl:param name="net.label-z-index">4000</xsl:param>
+<xsl:param name="net.tooltip-z-index">5000</xsl:param>
+
+<!-- Arc settings except z-index: -->
+<xsl:param name="net.arc-thickness">1</xsl:param>
+<xsl:param name="net.arc-color">#000000</xsl:param>
+
+<!-- Thread arc settings except z-index: -->
+<xsl:param name="net.thread-arc-thickness">3</xsl:param>
+<xsl:param name="net.thread-arc-color">#c61c1c</xsl:param>
+
+<!-- Tooltip settings: -->
+<xsl:param name="net.tooltip-shiftx">8</xsl:param>
+<xsl:param name="net.tooltip-shifty">8</xsl:param>
+<xsl:param name="net.tooltip-width">150</xsl:param>
+<xsl:param name="net.tooltip-thresholdx">35</xsl:param>
+<xsl:param name="net.tooltip-thresholdy">35</xsl:param>
+
+<!-- label settings: -->
+<xsl:param name="net.label-shiftx">3</xsl:param>
+<xsl:param name="net.label-shifty">3</xsl:param>
+<xsl:param name="net.label-max-width">170</xsl:param>
+
+<!-- Button settings: -->
+<xsl:param name="net.button-sepx">26</xsl:param>
+<xsl:param name="net.button-offsety">80</xsl:param>
+
+<!-- Largest x position of the net -->
+<xsl:variable name="net.net-xmax">
+  <xsl:for-each select="//@posx|//@startposx|//@endposx">
+    <xsl:sort order="ascending" data-type="number"/>
+    <xsl:if test="position() = last()">
+      <xsl:value-of select="."/>
+    </xsl:if>
+  </xsl:for-each>
+</xsl:variable>
+
+<!-- Smallest x position of the net -->
+<xsl:variable name="net.net-xmin">
+  <xsl:for-each select="//@posx|//@startposx|//@endposx">
+    <xsl:sort order="ascending" data-type="number"/>
+    <xsl:if test="position() = 1">
+      <xsl:value-of select="."/>
+    </xsl:if>
+  </xsl:for-each>
+</xsl:variable>
+
+<!-- Largest y position of the net -->
+<xsl:variable name="net.net-ymax">
+  <xsl:for-each select="//@posy|//@startposy|//@endposy">
+    <xsl:sort order="ascending" data-type="number"/>
+    <xsl:if test="position() = last()">
+      <xsl:value-of select="."/>
+    </xsl:if>
+  </xsl:for-each>
+</xsl:variable>
+
+<!-- Smallest y position of the net -->
+<xsl:variable name="net.net-ymin">
+  <xsl:for-each select="//@posy|//@startposy|//@endposy">
+    <xsl:sort order="ascending" data-type="number"/>
+    <xsl:if test="position() = 1">
+      <xsl:value-of select="."/>
+    </xsl:if>
+  </xsl:for-each>
+</xsl:variable>
+
+<!-- The children of the crs:nodes element -->
+<xsl:variable name="net.nodes" select="/*/mumie:content/*/crs:net/crs:nodes/*"/>
+
+<!-- Nodes having both a lid and a nid -->
+<xsl:variable name="net.proper-nodes"
+              select="/*/mumie:content/*/crs:net/crs:nodes/*[@lid != '' and @nid != '']"/>
+
+<!-- The children of the crs:arcs element -->
+<xsl:variable name="net.arcs" select="/*/mumie:content/*/crs:net/crs:arcs/*"/>
+
+<!-- The children of the crs:thread element -->
+<xsl:variable name="net.thread-arcs" select="/*/mumie:content/*/crs:thread/crs:arcs/*"/>
+
+<!-- The start node -->
+<xsl:variable name="net.start-node-nid" select="/*/mumie:content/*/crs:thread/@start"/>
+<xsl:variable name="net.start-node" select="/*/mumie:content/*/crs:net/crs:nodes/*[@nid=$net.start-node-nid]"/>
+
+<!-- HTML id of the summary button -->
+<xsl:variable name="net.summary-button-html-id">SUMMARY-BUTTON</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="net.javascript">
+  <script type="text/javascript">
+
+    <!-- ~~~~~~~~~~~~~~~~~~~~ -->
+    <!-- h2: Global variables -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- Tooltip settings -->
+
+    <!-- Id of the currently active hover element, or the empty string if none -->
+    var currentHoverId = "";
+
+    <!-- Id of the currently visible tooltip element, or the empty string if none -->
+    var currentTooltipId = "";
+
+    <!-- Id of the currently selected icon, or the empty string if none -->
+    var currentSelectedId = '';
+
+    <!-- Id of the first node on the thread -->
+    var startNodeId = <!-- 
+     -->'<xsl:if test="$net.start-node"><xsl:value-of select="generate-id($net.start-node)"/></xsl:if>';
+
+    <!-- List containing the XHTML ids of all labels -->
+    var labelIds = new Array
+      (
+        <xsl:for-each select="$net.proper-nodes">
+          "<xsl:value-of select="generate-id()"/>-label"<xsl:if test="position()!=last()">,</xsl:if>
+        </xsl:for-each>
+      );
+
+    <!-- Array mapping XHTML id's to URL's -->
+    var urls = new Array();
+    <xsl:for-each select="$net.nodes/descendant-or-self::*[@lid]">urls["<xsl:value-of select="generate-id()"/>"] = "<xsl:call-template name="url"/>"
+    </xsl:for-each>
+
+    <xsl:if test="$input-doctype='course'">
+    <!-- Array mapping XHTML id's to nav URL's -->
+    var navUrls = new Array();
+    <xsl:for-each select="$net.nodes/descendant-or-self::*[@lid]">navUrls["<xsl:value-of select="generate-id()"/>"] = "<xsl:call-template name="nav-url"/>"
+    </xsl:for-each>
+    </xsl:if>
+
+    <!-- Associative arrays mapping thread arc heads to tails (threadNext) or vice versa
+      (threadPrev). Needed to step forward/backward on the tread. -->
+    var threadNext = new Array();
+    var threadPrev = new Array();
+    <xsl:for-each select="$net.thread-arcs"><!-- 
+ --><xsl:variable name="from" select="generate-id($net.nodes[@nid=current()/@from])"/><!-- 
+ --><xsl:variable name="to" select="generate-id($net.nodes[@nid=current()/@to])"/>
+    threadNext["<xsl:value-of select="$from"/>"] = "<xsl:value-of select="$to"/>";
+    threadPrev["<xsl:value-of select="$to"/>"] = "<xsl:value-of select="$from"/>";<!-- 
+ --></xsl:for-each>
+
+    <!-- ~~~~~~~~~~~~~~~ -->
+    <!-- h2: Auxiliaries -->
+    <!-- ~~~~~~~~~~~~~~~ -->
+    
+    <!-- Sets the 'visibility' CSS property of the node with the specified XHTML id to
+      the specified value. -->
+    function setVisibility (id, visibility)
+      {
+        document.getElementById(id).style.visibility = visibility;
+      }
+
+    <!-- ~~~~~~~~~~~~~~~~~~~ -->
+    <!-- h2: Selecting items -->
+    <!-- ~~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- Markes the icon with the specified XHTML id as the selected component -->
+    function startSelected (id)
+      {
+        clearSelected();
+        setVisibility(id, "visible");
+        currentSelectedId = id;
+      }
+
+    <!-- Unmarkes the icon of the currently selected component -->
+    function clearSelected ()
+      {
+        if ( currentSelectedId != "" )
+          {
+            setVisibility(currentSelectedId + "-selected", "hidden");
+            currentSelectedId = "";
+            setVisibility("<xsl:value-of select="$net.summary-button-html-id"/>", "hidden");
+          }
+      }
+
+    <!-- Selects the component with the specified XHTML id -->
+    function selectComponent (id)
+      {
+        startSelected(id + "-selected");
+        parent.<xsl:value-of select="$main-frame"/>.location.href = urls[id];
+        <xsl:if test="$input-doctype='course'">
+        parent.<xsl:value-of select="$nav-frame"/>.location.href = navUrls[id];
+        </xsl:if>
+        currentSelectedId = id;
+        //updateThreadButtons();
+        setVisibility("<xsl:value-of select="$net.summary-button-html-id"/>", "visible");
+      }
+
+    <!-- Selects the next component on the thread. -->
+    function selectNextThreadItem ()
+      {
+        if ( currentSelectedId != '' )
+          {
+            var next = threadNext[currentSelectedId];
+            if ( next ) selectComponent(next);
+          }
+        else if ( startNodeId != '' )
+          selectComponent(startNodeId);
+      }
+
+    <!-- Selects the previous component on the thread. -->
+    function selectPreviousThreadItem ()
+      {
+        if ( currentSelectedId != '' )
+          {
+            var prev = threadPrev[currentSelectedId];
+            if ( prev ) selectComponent(prev);
+          }
+      }
+
+    <!-- ~~~~~~~~~~~~~~~~~ -->
+    <!-- h2: Hover effects -->
+    <!-- ~~~~~~~~~~~~~~~~~ -->
+
+    <!-- Displays the element with the specified XHTML id as a hover effect -->
+    function startHover (id)
+      {
+        clearHover();
+        setVisibility(id, "visible");
+        currentHoverId = id;
+      }
+
+    <!-- Switches the currently active hover effect off -->
+    function clearHover ()
+      {
+        if ( currentHoverId != "" )
+          {
+            setVisibility(currentHoverId, "hidden");
+            currentHoverId = "";
+          }
+      }
+
+    <!-- ~~~~~~~~~~~~ -->
+    <!-- h2: Tooltips -->
+    <!-- ~~~~~~~~~~~~ -->
+
+    <!-- Displays the element with the specified XHTML id as a tooltip -->
+    function startTooltip (id, x, y)
+      {
+        clearTooltip();
+
+        tooltip = document.getElementById(id);
+        adjustWidth(id);
+        
+        width = tooltip.clientWidth;
+        totalWidth = document.documentElement.clientWidth;
+        height = tooltip.clientHeight;
+        totalHeight = document.documentElement.clientHeight;
+              
+        shiftX = <xsl:value-of select="$net.tooltip-shiftx"/>;
+        shiftY = <xsl:value-of select="$net.tooltip-shifty"/>;
+
+        left = x + shiftX;
+        top = y + shiftY;
+
+        if ( left + width &gt; totalWidth )
+          {
+            left = x - shiftX - width;
+            if ( left &lt; 0 ) left = 0;
+          }
+        if ( top + height &gt; totalHeight ) top = y - shiftY - height;
+
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+        tooltip.style.visibility = "visible";
+       
+        currentTooltipId = id;
+      }
+     
+      function adjustWidth (id)
+      {
+        tooltip = document.getElementById(id);        
+        var maxWidth = <xsl:value-of select="$net.tooltip-width"/>;
+        while ( tooltip.clientWidth == maxWidth )
+        {
+          maxWidth += 10;
+          tooltip.style.maxWidth = maxWidth + "px";     
+        }
+      }
+      
+      
+    <!-- Switches the currently active tooltip off -->
+    function clearTooltip ()
+      {
+        if ( currentTooltipId != "" )
+          {
+            setVisibility(currentTooltipId, "hidden");
+            currentTooltipId = "";
+          }
+      }
+
+
+    <!-- ~~~~~~~~~~~ -->
+    <!-- h2: Buttons -->
+    <!-- ~~~~~~~~~~~ -->
+
+    <!-- Enables the button with the specified XHTML id -->
+    function enableButton (id)
+      {
+        setVisibility(id + "-disabled", "hidden");
+      }
+
+    <!-- Disables the button with the specified XHTML id -->
+    function disableButton (id)
+      {
+        setVisibility(id + "-disabled", "visible");
+      }
+
+    <!-- Update the enabled/disabled state of the "left" and "right" thread buttons
+      according to the current thread position. -->
+    function updateThreadButtons ()
+      {
+        <!-- TODO -->
+      }
+
+    <!-- ~~~~~~~~~~~ -->
+    <!-- h2: Labels -->
+    <!-- ~~~~~~~~~~~ -->
+
+    <!-- Makes all labels visible -->
+    function showLabels ()
+      {
+      for (var i = 0; i &lt; labelIds.length; i++)
+        {
+        setVisibility(labelIds[i], "visible");
+        adjustWidthLabel(labelIds[i]);
+        }
+
+      }
+
+    <!-- Makes all labels invisible -->
+    function hideLabels ()
+      {
+        for (var i = 0; i &lt; labelIds.length; i++)
+          setVisibility(labelIds[i], "hidden");
+      }
+      
+    function adjustWidthLabel (id)
+      {
+        var element = document.getElementById(id);
+        var maxWidth = element.offsetWidth;
+        while ( element.offsetWidth &gt;= maxWidth 
+                &amp;&amp; maxWidth &lt; <xsl:value-of select="$net.label-max-width"/>)
+        {
+          maxWidth += 10;
+          element.style.maxWidth = maxWidth + "px";
+        }
+      }
+
+    <!-- ~~~~~~~~~~~~~~~~~~ -->
+    <!-- h2: Event handlers -->
+    <!-- ~~~~~~~~~~~~~~~~~~ -->
+
+    <!-- Called when the 'show labels' button is clicked -->
+    function onShowLabelsButtonClick ()
+      {
+        
+        clearTooltip();        
+        showLabels();
+        setVisibility("button-hide_labels-normal", "visible");
+        startHover("button-hide_labels-hover");
+      }
+
+    <!-- Called when the 'hide labels' button is clicked -->
+    function onHideLabelsButtonClick ()
+      {        
+        clearTooltip();
+        hideLabels();
+        setVisibility("button-hide_labels-normal", "hidden");
+        startHover("button-show_labels-hover");
+      }
+
+    <!-- Called if the mouse is moved onto a normal icon -->
+    function onNormalIconMouseOver (id, x, y)
+      {
+        startHover(id + "-hover");
+        startTooltip(id + "-tooltip-normal", x, y);
+        
+      }
+
+    <!-- Called if the mouse is moved away from a hover icon -->
+    function onHoverIconMouseOut ()
+      {
+        clearHover();
+        clearTooltip();
+      }
+
+    <!-- Called if a hover icon is clicked -->
+    function onHoverIconClick (id)
+      {
+        clearHover();
+        selectComponent(id);
+      }
+
+    <!-- Called if the 'up' icon is clicked -->
+    function onUpIconClick ()
+      {
+      <xsl:choose>
+        <xsl:when test="$input-doctype!='course'">
+          parent.<xsl:value-of select="$nav-frame"/>.location.href = <!--
+            -->'<xsl:call-template name="xsl.document-url">
+                  <xsl:with-param name="id" select="$parent-id"/>
+                  <xsl:with-param name="document-type.name" select="$parent-type-name"/>
+                  <xsl:with-param name="context" select="'nav'"/>
+                </xsl:call-template>';
+          parent.<xsl:value-of select="$main-frame"/>.location.href = <!--
+            -->'<xsl:call-template name="xsl.document-url">
+                  <xsl:with-param name="id" select="$parent-id"/>
+                  <xsl:with-param name="document-type.name" select="$parent-type-name"/>
+                  <xsl:with-param name="context" select="'homework'"/>
+                  <!--xsl:with-param name="as-frame" select="$as-frame"/-->
+                </xsl:call-template>';
+        </xsl:when>
+        <xsl:when test="$input-doctype = 'course'">
+          parent.location.href = <!--
+            -->'<xsl:value-of select="concat($xsl.url-prefix, '/protected/alias/courses')"/>';
+        </xsl:when>
+      </xsl:choose>
+      }
+
+    
+    <!-- Called if the summary button is clicked -->
+    function onShowSummaryButtonClick ()
+      {
+        parent.<xsl:value-of select="$main-frame"/>.location.href = '<xsl:call-template name="summary-url"/>?as-frame=true';
+        clearSelected();
+      }
+    
+  </script>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Styles                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="net.styles">
+  <style type="text/css">
+
+    html, body
+      {
+        margin: 0em 0em 0em 0em;
+        padding: 0em 0em 0em 0em;
+      }
+
+    div.tooltip-position-anchor
+      {
+        z-index: <xsl:value-of select="$net.tooltip-z-index - 1"/>;
+      }
+
+    div.tooltip
+      {
+        position: absolute;
+        z-index: <xsl:value-of select="$net.tooltip-z-index"/>;
+        max-width: <xsl:value-of select="$net.tooltip-width"/>px;
+      }
+
+    div.label
+      {
+        z-index: <xsl:value-of select="$net.label-z-index"/>;
+      }
+
+  </style>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Lines                                                                        -->
+<!-- ================================================================================ -->
+<!-- 
+  Auxiliary template; returns the "line offset". Lines are rectanges (div elements) filled
+  with color. Lines are either horizontal or vertical. Horizontal lines have the form
+
+        oooooooooooooooooooooooooooooooooooooooooooooooo
+    y - oooooooooooooooooooooooooooooooooooooooooooooooo
+        oooooooooooooooooooooooooooooooooooooooooooooooo
+        |                                              |
+        x1                                             x2
+
+  where o stands for a pixel, and y, x1, x2 are the y-coordinate and the start and end
+  x-coordinates, respectively. The line is usually specified by y, x1, x2; but to draw
+  it, the top-left corner and thw width are needed (cf. template "net.horizontal-line"). The
+  line offset is the value that must be subtracted from y to obtain the y-coordinate of
+  the upper-left corner. With vertical lines, the offset is defined analogously.
+-->
+
+<xsl:template name="net.line-offset">
+  <xsl:param name="thickness"/>
+  <xsl:choose>
+    <xsl:when test="$thickness=1">0</xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="round( ( $thickness - 1 ) div 2 )"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- 
+  Creates a horizontal line from (x1,y) to (x2,y) with the specified color, thickness and
+  z-index. Color and thickness default to black and 1, respectively.
+-->
+
+<xsl:template name="net.horizontal-line">
+  <xsl:param name="x1"/>
+  <xsl:param name="x2"/>
+  <xsl:param name="y"/>
+  <xsl:param name="color" select="'#000000'"/>
+  <xsl:param name="thickness" select="'1'"/>
+  <xsl:param name="z-index"/>
+  <xsl:variable name="xmin">
+    <xsl:call-template name="min">
+      <xsl:with-param name="n1" select="$x1"/>
+      <xsl:with-param name="n2" select="$x2"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="xmax">
+    <xsl:call-template name="max">
+      <xsl:with-param name="n1" select="$x1"/>
+      <xsl:with-param name="n2" select="$x2"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="offset">
+    <xsl:call-template name="net.line-offset">
+      <xsl:with-param name="thickness" select="$thickness"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <div>
+    <xsl:attribute name="style">
+      <xsl:text>position:absolute;</xsl:text>
+      <xsl:value-of select="concat('top:',$y - $offset,'px;')"/>
+      <xsl:value-of select="concat('left:',$xmin - $offset,'px;')"/>
+      <xsl:value-of select="concat('width:',$xmax - $xmin + 1 + 2 * $offset,'px;')"/>
+      <xsl:value-of select="concat('height:',$thickness,'px;')"/>
+      <xsl:value-of select="concat('background-color:',$color,';')"/>
+      <xsl:if test="$z-index">
+        <xsl:value-of select="concat('z-index:',$z-index,';')"/>
+      </xsl:if>
+    </xsl:attribute>
+  </div>
+</xsl:template>
+
+<!-- 
+  Creates a vertical line from (x,y1) to (x,y2) with the specified color, thickness and
+  z-index. Color and thickness default to black and 1, respectively.
+-->
+
+<xsl:template name="net.vertical-line">
+  <xsl:param name="x"/>
+  <xsl:param name="y1"/>
+  <xsl:param name="y2"/>
+  <xsl:param name="color" select="'#000000'"/>
+  <xsl:param name="thickness" select="'1'"/>
+  <xsl:param name="z-index"/>
+  <xsl:variable name="ymin">
+    <xsl:call-template name="min">
+      <xsl:with-param name="n1" select="$y1"/>
+      <xsl:with-param name="n2" select="$y2"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="ymax">
+    <xsl:call-template name="max">
+      <xsl:with-param name="n1" select="$y1"/>
+      <xsl:with-param name="n2" select="$y2"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="offset">
+    <xsl:call-template name="net.line-offset">
+      <xsl:with-param name="thickness" select="$thickness"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <div>
+    <xsl:attribute name="style">
+      <xsl:text>position:absolute;</xsl:text>
+      <xsl:value-of select="concat('top:',$ymin - $offset,'px;')"/>
+      <xsl:value-of select="concat('left:',$x - $offset,'px;')"/>
+      <xsl:value-of select="concat('width:',$thickness,'px;')"/>
+      <xsl:value-of select="concat('height:',$ymax - $ymin + 1 + 2 * $offset,'px;')"/>
+      <xsl:value-of select="concat('background-color:',$color,';')"/>
+      <xsl:if test="$z-index">
+        <xsl:value-of select="concat('z-index:',$z-index,';')"/>
+      </xsl:if>
+    </xsl:attribute>
+  </div>
+</xsl:template>
+
+<xsl:template name="net.line">
+  <xsl:param name="x1"/>
+  <xsl:param name="x2"/>
+  <xsl:param name="y1"/>
+  <xsl:param name="y2"/>
+  <xsl:param name="color" select="'#000000'"/>
+  <xsl:param name="thickness" select="'1'"/>
+  <xsl:param name="z-index"/>
+  <xsl:choose>
+    <xsl:when test="$y1 = $y2">
+      <xsl:call-template name="net.horizontal-line">
+        <xsl:with-param name="y" select="$y1"/>
+        <xsl:with-param name="x1" select="$x1"/>
+        <xsl:with-param name="x2" select="$x2"/>
+        <xsl:with-param name="color" select="$color"/>
+        <xsl:with-param name="thickness" select="$thickness"/>
+        <xsl:with-param name="z-index" select="$z-index"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:when test="$x1 = $x2">
+      <xsl:call-template name="net.vertical-line">
+        <xsl:with-param name="x" select="$x1"/>
+        <xsl:with-param name="y1" select="$y1"/>
+        <xsl:with-param name="y2" select="$y2"/>
+        <xsl:with-param name="color" select="$color"/>
+        <xsl:with-param name="thickness" select="$thickness"/>
+        <xsl:with-param name="z-index" select="$z-index"/>
+      </xsl:call-template>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Tooltips                                                                     -->
+<!-- ================================================================================ -->
+
+<xsl:template name="net.tooltip">
+  <xsl:param name="lid"/>
+  <xsl:param name="x"/>
+  <xsl:param name="y"/>
+  <xsl:param name="id"/>
+  <xsl:variable name="id-normal" select="concat($id,'-normal')"/>
+  <xsl:variable name="id-expanded" select="concat($id,'-expanded')"/>
+  <xsl:variable name="component" select="/*/mumie:components/*[@lid=$lid]"/>
+  <xsl:variable name="name">
+    <xsl:call-template name="doc-name">
+      <xsl:with-param name="doc" select="$component"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="description">
+    <xsl:call-template name="doc-description">
+      <xsl:with-param name="doc" select="$component"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <xsl:variable name="label" select="/*/mumie:components/*[@lid=$lid]/mumie:ref_attribute[@name='label']/@value"/>
+  <xsl:variable name="actual-node" select="/*/mumie:components/*[@lid=$lid]/."/>
+
+  <!-- The normal (non-expanded) form of the tooltip (name only): -->
+  <div>
+    <xsl:attribute name="class">tooltip</xsl:attribute>
+    <xsl:attribute name="id">
+      <xsl:value-of select="$id-normal"/>
+    </xsl:attribute>
+    <xsl:attribute name="onmouseout">onHoverIconMouseOut()</xsl:attribute>
+    <xsl:choose>
+      <xsl:when test="$input-doctype='worksheet'">
+        <xsl:value-of select="$i18n-problem-short"/>
+        <xsl:text>. </xsl:text>
+        <xsl:value-of select="$label"/>
+        <xsl:text>: </xsl:text>
+      </xsl:when>
+      <xsl:when test="$input-doctype='course' and local-name($actual-node)='worksheet'">
+        <xsl:choose>
+          <xsl:when test="$actual-node/mumie:category/@name='homework'">
+            <xsl:value-of select="$i18n-worksheet-homework-short"/>
+          </xsl:when>
+          <xsl:when test="$actual-node/mumie:category/@name='prelearn'">
+            <xsl:value-of select="$i18n-worksheet-prelearn-short"/>
+          </xsl:when>
+          <xsl:when test="$actual-node/mumie:category/@name='pretest'">
+            <xsl:value-of select="$i18n-worksheet-pretest-short"/>
+          </xsl:when>
+          <xsl:when test="$actual-node/mumie:category/@name='selftest'">
+            <xsl:value-of select="$i18n-worksheet-selftest-short"/>
+          </xsl:when>
+        </xsl:choose>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="$label"/>
+        <xsl:text>: </xsl:text>
+      </xsl:when>
+      <xsl:when test="$input-doctype='course' and local-name($actual-node)='course_section'">
+        <xsl:value-of select="$i18n-course_section-short"/>
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="$label"/>
+        <xsl:text>: </xsl:text>
+      </xsl:when>
+    </xsl:choose>
+    <xsl:value-of select="$name"/>
+  </div>
+
+</xsl:template>
+
+<xsl:template name="net.button-tooltip">
+  <xsl:param name="text"/>
+  <xsl:param name="x"/>
+  <xsl:param name="y"/>
+  <xsl:param name="id"/>
+  <div>
+    <xsl:attribute name="class">tooltip</xsl:attribute>
+    <xsl:attribute name="id">
+      <xsl:value-of select="$id"/>
+    </xsl:attribute>
+    <xsl:attribute name="onmouseout">clearTooltip()</xsl:attribute>
+    <xsl:value-of select="$text"/>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Labels                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="net.label">
+  <xsl:param name="lid" select="@lid"/>
+  <xsl:param name="x" select="@posx"/>
+  <xsl:param name="y" select="@posy"/>
+  <xsl:param name="id" select="concat(generate-id(),'-label')"/>
+  <xsl:param name="text">
+    <xsl:call-template name="doc-name">
+      <xsl:with-param name="doc" select="/*/mumie:components/*[@lid=$lid]"/>
+    </xsl:call-template>
+  </xsl:param>
+  <div>
+    <xsl:attribute name="class">label</xsl:attribute>
+      <xsl:attribute name="id">
+        <xsl:value-of select="$id"/>
+      </xsl:attribute>
+      <xsl:attribute name="style">
+        <xsl:text>position:absolute;</xsl:text>
+        <xsl:value-of select="concat('top:',$y + $net.label-shifty,'px;')"/>
+        <xsl:value-of select="concat('left:',$x + $net.label-shiftx,'px;')"/>
+      </xsl:attribute>
+      <xsl:value-of select="$text"/>    
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Icons                                                                        -->
+<!-- ================================================================================ -->
+
+<!-- 
+  Places an image at a certain position.
+-->
+
+<xsl:template name="net.put-image">
+  <xsl:param name="src"/>
+  <xsl:param name="width"/>
+  <xsl:param name="height"/>
+  <xsl:param name="x"/>
+  <xsl:param name="y"/>
+  <xsl:param name="id"/>
+  <xsl:param name="z-index"/>
+  <xsl:param name="visibility"/>
+  <xsl:param name="cursor"/>
+  <xsl:param name="onmouseover"/>
+  <xsl:param name="onmouseout"/>
+  <xsl:param name="onclick"/>
+  <img>
+    <xsl:attribute name="src">
+      <xsl:value-of select="$src"/>
+    </xsl:attribute>
+    <xsl:attribute name="style">
+      <xsl:text>position:absolute;</xsl:text>
+      <xsl:value-of select="concat('top:',round($y - ($height div 2)),'px;')"/>
+      <xsl:value-of select="concat('left:',round($x - ($width div 2)),'px;')"/>
+    <xsl:if test="$cursor">
+      <xsl:attribute name="cursor">
+        <xsl:value-of select="concat('cursor:',$cursor,';')"/>
+      </xsl:attribute>
+    </xsl:if>
+      <xsl:if test="$z-index">
+        <xsl:value-of select="concat('z-index:',$z-index,';')"/>
+      </xsl:if>
+      <xsl:if test="$visibility">
+        <xsl:value-of select="concat('visibility:',$visibility,';')"/>
+      </xsl:if>
+    </xsl:attribute>
+    <xsl:attribute name="width">
+      <xsl:value-of select="$width"/>
+    </xsl:attribute>
+    <xsl:attribute name="height">
+      <xsl:value-of select="$height"/>
+    </xsl:attribute>
+    <xsl:if test="$onmouseover">
+      <xsl:attribute name="onmouseover">
+        <xsl:value-of select="$onmouseover"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$onmouseout">
+      <xsl:attribute name="onmouseout">
+        <xsl:value-of select="$onmouseout"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$onclick">
+      <xsl:attribute name="onclick">
+        <xsl:value-of select="$onclick"/>
+      </xsl:attribute>
+    </xsl:if>
+    <xsl:if test="$id">
+      <xsl:attribute name="id">
+        <xsl:value-of select="$id"/>
+      </xsl:attribute>
+    </xsl:if>
+  </img>
+</xsl:template>
+
+<!-- Places an icon for a document at a certain position -->
+
+<xsl:template name="net.put-icon">
+  <xsl:param name="lid" select="@lid"/>
+  <xsl:param name="state"/>
+  <xsl:param name="key">
+    <xsl:call-template name="icon-key">
+      <xsl:with-param name="lid" select="$lid"/>
+      <xsl:with-param name="state" select="$state"/>
+    </xsl:call-template>
+  </xsl:param>
+  <xsl:param name="x" select="@posx"/>
+  <xsl:param name="y" select="@posy"/>
+  <xsl:param name="z-index"/>
+  <xsl:param name="visibility"/>
+  <xsl:param name="onmouseover"/>
+  <xsl:param name="onmouseout"/>
+  <xsl:param name="onclick"/>
+  <xsl:param name="id"/>
+  <xsl:variable name="icon" select="$data/data:icon[@key=$key]/*"/>
+  <xsl:call-template name="net.put-image">
+    <xsl:with-param name="src" select="$icon/@src"/>
+    <xsl:with-param name="width" select="$icon/@width"/>
+    <xsl:with-param name="height" select="$icon/@height"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="z-index" select="$z-index"/>
+    <xsl:with-param name="visibility" select="$visibility"/>
+    <xsl:with-param name="onmouseover" select="$onmouseover"/>
+    <xsl:with-param name="onmouseout" select="$onmouseout"/>
+    <xsl:with-param name="onclick" select="$onclick"/>
+    <xsl:with-param name="id" select="$id"/>
+  </xsl:call-template>
+</xsl:template>
+
+<!-- 
+  Places an "icon group" for a document at a certain position. An icon group consists of
+  three icons for the three states "normal", "hover", and "selected". They are placed on
+  top of each other. Initially, the latter two ("hover", and "selected") are invisible.
+-->
+
+<xsl:template name="net.put-icon-group">
+  <xsl:param name="lid" select="@lid"/>
+  <xsl:param name="x" select="@posx"/>
+  <xsl:param name="y" select="@posy"/>
+  <xsl:param name="z-index" select="$net.icon-z-index"/>
+  <xsl:param name="with-label">yes</xsl:param>
+  <xsl:variable name="id" select="generate-id()"/>
+
+  <!-- The id's of the three img elements, the tooltip div, and the label div:  -->
+  <xsl:variable name="id-normal" select="concat($id,'-normal')"/>
+  <xsl:variable name="id-hover" select="concat($id,'-hover')"/>
+  <xsl:variable name="id-selected" select="concat($id,'-selected')"/>
+  <xsl:variable name="id-tooltip" select="concat($id,'-tooltip')"/>
+  <xsl:variable name="id-label" select="concat($id,'-label')"/>
+
+  <!-- Create the img element for the 'normal' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="lid" select="$lid"/>
+    <xsl:with-param name="state">normal</xsl:with-param>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-normal"/>
+    <xsl:with-param name="z-index" select="$z-index"/>
+    <xsl:with-param name="onmouseover">
+      <xsl:text>javascript:onNormalIconMouseOver("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>",</xsl:text>
+      <xsl:value-of select="$x"/>
+      <xsl:text>,</xsl:text>
+      <xsl:value-of select="$y"/>
+      <xsl:text>);</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the img element for the 'hover' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="lid" select="$lid"/>
+    <xsl:with-param name="state">hover</xsl:with-param>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-hover"/>
+    <xsl:with-param name="z-index" select="$z-index + 1"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+    <xsl:with-param name="onmouseout">
+      <xsl:text>javascript:onHoverIconMouseOut("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>");</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="onclick">
+      <xsl:text>javascript:onHoverIconClick("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>");</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the img element for the 'selected' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="lid" select="$lid"/>
+    <xsl:with-param name="state">selected</xsl:with-param>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-selected"/>
+    <xsl:with-param name="z-index" select="$z-index + 2"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the tooltip: -->
+  <xsl:call-template name="net.tooltip">
+    <xsl:with-param name="lid" select="$lid"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-tooltip"/>
+  </xsl:call-template>
+
+  <xsl:if test="$with-label='yes'">
+    <!-- Create the label: -->
+    <xsl:call-template name="net.label">
+      <xsl:with-param name="lid" select="$lid"/>
+      <xsl:with-param name="x" select="$x"/>
+      <xsl:with-param name="y" select="$y"/>
+      <xsl:with-param name="id" select="$id-label"/>
+    </xsl:call-template>
+  </xsl:if>
+
+</xsl:template>
+
+<!--
+  Creates a branching point icon
+-->
+
+<xsl:template name="net.put-branching-point-icon">
+  <xsl:param name="x" select="@posx"/>
+  <xsl:param name="y" select="@posy"/>
+  <xsl:param name="type"/>
+  <xsl:variable name="key">
+    <xsl:text>branching_point</xsl:text>
+    <xsl:choose>
+      <xsl:when test="$type='and'">_and</xsl:when>
+      <xsl:when test="$type='or'">_or</xsl:when>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="icon" select="$data/data:icon[@key=$key]/*"/>
+  <xsl:call-template name="net.put-image">
+    <xsl:with-param name="src" select="$icon/@src"/>
+    <xsl:with-param name="width" select="$icon/@width"/>
+    <xsl:with-param name="height" select="$icon/@height"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="z-index" select="$net.icon-z-index"/>
+  </xsl:call-template>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Buttons                                                                      -->
+<!-- ================================================================================ -->
+
+<xsl:template name="net.button">
+  <xsl:param name="key"/>
+  <xsl:param name="x"/>
+  <xsl:param name="y"/>
+  <xsl:param name="onclick"/>
+  <xsl:param name="tooltip"/>
+  <xsl:param name="z-index" select="$net.icon-z-index"/>
+  <xsl:variable name="id" select="concat('button-',$key)"/>
+
+  <!-- The keys of the three icons  -->
+  <xsl:variable name="key-normal" select="concat($key,'_normal')"/>
+  <xsl:variable name="key-hover" select="concat($key,'_hover')"/>
+  <xsl:variable name="key-disabled" select="concat($key,'_disabled')"/>
+
+  <!-- The id's of the three img elements and the tooltip div:  -->
+  <xsl:variable name="id-normal" select="concat($id,'-normal')"/>
+  <xsl:variable name="id-hover" select="concat($id,'-hover')"/>
+  <xsl:variable name="id-disabled" select="concat($id,'-disabled')"/>
+  <xsl:variable name="id-tooltip-normal" select="concat($id,'-tooltip-normal')"/>
+
+  <!-- Create the img element for the 'normal' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key-normal"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-normal"/>
+    <xsl:with-param name="z-index" select="$z-index"/>
+    <xsl:with-param name="onmouseover">
+      <xsl:text>javascript:onNormalIconMouseOver("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>",</xsl:text>
+      <xsl:value-of select="$x"/>
+      <xsl:text>,</xsl:text>
+      <xsl:value-of select="$y"/>
+      <xsl:text>);</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the img element for the 'hover' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key-hover"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-hover"/>
+    <xsl:with-param name="z-index" select="$z-index + 1"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+    <xsl:with-param name="onmouseout">
+      <xsl:text>javascript:onHoverIconMouseOut("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>");</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="onclick" select="$onclick"/>
+  </xsl:call-template>
+
+  <!-- Create the img element for the 'disabled' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key-disabled"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-disabled"/>
+    <xsl:with-param name="z-index" select="$z-index + 2"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the tooltip -->
+  <xsl:call-template name="net.button-tooltip">
+    <xsl:with-param name="text" select="$tooltip"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id-tooltip-normal"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+<xsl:template name="net.summary-button">
+  <xsl:param name="x"/>
+  <xsl:param name="y"/>
+  <xsl:param name="tooltip"/>
+  <xsl:variable name="tooltip-id" select="concat($net.summary-button-html-id,'-tooltip-normal')"/>
+
+  <!-- Create the button area -->
+  <div>
+    <xsl:attribute name="class">buttons</xsl:attribute>
+    <xsl:attribute name="style">
+      <xsl:text>position:absolute;</xsl:text>
+      <xsl:value-of select="concat('top:',$y,'px;')"/>
+      <xsl:value-of select="concat('left:',$x,'px;')"/>
+      <xsl:text>width:180px;</xsl:text>
+    </xsl:attribute>
+      
+    <!-- Create the summary button -->
+    <a>
+      <xsl:attribute name="class">button-small</xsl:attribute>
+      <xsl:attribute name="id">
+        <xsl:value-of select="$net.summary-button-html-id"/>
+      </xsl:attribute>
+      <xsl:attribute name="style">
+        <xsl:text>visibility:hidden;</xsl:text>
+      </xsl:attribute>
+      <xsl:attribute name="onclick">onShowSummaryButtonClick()</xsl:attribute>
+      <xsl:attribute name="onmouseover">startTooltip("<xsl:value-of select="$tooltip-id"/>", <xsl:value-of select="$x"/>, <xsl:value-of select="$y"/>)</xsl:attribute>
+      <xsl:attribute name="onmouseout">clearTooltip()</xsl:attribute>
+      <xsl:value-of select="$i18n-summary"/>
+    </a>
+  </div>
+
+  <!-- Create the tooltip for the button: -->
+  <xsl:call-template name="net.button-tooltip">
+    <xsl:with-param name="text" select="$tooltip"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$tooltip-id"/>
+  </xsl:call-template>
+  
+</xsl:template>
+
+<xsl:template name="net.toggle-button">
+  <xsl:param name="key1"/>
+  <xsl:param name="key2"/>
+  <xsl:param name="onclick1"/>
+  <xsl:param name="onclick2"/>
+  <xsl:param name="tooltip1"/>
+  <xsl:param name="tooltip2"/>
+  <xsl:param name="x"/>
+  <xsl:param name="y"/>
+  <xsl:param name="z-index" select="$net.icon-z-index"/>
+  <xsl:variable name="id1" select="concat('button-',$key1)"/>
+  <xsl:variable name="id2" select="concat('button-',$key2)"/>
+
+  <!-- The keys of the four icons  -->
+  <xsl:variable name="key1-normal" select="concat($key1,'_normal')"/>
+  <xsl:variable name="key1-hover" select="concat($key1,'_hover')"/>
+  <xsl:variable name="key2-normal" select="concat($key2,'_normal')"/>
+  <xsl:variable name="key2-hover" select="concat($key2,'_hover')"/>
+
+  <!-- The id's of the four img elements and the tooltip div's:  -->
+  <xsl:variable name="id1-normal" select="concat($id1,'-normal')"/>
+  <xsl:variable name="id1-hover" select="concat($id1,'-hover')"/>
+  <xsl:variable name="id2-normal" select="concat($id2,'-normal')"/>
+  <xsl:variable name="id2-hover" select="concat($id2,'-hover')"/>
+  <xsl:variable name="id1-tooltip-normal" select="concat($id1,'-tooltip-normal')"/>
+  <xsl:variable name="id2-tooltip-normal" select="concat($id2,'-tooltip-normal')"/>
+
+  <!-- Create the img element for the first 'normal' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key1-normal"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id1-normal"/>
+    <xsl:with-param name="z-index" select="$z-index"/>
+    <xsl:with-param name="onmouseover">
+      <xsl:text>javascript:onNormalIconMouseOver("</xsl:text>
+      <xsl:value-of select="$id1"/>
+      <xsl:text>",</xsl:text>
+      <xsl:value-of select="$x"/>
+      <xsl:text>,</xsl:text>
+      <xsl:value-of select="$y"/>
+      <xsl:text>);</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the img element for the first 'hover' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key1-hover"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id1-hover"/>
+    <xsl:with-param name="z-index" select="$z-index + 1"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+    <xsl:with-param name="onmouseout">
+      <xsl:text>javascript:onHoverIconMouseOut("</xsl:text>
+      <xsl:value-of select="$id1"/>
+      <xsl:text>");</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="onclick" select="$onclick1"/>
+  </xsl:call-template>
+
+  <!-- Create the tooltip for the first button: -->
+  <xsl:call-template name="net.button-tooltip">
+    <xsl:with-param name="text" select="$tooltip1"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id1-tooltip-normal"/>
+  </xsl:call-template>
+
+  <!-- Create the img element for the second 'normal' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key2-normal"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id2-normal"/>
+    <xsl:with-param name="z-index" select="$z-index"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+    <xsl:with-param name="onmouseover">
+      <xsl:text>javascript:onNormalIconMouseOver("</xsl:text>
+      <xsl:value-of select="$id2"/>
+      <xsl:text>",</xsl:text>
+      <xsl:value-of select="$x"/>
+      <xsl:text>,</xsl:text>
+      <xsl:value-of select="$y"/>
+      <xsl:text>);</xsl:text>
+    </xsl:with-param>
+  </xsl:call-template>
+
+  <!-- Create the img element for the second 'hover' icon:  -->
+  <xsl:call-template name="net.put-icon">
+    <xsl:with-param name="key" select="$key2-hover"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id2-hover"/>
+    <xsl:with-param name="z-index" select="$z-index + 2"/>
+    <xsl:with-param name="visibility">hidden</xsl:with-param>
+    <xsl:with-param name="onmouseout">
+      <xsl:text>javascript:onHoverIconMouseOut("</xsl:text>
+      <xsl:value-of select="$id2"/>
+      <xsl:text>");</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="onclick" select="$onclick2"/>
+  </xsl:call-template>
+
+  <!-- Create the tooltip for the second button: -->
+  <xsl:call-template name="net.button-tooltip">
+    <xsl:with-param name="text" select="$tooltip2"/>
+    <xsl:with-param name="x" select="$x"/>
+    <xsl:with-param name="y" select="$y"/>
+    <xsl:with-param name="id" select="$id2-tooltip-normal"/>
+  </xsl:call-template>
+
+</xsl:template>
+
+<xsl:template name="net.button-area">
+  <xsl:variable name="number-of-buttons">4</xsl:variable>
+  <xsl:variable name="posx-first"
+                select="round( $net.net-xmin
+                               + ( $net.net-xmax - $net.net-xmin
+                                   - ( ( $number-of-buttons - 1 ) * $net.button-sepx ) ) div 2 )"/>
+  <xsl:variable name="posy" select="$net.net-ymax + $net.button-offsety"/>
+
+  <xsl:call-template name="net.button">
+    <xsl:with-param name="key">arrow_left</xsl:with-param>
+    <xsl:with-param name="x" select="$posx-first"/>
+    <xsl:with-param name="y" select="$posy"/>
+    <xsl:with-param name="onclick">javascript:selectPreviousThreadItem()</xsl:with-param>
+    <xsl:with-param name="tooltip"><xsl:value-of select="$i18n-previous-elem-of-thread"/></xsl:with-param>
+  </xsl:call-template>
+
+  <xsl:call-template name="net.button">
+    <xsl:with-param name="key">arrow_right</xsl:with-param>
+    <xsl:with-param name="x" select="$posx-first + $net.button-sepx"/>
+    <xsl:with-param name="y" select="$posy"/>
+    <xsl:with-param name="onclick">javascript:selectNextThreadItem()</xsl:with-param>
+    <xsl:with-param name="tooltip"><xsl:value-of select="$i18n-next-elem-of-thread"/></xsl:with-param>
+  </xsl:call-template>
+
+  <!-- The UP icon. Disabled, when this is a course. -->
+  <xsl:call-template name="net.button">
+    <xsl:with-param name="key">arrow_up</xsl:with-param>
+    <xsl:with-param name="x" select="$posx-first + 2 * $net.button-sepx"/>
+    <xsl:with-param name="y" select="$posy"/>
+    <xsl:with-param name="onclick">
+      <xsl:text>javascript:onUpIconClick();</xsl:text>
+    </xsl:with-param>
+    <xsl:with-param name="tooltip"><xsl:value-of select="$i18n-parent-unit"/></xsl:with-param>
+  </xsl:call-template>
+
+  <xsl:call-template name="net.toggle-button">
+    <xsl:with-param name="key1">show_labels</xsl:with-param>
+    <xsl:with-param name="key2">hide_labels</xsl:with-param>
+    <xsl:with-param name="x" select="$posx-first + 3 * $net.button-sepx"/>
+    <xsl:with-param name="y" select="$posy"/>
+    <xsl:with-param name="onclick1">javascript:onShowLabelsButtonClick()</xsl:with-param>
+    <xsl:with-param name="onclick2">javascript:onHideLabelsButtonClick()</xsl:with-param>
+    <xsl:with-param name="tooltip1"><xsl:value-of select="$i18n-show-labels"/></xsl:with-param>
+    <xsl:with-param name="tooltip2"><xsl:value-of select="$i18n-hide-labels"/></xsl:with-param>
+  </xsl:call-template>
+
+  <xsl:call-template name="net.summary-button">
+    <xsl:with-param name="x" select="round( $net.net-xmin + ( ( $net.net-xmax - $net.net-xmin ) div 2 ) - 90 )"/>
+    <xsl:with-param name="y" select="$posy + 20"/>
+    <xsl:with-param name="tooltip"><xsl:value-of select="$i18n-show-summary"/></xsl:with-param>
+  </xsl:call-template>
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Arcs                                                                         -->
+<!-- ================================================================================ -->
+
+<xsl:template match="crs:arc" mode="net">
+  <xsl:param name="color"/>
+  <xsl:param name="thickness"/>
+  <xsl:param name="z-index"/>
+  <xsl:variable name="net.start-node" select="$net.nodes[@nid=current()/@from]"/>
+  <xsl:variable name="end-node" select="$net.nodes[@nid=current()/@to]"/>
+  <xsl:variable name="x1" select="$net.start-node/@posx"/>
+  <xsl:variable name="y1" select="$net.start-node/@posy"/>
+  <xsl:variable name="x2" select="$end-node/@posx"/>
+  <xsl:variable name="y2" select="$end-node/@posy"/>
+  <xsl:choose>
+    <xsl:when test="crs:point">
+      <xsl:variable name="last-point" select="crs:point[position()=last()]"/>
+      <!-- Draw first segment: -->
+      <xsl:call-template name="net.line">
+        <xsl:with-param name="x1" select="$x1"/>
+        <xsl:with-param name="x2" select="crs:point[1]/@posx"/>
+        <xsl:with-param name="y1" select="$y1"/>
+        <xsl:with-param name="y2" select="crs:point[1]/@posy"/>
+        <xsl:with-param name="color" select="$color"/>
+        <xsl:with-param name="thickness" select="$thickness"/>
+        <xsl:with-param name="z-index" select="$z-index"/>
+      </xsl:call-template>
+      <!-- Draw segments between intermediate points: -->
+      <xsl:for-each select="crs:point[position() &lt; last()]">
+        <xsl:call-template name="net.line">
+          <xsl:with-param name="x1" select="@posx"/>
+          <xsl:with-param name="x2" select="following-sibling::*[position()=1]/@posx"/>
+          <xsl:with-param name="y1" select="@posy"/>
+          <xsl:with-param name="y2" select="following-sibling::*[position()=1]/@posy"/>
+          <xsl:with-param name="color" select="$color"/>
+          <xsl:with-param name="thickness" select="$thickness"/>
+          <xsl:with-param name="z-index" select="$z-index"/>
+        </xsl:call-template>
+      </xsl:for-each>
+      <!-- Draw last segment: -->
+      <xsl:call-template name="net.line">
+        <xsl:with-param name="x1" select="$last-point/@posx"/>
+        <xsl:with-param name="x2" select="$x2"/>
+        <xsl:with-param name="y1" select="$last-point/@posy"/>
+        <xsl:with-param name="y2" select="$y2"/>
+        <xsl:with-param name="color" select="$color"/>
+        <xsl:with-param name="thickness" select="$thickness"/>
+        <xsl:with-param name="z-index" select="$z-index"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="net.line">
+        <xsl:with-param name="x1" select="$x1"/>
+        <xsl:with-param name="x2" select="$x2"/>
+        <xsl:with-param name="y1" select="$y1"/>
+        <xsl:with-param name="y2" select="$y2"/>
+        <xsl:with-param name="color" select="$color"/>
+        <xsl:with-param name="thickness" select="$thickness"/>
+        <xsl:with-param name="z-index" select="$z-index"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Nodes                                                                        -->
+<!-- ================================================================================ -->
+
+<!-- Creates the icon of a document node (see the specification for that term). This
+  template also triggers the creation of the icons of the "attached" documents. -->
+
+<xsl:template match="crs:course_section|crs:element|crs:problem|crs:generic_element|crs:generic_problem" mode="net">
+
+  <!-- Put the icon of this element resp. course_section: -->
+  <xsl:call-template name="net.put-icon-group"/>
+
+  <!-- This icon's node in the data section -->
+  <!-- (to pass width and height to the attached icons): -->
+  <xsl:variable name="key">
+    <xsl:call-template name="icon-key"/>
+  </xsl:variable>
+  <xsl:variable name="icon" select="$data/data:icon[@key=$key]/*"/>
+
+  <!-- Process children (i.e., attached icons)  -->
+  <xsl:apply-templates mode="net">
+    <xsl:with-param name="parent-icon-posx" select="@posx"/>
+    <xsl:with-param name="parent-icon-posy" select="@posy"/>
+    <xsl:with-param name="parent-icon-width" select="$icon/@width"/>
+    <xsl:with-param name="parent-icon-height" select="$icon/@height"/>
+  </xsl:apply-templates>
+
+</xsl:template>
+
+<!-- Creates the icon of a document "attached" to a document node. -->
+
+<xsl:template match="crs:worksheet|crs:subelement|crs:generic_subelement" mode="net">
+
+  <!-- Parameters: -->
+  <xsl:param name="parent-icon-posx"/>
+  <xsl:param name="parent-icon-posy"/>
+  <xsl:param name="parent-icon-width"/>
+  <xsl:param name="parent-icon-height"/>
+
+  <!-- Alignment factors: -->
+  <xsl:variable name="xsign">
+    <xsl:choose>
+      <xsl:when test="@align='topright' or @align='bottomright'">1</xsl:when>
+      <xsl:otherwise>-1</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="ysign">
+    <xsl:choose>
+      <xsl:when test="@align='bottomright' or @align='bottomleft'">1</xsl:when>
+      <xsl:otherwise>-1</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <!-- This icon's node in the data section -->
+  <!-- (to get width and height for position shifts): -->
+  <xsl:variable name="key">
+    <xsl:call-template name="icon-key"/>
+  </xsl:variable>
+  <xsl:variable name="icon" select="$data/data:icon[@key=$key]/*"/>
+
+  <xsl:call-template name="net.put-icon-group">
+    <xsl:with-param name="x"
+      select="$parent-icon-posx
+                + ( $xsign )
+                  * ( ( ( $parent-icon-width - $icon/@width ) div 2 )
+                    + ( @count * ( $icon/@width div 2 ) ) )"/>
+    <xsl:with-param name="y"
+      select="$parent-icon-posy
+                + ( $ysign )
+                  * ( ( ( $parent-icon-height - $icon/@height ) div 2 )
+                    + ( @count * ( $icon/@height div 2 ) ) )"/>
+    <xsl:with-param name="z-index" select="$net.icon-z-index - ( @count * 10 )"/>
+    <xsl:with-param name="with-label">no</xsl:with-param>
+  </xsl:call-template>
+
+</xsl:template>
+
+<xsl:template match="crs:and" mode="net">
+  <xsl:call-template name="net.put-branching-point-icon">
+    <xsl:with-param name="type">and</xsl:with-param>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="crs:or" mode="net">
+  <xsl:call-template name="net.put-branching-point-icon">
+    <xsl:with-param name="type">or</xsl:with-param>
+  </xsl:call-template>
+</xsl:template>
+
+<xsl:template match="crs:branch" mode="net">
+  <xsl:call-template name="net.put-branching-point-icon"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main structure                                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template name="net.main">
+  <html>
+    <head>
+      <link rel="stylesheet" type="text/css" href="{$net.css-stylesheet}"/>
+      <xsl:call-template name="net.styles"/>
+      <xsl:call-template name="net.javascript"/>
+    </head>
+    <body>
+      <xsl:apply-templates select="$net.thread-arcs" mode="net">
+        <xsl:with-param name="color" select="$net.thread-arc-color"/>
+        <xsl:with-param name="thickness" select="$net.thread-arc-thickness"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="$net.arcs" mode="net">
+        <xsl:with-param name="color" select="$net.arc-color"/>
+        <xsl:with-param name="thickness" select="$net.arc-thickness"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="$net.nodes" mode="net"/>
+      <xsl:call-template name="net.button-area"/>
+      <script type="text/javascript">
+        updateThreadButtons();
+      </script>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

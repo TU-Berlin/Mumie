@@ -1,0 +1,24 @@
+package net.mumie.srv.notions;
+
+public class XMLAttribute
+{
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private XMLAttribute ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("XMLAttribute must not be instanciated");
+  }
+}

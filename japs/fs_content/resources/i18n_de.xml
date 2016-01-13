@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<defs xmlns="http://www.mumie.net/xml-namespace/fs-content-i18n"
+      xmlns:h="http://www.mumie.net/xml-namespace/fs-content-i18n-embedded-xhtml">
+
+  <!-- ====================================================================== -->
+  <!-- h1: General                                                            -->
+  <!-- ====================================================================== -->
+
+  <def id="top-bar-title">MUMIE - Multimediale Mathematikausbildung</def>
+
+  <def id="top-bar-subtitle">TU Berlin &#183; Institut f&#252;r Mathematik</def>
+
+  <def id="retry">Bitte versuchen Sie es erneut</def>
+
+  <def id="account">Konto</def>
+
+  <def id="account-name">Konto-Name</def>
+
+  <def id="first-name">Vorname</def>
+
+  <def id="surname">Nachname</def>
+
+  <def id="e-mail">E-Mail</def>
+
+  <def id="password">Passwort</def>
+
+  <def id="password-retyped">Passwort wiederholen</def>
+
+  <def id="login">Anmelden</def>
+
+  <def id="submit">Abschicken</def>
+
+  <def id="please-note">Bitte beachten Sie</def>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Error messages                                                     -->
+  <!-- ====================================================================== -->
+
+  <def id="cause-unknown">Ursache unbekannt</def>
+
+  <def id="login-name-missing">Feld "Konto-Name" nicht ausgef&#252;llt</def>
+
+  <def id="invalid-characters-in-login-name">Konto-Name enth&#228;lt unzul&#228;ssige Zeichen</def>
+
+  <def id="first-name-missing">Feld "Vorname" nicht ausgef&#252;llt</def>
+
+  <def id="surname-missing">Feld "Nachname" nicht ausgef&#252;llt</def>
+
+  <def id="email-missing">Feld "E-Mail" nicht ausgef&#252;llt</def>
+
+  <def id="password-missing">Feld "Passwort" nicht ausgef&#252;llt</def>
+
+  <def id="invalid-characters-in-password">Passwort enth&#228;lt unzul&#228;ssige Zeichen</def>
+
+  <def id="password-too-short">Das Passwort ist zu kurz (muss mindestens 6 Zeichen haben)</def>
+
+  <def id="password-retyped-missing">Feld "Passwort wiederholen" nicht ausgef&#252;llt</def>
+
+  <def id="retyped-passwords-does-not-match">
+    Die beiden Passwort-Eingaben stimmennicht &#252;berein
+  </def>
+
+  <def id="user-already-exists">Ein Konto mit diesem Namen existiert bereits</def>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Login form                                                         -->
+  <!-- ====================================================================== -->
+  
+  <def id="login-form-headline">MUMIE Anmeldung</def>
+
+  <def id="login-form-explanation">
+    Sie haben eine gesch&#252;tzte Seite angefordert, sind aber z.Z. nicht angemeldet.
+    Um die Seite zu sehen, melden Sie sich bitte zuerst mit Ihrem Konto-Namen und
+    Passwort an: 
+  </def>
+
+  <def id="login-form-err-headline">Anmeldung fehlgeschlagen</def>
+
+  <def id="login-form-err-causes">M&#246;gliche Ursachen:</def>
+
+  <def id="login-form-err-no-account">Sie haben kein Konto bei der MUMIE</def>
+
+  <def id="login-form-err-misspelled-account">Konto falsch geschrieben</def>
+
+  <def id="login-form-err-misspelled-password">
+    Passwort falsch geschrieben.<br/>
+    Bitte beachten Sie Gro&#223;- und Kleinschreibung. Ist
+    vielleicht versehentlich <h:kbd>Caps-Lock</h:kbd> aktiviert?
+  </def>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Create account form                                                -->
+  <!-- ====================================================================== -->
+
+  <def id="create-account-title">MUMIE: Konto erstellen</def>
+
+  <def id="create-account-headline">Konto erstellen</def>
+
+  <def id="create-account-err-headline">Konto-Erstellung fehlgeschlagen</def>
+
+  <def id="create-account-explanation">
+    Hier k&#246;nnen Sie ein neues Mumie-Konto erstellen.
+  </def>
+
+  <def id="create-account-hint-login-name">
+    Der Konto-Name darf nur aus Buchstaben und Ziffern bestehen. Umlaute, Zeichen
+    mit Akzenten usw. sind nicht erlaubt.
+    Zwischen Gross- und Kleinschreibung wird unterschieden.
+  </def>
+
+  <def id="create-account-hint-password">
+    Das Passwort muss mindestens 6 Zeichen lang sein. Erlaubt sind
+    Buchstaben, Ziffern, die Zeichen
+      <h:code>!@#$%^&amp;*()_+-=`{}[]|\/:";'&lt;&gt;,.?</h:code>
+    und das Leerzeichen.
+    Nicht erlaubt sind Umlaute, Zeichen mit Akzenten und dergleichen.
+    Zwischen Gross- und Kleinschreibung wird unterschieden.
+    Bitte achten Sie darauf, dass das Passwort nicht leicht zu erraten ist.
+  </def>
+
+</defs>

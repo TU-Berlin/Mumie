@@ -1,0 +1,116 @@
+\documentclass{generic}
+%this.filename = flatgraphkonzept.tex
+%usage:
+% mmtex flatgraphkonzept.tex
+% mmxalan flatgraphkonzept.xml
+% firefox flatgraphkonzep.xhtml
+
+%author: vrichter
+
+\begin{document}
+
+Alle Graphen, die erzeugt werden, sind in der Klasse CCModel in der Liste bufferedGraphs. jeder neue Graph wird als mit bufferedGraphs.addFirst(graph) zugefügt.
+Verwaltet werden die einzelnen Srukturen  (zb NavGraph und später FlatGraph) in den Klassen NavModel-bzw FlatModel)
+
+
+
+\section{flatgraphpackage}
+\subsection{FlatCell} (enthált beschreibung der einzelnen Cellen - sind die Komponenten von FlatGraph unterscheide zwischen Main und SubKomponenten)
+
+benötigt Funktionen rund um Label, points, category..
+	toMetaXML und toContentXML
+	
+
+\subsection{FlatGraph}
+abgeleitet von Graph benötigt daher  die Funktionen:\\
+void setChanged(boolean c);\\
+	int getUndoNumber();\\
+	void setUndoNumber(int n);\\
+	String getUndoName();\\
+	void setUndoName(String s);\\
+	\\
+	boolean isProblemGraph();\\
+	boolean isSectionGraph();\\
+	boolean isElementGraph();\\
+
+	void setLid_counter(int i);\\
+	MetaInfos getMetaInfos();\\
+	void setMetaInfos(MetaInfos meta);\\
+	void setGraphType(int type);\\
+	Object createCell(int cellType, String path, int cat, int nid, String lid,
+			Object parent, int x, int y,String label);\\
+
+	Object insertCell(Object o);\\
+	void setSummary(String s);\\
+	void repaint();\\
+	void delete();\\
+	boolean getChanged();\\
+	
+	Object[] getSelectionCells();\\
+	int getSelectionCount();\\
+	Object getSelectionCell();\\
+	boolean getButtonEnable(String s);\\
+	public String toXMLContent();\\
+	public String toXMLMeta();\\
+
+ausserdem eigene Funktionalitäten..
+
+\subsection{FlatGraphController}
+Controller für FlatGraph, analog NavGraphController 
+
+\subsection{FlatMarqueeHandler}
+Kontextmenue fuer Flatgraph. 
+\subsection{FlatModel}
+Diese Klasse hält alle FlatGraphen und kommuniziert zwischen den einzelnen FlatGraphen und der CCModelklasse.
+
+es müssen Funktionen die an den Flatgraphen weitergegeben werden implementiert werden zB.:\\
+ public void showCircles(){\\
+    	this.getMainGraph().showCircles();\\
+    } \\
+ausserdem das Speichern des ersten Graphen.
+
+\section{CCModel}
+diese Klasse ist Verbindung zwischen der Oberfláche und den Graphen. 
+
+"Angesprochen" wird immer nur der erste Graph (da alle Veränderungen der Strukturen durch Benutzerinteraktionen geschehen und dieser nur den ersten Graph sieht.) angesprochen wird der erste Graph mit CCModel.getFirstGraph.
+
+- zuerst sollte die Funktion newFlatCourse bearbeitet werden (entfernen der if(false)-zeile) ganz wichtig ist das setzten der Variable CCModel.setKursTyp(KURS_FLATGRAPH);
+- CourseCreator.createFlatGraphPanel muss sinnvollen Inhalt bekommen (erzeugen eines leeren Baums)
+- mehrere Funktionen leiten Befehle weiter an den Flatgraph. diese Funktionen müssen im Flatgraph geschrieben werden (dabei handelt es sich um die Liste der Funktionen, die unter dem Kapitel Flatgraph beschrieben sind.) im CCModel sind diese zu erkennen an der Struktur:\\
+	 public void setLIDcount(int cnt) {\\
+   		this.getFirstGraph().setLid_counter(cnt);\\
+    	}\\
+desweiteren gibt es spezielle Funktionen, die nicht jeder Graph haben muss, hier muss überlegt werden, ob die der FlatGraph ebenso benötig. gekennzeichnet sind diese im Quellcode durch: FIXME anpassen an andere Graphtypen oder aehnlich.
+passiert dies, sollte der erste FlatGraph nie direkt angesprochen werden, sondern über die Klasse FlatModel (noch zu implementieren)also zum Beispiel:
+    
+   public boolean checkSummaryExists(){\\
+    	if (this.getKursTyp()==KURS_NAVGRAPH) {\\
+    		return this.navModel.getMainGraph().checkSummaryExists();\\
+    	}else if (this.getKursTyp()==KURS_FLATGRAPH) {\\
+    		return this.flatModel.getMainGraph().checkSummaryExists();\\
+    	}\\
+    	return false;\\
+    }\\
+
+\section{bearbeiten der Struktur}
+- es gibt noch kein Konzept, wie die Struktur genau bearbeitet werden soll: 
+Vorschlag: 
+- Einfügen von Mainkomponenten, Einfügen von SubKomponenten an MainKomponenten, Einfügen von Verzeichnissen (ähnlich jetzt den Branchknoten). MainKomponenten nur als Blätter Verzeichnisse nur als "nicht-Blätter) - müssen Blätter haben, sonst ist die Struktur "nicht richtig". Beachte: durch die undo Fuktion wird jeweils die Struktur gespeichert, es darf also keinen Moment geben, wo der Graph nicht speicherbar ist. - wo werden die neuen Komponenten eingefügt zB vor, nach .. der markierten Komponente..
+
+
+
+\section{Laden}
+bisher gibt es keine XML-Darstellung flacher Kurse. 
+Am XML sollte erkennen zu sein, welcher Kurstyp es ist.
+
+Angepasst an das neue XML ist eine Klasse FlatGraphLoader analog zu NavGraphLoader zu schreiben.
+
+\section{sonstiges}
+die Buttons in der Toolbar müssen angepasst werden (die auf der linken seite.)
+Vorbereitet ist dafür die Funktion getButtonEnable in der Klasse FlatGraph. für
+jeden Button muss geprüft werden, ob dieser enable oder disabled sein soll (die
+Funktion ist eigentlich schon fertig.)
+Sinnvoll wäre noch eine Funktion getButtonVisible, da der Connect-Button für
+Graphen ohne Kanten noch sinnvoll ist.
+
+\end{document}

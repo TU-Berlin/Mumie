@@ -1,0 +1,255 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!-- ================================================================================ -->
+<!-- h1: Definitions                                                                  -->
+<!-- ================================================================================ -->
+
+<css:def id="no-space" value="0px 0px 0px 0px"/>
+<css:def id="default-space" value="1em 1em 1em 1em"/>
+<css:def id="stroke-color" value="#949494"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Table "genuine"                                                              -->
+<!-- ================================================================================ -->
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: General                                                                      -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<css:rule selector='table.genuine'>
+  <css:property name='margin-left' value='0em'/>
+</css:rule>
+
+<css:rule selector='table.genuine td'>
+  <css:property name='text-align' value='center'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.name'>
+  <css:property name='border-right-style' value='dotted'/>
+</css:rule>
+
+<css:rule selector='table.genuine tbody td.name'>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.id'>
+  <css:property name='border-left-style' value='dotted'/>
+</css:rule>
+
+<css:rule selector='table.genuine tbody td.id'>
+  <css:property name='text-align' value='right'/>
+</css:rule>
+
+<css:rule selector='table.genuine tfoot.max'>
+</css:rule>
+
+<css:rule selector='td.label'>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Inner/first/last/single cells                                                -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<css:rule selector='table.genuine td.inner'>
+  <css:property name='border-left-style' value='dotted'/>
+  <css:property name='border-right-style' value='dotted'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.first'>
+  <css:property name='border-right-style' value='dotted'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.last'>
+  <css:property name='border-left-style' value='dotted'/>
+</css:rule>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Inner/first/last/single input cells                                          -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<css:rule selector='table.genuine td.input-inner'>
+  <css:property name='border-left-style' value='dotted'/>
+  <css:property name='border-right-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-first'>
+  <css:property name='border-right-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-last'>
+  <css:property name='border-left-style' value='dotted'/>
+  <css:property name='border-right-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-single'>
+  <css:property name='border-right-style' value='none'/>
+</css:rule>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Inner/first/last/single input error cells                                    -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+<css:rule selector='table.genuine td.input-error-inner, table.genuine td.input-error-first, table.genuine td.input-error-last, table.genuine td.input-error-single'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-error-inner'>
+  <css:property name='border-left-style' value='none'/>
+  <css:property name='border-right-style' value='dotted'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-error-first'>
+  <css:property name='border-left-style' value='none'/>
+  <css:property name='border-right-style' value='dotted'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-error-last'>
+  <css:property name='border-left-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.input-error-single'>
+  <css:property name='border-left-style' value='none'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Table "list"                                                              -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.list'>
+  <css:property name='margin-left' value='0em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Error messages                                                               -->
+<!-- ================================================================================ -->
+
+<css:rule selector='span.error'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' value='0em 0.25em 0em 0em'/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Form input elements                                                          -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.genuine input.normal'>
+  <css:property name='border-style' value='dotted'/>
+  <css:property name='border-width' value='1px'/>
+  <!-- <css:property name='background-color' value='#E7FFCE'/> -->
+</css:rule>
+
+<css:rule selector='table.genuine input.error'>
+  <css:property name='border-style' value='dotted'/>
+  <css:property name='border-width' value='1px'/>
+  <!-- <css:property name='background-color' value='#E7FFCE'/> -->
+  <css:property name='color' value='red'/>
+</css:rule>
+
+<css:rule selector='table.genuine input.focus'>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-color' value='#000000'/>
+  <!-- <css:property name='background-color' value='#FFFFE0'/> -->
+</css:rule>
+
+<css:rule selector='table.genuine input.changed'>
+  <css:property name='border-style' value='dotted'/>
+  <css:property name='border-width' value='1px'/>
+  <!-- <css:property name='font-weight' value='bold'/> -->
+  <css:property name='color' value='#008B00'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Scrollable area                                                              -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.genuine-wrap'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='border-collapse' value='collapse'/>
+</css:rule>
+
+<css:rule selector='table.genuine-wrap td.column-wrap'>
+  <css:property name='padding' value='1px 0px 0px 0px'/>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<css:rule selector='table.genuine-wrap td.column-no-wrap'>
+  <css:property name='padding' value='0px 1px 0px 0px'/>
+  <css:property name='vertical-align' value='top'/>
+  <css:property name='width' value='800px'/>
+</css:rule>
+
+<css:rule selector='table.genuine-wrap div.scroll'>
+  <css:property name='height' value='100%'/>
+  <css:property name='overflow' value='auto'/>
+  <css:property name='border-top-style' value='solid'/>
+  <css:property name='border-top-color' ref='stroke-color'/>
+  <css:property name='border-top-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='table.genuine-wrap table.genuine'>
+  <css:property name='margin' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='td.dheight'>
+  <css:property name='height' value='50px'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Button area                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector="div.buttons">
+  <css:property name="margin" value="2em 0em 1em 0em"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Colors                                                                 -->
+<!-- ================================================================================ -->
+
+<css:rule selector='span.low'>
+  <css:property name='color' value='red'/>
+</css:rule>
+
+<css:rule selector='span.high'>
+  <css:property name='color' value='green'/>
+</css:rule>
+
+<css:rule selector='span.mid'>
+  <css:property name='color' value='orange'/>
+</css:rule>
+
+</css:style>

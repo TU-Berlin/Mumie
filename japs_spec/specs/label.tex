@@ -1,0 +1,197 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Labels}
+
+\begin{authors}
+  \author[vrichter@math.tu-berlin.de]{Verena Richter}
+\end{authors}
+
+\tableofcontents
+
+\section{Spezifikation der Labels in der Datenbank}
+\subsection{Japs}
+In den Tabellen
+\begin{itemize}
+\item refs\_course\_subsection\_problem, 
+\item refs\_course\_course\_section,
+\item refs\_course\_course\_subsection, 
+\item refs\_course\_section\_element,
+\item refs\_course\_section\_subelement 
+\end{itemize}
+gibt es jeweils die Spalte ''label'' vom Typ Text.
+
+\subsection{Schreiben der Labels in die Datenbank}
+Die Labels werden mittels der theoriegraph*.meta.xml -Dateien in die Datenbank
+geschrieben. Sie sind ref\_attribute, somit (wie die points von problem) Kinder von
+\begin{itemize}
+\item course\_section
+\item course\_subsection
+\item element
+\item subelement
+\item problem
+\end{itemize}
+und haben die Attribute name=''label'' und value='' ''.\\
+Somit muss der Abschnitt der theoriegraph*.meta.xml-Datei folgendermassen
+aussehen:
+\begin{preformatted}[code]%
+    <mumie:components>
+      <mumie:course_section lid="1" url="theoriegraph_0.meta.xml">
+        <mumie:ref_attribute name="label" value="SectionLabel"/>
+      </mumie:course_section>
+      <mumie:course_subsection lid="2" url="theoriegraph_0_sub_0.meta.xml">
+        <mumie:ref_attribute name="label" value="subSectionLabel"/>
+      </mumie:course_subsection>
+    </mumie:components>
+\end{preformatted}
+\section{Labels im CourseCreator}
+Die Labels sind Membervariablen der Klassen 
+\begin{itemize}
+\item SubElementProperties
+\item ElementProperties
+\item ProblemProperties
+\item SectionProperties
+\item SubSectionProperties
+\end{itemize}
+welche im Package net.mumie.coursecreator.graph.cells zu finden sind. Die
+Labels sind vom Typ String. Initialisiert werden die Labels beim Aufruf eines Konstruktors und werden dann auf
+den Defaultwert gesetzt. Der Defaultwert eines Labels ist der Inhalt der Konstante DEFAULT\_LABEL der
+Klasse Constants im Package net.mumie.coursecreator.
+\subsection{Ändern der Labels im Coursecreator}
+Die Klassen ElementMarqueeHandler und SectionMarqueeHandler aus dem Package
+net.mumie.coursecreator.graph besitzen die Funktion createPopupMenu(), welche
+den Menupunkt ''Label setzen'' erzeugt.\\
+Die Klasse ElementMarqueeHandler ist der mouseHandler für 
+\begin{itemize}
+\item ElementCell
+\item ProblemCell
+\item SubElementCell
+\end{itemize}
+SectionMarqueeHandler für
+\begin{itemize}
+\item SectionCell
+\item SubSectionCell
+\end{itemize}
+
+Die Klasse CCController besitzt die Funktion assignLabelDialog(Object cell) welche
+den Dialog für das Setzen der Labels von ''cell'' erzeugt. Die Funktion wird
+von den MarqueeHandlern aufgerufen und
+\begin{itemize}
+\item erzeugt eine Fehlermeldung (und bricht dann ab), falls kein Label (leerer String) eingegeben
+wurde,
+\item bricht ab, falls das Label nicht verändert wurde, oder
+\item setzt das neue Label, indem die jeweilige setLabel(value) Funktion der Klasse
+\begin{itemize}
+\item SubElementProperties
+\item ElementProperties
+\item ProblemProperties
+\item SectionProperties
+\item SubSectionProperties
+\end{itemize}
+aufgerufen wird.
+\end{itemize}
+
+\subsection{Laden und Speichern}
+\subsubsection{lokal Laden und Speichern}
+Zum lokal speichern hat jede der Klassen 
+\begin{itemize}
+\item ElementCell
+\item ProblemCell
+\item SubElementCell
+\item SectionCell
+\item SubSectionCell
+\end{itemize}
+eine Funktion getUnfinishedXML(..) in der alle Attribute, also auch die Labels des jeweiligen
+Types gesetzt werden. Die Funktionen werden jeweils von der Funktion
+graph2xml(..) der Klasse UnfinishedGraphSaver aus dem Package
+net.mumie.coursecreator.io aufgerufen.
+
+Die Labels werden als Attribute der Knoten
+\begin{itemize}
+\item Section
+\item SubSection
+\item Element
+\item SubElement
+\item Problem
+\end{itemize}
+gespeichert.
+
+Für das lokale Laden wird durch die parse(..)-Funktion der Klasse
+UnfinishedGraphHandler aus dem Package net.mumie.coursecreator.io.helper die
+Funktion setComponents(..) der gleichen Klasse auf. Diese liest das Label aus
+und erzeugt entsprechend des Types eine neue *Properties Instanz.
+Beispiel:
+\begin{preformatted}[code]%
+String label = getSingleNode(act,"./@label").getNodeValue();
+AbstractMainComponentCellProperties prop = new
+SectionProperties(lid,id,label,first);
+SectionCell sc =
+((SectionGraph)ng).insertSection(p,(SectionProperties)prop,!lid.equals(""));
+\end{preformatted}
+\subsubsection{Speichern in die Datenbank}
+
+Die Sections und Elements werden unterschiedlich behandelt.\\
+
+Erzeugt werden die Sectionlabels in der Funktion buildComponents(..) der Klasse GraphSaver
+des Packages net.mumie.coursecreator.io.\\
+
+Für die Elements hat jede der Klassen
+\begin{itemize}
+\item ElementCell
+\item ProblemCell
+\item SubElementCell
+\end{itemize} aus dem Package net.mumie.coursecreator.graphs.cells eine
+Funktion getXML(..), die die Labels in die XML-Datei schreibt. Diese
+getXML(..)-Funktion wird jedoch ebenfalls vom GraphSaver aufgerufen.
+
+Die Labels werden mittels der theoriegraph*.meta.xml Dateien in die Datenbank
+geschrieben. Die Labels sind ref\_attribute, somit Kinder von
+\begin{itemize}
+\item course\_section
+\item course\_subsection
+\item element
+\item subelement
+\item problem
+\end{itemize}
+und haben die Attribute name=''label'' und value='' ''.
+
+Beispiel:
+\begin{preformatted}[code]%
+Element labelElem = document[0].createElement(XMLConstants.PREFIX_META + "ref_attribute");
+labelElem.setAttribute("name", "label");
+labelElem.setAttribute("value", prop.getLabel());
+xmlElem.appendChild(labelElem);
+\end{preformatted}
+
+wobei xmlElem ebenfalls vom Typ Element ist und zB. die course\_section darstellt und
+prop die SectionProperties der zugehörigen SectionCell ist.\\
+
+\subsubsection{Laden aus der Datenbank}
+Wie beim Speichern werden die Elements und die Sections in unterschiedlichen
+Funktionen behandelt, die Verarbeitungsweise ist aber gleich.\\
+
+Die Sectionlabels werden in der Funktion setCourseComponents(..), die
+Elementlabels in der Funktion setSectionComponents(..) der Klasse
+GraphJaxenHandler aus dem package net.mumie.coursecreator.io.xml
+ausgelesen und ja nach Typ wird eine neue *Properties Instanz erzeugt. Beide
+Funktionen (setCourseComponents und setSectionComponents) werden von von der parse(..)-Funktion der gleichen
+Klasse aufgerufen.\\
+
+Sollte es kein Label geben, wird das Defaultlabel DEFAULT\_LABEL der
+Klasse Constants im Package net.mumie.coursecreator gesetzt.\\
+
+Beispiel:\\
+\begin{preformatted}[code]%
+Node labelNode = this.getSingleNode(root,metaSource+"/"+MUMIE+"ref_attribute[@name=$\backslash$"label$\backslash$"]/@value");
+String label;
+if (labelNode== null) label = Constants.DEFAULT_LABEL;
+else label = labelNode.getNodeValue();
+SectionProperties prop = new SectionProperties(lid,id,label,false);
+\end{preformatted}
+\subsection{Beschränkungen des Labels}
+Keine, es darf nur nicht leer sein (das sollte aber nicht möglich sein, da es beim
+Erstellen einen Wert erhält, und beim Setzen kein Leerstring eingegeben werden kann).
+\end{document}

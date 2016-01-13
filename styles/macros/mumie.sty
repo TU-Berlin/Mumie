@@ -1,0 +1,46 @@
+%%       Hey emacs! This is a -*- latex -*- file.
+%
+% File:    $Source: /net/mumie/cvs/styles/macros/mumie.sty,v $
+% Version: $Revision: 1.2 $
+% VC-ID:   $Id: mumie.sty,v 1.2 2001/09/17 07:43:17 eberlein Exp $
+%
+% 2001-07-18, Dominik Eberlein (eberlein@mathematik.tu-muenchen.de)
+%
+
+\ProvidesFile{mumie.sty}
+
+\RequirePackage[latin1]{inputenc}
+\RequirePackage[german]{babel}
+
+\usepackage[intlimits,fleqn]{amsmath}
+\usepackage{amssymb}
+\usepackage{latexsym}
+
+\setlength{\hoffset}{-1in}
+\setlength{\voffset}{-1in}
+
+\setlength{\parindent}{0mm}
+\setlength{\textwidth}{170mm}
+\setlength{\textheight}{250mm}
+\setlength{\topmargin}{5mm}
+\setlength{\headheight}{10mm}
+\setlength{\headsep}{5mm}
+\setlength{\footskip}{10mm}
+\setlength{\oddsidemargin}{15mm}
+\setlength{\evensidemargin}{15mm}
+\setlength{\parskip}{4pt}                                                               
+
+\sloppy % fuer eine lockere Silbentrennung!!
+
+%%%%%%%%% automatische PDF/PS-Umstellung %%%%%%%%%
+\ifx\pdfoutput\undefined
+  \usepackage[xdvi]{epsfig}
+\else
+  \usepackage{graphicx}
+\fi
+
+\def\mumie{\texttt{mumie}}
+
+\def\styletitle#1{\textsf{\Huge #1}}
+
+\endinput

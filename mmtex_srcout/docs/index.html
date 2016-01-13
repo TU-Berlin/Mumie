@@ -1,0 +1,371 @@
+<head>
+  <title>What is where</title>
+  <link rel="stylesheet" type="text/css" href="../styles/css/doc_index.css"/>
+
+  <!-- Box Script -->
+      <script language="javascript">
+        var ie4 = false; if(document.all) { ie4 = true; }
+        function getObject(id) { if (ie4) { return document.all[id]; } else { return document.getElementById(id); } }
+        function toggle(link, divId) { var lText = link.innerHTML; var d = getObject(divId);
+        if (lText == '+') { link.innerHTML = '&#8722;'; d.style.display = 'block'; }
+        else { link.innerHTML = '+'; d.style.display = 'none'; } }
+      </script>
+
+</head>
+
+<body>
+
+
+
+
+
+<!--========================================================== -->
+<!-- Brief overview of directory structure                     -->
+<!--========================================================== -->
+<br/><br/>
+
+    <table class="short-explanation">
+      <tr>
+        <th colspan="3">Brief MmTex Overview</th>
+      </tr>
+      <tr>
+        <td class="root" colspan="3"><a href="../." title="Source folder of MmTex">MmTex</a></td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../bin">bin</a></td>
+        <td class="description">Folder with the executables</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../docs">docs</a></td>
+        <td class="description">Documentation folder</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../etc">etc</a></td>
+        <td class="description">Configuration file folder</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../lib">lib</a></td>
+        <td class="description">Libraries, documentclasses, core files of MmTex</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../notes">notes</a></td>
+        <td class="description">Notes, Todo's and other stuff</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../samples">samples</a></td>
+        <td class="description">Sample folder</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch1.jpg"></td>
+        <td class="name"><a href="../styles">styles</a></td>
+        <td class="description">CSS and XSLT folder</td>
+      </tr>
+      <tr>
+        <td class="branch"><img src="pics/branch2.jpg"></td>
+        <td class="name"><a href="../utils">utils</a></td>
+        <td class="description">Useful things</td>
+      </tr>
+    </table>
+
+
+
+<br/><br/><br/>
+
+
+<!--========================================================== -->
+<!-- Detailed description of folders and files                 -->
+<!--========================================================== -->
+
+
+  <table class="details-outer">
+    <tr>
+      <th width="20%">Folder / File / Script</th>
+      <th>Brief description</th>
+    </tr>
+
+
+
+    <!--=============================================================================-->
+    <!-- Next Area (samples)
+    <!--=============================================================================-->
+
+
+
+    <tr>
+      <td colspan='2'>
+        <a name="samples"/>
+        <table>
+          <tr>
+            <td colspan='2' class='headline'>
+              All about <span class='keyword'>samples</span>
+            </td>
+          </tr>
+          <tr>
+            <td class='directory'><a href="../samples/xhtml">samples/xhtml</a></td>
+            <td class='description'>
+              Folder where the converted samples will be stored. 
+              The XHTML-files need to be created by the <a href="../utils/create_samples">'create_samples'</a> script. 
+              There is also a link to the corresponding samples from the <a href="#xdocs">'XDOC index page'</a>
+              To see a list of the xhtml | tex | xml sample-versions please go to 
+              <a href="../samples/index.xhtml">'sample_index'</a>
+            </td>
+          </tr>
+          <tr>
+            <td class='directory'><a href="../samples/tex">samples/tex</a></td>
+            <td class='description'>
+              Folder with the TEX-sources of all samples
+            </td>
+          </tr>
+          <tr>
+            <td class='directory'><a href="../samples/xml">samples/xml</a></td>
+            <td class='description'>
+              Folder with the XML-files after the conversion of the sources with mmtex
+            </td>
+          </tr>
+          <tr>
+            <td class='file'><a href="../samples/index.xhtml">samples/index.xhtml</a></td>
+            <td class='description'>
+              Index file of the sample folder.
+              Will give you a list of all files, including the TEX-sources, the XML-files and the resulting XHTML
+            </td>
+          </tr>
+          <tr>
+            <td class='script'><a href="../utils/create_samples">utils/create_samples</a></td>
+            <td class='description'>
+              Script to create the sample files. It will convert all sources in the TEX-folder using mmtex and
+              then convert the resulting XML-files to XHTML using mmxalan. 
+              The <a href="../samples/index.xhtml">'sample_index'</a>
+              is created by this script, too.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+
+    <!--=============================================================================-->
+    <!-- Next Area (xdocs)
+    <!--=============================================================================-->
+
+    <tr>
+      <td colspan='2'>
+        <a name="xdocs"/>
+        <table>
+          <tr>
+            <td colspan='2' class='headline'>
+              All about <span class='keyword'>xdocs</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' class='basic-info'>
+              The so called 'xdocs' are files created automatically with mmtex.
+              Every library has its own, build in documentation. One way is to ask mmtex for information on
+              a special command using for example:
+              <span class="command-line">"mmtex -c addtocounter -l counter"</span>
+              or
+              <span class="command-line">"mmtex --list-cmds --lib=counter"</span>
+              But the more comfortable way is to browser through the XDOC folder and take a look
+              at the files for every library. All commands are listed, with a short explanation.
+            </td>
+          </tr>
+          <tr>
+            <td class='directory'><a href="xdocs">docs/xdocs</a></td>
+            <td class='description'>
+              Parent folder of the xdocs, contains the <a href="xdocs/xml_sources">xml_sources</a> folder, where the xml
+              files are located. Also place of the <a href="xdocs/xhtml">xhtml</a> folder, if XDOC files had been converted
+              to xhtml (may be set as option for the script <a href="../utils/xdoc_create">xdocs_create</a>)
+            </td>
+          </tr>
+          <tr>
+            <td class='directory'><a href="xdocs/xml_sources">docs/xdocs/xml_sources</a></td>
+            <td class='description'>
+              Folder with the xml_sources of the XDOC files. They may be viewed directly in a browser,
+              because there is a stylesheet associated to every file. But sometimes it's faster to
+              view the xhtml files, especially in case of big xml-files
+            </td>
+          </tr>
+          <tr>
+            <td class='directory'><a href="xdocs/xhtml">docs/xdocs/xhtml</a></td>
+            <td class='description'>
+              Folder with the xhtml version of the XDOC files created by <a href='../utils/xdoc_create'>xdocs_create</a>.
+              May be a better way to view the content if your browser doesn't support the 'on the fly' conversion or
+              the files are really large, so it would take to long until you'll see anything in your browser.
+            </td>
+          </tr>
+          <tr>
+            <td class='file'><a href="xdocs/index.xhtml">xdocs/index.xhtml</a></td>
+            <td class='description'>
+              Index file of the xdoc folder.
+              Will present a list of all libraries where XDOCs exist. Provide links to the detailed XHTML-version
+              for every library and the sample file if there is any.
+            </td>
+          </tr>
+
+          <tr>
+            <td class='script'><a href="../utils/xdoc_create">utils/xdoc_create</a></td>
+            <td class='description'>
+              Script to create the XDOCs for all libraries and DCLs.
+              Please call <span class='command-line'>"xdoc_create --help"</span> for more information
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+
+
+    <!--=============================================================================-->
+    <!-- Next Area (utils)
+    <!--=============================================================================-->
+
+    <tr>
+      <td colspan='2'>
+        <a name="utils"/>
+        <table>
+          <tr>
+            <td colspan='2' class='headline'>
+              All about <span class='keyword'>utils</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' class='basic-info'>
+              In this folder all useful scripts are located. Some description below may appear two times,
+              once here and once in the according area. (create_samples e.g is described in the 
+              <a href="#samples">samples</a> section too)
+              The pretty html version of all scripts, you see when clicking on a file, is created by
+              htmlize and create_sub_overview. To know more, please see the <a href="#source_docs">source_docs</a> 
+              area.
+            </td>
+          </tr>
+          <tr>
+            <td class='script'><a href="../utils/create_samples">utils/create_samples</a></td>
+            <td class='description'>
+              Script to create the sample files. It will convert all sources in the TEX-folder using mmtex and
+              then convert the resulting XML-files to XHTML using mmxalan. 
+              The <a href="../samples/index.xhtml">'sample_index'</a>
+              is created by this script, too.
+            </td>
+          </tr>
+          <tr>
+            <td class='script'><a href="../utils/xdoc_create">utils/xdoc_create</a></td>
+            <td class='description'>
+              Script to create the XDOCs for all libraries and DCLs.
+              Please call <span class='command-line'>"xdoc_create --help"</span> for more information
+            </td>
+          </tr>
+          <tr>
+            <td class='script'><a href="../utils/htmlize">utils/htmlize</a></td>
+            <td class='description'>
+              Folder where a xemacs '.el' file is located. It may be used to convert all perl
+              files of an directory to html version, so the could be viewed by any browser in 
+              a pretty form. It's used by <a href="sub_overview">sub_overview</a> to create the 
+              html files and the navigation. See there for more details on this.
+              <p>
+                For stand-alone usage, if there might be a folder with perl sources to convert to html
+                please use:
+                <br/>
+                <span class="command-line">
+                  xemacs -l ~/mmtex/utils/htmlize/htmlize_whole_directory.el -eval '(htmlize-tree("~/mmtex/")'
+                </span>
+                Results will be placed in <a href="source_docs">/docs/source_docs</a>
+
+
+                <span class="todo">
+                  <br>
+                  <blink>
+                  not working, not shure why...
+                  </blink>
+                </span>
+
+              </p>
+
+            </td>
+          </tr>
+
+
+
+
+        </table>
+      </td>
+    </tr>
+
+
+
+    <!--=============================================================================-->
+    <!-- Next Area (source_docs)
+    <!--=============================================================================-->
+
+    <tr>
+      <td colspan='2'>
+        <a name="source_docs"/>
+        <table>
+          <tr>
+            <td colspan='2' class='headline'>
+              All about <span class='keyword'>source_docs</span>
+            </td>
+          </tr>
+          <tr>
+            <td colspan='2' class='basic-info'>
+              In this folder, all HTML-versions of the perl files are located..
+              Below this folder, the complete folder structure of mmtex is rebuilded, and all folders
+              where normally perl scripts are located, are now filled with the html versions of these
+              scripts.
+            </td>
+          </tr>
+          <tr>
+            <td class='file'><a href="../docs/source_docs/index.xhtml">docs/source_docs/index.xhtml</a></td>
+            <td class='description'>
+              Index file for source_docs, presents a tree to navigate through the HTML-versions of all perl
+              files.
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+
+
+
+
+
+  </table>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<br/><br/><br/><br/><br/><br/><br/><br/>
+<a href="xy" title="Dein Text">Verweistext<a>
+    <div style="border: 1px solid #000000; padding: 0px; background: #EEEEEE; ">
+      <table border="0" cellspacing="0" cellpadding="2" width="100%" style="background: #000000; color: #FFFFFF; ">
+        <tr>
+          <td>
+            Head
+          </td>
+          <td align="right">
+            [<a title="show/hide" 
+                id="1234_link" 
+                href="javascript: void(0);" 
+                style="text-decoration: none; color: #FFFFFF;"
+                onclick="toggle(this, '1234')">
+               -
+             </a>]
+          </td>
+        </tr>
+      </table>
+      <div id="1234" style="padding: 3px;">
+        Balbala
+      </div>
+    </div>
+    <script language="javascript">toggle(getObject('1234_link'), '1234');</script>
+
+<br/><br/><br/><br/><br/><br/><br/><br/>
+
+
+</body>
+

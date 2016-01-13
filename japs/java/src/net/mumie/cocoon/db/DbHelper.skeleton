@@ -1,0 +1,149 @@
+package net.mumie.cocoon.db;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+import net.mumie.cocoon.documents.Document;
+import net.mumie.cocoon.notions.AnnType;
+import net.mumie.cocoon.notions.DbColumn;
+import net.mumie.cocoon.pseudodocs.GeneralUser;
+import net.mumie.cocoon.pseudodocs.User;
+import net.mumie.cocoon.util.Identifyable;
+import net.mumie.cocoon.content.ContentObjectItem;
+import org.apache.avalon.framework.service.ServiceException;
+
+/**
+ * <p> 
+ *   The <em>DbHelper</em> is the link between components (in the Avalon sence) and the
+ *   database. It provides methods to retrieve information from the db, and to store data in
+ *   the db, while hiding the implementation in JDBC and SQL (or whatever API is used) to the
+ *   components. By this means, the code of the components remains independent of the DBMS and
+ *   the way the DBMS is accessed. If you change the latter, you may have to change the
+ *   DbHelper, but not the other components.
+ * </p>
+ * <p>
+ *   This interface contains a large number of methods. The following list provides a
+ *   thematic overview:
+ * </p>
+ *
+ * @author Tilman Rassy <a href="mailto:rassy@math.tu-berlin.de">rassy@math.tu-berlin.de</a>
+ * @author Fritz Lehmann-Grube <a href="mailto:lehmannf@math.tu-berlin.de">lehmannf@math.tu-berlin.de</a>
+ * @author Uwe Sinha <a href="mailto:sinha@math.tu-berlin.de">sinha@math.tu-berlin.de</a>
+ * @author Andreas Hoffmann <a href="mailto:hoffmana@ma.tum.de">hoffmana@ma.tum.de</a>
+ * @version <span class="file">$Id: DbHelper.skeleton,v 1.4 2009/12/27 18:06:28 rassy Exp $</span>
+ */
+
+public interface DbHelper extends Identifyable 
+{
+  // --------------------------------------------------------------------------------
+  // Static constants
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Role of implementing classes as an Avalon component. Value is
+   * <span class="string">"net.mumie.cocoon.db.DbHelper"</span>.
+   */
+
+  String ROLE = "net.mumie.cocoon.db.DbHelper";
+
+  // --------------------------------------------------------------------------------
+  // Utilities
+  // --------------------------------------------------------------------------------
+
+  /**
+   * <p>
+   *  Returns the default columns of the document table for document type
+   *  <code>doctype</code>. These columns are used for queries if the columns are not
+   *  specified explicitely.
+   * </p>
+   * <p>
+   *   The included columns are shown in the following table:
+   * </P>
+   * <table class="genuine">
+   *   <thead>
+   *     <tr>
+   *       <td>Column</td>
+   *       <td>Included</td>
+   *     </tr>
+   *   </thead>
+   *   <tbody>
+   *     <!-- Always -->
+   *     <tr>
+   *       <td>{@link DbColumn#ID ID}</td>
+   *       <td rowspan="3" style="vertical-align:middle">Always</td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#NAME NAME}</td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#DESCRIPTION DESCRIPTION}</td>
+   *     </tr>
+   *     <!-- If document type is non-generic -->
+   *     <tr>
+   *       <td>{@link DbColumn#VC_THREAD VC_THREAD}</td>
+   *       <td rowspan="6" style="vertical-align:middle">
+   *         Only if the document type is not generic
+   *       </td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#VERSION VERSION}</td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#LAST_MODIFIED LAST_MODIFIED}</td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#STATUS STATUS}</td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#CONTENT_TYPE CONTENT_TYPE}</td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#MANUAL MANUAL}</td>
+   *     </tr>
+   *     <!-- If document type has width and height -->
+   *     <tr>
+   *       <td>{@link DbColumn#WIDTH WIDTH}</td>
+   *       <td rowspan="2" style="vertical-align:middle">
+   *         Only if the document type has width and height
+   *       </td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#HEIGHT HEIGHT}</td>
+   *     </tr>
+   *     <!-- If document type has a timeframe -->
+   *     <tr>
+   *       <td>{@link DbColumn#TIMEFRAME_START TIMEFRAME_START}</td>
+   *       <td rowspan="2" style="vertical-align:middle">
+   *         Only if the document type has a timeframe
+   *       </td>
+   *     </tr>
+   *     <tr>
+   *       <td>{@link DbColumn#TIMEFRAME_END TIMEFRAME_END}</td>
+   *     </tr>
+   *     <!-- If document type has a thumbnail -->
+   *     <tr>
+   *       <td>{@link DbColumn#THUMBNAIL THUMBNAIL}</td>
+   *       <td>Only if the document type has a thumbnail</td>
+   *     </tr>
+   *   </tbody>
+   * </table>
+   */
+
+  public String[] getDefaultColumns (int docType);
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+}

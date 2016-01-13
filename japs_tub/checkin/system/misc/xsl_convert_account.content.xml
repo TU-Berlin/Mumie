@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_convert_account.content.xml,v 1.6 2009/11/03 12:24:54 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<xsl:variable name="status" select="/*/@status"/>
+
+<xsl:variable name="error" select="/*/@error"/>
+
+<xsl:variable name="text-field-size">20</xsl:variable>
+
+<xsl:template name="text-field">
+  <xsl:param name="name"/>
+  <xsl:param name="default-value"/>
+  <xsl:param name="size" select="$text-field-size"/>
+  <xsl:param name="html-id" select="concat('INPUT.', $name)"/>
+  <xsl:variable name="value">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name" select="$name"/>
+      <xsl:with-param name="default" select="$default-value"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <input id="{$html-id}"
+         type="text"
+         class="normal"
+         name="{$name}"
+         value="{$value}"
+         size="{$size}"
+         onfocus="setInputFocusStyle('{$html-id}')"
+         onblur="setInputNormalStyle('{$html-id}')">
+  </input>
+</xsl:template>
+
+<xsl:template name="password-field">
+  <xsl:param name="name"/>
+  <xsl:param name="size" select="$text-field-size"/>
+  <xsl:param name="html-id" select="concat('INPUT.', $name)"/>
+  <input id="{$html-id}"
+         type="password"
+         name="{$name}"
+         size="{$size}"
+         onfocus="setInputFocusStyle('{$html-id}')"
+         onblur="setInputNormalStyle('{$html-id}')"/>
+</xsl:template>
+
+<xsl:template name="mark-as-mandatory">
+  <span class="mandatory-mark">*</span>
+</xsl:template>
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>Mumie-Konto-Umstellung</title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="input-element-javascript"/>
+      </script>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-bounded-width">
+        <xsl:choose>
+          <xsl:when test="$status = 'ok'">
+            <!-- Feedback after successful accout conversion: -->
+            <h1>Konto-Umstellung erfolgreich</h1>
+            <p>
+              Bitte melden Sie sich ab jetzt immer mit Ihrem regul&#228;ren tubIT-Konto an.
+            </p>
+          </xsl:when>
+          <xsl:otherwise>
+            <!-- Initial form, or form with error message after failed try: -->
+            <h1>Konto-Umstellung</h1>
+            <xsl:if test="$status = 'failed'">
+              <div class="error">
+                <h2>Fehler:</h2>
+                <p>
+                  <xsl:choose>
+                    <xsl:when test="$error = 'old-login-name-missing'">
+                      Name des alten Kontos fehlt
+                    </xsl:when>
+                    <xsl:when test="$error = 'old-password-missing'">
+                      Passwort des alten Kontos fehlt
+                    </xsl:when>
+                    <xsl:when test="$error = 'new-login-name-missing'">
+                      Name des neuen Kontos fehlt
+                    </xsl:when>
+                    <xsl:when test="$error = 'new-password-missing'">
+                      Passwort des neuen Kontos fehlt
+                    </xsl:when>
+                    <xsl:when test="$error = 'old-user-not-found-in-ldap'">
+                      Altes Konto <!--in LDAP-->unbekannt
+                    </xsl:when>
+                    <xsl:when test="$error = 'old-password-check-failed'">
+                      Passwort-&#220;berpr&#252;fung des alten Kontos fehlgeschlagen
+                    </xsl:when>
+                    <xsl:when test="$error = 'old-user-not-found-in-mumie-db'">
+                      Altes Konto <!--in Mumie-->unbekannt
+                    </xsl:when>
+                    <xsl:when test="$error = 'new-user-not-found-in-ldap'">
+                      Neues Konto unbekannt
+                    </xsl:when>
+                    <xsl:when test="$error = 'new-password-check-failed'">
+                      Passwort-&#220;berpr&#252;fung des neuen Kontos fehlgeschalgen
+                    </xsl:when>
+                    <xsl:when test="$error = 'user-is-not-logged-in-user'">
+                      Falsche Login-Daten f&#252;r altes Konto
+                    </xsl:when>
+                    <xsl:when test="$error = 'old-account-is-no-temp-account'">
+                      Altes Konto ist kein externes Konto
+                    </xsl:when>
+                    <xsl:when test="$error = 'new-account-is-temp-account'">
+                      Neues Konto ist ein externes Konto
+                    </xsl:when>
+                    <xsl:when test="$error = 'new-account-already-exists-in-mumie-db'">
+                      Neues Konto existiert bereits in Mumie
+                    </xsl:when>
+                  </xsl:choose>
+                </p>
+                <p>
+                  Versuchen Sie es bitte erneut
+                </p>
+              </div>
+            </xsl:if>
+            <p>
+              Hier k&#246;nnen Sie Ihr derzeitiges <b>externes tubIT-Konto</b> in der Mumie auf ein regul&#228;res <b>tubIT-Konto</b>
+              umstellen.
+ <!-- Alle bisher erzielten Hausaufgabenpunkte usw. bleiben Ihnen selbstverst&#228;ndlich erhalten. -->
+            </p>
+            <p>
+              Bei Fragen/Problemen wenden Sie sich bitte an das <a target="_blank" href="http://www.moses.tu-berlin.de/forum">
+              Moses-Forum</a>.
+            </p>
+            <form action="{$xsl.url-prefix}/protected/convert-account"
+                  enctype="multipart/form-data"
+                  method="post">
+              <input type="hidden" name="form-stage" value="1"/>
+              <h2>Altes Konto:</h2>
+              <i>(derzeitiges verwendetes externes tubIT-Konto)</i>
+              <table class="grid" style="margin-left: 0em">
+                <tr>
+                  <td>Konto:</td>
+                  <td>
+                    <xsl:call-template name="text-field">
+                      <xsl:with-param name="name">old-login-name</xsl:with-param>
+                    </xsl:call-template>
+                    <!-- <xsl:call-template name="mark-as-mandatory"/> -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>Passwort:</td>
+                  <td>
+                    <xsl:call-template name="password-field">
+                      <xsl:with-param name="name">old-password</xsl:with-param>
+                    </xsl:call-template>
+                    <!-- <xsl:call-template name="mark-as-mandatory"/> -->
+                  </td>
+                </tr>
+              </table>
+              <h2>Neues Konto:</h2>
+             <i>(regul&#228;res tubIT-Konto)</i>
+              <table class="grid" style="margin-left: 0em">
+                <tr>
+                  <td>Konto:</td>
+                  <td>
+                    <xsl:call-template name="text-field">
+                      <xsl:with-param name="name">new-login-name</xsl:with-param>
+                    </xsl:call-template>
+                    <!-- <xsl:call-template name="mark-as-mandatory"/> -->
+                  </td>
+                </tr>
+                <tr>
+                  <td>Passwort:</td>
+                  <td>
+                    <xsl:call-template name="password-field">
+                      <xsl:with-param name="name">new-password</xsl:with-param>
+                    </xsl:call-template>
+                    <!-- <xsl:call-template name="mark-as-mandatory"/> -->
+                  </td>
+                </tr>
+              </table>
+              <p>
+                <button type="submit" name="submit" value="submit">Konto umstellen</button>
+              </p>
+            </form>
+          </xsl:otherwise>
+        </xsl:choose>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

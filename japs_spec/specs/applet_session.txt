@@ -1,0 +1,85 @@
+Autoren: Ruedi Seiler <seiler@math.tu-berlin.de>,
+         Tilman Rassy <rassy@math.tu-berlin.de> 
+$Id: applet_session.txt,v 1.1 2005/05/19 09:04:53 rassy Exp $
+
+
+
+                        SESSION-WIEDERHERSTELLUNG IN APPLETS
+
+
+        Ziel ist es mit folgender Situation umzugehen: Die Studentin hat die
+        Aufgabe teilweise gelöst und dann die Bearbeitung unterbrochen (Applet
+        geschlossen, ausgeloggt). Bei der Wiederaufname der Bearbeitung soll
+        sie das Applet so vorfinden, als hätte sie es nie verlassen. Dazu ist
+        es notwendig, alle Daten, die den momentanen "Zustand" des Applets
+        ausmachen, in das Data-Sheet zu schreiben, das das Appltet beim
+        Speichern an den Server schickt, und diese beim Neustart aus dem
+        Data-Sheet, das vom Server zum Applet geschickt wird, wieder auszulesen
+        und mit ihnen des letzten Zustand zu rekonstruieren.
+
+
+
+1. Der Applet-Zustand
+   ==================
+
+Der momentane Zustand des Applets umfasst die folgenden Daten:
+
+  1.1. Die Antworten des Studenten, soweit eingegeben.
+
+  1.2. Den Zustand sämtlicher veränderbaren GUI-Elemente (auch der momentan
+       nicht sichtbaren), z.B. bei Radio-Buttons den gerade aktivierten Button,
+       bei Karteikarten die gerade aktive Karteikarte usw.
+
+  1.3. Den Zustand aller von aussen, d.h. von JavaScript-Funktionen,
+       kontrollierten Schalter.
+
+  1.4. Den Zustand veränderbarer grafischer Darstellungen (z.B. vom Benutzer
+       verschiebbarer Pfeile).
+
+  1.5. BEMERKUNG: Ist die Aufgabe in Teilaufgaben unterteilt, so beinhaltet der
+       Zustand insbesondere die Angabe, welche Teilaufgabe gerade bearbeitet
+       wird.
+
+  1.6. Kriterium für die Vollständigkeit der den Zustand charakterisierenden
+       Daten ist, dass nach Speichern, Ausloggen, Wiedereinloggen und Neuladen
+       der Aufgabenseite das Applet sich genauso verhält, als wenn die Seite
+       nie verlassen worden wäre.
+
+
+
+2. Speicherung/Wiederherstellung des Zustandes
+   ===========================================
+
+  2.1. Klickt der Benutzer den "Speichern"-Button, so werden alle Angaben, die
+       zur Charakterisierung des Zustands nötig sind, in das Data-Sheet
+       geschrieben (s.u.), das an den Server geschickt und dort in der
+       Datenbank gespeichert wird.
+
+  2.2. Lädt der Benutzer die Aufgabenseite im Browser, so wird der Zustand des
+       Applets bei der letzten Betätigung des "Speichern"-Buttons
+       wiederhergestellt. Die Daten dazu findet das Applet in dem Data-Sheet,
+       das ihm beim Laden der Seite vom Server übermittelt wird.
+
+
+
+3. Organisation der Zustands-Daten im Data-Sheet
+   =============================================
+
+  3.1. Die Antworten (1.1) werden im user/answer-Teil des Data-Sheets
+       abgelegt. 
+
+       Konventionsvorschlag: Ist die Aufgabe in Teilaufgaben unterteilt, so
+       gibt es für jede Teilaufgabe eine Unit user/answer/subtask_N, wobei N
+       die Nummer der Teilaufgabe ist (Numerierung bei 1 beginnend).
+
+  3.2. Die anderen Zustands-Daten werden im user/session-Teil des Data-Sheets
+       abgelegt. 
+
+       Konventionsvorschlag:  Ist die Aufgabe in Teilaufgaben unterteilt, so
+       gibt es ein Data-Element user/session/selected_subtask, das die Nummer der
+       aktuellen Teilaufgabe enthält.
+
+
+
+
+-- ENDE DER DATEI --

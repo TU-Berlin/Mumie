@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_element.content.xml,v 1.24 2009/11/03 12:23:41 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:elm="http://www.mumie.net/xml-namespace/document/element"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:math-ext="http://www.mumie.net/xml-namespace/mathml-ext"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="elm mtx math math-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-stdlayout" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-math" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-media" internal="yes"/>
+<xsl-ext:import lid="xsl-element-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!--
+  ================================================================================
+  Global parameters and variables
+  ================================================================================
+-->
+
+<!-- HTML id of the main element, ie. the "table" element containing all the content -->
+<xsl:variable name="main-element-html-id">_MAIN_</xsl:variable>
+
+<!-- The "strut" image -->
+<xsl:param name="strut-image"><xsl-ext:url lid="strut-image"/></xsl:param>
+
+<!-- Whether this content is shown in a frame -->
+<xsl:variable name="as-frame">
+<xsl:call-template name="xsl.boolean-to-yes-or-no">
+  <xsl:with-param name="boolean">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name">as-frame</xsl:with-param>
+      <xsl:with-param name="default">no</xsl:with-param>
+    </xsl:call-template>
+  </xsl:with-param>
+</xsl:call-template>
+</xsl:variable>
+
+<!-- Whether this content is shown in a popup -->
+<xsl:variable name="as-popup">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">as-popup</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!--
+  ================================================================================
+  General
+  ================================================================================
+-->    
+
+<xsl:template name="category-name">
+  <xsl:choose>
+    <xsl:when test="@category='definition'">
+      <xsl:value-of select="$i18n-definition-name"/>
+    </xsl:when>
+    <xsl:when test="@category='theorem'">
+      <xsl:value-of select="$i18n-theorem-name"/>
+    </xsl:when>
+    <xsl:when test="@category='lemma'">
+      <xsl:value-of select="$i18n-lemma-name"/>
+    </xsl:when>
+    <xsl:when test="@category='application'">
+      <xsl:value-of select="$i18n-application-name"/>
+    </xsl:when>
+    <xsl:when test="@category='motivation'">
+      <xsl:value-of select="$i18n-motivation-name"/>
+    </xsl:when>
+    <xsl:when test="@category='algorithm'">
+      <xsl:value-of select="$i18n-algorithm-name"/>
+    </xsl:when>
+    <xsl:when test="@category='proof'">
+      <xsl:value-of select="$i18n-proof-name"/>
+    </xsl:when>
+    <xsl:when test="@category='visualization'">
+      <xsl:value-of select="$i18n-visualization-name"/>
+    </xsl:when>
+    <xsl:when test="@category='deduction'">
+      <xsl:value-of select="$i18n-deduction-name"/>
+    </xsl:when>
+    <xsl:when test="@category='remark'">
+      <xsl:value-of select="$i18n-remark-name"/>
+    </xsl:when>
+    <xsl:when test="@category='history'">
+      <xsl:value-of select="$i18n-history-name"/>
+    </xsl:when>
+    <xsl:when test="@category='example'">
+      <xsl:value-of select="$i18n-example-name"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:template>
+
+<!--
+  ================================================================================
+  General JavaScript
+  ================================================================================
+-->
+
+<xsl:template name="javascript">
+  
+  <!--
+    Popup "windows"
+  -->
+  
+  <xsl:call-template name="popup-javascript">
+    <xsl:with-param name="main" select="$main-element-html-id"/>
+  </xsl:call-template>
+  
+</xsl:template>
+
+<!--
+  ================================================================================
+  Top-level structure
+  ================================================================================
+-->    
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="/*/mumie:name"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmtex-stdlayout"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-element"/></xsl:attribute>
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+      <xsl:apply-templates select="/*/mumie:content/*"/>
+    </body>
+  </html>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Main template for definitions, theorems, and lemmas
+  ================================================================================
+-->    
+
+<xsl:template match="/*/mumie:content/elm:element[@category='definition' or
+                                                  @category='theorem' or
+                                                  @category='lemma']">
+  <xsl:variable name="parts"
+                select="elm:statement|elm:defequivalence|elm:implication|elm:equivalence"/>
+
+  <table id="{$main-element-html-id}" class="root">
+    <xsl:choose>
+
+      <!-- Free:-->
+      <xsl:when test="@arrange='free'">
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Free text: -->
+            <div class="plain">
+              <xsl:apply-templates/>
+            </div>
+          </td>
+        </tr>
+      </xsl:when>
+
+      <!-- Single:-->
+      <xsl:when test="count($parts) = 1">
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Suppositions: -->
+            <xsl:apply-templates select="elm:suppositions"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Part: -->
+            <xsl:apply-templates select="$parts"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Remarks: -->
+            <xsl:apply-templates select="elm:remark|elm:remarks"/>
+          </td>
+        </tr>
+      </xsl:when>
+
+      <!-- Multiple: -->
+      <xsl:when test="count($parts) &gt; 1">
+        <tr>
+          <td colspan="2">
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <!-- Suppositions: -->
+            <xsl:apply-templates select="elm:suppositions"/>
+          </td>
+        </tr>
+        <xsl:for-each select="$parts">
+          <tr>
+            <td class="number">
+              <!-- Number: -->
+              <div class="number">
+                <xsl:number value="position()" format="(i)"/>
+              </div>
+            </td>
+            <td>
+              <!-- Part: -->
+              <xsl:apply-templates select="."/>
+            </td>
+          </tr>
+        </xsl:for-each>
+        <tr>
+          <td colspan="2">
+            <!-- Remarks: -->
+            <xsl:apply-templates select="elm:remark|elm:remarks"/>
+          </td>
+        </tr>
+      </xsl:when>
+
+      <!-- Propositionlist: -->
+      <xsl:when test="elm:propositionlist">
+        <xsl:variable name="variant" select="elm:propositionlist/@variant"/>
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Suppositions: -->
+            <xsl:apply-templates select="elm:suppositions"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Junction text (e.g., "then the following holds:"): -->
+            <div class="plain">
+              <xsl:choose>
+                <xsl:when test="$variant='plain'">
+                  <xsl:value-of select="$i18n-text-proplist-plain"/>
+                </xsl:when>
+                <xsl:when test="$variant='equivalent'">
+                  <xsl:value-of select="$i18n-text-proplist-equivalent"/>
+                </xsl:when>
+              </xsl:choose>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- List of propopsitions: -->
+            <xsl:apply-templates select="elm:propositionlist"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Remarks: -->
+            <xsl:apply-templates select="elm:remark|elm:remarks"/>
+          </td>
+        </tr>
+      </xsl:when>
+
+    </xsl:choose>
+
+    <tr>
+      <td colspan="2">
+        <!-- Buttons: -->
+        <xsl:call-template name="buttons"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <!-- Footer: -->
+        <xsl:call-template name="footer"/>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Main template for algorithms
+  ================================================================================
+-->
+
+<xsl:template match="/*/mumie:content/elm:element[@category='algorithm']">
+  <table class="root">
+    <tr>
+      <td>
+        <!-- Header: -->
+        <xsl:call-template name="header"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- Background: -->
+        <xsl:apply-templates select="elm:background"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table class="boxes">
+          <!-- Input: -->
+          <tr>
+            <td class="alg-io-left">
+              <xsl:value-of select="$i18n-algorithm-input"/>
+            </td>
+            <td class="alg-io-right">
+              <xsl:apply-templates select="elm:input"/>
+            </td>
+          </tr>
+          <!-- Output: -->
+          <tr>
+            <td class="alg-io-left">
+              <xsl:value-of select="$i18n-algorithm-output"/>
+            </td>
+            <td class="alg-io-right">
+              <xsl:apply-templates select="elm:output"/>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- Algsteps: -->
+        <xsl:apply-templates select="elm:algsteps"/>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <!-- Remarks: -->
+        <xsl:apply-templates select="elm:remark|elm:remarks"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <!-- Buttons: -->
+        <xsl:call-template name="buttons"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <!-- Footer: -->
+        <xsl:call-template name="footer"/>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Main template for motivations and applications
+  ================================================================================
+-->    
+
+<xsl:template match="/*/mumie:content/elm:element[@category='motivation' or
+                                                  @category='application']">
+  <table class="root">
+    <xsl:choose>
+
+      <!-- Free:-->
+      <xsl:when test="@arrange='free'">
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Free text: -->
+            <div class="plain">
+              <xsl:apply-templates/>
+            </div>
+          </td>
+        </tr>
+      </xsl:when>
+
+      <xsl:otherwise>
+        <!-- Should not occur, since the "free" flag is always enabled -->
+      </xsl:otherwise>
+
+    </xsl:choose>
+
+    <tr>
+      <td colspan="2">
+        <!-- Buttons: -->
+        <xsl:call-template name="buttons"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <!-- Footer: -->
+        <xsl:call-template name="footer"/>
+      </td>
+    </tr>
+
+  </table>
+
+</xsl:template>
+
+<!--
+  ================================================================================
+  Main template for remarks, examples, visualizations, histories, motivations (as
+  subelements)
+  ================================================================================
+-->    
+
+<xsl:template match="/*/mumie:content/elm:subelement[@category='remark' or
+                                                     @category='example' or
+                                                     @category='visualization' or
+                                                     @category='history' or
+                                                     @category='motivation']">
+  <table class="root">
+    <xsl:choose>
+
+      <!-- Free:-->
+      <xsl:when test="@arrange='free'">
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Free text: -->
+            <div class="plain">
+              <xsl:apply-templates/>
+            </div>
+          </td>
+        </tr>
+      </xsl:when>
+
+      <xsl:otherwise>
+        <!-- Should not occur, since the "free" flag is always enabled -->
+      </xsl:otherwise>
+
+    </xsl:choose>
+
+    <tr>
+      <td colspan="2">
+        <!-- Buttons: -->
+        <xsl:call-template name="buttons"/>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <!-- Footer: -->
+        <xsl:call-template name="footer"/>
+      </td>
+    </tr>
+
+  </table>
+
+</xsl:template>
+
+<!--
+  ================================================================================
+  Header
+  ================================================================================
+-->    
+
+<xsl:template name="header">
+  <table class="header">
+    <tr>
+      <td>
+        <div class="category">
+          <xsl:call-template name="category-name"/>
+        </div>
+      </td>
+      <td>
+        <xsl:apply-templates select="elm:title|elm:defnotions" mode="header"/>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template match="elm:title" mode="header">
+  <div class="title">
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<xsl:template match="elm:defnotions" mode="header">
+  <div class="defnotions">
+    <xsl:for-each select="elm:defnotion">
+      <xsl:apply-templates/>
+      <br/>
+    </xsl:for-each>
+  </div>
+</xsl:template>
+
+<xsl:template match="elm:title|elm:defnotions">
+  <!-- Ignored in normal processing -->
+</xsl:template>
+
+<!--
+  ================================================================================
+  Suppositions, statement, background
+  ================================================================================
+-->    
+
+<xsl:template match="elm:suppositions|elm:statement|elm:background">
+  <div class="box">
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Construct of two statements (defequivalence, equivalence, implication)
+  ================================================================================
+-->
+
+<xsl:template match="elm:defequivalence|elm:equivalence|elm:implication">
+  <table class="pair-of-statements">
+    <xsl:choose>
+      <xsl:when test="@arrange='top-bottom'">
+        <tr>
+          <td>
+            <xsl:apply-templates select="elm:statement[1]"/>
+          </td>
+          <td>
+            <div class="symbol-top-bottom">
+              <xsl:call-template name="symbol"/>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <xsl:apply-templates select="elm:statement[2]"/>
+          </td>
+        </tr>
+      </xsl:when>
+      <xsl:otherwise> <!-- esp. @arrange='side-by-side' -->
+        <tr>
+          <td>
+            <xsl:apply-templates select="elm:statement[1]"/>
+          </td>
+          <td>
+            <div class="symbol-side-by-side">
+              <xsl:call-template name="symbol"/>
+            </div>
+          </td>
+          <td>
+            <xsl:apply-templates select="elm:statement[2]"/>
+          </td>
+        </tr>
+      </xsl:otherwise>
+    </xsl:choose>
+  </table>
+</xsl:template>
+
+<xsl:template name="symbol">
+  <math xmlns="http://www.w3.org/1998/Math/MathML">
+    <mo>
+      <xsl:choose>
+        <xsl:when test="../elm:defequivalence">:&#x021D4;</xsl:when>
+        <xsl:when test="../elm:equivalence">&#x021D4;</xsl:when>
+        <xsl:when test="../elm:implication">&#x021D2;</xsl:when>
+      </xsl:choose>
+    </mo>
+  </math>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Propositionlist
+  ================================================================================
+-->
+
+<xsl:template match="elm:propositionlist">
+  <div class="box">
+    <table class="propositionlist">
+      <xsl:for-each select="elm:proposition">
+        <tr>
+          <td class="proplist-number">
+            <!-- Number: -->
+            <xsl:number value="position()" format="(i)"/>
+          </td>
+          <td>
+            <!-- Proposition: -->
+            <xsl:apply-templates select="."/>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </div>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Algsteps
+  ================================================================================
+-->
+
+<xsl:template match="elm:algsteps">
+  <div class="box">
+    <table class="algsteps">
+      <xsl:for-each select="elm:algstep">
+        <tr>
+          <td class="algstep-number">
+            <!-- Number: -->
+            <p>
+              <img src="{$strut-image}" class="strut"/>
+              <xsl:number value="position()" format="1."/>
+            </p>
+          </td>
+          <td>
+            <!-- Algstep: -->
+            <xsl:apply-templates select="."/>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </div>
+</xsl:template>
+
+<!--
+  Paragraphs in algsteps:
+-->
+
+<xsl:template match="elm:algstep/mtx:par" priority="10">
+  <p>
+    <img src="{$strut-image}" class="strut"/>
+    <xsl:apply-templates/>
+  </p>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Remarks
+  ================================================================================
+-->    
+
+<xsl:template match="elm:remark">
+  <div class="remarks">
+    <div class="remarks-headline">
+      <xsl:value-of select="$i18n-remark-headline"/>
+    </div>
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<xsl:template match="elm:remarks">
+  <div class="remarks">
+    <div class="remarks-headline">
+      <xsl:value-of select="$i18n-remarks-headline"/>
+    </div>
+    <xsl:apply-templates/>
+  </div>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Buttons
+  ================================================================================
+-->
+
+<!--
+  Button-area
+-->
+
+<xsl:template name="buttons">
+  <div class="buttons">
+    <xsl:if test="$as-popup='yes'">    
+    <button type="button" onclick="javascript:window.close()">
+      <xsl:value-of select="$i18n-close-window"/>
+     </button>
+   </xsl:if>
+  </div>
+</xsl:template>
+
+</xsl:stylesheet>

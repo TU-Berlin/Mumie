@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cocoon xmlns:mumie="http://www.mumie.net/xml-namespace/xconf"
+        version="2.1"
+        user-roles="/WEB-INF/mumie.roles">
+
+  <!--
+    ================================================================================
+    Sitemap
+    ================================================================================
+  -->
+
+  <sitemap check-reload="yes" file="context://sitemap.xmap" logger="sitemap"/>
+
+  <!--
+    ================================================================================
+    Sitemap Flowscript
+    ================================================================================
+  -->
+
+  <flow-interpreters default="javascript" logger="flow">
+    <!-- FOM (Flow Object Model) -->
+    <component-instance class="org.apache.cocoon.components.flow.javascript.fom.FOM_JavaScriptInterpreter" name="javascript">
+      <load-on-startup>resource://org/apache/cocoon/components/flow/javascript/fom/fom_system.js</load-on-startup>
+      <reload-scripts>true</reload-scripts>
+      <check-time>4000</check-time>
+      <!--  <debugger>enabled</debugger> -->  <!-- JavaScript Debugger support -->
+    </component-instance>
+  </flow-interpreters>
+
+  <!--
+    ================================================================================
+    Configuration for the continuations manager
+    ================================================================================
+  -->
+
+  <continuations-manager continuation-sharing-bug-compatible="false" logger="flow.manager" session-bound-continuations="false" time-to-live="3600000">
+    <expirations-check type="periodic">
+      <offset>180000</offset>
+      <period>180000</period>
+    </expirations-check>
+  </continuations-manager>
+
+  <!--
+    ================================================================================
+    Sitemap Input/Output Modules
+    ================================================================================
+  -->
+
+  <input-modules>
+    <component-instance class="org.apache.cocoon.components.modules.input.URLEncodeModule" logger="core.modules.input" name="url-encode">
+      <encoding>UTF-8</encoding>
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.URLDecodeModule" logger="core.modules.input" name="url-decode">
+      <encoding>UTF-8</encoding>
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.GlobalInputModule" logger="core.modules.input" name="global"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.RequestModule" logger="core.modules.input" name="request"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.BaseLinkModule" logger="core.modules.input" name="baselink"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.SessionModule" logger="core.modules.input" name="session"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.RequestParameterModule" logger="core.modules.input" name="request-param"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.RawRequestParameterModule" logger="core.modules.input" name="raw-request-param"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.RequestAttributeModule" logger="core.modules.input" name="request-attr"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.HeaderAttributeModule" logger="core.modules.input" name="request-header"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.SessionAttributeModule" logger="core.modules.input" name="session-attr"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.CookieModule" logger="core.modules.input" name="cookie"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.SystemPropertyModule" logger="core.modules.input" name="system-property"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.StringConstantModule" logger="core.modules.input" name="constant"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.RandomNumberModule" logger="core.modules.input" name="random"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.DigestMetaModule" logger="core.modules.input" name="digest"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.DateInputModule" logger="core.modules.input" name="date">
+      <!-- <format>EEE, d MMM yyyy HH:mm:ss Z</format> -->
+      <!--Eg: Mon, 28 Oct 2002 03:08:49 +1100 -->
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.NullInputModule" logger="core.modules.input" name="nullinput"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.RealPathModule" logger="core.modules.input" name="realpath"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.ContextPathModule" logger="core.modules.input" name="contextpath"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.NamingInputModule" logger="core.modules.input" name="naming">
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.PropertiesFileModule" logger="core.modules.input" name="cocoon-properties">
+      <file src="resource://org/apache/cocoon/cocoon.properties"/>
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.FlowAttributeModule" logger="core.modules.input" name="flow-attribute"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.FlowAttributeModule" logger="core.modules.input" name="flow-attr"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.FlowContinuationModule" logger="core.modules.input" name="flow-continuation"/>
+
+    <component-instance class="org.apache.cocoon.components.modules.input.XMLMetaModule" logger="core.modules.input" name="xmlmeta"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.MapMetaModule" logger="core.modules.input" name="mapmeta"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.DateMetaInputModule" logger="core.modules.input" name="datemeta"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.JXPathMetaModule" logger="core.modules.input" name="jxpath"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.SimpleMappingMetaModule" logger="core.modules.input" name="simplemap"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.LocateResource" logger="core.modules.input" name="locate"/>
+    <component-instance class="org.apache.cocoon.components.modules.input.ChainMetaModule" logger="core.modules.input" name="chain">
+      <input-module name="request-param"/>
+      <input-module name="request-attr"/>
+      <input-module name="session-attr"/>
+      <input-module name="defaults"/>
+    </component-instance>
+
+    <!--+
+        | Following three modules definitions, 'defaults', 'myxml', and
+        | 'slashdot', are used only in the samples.
+        +-->
+    <component-instance class="org.apache.cocoon.components.modules.input.DefaultsModule" logger="core.modules.input" name="defaults">
+      <values>
+        <skin>defaultSkin</skin>
+        <base-url>http://localhost:8080/cocoon</base-url>
+      </values>
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.XMLFileModule" logger="core.modules.input" name="myxml">
+      <file src="context://samples/modules/forrestconf.xml"/>
+    </component-instance>
+    <component-instance class="org.apache.cocoon.components.modules.input.XMLFileModule" logger="core.modules.input" name="slashdot">
+      <file src="http://slashdot.org/slashdot.rss"/>
+    </component-instance>
+
+      <!-- This input module provides access to the information of a session context -->
+      <component-instance class="org.apache.cocoon.webapps.session.components.ContextInputModule" logger="core.modules.input" name="session-context"/>
+
+  </input-modules>
+
+  <!-- Output modules: -->
+  <output-modules>
+    <component-instance class="org.apache.cocoon.components.modules.output.RequestAttributeOutputModule" logger="core.modules.output" name="request-attr"/>
+    <component-instance class="org.apache.cocoon.components.modules.output.RequestAttributeMap" logger="core.modules.output" name="request-attr-map"/>
+    <component-instance class="org.apache.cocoon.components.modules.output.SessionAttributeOutputModule" logger="core.modules.output" name="session-attr"/>
+  </output-modules>
+
+  <!--
+    ================================================================================
+    XML
+    ================================================================================
+  -->
+
+  <entity-resolver logger="core.resolver">
+    <parameter name="catalog" value="WEB-INF/entities/catalog"/>
+    <parameter name="verbosity" value="1"/>
+  </entity-resolver>
+
+  <xml-parser class="org.apache.excalibur.xml.impl.JaxpParser" logger="core.xml-parser" pool-max="32">
+    <parameter name="validate" value="false"/>
+    <parameter name="namespace-prefixes" value="false"/>
+    <parameter name="stop-on-warning" value="true"/>
+    <parameter name="stop-on-recoverable-error" value="true"/>
+    <parameter name="reuse-parsers" value="false"/>
+    <parameter name="drop-dtd-comments" value="true"/>
+  </xml-parser>
+
+  <!-- XSLT Processor -->
+  <xslt-processor logger="core.xslt">
+     <parameter name="use-store" value="true"/>
+     <parameter name="incremental-processing" value="false"/>
+  </xslt-processor>
+
+  <!--  XSLT Processor using xsltc from Xalan -->
+  <component class="org.apache.cocoon.components.xslt.TraxProcessor" logger="core.xslt" role="org.apache.excalibur.xml.xslt.XSLTProcessor/xsltc">
+     <parameter name="use-store" value="true"/>
+     <parameter name="transformer-factory" value="org.apache.xalan.xsltc.trax.TransformerFactoryImpl"/>
+  </component>
+
+  <!--  Xalan XSLT Processor -->
+  <component class="org.apache.cocoon.components.xslt.TraxProcessor" logger="core.xslt" role="org.apache.excalibur.xml.xslt.XSLTProcessor/xalan">
+     <parameter name="use-store" value="true"/>
+     <parameter name="incremental-processing" value="false"/>
+     <parameter name="transformer-factory" value="org.apache.xalan.processor.TransformerFactoryImpl"/>
+  </component>
+
+  <!-- Xpath Processor (Based on Xalan) -->
+  <xpath-processor class="org.apache.excalibur.xml.xpath.XPathProcessorImpl" logger="core.xpath"/>
+
+  <!-- XMLizers -->
+  <xmlizer logger="core.xmlizer">
+    <parser mime-type="text/xml" role="org.apache.excalibur.xml.sax.SAXParser"/>
+  </xmlizer>
+
+  <!--
+    ================================================================================
+    Object Stores
+    ================================================================================
+  -->
+
+  <transient-store logger="core.store.transient">
+    <parameter name="maxobjects" value="1000"/>
+  </transient-store>
+
+  <store logger="core.store">
+    <parameter name="maxobjects" value="1000"/>
+    <parameter name="use-cache-directory" value="true"/>
+  </store>
+
+  <store-janitor logger="core.store.janitor">
+    <parameter name="freememory" value="2048000"/>
+    <parameter name="heapsize" value="66600000"/>
+    <parameter name="cleanupthreadinterval" value="10"/>
+    <parameter name="percent_to_free" value="10"/>
+    <parameter name="invokegc" value="false"/>
+    <parameter name="thread-pool" value="daemon"/>
+  </store-janitor>
+
+  <!--
+    ================================================================================
+    Protocol Handlers
+    ================================================================================
+  -->
+
+  <source-factories>
+    <component-instance class="org.apache.excalibur.source.impl.ResourceSourceFactory" name="resource"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.ContextSourceFactory" name="context"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.SitemapSourceFactory" name="cocoon"/>
+    <component-instance class="org.apache.excalibur.source.impl.FileSourceFactory" name="file"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.PartSourceFactory" name="upload"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.ModuleSourceFactory" name="module"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.XModuleSourceFactory" name="xmodule"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.ZipSourceFactory" name="zip"/>
+    <component-instance class="org.apache.cocoon.components.source.impl.EmptySourceFactory" name="empty"/>
+    <component-instance class="org.apache.excalibur.source.impl.URLSourceFactory" name="*"/>
+  </source-factories>
+
+  <!--
+    ================================================================================
+    Internationalization Catalogs
+    ================================================================================
+  -->
+
+  <i18n-bundles logger="core.i18n">
+    <store-role>org.apache.excalibur.store.Store/TransientStore</store-role>
+    <reload-interval>60000</reload-interval>
+    <catalogue-location>context://samples/i18n/translations</catalogue-location>
+  </i18n-bundles>
+
+  <!--
+    ================================================================================
+    System Components
+    ================================================================================
+  -->
+
+  <classloader class="org.apache.cocoon.components.classloader.ClassLoaderManagerImpl" logger="core.classloader"/>
+
+  <!--  XML compiler/decompiler -->
+  <xml-serializer class="org.apache.cocoon.components.sax.XMLByteStreamCompiler" logger="core.xml.serializer" pool-max="32"/>
+  <xml-deserializer class="org.apache.cocoon.components.sax.XMLByteStreamInterpreter" logger="core.xml.deserializer" pool-max="32"/>
+
+  <!-- Cache Manager -->
+  <component class="org.apache.cocoon.transformation.helpers.DefaultIncludeCacheManager" role="org.apache.cocoon.transformation.helpers.IncludeCacheManager">
+  </component>
+
+  <runnable-manager logger="core.runnable">
+    <thread-factory>org.apache.cocoon.components.thread.DefaultThreadFactory</thread-factory>
+    <thread-pools>
+      <thread-pool>
+        <name>default</name>
+        <priority>NORM</priority>
+        <daemon>false</daemon>
+        <queue-size>-1</queue-size>
+        <max-pool-size>5</max-pool-size>
+        <min-pool-size>5</min-pool-size>
+        <keep-alive-time-ms>60000</keep-alive-time-ms>
+        <block-policy>ABORT</block-policy>
+        <shutdown-graceful>false</shutdown-graceful>
+        <shutdown-wait-time-ms>-1</shutdown-wait-time-ms>
+      </thread-pool>
+      <thread-pool>
+        <name>daemon</name>
+        <priority>NORM</priority>
+        <daemon>true</daemon>
+        <queue-size>0</queue-size>
+        <max-pool-size>-1</max-pool-size>
+        <min-pool-size>1</min-pool-size>
+        <keep-alive-time-ms>60000</keep-alive-time-ms>
+        <block-policy>ABORT</block-policy>
+        <shutdown-graceful>false</shutdown-graceful>
+        <shutdown-wait-time-ms>-1</shutdown-wait-time-ms>
+      </thread-pool>
+    </thread-pools>
+  </runnable-manager>
+
+  <session-manager logger="core.session-manager"/>
+  <session-form-manager logger="core.session-manager"/>
+  <session-transaction-manager logger="core.session-manager"/>
+  <session-context-manager logger="core.session-manager"/>
+
+  <session-media-manager logger="core.media-manager" pool-max="32">
+      <mediatypes default="html">
+        <media name="wap" useragent="Nokia"/>
+        <media name="wap" useragent="UP"/>
+        <media name="wap" useragent="Wapalizer"/>
+      </mediatypes>
+  </session-media-manager>
+
+  <session-context-providers>
+    <component-instance class="org.apache.cocoon.webapps.session.context.StandardSessionContextProvider" name="request"/>
+    <component-instance class="org.apache.cocoon.webapps.session.context.StandardSessionContextProvider" name="temporary"/>
+    <component-instance class="org.apache.cocoon.webapps.authentication.context.AuthenticationContextProvider" name="authentication"/>
+  </session-context-providers>
+
+  <authentication-manager logger="core.authentication-manager">
+  </authentication-manager>
+
+  <!--
+    ================================================================================
+    DEPRECATED
+    ================================================================================
+  -->
+
+  <url-factory logger="core.url-factory">
+    <protocol class="org.apache.cocoon.components.url.ResourceURLFactory" name="resource"/>
+  </url-factory>
+
+  <source-handler logger="core.source-handler">
+    <protocol class="org.apache.cocoon.components.source.FileSourceFactory" name="file"/>
+    <protocol class="org.apache.cocoon.components.source.ContextSourceFactory" name="context"/>
+  </source-handler>
+
+  <!--
+    ================================================================================
+    Mumie Components
+    ================================================================================
+  -->
+
+  <checkin-helper>
+    <mumie:checkin-helper-config/>
+  </checkin-helper>
+
+  <db-helper pool-min="8"
+             pool-max="256"
+             pool-grow="4">
+    <mumie:db-helper-config/>
+  </db-helper>
+
+  <mumie:documents>
+    <xsl_stylesheet name="xsl_stylesheet" pool-max="256" pool-min="8" pool-grow="4"/>
+  </mumie:documents>
+
+  <mumie:content-objects-to-checkin/>
+
+  <mumie:checked-in-documents/>
+
+  <mumie:pseudo-documents/>
+
+  <mumie:sync-commands/>
+
+  <mumie:event-handlers/>
+
+  <!--
+  <sax-filters>
+    <subdocument name="subdocument"/>
+  </sax-filters>
+  -->
+
+  <mail-helper>
+    <mumie:mail-helper-config/>
+  </mail-helper>
+
+  <upload-helper>
+    <mumie:upload-helper-config/>
+  </upload-helper>
+
+  <sign-helper>
+    <mumie:sign-helper-config/>
+  </sign-helper>
+
+  <receipt-helper>
+    <mumie:receipt-helper-config/>
+  </receipt-helper>
+
+  <user-problem-data>
+    <mumie:user-problem-data-config/>
+  </user-problem-data>
+
+  <message-destination-table>
+    <mumie:message-destination-table-config/>
+  </message-destination-table>
+
+  <client-time>
+    <offset>0</offset>
+  </client-time>
+
+</cocoon>

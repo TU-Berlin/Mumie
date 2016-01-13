@@ -1,0 +1,1070 @@
+*************************************************************************
+*                          Version History                              *
+*************************************************************************
+
+Version 2.1.2-b19 (letzter Checkin: 2.12.2009)
+=================
+- MMTupleSet zweisprachig
+- MMAffine2DPolygon Methoden RemoveFirstVertex 
+  und RemoveFirstVertices hinzugefuegt.
+- Common-Explanation-Nodes in Korrektur_DS
+- J3DLineSegmentDrawable: Cone f�r Arrowhead benutzt.
+- MM3DCanvas: Bugfix bei nicht angezeigten Toolbar.
+- ViewPanel: Fix für Zeilenumbrüche/Höhe von Textpanels (Applet-Titel abgeschnitten)
+
+Version 2.1.2-b18 (letzter Checkin: 05.10.2009)
+=================
+- Workaround: html-Tag aus TabbedPanel.HIGHLIGHT_STRING entfernt wegen Java-Bug (ID at bug.sun.com: 6670274)
+  im ab 1.6.0_15
+- DynamicResetButton: Tabnamen "Problem" hinzugefuegt
+
+Version 2.1.2-b17 (letzter Checkin: 18.09.2009)
+=================
+- MC: YesNoAnswer: "Ja"/"Nein" nun sprachunabhängig
+
+Version 2.1.2-b16 (letzter Checkin: 26.08.2009)
+=================
+- Operations
+  - Fix für fehlende Faktoren in Ergebnis von Operation::getComposed(..)
+- MMNumberPanel
+  - verwenden der Vordergrundfarbe der DisplayProperties, falls 'master' ist 'isFontRenderedWithObjectColor'
+    (Vordergrundfarbe wurde bisher ignoriert)
+
+Version 2.1.2-b15 (letzter Checkin: 20.07.2009)
+=================
+- Operations 
+  - kritische Regeln vom Expandieren entfernt (wg. Endlosschleife)
+    (z.B. "(-x-1)^2*(-x+1)^2")
+  - automatisches Normalisieren nach Expandieren 
+  - Fix f�r Expandieren von negativen Summen-Exponenten (z.B. "(x+2)^-2")
+    - Fehler (ExpandPowerOfSumRule)
+    - Berechnung (ExpandPowerRule)
+  - Fix f�r "(x-0)^3": Normalisieren entfernte Exponenten (RT #756)
+  - neue Normalisierungsregel f�r Potenzen vom komplexen "i" (RT #710)
+  - Fix f�r mehrstellige Wurzelexponenten (RT #735)
+- Zahlenklassen
+  - MComplex: triviale Rundungsfehler werden nun durch eigene "abs()" 
+    Methode vermieden (RT #710)
+  - MOpNumber: eigene "abs()" Methode benutzt nun Methode der Operation
+    (vorher: Ausdruck falsch da durch Quadrieren und Wurzel ziehen 
+     urspr�nglicher Ausdruck wieder erhalten wurde)
+- 'DARK_GREEN' im TeX-View entspricht jetzt (etwa) dem Farbwert von 'green' im html-View
+  (war vorher zu hell)     
+
+Version 2.1.2-b14 (letzter Checkin: 04.06.2009)
+=================
+- MC: Erklärungen für Antworten und Frage implementiert
+- MC: Marking-Texte geändert
+
+Version 2.1.2-b13 (letzter Checkin: 10.05.2009)
+=================
+- MC: Anpassungen an MC-Exercise-Klassen für MC-Editor
+- MC: Fix für Antwort-Variablen in Antwort-Texten
+- MC: Implementierung von Erklärungen für Fragen aus TeX
+- Scrolling in ControlPanel verbessert; deaktiviert aufgrund von Layout-Problemen
+- Darstellung des Marking an JAPS-Darstellung angeglichen
+- Fix für fehlende "common/problem"-Informationen im Preview-Modus
+- Fix für Datasheets speichern im Preview-Modus unter Windows OS
+
+Version 2.1.2-b12 (letzter Checkin: 28.04.2009)
+=================
+- Fix für Screen-Type-Extensions ohne Canvas-Angabe
+- Fix für Baselines nach Größenänderung (Dimensionsänderung in MatrixPanel)
+- About-Dialog benutzt nun Plain-Text-Label für Applet-Namen
+- neue NumberFactory Methode zum verlustbehafteten Kopieren zwischen NumberClasses
+- neue Plain Text View
+- Fix für Out-Of-Memory-Fehler
+- Abfrage auf fehlende Transformer in MMCanvas hinzugefügt (Registrieren von Extensions)
+
+Version 2.1.2-b11 (letzter Checkin: 31.03.2009)
+=================
+- wichtiger Bugfix in Klasse Eigenvalue2x2
+- CHARACTER_REPLACEMENTS erweitert
+- Schriftgroesse in PowerView geaendert
+- Abstand der Betragstriche und Stil in AbsView geaendert
+- Abstand zwischen Wurzelexponent und Wurzelzeichen in NrtView geaendert
+- Kopie/Erweiterung von Set2DTransformer fuer 'schoenere' Visualisierung von Mengen
+
+Version 2.1.2-b10 (letzter Checkin: 07.01.2009)
+=================
+- Tex-Renderer: Fix für falsche Schrift-Farbe und -Font nach "setText"
+- ja/nein bei JRadioButtons in MCQuestionPanel, wenn yesno-Typ
+- Set2DTransformer etwas "aufgehuebscht"
+- label-Rendering in Affine2DEllipseTransformer
+- TopBarView ersetzt nun TopCharView.BAR_TYPE (TeX-Renderer)
+
+Version 2.1.2-b09 (letzter Checkin: 21.11.2008)
+=================
+- ControlPanel-Ränder können nun geändert werden
+- MCRandomCorrector: Bugfix für falsche Frage-Nummern im Antwort-Marking
+- URL-Prefix des Mumie-Servers in Bug-Reports hinzugefügt
+- Bugfix in DoubleSliderTransformer wegen unnoetiger (zu Fehler fuehrenden) 
+  Methodenaufrufen in render(..)
+- getSpeedSlider() in Animation-Klasse hinzugefuegt
+
+
+Version 2.1.2-b08 (letzter Checkin: 14.11.2008)
+=================
+- TeX-Kommandos "quad" und "qquad" hinzugefügt
+- TeX-Renderer: - unnötige Zeilenumbrüche entfernt (falsche vertikale Ausrichtung)
+                - Fix für falsche horizontale linke Ausrichtung
+                - extra-Neuzeichnen für Baseline-Ausrichtung entfernt
+                - Wiederherstellen des Graphik-Kontextes nach Zeichnen
+- TeX-Parser: - Bugfix: aufeinanderfolgende Attribute
+              - Bugfix: Attribute in "non-Leaf"-Views (z.B. det, fraction, vec, etc.)
+- StyledTextButton: Fix für Vordergrundfarbe wenn deaktiviert
+
+
+Version 2.1.2-b07 (letzter Checkin: 07.10.2008)
+=================
+- MC-Technologie: Bugfix für nicht-String-Zahlen in Fragen-Auswahl (Random)
+
+
+Version 2.1.2-b06 (letzter Checkin: 01.10.2008)
+=================
+- MC-Technologie: Fragen-Auswahl hinzugefügt
+
+
+Version 2.1.2-b05
+=================
+- Minor Changes in j3d library : bessere Darstellung in ParameterizedSurfaceGeometry 
+                                 durch Nutzung von QuadArray statt TriangleStripArray
+- J3DRenderingHints : J3D_LINE_DISPLAYED hinzugef�gt. 
+- ParametricFunctionInR3 : Man kann nun Ecken-linien zeichnen lassen 
+- Bugfix (replace/substitute) aus MCAbstractExercise portiert
+- TeX-Sonderzeichen im Corrector-Marking implementiert
+- Build-Files angepasst
+- MC-Technologie: neuer Fragen-Typ "Text"
+- Bugfix für zu kleine Dialoge
+
+Version 2.1.2-b04
+=================
+- Umstellung des Build-Prozesses
+- Fix für Attribute-Bug in TeX-Parser
+
+
+Version 2.1.2-b03
+=================
+- Bugfix für Threading-Problem (selbes Applet mehrmals hintereinander starten)
+- TeX-Texte können nun auf Buttons benutzt werden
+- About-Dialog ans neue Framework angepaßt
+- Umlaute in Messages korrigiert
+- Icons aufgeräumt und ggf. verschoben und Code angepaßt (Lib und Applets)
+- Applet-Methode "showAppletFrame" benutzt nun Security-Workaround-Thread
+
+
+Version 2.1.2-b02
+=================
+- Ueberarbeitung (Layout, Events) von TupleSet (M, MM, MM-Panel, Transformer, TupleSetEntry)
+- neue Methoden in MMNumberMatrixPanel, ParenSymbolLabel
+- Reihenfolge beim Laden der Extension korrigiert
+- Reihenfolge der Einträge im Hilfe-Inhaltsverzeichnis korrigiert
+- Bugfix für Ausrichtung in ControlPanel bei aktivierten Scrollbars
+- ControlPanel's Scroll-Ansicht läßt sich nun zurücksetzen
+- Scroll-Ansicht von Std-ControlPanel im BaseApplet wird bei Reset nun angepaßt
+- Workaround für abgeschnittene HTML-Texte im Schrift-Stil "PLAIN"
+- Bugfix für automatischen Zeilenumbruch in TeX-Texten
+- Bugfix für vertikale Ausrichtung von TeX-Elementen (kein "Springen" des Layouts mehr)
+- Revision der Viewer-Klassen: Größe muss nun vor dem Malen gesetzt werden
+- Bugfix für Speichern von Exercises mit mehr als 9 Subtasks
+- Bugfix für Anzeige von Quittungen von Exercises mit mehr als 9 Subtasks
+- zusaetzliche color-Attribute fuer den TeX-View (dark, light)
+
+Version 2.1.2-b01
+=================
+- Pre-Registering von Extensions eingeführt
+- Hierarchie der Extension-Properties überarbeitet
+- Error-Handling in Core-Klassen überarbeitet
+- generische Dialog-Technologie eingeführt und Fehler-Dialoge überarbeitet
+- parametriesierte Message-Technologie eingeführt
+- Versionsmanagment überarbeitet
+- neue Applet-Basisklassen eingeführt
+- private JMF-Klassen gelöscht
+
+
+============================================
+   Erhöhen der Versionsnummer auf 2.1.2
+============================================
+
+
+Version 2.1.1-b38
+=================
+- Implementation des "homeworkEditable" Flags/Parameters in die MC-Applet-Technologie
+- Workaround für abgeschnittene Operationen in MC-Aufgaben (#570 & #595)
+- Debug-Button für Debug-Modus in MC-Applets hinzugefügt
+- Entfernen von doppelten Leerzeichen und Zeilenumbrüchen in MC-Texten (#574)
+- Zusammenführen der Sonderzeichen von MC-Exercises und TeX-Renderer
+- MC-Buttons nun noch Mumie-ähnlicher
+- grauen Rand oben in MC-Applets weg
+- Rand und Scrollbars in MC-Applets überarbeitet
+- Warnung in Debug-Modus für MC-Applets hinzugefügt wenn Applet-Größe zu klein
+- Möglichkeit zur manuellen Auswahl des Input-Datasheets im Debug-Modus
+- Behandlung von Zeilenumbrüchen in MC-Correctoren
+- MathML-Converter implementiert für Presentation Markup im gesamten Marking
+  ("abs" und "conj" z.B. werden im Marking-MathML anders dargestellt)
+- Hintergrundfarbe von 2D-Canvas kann nun im Applet verändert werden
+
+
+Version 2.1.1-b37
+=================
+- Bugfix für fehlende Klammern in Operations (z.B. "(x+1)^3")
+- Exponenten in Operations nun tiefer gestellt
+- Bugfix für unterschiedliche Höhe der Exponenten in Polynomen
+- Exponent und Index in Variablen stehen nun übereinander
+
+
+Version 2.1.1-b36
+=================
+- Bugfix für unterschiedliche Reihenfolge der Applet-Instanz-Methoden (nur Apple Java)
+- Texte im Marking angepaßt
+- Java-Unicode-Ausdrücke werden nun auch im Corrector ersetzt
+- Bugfix für Koordinaten-Systeme in Canvi mit Scrollpanes
+- Bugfix für MC-Formeln in der 1. Zeile in mehrzeiligen Texten
+
+
+Version 2.1.1-b35
+=================
+- Sonderzeichen im Marking nun in XML-Syntax
+- Bugfix für Labels in Canvi
+- neuer Korrektur-Algorithmus für "Multiple"-MC-Fragen (Angleich an JAPS)
+- Portierung der Exercise-Bugfixes aus dem Branch 2.0:
+  - Abfrage nach Session-Cookie beim Herunterladen des Question-Sheets
+  - Error-Handling in MumieExercise geändert; benutzt nun NoDataSheetException
+  - explizites Abfangen des "rejected after successful login"-Fehlers
+  - Bugfix für HTML-Aktionen wenn Applet noch nicht fertig initialisiert (nur Apple)
+- Fix für Focus-Bug wenn Focus außerhalb des Applets/innerhalb der HTML-Seite ist
+
+
+Version 2.1.1-b34
+=================
+- Umbennung der Exercise-Objekt-Attribute und Einführung eines eigenen XML-Namespaces dafür
+- Workaround wenn XML Namespaces in String-Repräsentationen weggelassen werden (Java 1.4.2)
+- Einbindung des Workarounds als System-Property in den System-Descriptor
+- XML-Fehler teilweise von Konsolen-Meldungen auf Laufzeitfehler umgestellt
+- Bugfix für Class-Cast-Exception in Correctoren auf Server
+
+
+Version 2.1.1-b33
+=================
+- BufferedImage getSnapshot() fuer MMJ3DCanvas hinzugefuegt.
+- Neuer Algo. für Punktevergabe in "Multiple"-MC-Fragen
+- Konvention (mind. 1 "TRUE" Lösung) in "Multiple"-MC-Fragen als Abfrage eingebaut
+- Implementation von auto. Zeilenumbrüchen, manuellen Zeilenvorschüben und 
+  manuellen Einstellungen für die horizontale Ausrichtung in allen TeX-Text-Views
+- Trimmen von Relationszeichen
+
+Version 2.1.1-b32
+=================
+- deutsches "sz" hinzugefuegt
+- Fonts fuer Op-, Number- und Function-Panels in Theme-Props eingetragen
+- Fonts fuer Zaehler/Nenner vergroessert
+- Klammern fuer verschachtelte Power-Ops
+- Ansicht von Index-Text in Variablen
+- Bugfix fuer Breite von Operationen
+- Bugfix fuer negativen Imaginaerteil in MComplex::isReal() Methode
+- Sortieren nach Potenzen in Operationen
+- Bugfix fuer Variablen mit negativem Vorzeichen
+- Bugfix für Umlaute im Marking-Text
+
+
+Version 2.1.1-b31
+=================
+- Bugfix im TeX-Renderer für Attribut-Kommandos
+- Bugfix für konflikte zwischen Theme- und TeX-Attributen
+
+Version 2.1.1-b30
+=================
+- Bugfixes für MC-Applet-Aufgaben:
+  - Frage nur teilweise richtig bewertet obwohl komplett richtig
+  - Trimmen von Frage-Stellung und Antwort-Texten
+  - Implementation eines "edited" Flags für MC-Problems
+  - Variablen-Substitution nun ohne Expandieren und Normalisieren
+  - Workaround für komplexe Zahlen-Klassen in Intervallen/Funktionen
+- Neue Features für MC-Problem-Applets:
+  - Aussehen von herkömlichen MC-Aufgaben
+  - Sonderzeichen-Support
+  - Möglichkeit zur Änderung der lokalen Zahlen-Klasse für Funktionen
+  - Möglichkeit zur Änderung der globalen Rendering-Präzision von Zahlen/Funktionen
+  - Funktionen können nun entweder als MathML oder Plain-Text übergeben werden
+  - Unterscheidung zw. "ausgeschriebenem" und "ausgedrücktem" Unicode in Applets und Correctoren
+  - Fragestellung and Antwortmöglichkeiten werden nun im Marking verwendet
+- Zeilen im ControlPanel sind nun durchsichtig bzw. haben keine Hintergrundfarbe mehr
+
+Version 2.1.1-b29
+=================
+-erste Version des MC-Problem-Applet-Frameworks
+-Zahlenklassen zu XMLUtils hinzugefügt
+-Fehler-Handling in MumieExercise leicht verschärft
+
+
+Version 2.1.1-b28
+=================
+-Bugfix in TeX-Renderer (RowView-Bugfix)
+-Anzeige von TeX- und HTML-Labels in 2D-Canvi
+-neue Updater-Klasse zum automatischen Update von Parametern in Funktionen
+
+
+Version 2.1.1-b27
+=================
+- persönliche Test-Klassen in neues Test-CVS-Repository verschoben
+- Standard-Erweiterungen entfernt aus Applet-Defaults
+
+
+Version 2.1.1-b26
+=================
+- Bugfix für Anzeige von Brüchen in Operations
+- Bugfix für Ausblenden von Labels
+
+
+Version 2.1.1-b25
+=================
+- Labels werden nun ausgeblendet wenn Property gesetzt ist (Bugfix)
+- Repaint-Bug in MMPanel behoben (nach render kein Neuzeichnen)
+- Font und Farben in HTML-View
+- Zentrierung von Sub-/Super-Skripten
+- Quittungsviewer: Ausblenden des Labels von generischen Antworten
+- Quittungsviewer: Bugfix wenn aktuelle Subtask-Anworten leer sind
+- Quittungsviewer: Antwort- und Fehler-Daten nun in eigenem Dialog
+
+
+Version 2.1.1-b24
+=================
+- Logging nun auch im ControlPanel
+- Ränder in ControlPanel korrigiert und verkleinert
+- Baseline-Bugfix in OperationPanel/~°Display
+- MM-Panels haben nun eigene Methode zum Setzen der Border-Color
+- Matrix-Panels benutzen neue Border-Color-Methode zum Markieren von Einträgen
+- Rendering Hint für das autom. Hinzufügen des "=" Zeichens in Labels hinzugefügt
+- Compliance Property für Double-Slider-Panel hinzugefügt
+- neue Methode in BaseApplet zum nachträglichen Anpassen von Theme-Einstellungen
+- MumieTheme.getWindowBackground() liefert nun standard Hintergrundfarbe zurück
+
+
+Version 2.1.1-b23
+=================
+- Überarbeitung der Render/Repaint-Aufrufe in MM-Panels
+- Überarbeitung des Baseline-Handlings in u.a. Panels und Layout
+- Intervall-Panels benutzen nun TextPanel anstatt Attr.StringLabel
+- Bugfix für Super/Subskripte und kleinere Anpassungen im TeX-Renderer
+- Bugfix für Attribute von Kind-Knoten im TeX-Renderer
+- Revision des TeX-Attribut-Models
+- neue TeX-Kommandos und -Attribute
+
+
+Version 2.1.1-b22
+=================
+- Unterstützung für Sonderzeichen und Symbole im Tex-Renderer
+- Notation der TeX-Kommandos nun wie üblich ("\" statt "/" am Anfang)
+- HTML-Befehle für Sonderzeichen werden im Tex-Renderer "übersetzt"
+
+
+Version 2.1.1-b21
+=================
+- Titel- und Label-Fonts angepaßt
+- Abstände zwischen Zeilen in ControlPanel hinzugefügt
+- Inhalt von TextPanel wird nun zentriert dargestellt
+- Bugfix für Größe von Panels mit MatrixLayout
+
+
+Version 2.1.1-b20
+=================
+- Hinzufügen eines HTML-Viewers
+- TextPanel benutzt nun ViewIF-Instanz (TeX- oder HTML-Inhalt)
+- Bugfix für falsche Abstände in MatrixLayout
+- MM-Panels benutzen nun auch TextPanel zum Anzeigen des Labels
+- Debug-Meldungen ausgeschaltet
+
+
+Version 2.1.1-b19
+=================
+- MatrixLayout besitzt nun Abstände zwischen Komponenten
+- Klassen MatrixLayout und TextPanel verschoben
+
+
+Version 2.1.1-b18
+=================
+- Aligner-Klassen nach "display.layout" verschoben
+- LabelSupport nach "display.util" verschoben
+- Implementation eines TeX-Viewers
+
+
+Version 2.1.1-b17
+=================
+- Refactoring von ControlPanel (u.a. Scrollbars, Linien-Handling)
+- Bugfix für "springende" Panels
+
+
+Version 2.1.1-b16
+=================
+- Plain-Buttons für MMIntervalPanel und MMPiecewiseFunctionPanel
+- Fragezeichen tiefer gestellt (jetzt mehr mittig, dafür unter der Grundlinie)
+- Canvas-Hilfen hinzugefügt
+- Implementation des AlignerLayouts und Überarbeitung der Baseline-Ausrichtung
+  aller MM-Panels
+- Roll-Over in Fragezeichen
+- Compiler-Warnings aus Klassen für einige Packages entfernt
+- Anzeige von ComboBoxen (Ticket #515)
+- Bufix in MMPiecewiseFunction und -Panel (Ticket #509)
+- Rendering-Hints von Transformer-Superklassen werden nun auch berücksichtigt 
+  und Compliance-Setting für Labels korrigiert (Ticket #511)
+- Bugfix für Ticket #497
+- Aligner-Layout zum ControlPanel hinzugefügt
+
+
+Version 2.1.1-b15
+=================
+- Bugfix in MDimension
+
+
+Version 2.1.1-b14
+=================
+- bei math. Operationen in "Operations" wird nun eine Kopie des Arguments benutzt (#506)
+- Hausaufgaben-Hilfe hinzugefügt
+
+
+Version 2.1.1-b13
+=================
+- MathletRuntime wird nun auch beendet --> Bugfix für Ticket #508
+- 2D- und 3D-Canvas-Hilfe eingebaut, Bugfix für Panel-Eingabe-Hilfe
+- alte Hilfe-Dateien und -Verzeichnis gelöscht ("resource/html")
+
+
+Version 2.1.1-b12
+=================
+- Bugfix für Anzeige von Labels von MMStrings
+- Aussehen und Verhalten von MM-Panels geändert
+
+
+Version 2.1.1-b11
+=================
+- vertikale Orientierung des Vektorpfeils eines VektorBorder-Objektes
+individuell anpassbar
+- Font-Properties in MumieTheme integriert
+- Sub-Scripte nun etwas "höher"
+- Scroll-Balken werden ab dem Compliance-Level "2.1" in ControlPanels angezeigt,
+  wenn dort feste Größenangaben gemacht worden sind
+
+
+Version 2.1.1-b10
+=================
+- Kopieren der Property-Files beim Build-Prozess
+- Screen-Type-Dependant Labels für alle Screen-Types implementiert
+- nur noch Datasheet-Pfade als reine String-Antworten erlaubt
+- Fonts in Text-Panels (via "addText(...)"-Methoden) nun nicht mehr fett
+- Super- und Sub-Scripte in AttributedStringLabel (Panel-Labels) vergrößert
+- Aussehen und Verhalten von Canvas-Scroll- und Toolbar-Buttons geändert
+- Aussehen und Verhalten von Eingabe-Panels geändert
+- Labels aller MM-Panels an die Compliance-Properties angepasst
+
+
+Version 2.1.1-b09
+=================
+- Revision und Integration (in die Extension-Architektur) des Mumie-Themes
+- neues spezielles Aussehen für Buttons
+- Überarbeitung diverser Einstellungen zum Aussehen der Applets
+
+
+Version 2.1.1-b08
+=================
+- Integration der Compliance Level Architektur
+- Bugfixing für Rendering Hints
+
+
+Version 2.1.1-b07
+=================
+- Integration der Simple-Mumie-Hilfe als Fallback wenn kein JavaHelp vorhanden ist
+
+
+Version 2.1.1-b06
+=================
+- Integration der Mumie-Hilfe in das Extension-Framework
+
+
+Version 2.1.1-b05
+=================
+- Implementation der MathletRuntime
+- Revision des Extension-Frameworks
+- Entfernen des Mumie-Themes und der Applet-Size-Themes
+
+
+Version 2.1.1-b04
+=================
+- Anpassung der J3D-Rendering Hints zum neuen Property Frameworks
+
+Version 2.1.1-b03
+=================
+-Implementation des Property Frameworks
+-umfangreiche Änderungen an den Display Properties
+-Transformer-Konstanten in eigenes Interface ausgelagert
+
+
+Version 2.1.1-b02
+=================
+-Anzeige des imaginären Teils von ComplexRationals
+-Synchronisierungsbug in PropertyMap
+-Umbenennen von einzelnen DisplayProperties
+-JReality-Transformer-Properties angepasst
+-unnötiger render-Aufruf in MMHandler entfernt
+-Canvas-Objekte müssen nicht mehr editierbar sein, damit die Handler funktionieren
+
+
+Version 2.1.1-b01
+=================
+-Verschieben und teilweises Umbenennen der JReality-Klassen
+-Revision der DisplayProperties
+
+
+Version 2.1.0-b22
+=================
+-Klassen fuer TupleSet-Objekte hinzugefuegt (TupleSet, MMTupleSet, 
+MMTupleSetPanel, TupleSetEntry, TupleSetTransformer) und angepasst
+(PropertyHandlerIF, transformer.properties.noc, exerciseObjects.xml)
+
+
+Version 2.1.0-b21
+=================
+-Neues MM-Objekt "MMDimension" inkl. math. Klasse und Panel-Drawable
+-kleinere Arbeiten
+
+
+Version 2.1.0-b20
+=================
+-Label von MM-Panels sind nun standardmässig ausgeblendet
+
+
+Version 2.1.0-b19
+=================
+-Quick-Hack zum Ausfüllen von 2D-Canvas-Objekten
+
+
+Version 2.1.0-b18
+=================
+-Keine Fehler melden beim Sammeln von Zusatz-Infos für Quittungsansicht
+-Subtask Selektor im Debug-Modus
+
+
+Version 2.1.0-b17
+=================
+-Subtask-Knoten können nun verschachtelte Antworten haben
+-Selektierte Pfade können nun benutzerdefinierte Namen haben
+-MOpNumber: Hinzufügen der Basisklasse zu den Exercise-Typen
+
+
+Version 2.1.0-b16
+=================
+-Bugfix für Ansichtswechsel in Applet-Modus
+
+
+Version 2.1.0-b15
+=================
+-Laden und Anzeigen von Antworten in Quittungsansicht verbessert
+-verschiedene Ansichten in Quittungsviewer
+-Fehler-Anzeige in Quittungsviewer
+
+
+Version 2.1.0-b14
+=================
+-Selektierte Pfade und "hidden"-Flag für Quittungsansicht
+-Quittungsansicht auch im Debug-Modus/CorrectorDebugger benutzbar
+-Neustart-Button in Fehler-Fenster
+
+
+Version 2.1.0-b13
+=================
+-erste Implementation des Plugin/Extension Frameworks
+-util-Package: Verschieben von ErrorHandler und QualityFeedbackReport
+ nach util.error
+
+
+Version 2.1.0-b12
+=================
+-NumberFactory: Vorbesetzen von leeren "mn"-Knoten mit Null
+-Quittung speichern Dialog: "Speichern" statt "OK"
+-MumieExercise: neue Logik beim Überschreiben von Quittungen
+
+
+Version 2.1.0-b10...11
+======================
+-Überarbeitung der Quittungsansichts-Fenster
+-Fix für Datumsbug in Quittungsansicht
+
+
+Version 2.1.0-b09
+=================
+-Erste Version der Quittungsansicht implementiert
+
+
+Version 2.1.0-b08
+=================
+-Logging-Informationen zum Senden von HTTP-Requests
+
+
+Version 2.1.0-b07
+=================
+-Bugfix für Ticket #444 (Ändern des Dateinamens einer Quittung)
+
+
+Version 2.1.0-b06
+=================
+
+StringMatrix:
+-------------
+-MathML "class"-Attribut arbeit nun auch mit Vektor-Typen
+
+--------------------------------------------------------------------------
+
+Version 2.1.0-b05
+=================
+
+MMNumberPanel:
+--------------
+-kein Parsen des Master-Strings mehr in der Methode "setValue(MNumber)"
+
+StringMatrix:
+-------------
+-MathML "class"-Attribut (wie in allen anderen Matrix-Typen)
+
+--------------------------------------------------------------------------
+
+Version 2.1.0-b04
+=================
+-Bugfix in OpNode
+-Automatisches (unabhaengig vom normalize-Flag) Sortieren von Additions- 
+und Multiplikationsknoten deaktiviert 
+-Ersetzen von <mi>-Knoten geaendert
+
+--------------------------------------------------------------------------
+
+Version 2.1.0-b03
+=================
+
+Mathlet-System:
+----------
+-Einbau eines Parameter-Systems, zum Preloaden von registrierten Parametern
+-neue Logging-Kategorien
+
+Version:
+-------
+-Bugfix für CVS-Versionen mit mehrstelligen Ziffern
+
+MMEditablePanel:
+----------------
+-Bugfix für NullPointerException (Ticket #412)
+
+---------------------------------------------------------------------------
+
+Version 2.1.0-b02
+=================
+
+JReality:
+----------
+-Erste Version von JReality
+
+---------------------------------------------------------------------------
+
+Version 2.1.0-b01
+=================
+
+MM-Panels:
+----------
+-deaktivieren der Labels für Komponenten, die vorher kein Label hatten
+ (Abwärtskompatibilität mit bestehenden Applets)
+
+---------------------------------------------------------------------------
+
+============================================
+Abzweigen des 2.0-Branches von diesem Branch
+   Erhöhen der Versionsnummer auf 2.1.0
+============================================
+
+---------------------------------------------------------------------------
+
+Version 2.0.1-b02
+=================
+
+MMEditablePanel:
+----------------
+-Bugfix für fehlendes Textfeld beim 1. Editieren
+
+---------------------------------------------------------------------------
+
+Version 2.0.1-b01
+=================
+
+MumieExercise:
+--------------
+-neuer Applet-Parameter "saveAnswersPath" zum Speichern von Antworten
+
+---------------------------------------------------------------------------
+
+Version 2.0.0-b04
+=================
+
+Matrix-Bitmaps:
+---------------
+-Bugfix für ClassCastException (Bug #324)
+
+MMEditablePanel:
+----------------
+-Bugfix für falsches/fehlendes layouting des ContentViewerPanels (bug #323)
+
+Build.xml:
+----------
+-alte ant-Targets entfernt
+-Manifest-Attribut für Start-Applikation hinzugefügt
+
+---------------------------------------------------------------------------
+
+Version 2.0.0-b03
+=================
+
+display-noc-Klassen:
+--------------------
+-automatische Größenanpassung aller Alignable-Panels entfernt
+-Anzeige von HTML- und Plain-Text mit Baseline-Ausrichtung in MString
+
+MathletRuntimeSupport:
+----------------------
+-Bugfix für RuntimeException wenn ein Applet als Applikation gestartet wird
+
+---------------------------------------------------------------------------
+
+Version 2.0.0-b02
+=================
+
+display-noc-Klassen:
+--------------------
+-Bugfix für Fokus bei Eingabefeldern
+-Bugfix für Größe von Operation-Panels
+
+---------------------------------------------------------------------------
+
+Version 2.0.0-b01
+=================
+
+display-noc-Klassen (+Transformer):
+-----------------------------------
+-Implementation von generischen Labels und der Baseline-Ausrichtung in MMPanel
+-Alignable-Interface und -Implementationen angepasst
+-GUI Test Applikation
+-Einbau des MumieLoggings mit speziellen GUI-Debug-Kategorien
+
+MathML-Klassen:
+---------------
+-Implementation von XML-Attributen zur Beschreibung des Inhalts
+-neue Manager-Klasse "ExerciseObjectFactory" mit XML-Einstellungen
+-generischer MathML-Renderer für MathletFactory-XML-Daten
+
+MOpNumber:
+----------
+-neue Unter-Zahlen-Klassen zum Setzen der internen Zahlenklasse
+
+Vektorfelder:
+-------------
+-2D-Ansichten verbessert und hinzugefügt
+
+MMNumberMatrix:
+---------------
+-neues Drawable: MMLESPanel ("linear equation system")
+
+---------------------------------------------------------------------------
+
+====================================
+Erhöhen der Versionsnummer auf 2.0.0
+====================================
+
+---------------------------------------------------------------------------
+
+Version 1.1.1:
+==============
+
+display-noc-Klassen (+Transformer):
+-----------------------------------
+-Implementation des neuen Container Drawable Frameworks (b01)
+
+net.mumie.mathletfactory.transformer.GeneralTransformer:
+--------------------------------------------------------
+-Transformer Files von "/net/mumie/mathletfactory/transformer" nach "/resource/settings/transformer" verschoben (b01)
+
+net.mumie.mathletfactory.util.ResourceManager:
+-----------------------------------------------------
+-Static Messages Files von "/net/mumie/mathletfactory/i18n" nach "/resource/i18n" verschoben (b01)
+
+net.mumie.mathletfactory.util.logging.LoggingManager:
+-----------------------------------------------------
+-Loggable Categories File von "/resource" nach "/resource/settings" verschoben (b01)
+
+net.mumie.mathletfactory.appletskeleton.system.MathletRuntimeSupport:
+---------------------------------------------------------------------
+-Lib Version File von "/resource" nach "/resource/settings" verschoben (b01)
+
+net.mumie.mathletfactory.Start:
+---------------------------------------------------------------------
+-Start-Applikation zu den MathletFactory library tools (b01)
+
+---------------------------------------------------------------------------
+
+Version 1.1.0:
+==============
+
+net.mumie.mathletfactory.util.TabbedPanel:
+------------------------------------------
+- Bugfix für ArrayIndexOutOfBoundsException (b02)
+
+net.mumie.mathletfactory.util.logging:
+--------------------------------------
+- Einführung des MathletFactory Logging Frameworks (b01)
+
+MumieExercise:
+--------------
+- Einbau Revision des Speicher-Vorganges (b01)
+- Benutzen des neuen Loggers (b01)
+- Fehlermeldungen werden nun vom BaseApplet angezeigt (b01)
+- Request Parameter "course", "worksheet" und "problemID" werden nun
+  beim Laden des Input Datasheets benutzt (b05)
+
+BaseApplet:
+-----------
+- neue Methoden zum Anzeigen von Dialogen direkt im Applet-Fenster (b01)
+- Laden von Messages von runtime support übernommen(b04)
+- alten Code entfernt (b05)
+
+ImageHelper:
+------------
+-Abfangen von Security-Fehlern beim Laden und Speichern (b03)
+
+MathletRuntimeSupport/MathletExerciseSupport:
+---------------------------------------------
+- Abfangen von Fehlern beim Klassen-Laden (b03)
+- Laden von Messages (b04)
+
+ResourceManager:
+----------------
+- Laden von Messages nun über Pfade statt über Namen (b04)
+
+MComplex/MComplexRational:
+--------------------------
+-create()-Methoden geben nun mit Null besetzte Objekte zurueck (b06)
+
+MumieExercise:
+--------------
+-Bugfix fuer Bug 228 (Allg. Problem mit der Ticketspeicherung) (b07)
+
+MathletRuntimeSupport:
+----------------------
+-Verschieben von version.properties von "/" nach "/resource/" (b07)
+
+Versionskontrolle:
+------------------
+-Erweitern der kompatiblen JVMs auf Version 6 (b07)
+
+DefaultCanvasController:
+------------------------
+-Bugfix für Applet Java Kompatibilität (b08)
+
+---------------------------------------------------------------------------
+
+====================================
+Erhöhen der Versionsnummer auf 1.1.0
+====================================
+
+---------------------------------------------------------------------------
+
+Version 1.0.8:
+==============
+Checkin: 19.01.2007
+
+MDouble:
+--------
+-formatter wird nun erst erstellt, wenn er auch gebraucht wird
+ (Verhindern von OutOfMem-Errors)
+ 
+BaseApplet (b04):
+-----------------
+-in destroy() werden nun alle Referenzen auf "null" gesetzt
+
+MMEditablePanel (b05):
+----------------------
+-Fragezeichen werden nun generisch gezeichnet, nicht mehr mit JLabel dargestellt
+-Methode "startEditing()" nicht mehr abstrakt und muss von abgeleiteten Klassen
+ aufgerufen werden --> Textfeld wird erst bei 1. Editierung initialisiert
+-Tooltip wird erst bei 1. Eingabe-Fehler initialisiert
+
+ImageHelper:
+------------
+-Bilder laden geht schneller und braucht weniger Speicher (b06)
+-Meherer Helper können nun verknpüft werden (b12)
+
+XMLUtils/OpParser (b07):
+-----------------------
+-Einführung von erlaubten Zeichen in Operationen, "x^2" Bugfix für WinXP
+
+TabbedPanel (b08):
+------------------
+-Bugfix in "remove"-Methoden (Fehler beim Applet-Beenden)
+
+MMEditablePanel:
+----------------
+-Text ist ausgewählt nach Starten des Editier-Modus (altes Verhalten; Bugfix) (b08)
+-Bugfix für Laufzeitprobleme in der AWT/SWING Focus-Behandlung zwischen Browser- und Applet-Fenster (b13)
+
+---------------------------------------------------------------------------
+
+Version 1.0.7:
+==============
+Checkin: ???
+
+BaseApplet:
+--------
+-Versionscheck beim Start
+
+---------------------------------------------------------------------------
+
+Version 1.0.6:
+==============
+Checkin: ???
+
+MDouble:
+--------
+-NumberFormat nun nicht mehr statisch (Synchronisierungsproblem/NumberFormatExceptions)
+
+Bug-Reports:
+------------
+-Bug-Reports können nun nur noch einmal abgeschickt werden
+-Revision des Netzwerk- und JapsClient-Fehler-Handlings (Auto-Retry, Abfrage)
+
+XML/Exercises:
+--------------
+-Bugfix für SaxException (Synchronisierungsproblem/FWK005)
+
+---------------------------------------------------------------------------
+
+Version 1.0.5:
+==============
+Checkin: 29.11.2006
+
+Operation:
+-----------
+- MathML-Darstellung: Klammerung bei PowerOp wurde verbessert 
+
+ViewNodes
+---------------
+- groessere Anderungen in ViewNodes bezueglich ...(siehe weiter)
+- Minus-Bug korrigiert,einige (nicht)Klammerung-Bugs beseitigt sowie Bug mit Faktor (wurde bei Bruechen unten und oben angezeigt) 
+
+ResourceManager:
+----------------
+-Bugfix für MultipleChoiceApplet bzw. Applets ohne lokale Messages-Datei
+
+---------------------------------------------------------------------------
+
+Version 1.0.4:
+==============
+Checkin: ???
+
+MOpNumber:
+-----------
+-Die Benutzung der Variablen erlaubt/nicht gestattet (Flag)
+
+MMEditablePanel:
+---------------
+-ToolTips bei fehlerhaften Eingaben
+
+BaseApplet/ResourceManager:
+---------------------------
+-Messages werden nun über die Klasse ResourceManager behandelt
+
+---------------------------------------------------------------------------
+
+Version 1.0.3:
+==============
+Checkin: 14.11.2006
+
+MathML/XML:
+-----------
+[Bugfix for SAXException ("FWK005 parse may not be called while parsing.")]
+[Bugfix for SAXException removed due to WrongDocError from XML]
+-<math>-Knoten werden nun innerhalb eines <par>-Knotens arrangiert
+-DatasheetRenderer angepasst
+
+Exercise:
+---------
+-Netzwerk-Fehler im JAPS-Client werden im Applet abgefangen
+
+---------------------------------------------------------------------------
+
+Versioning ausgesetzt
+
+---------------------------------------------------------------------------
+Version 1.0.2:
+==============
+Datum: ???
+
+Operation:
+----------
+-neg. Vorzeichen-Bug nach Lesen aus MathML ("normalize-bug")
+-evaluate(MNumber) um die Berechnung mit doubles zu umgehen
+
+MRational:
+----------
+-neg. Nenner-Bug (1/-7 != -1/7)
+
+MMNumberPanel:
+--------------
+-trotz setenabled(false) -> bei klick wird editiert!
+
+TextPanel:
+----------
+-bekommt den focus beim traversieren mit tab (z.B. im controlpanel)
+
+DataSheetRenderer (nur in Testumgebung):
+----------------------------------------
+-String-, Op- & NumberMatrix kann nun als Typ ausgew�hlt werden, 
+ vorher nur NumberMatrix
+
+MMStringPanel & MMStringMatrixPanel:
+------------------------------------
+-beide �bernehmen beim Initialisieren den Wert des Masters
+
+StringMatrix:
+-------------
+-setValue() bug (nur wenn noch nicht sichtbar) behoben
+-benutzt nun MString anstatt MMString
+
+MMString:
+---------
+-erbt jetzt von MString
+
+BaseApplet:
+-----------
+-in Hilfe-Dialog: "�ber dieses Applet"-Button mit extra Fenster mit:
+  -Applet Name (Java-Name ohne .java bzw .class)
+  -Applet Version (aus CVS beschriebener Variable aus dem Applet)
+  -Lib Version (gelesen aus version.properties Datei aus user lib dir)
+    -eventuell Anzeige local und current (net) version
+  -Copyright
+
+MumieExercise:
+--------------
+-try/catch in sendAnswerSheet() f�ngt nun auch Errors (nicht nur Exceptions) ab
+  -> xml-bug in 1.4.2_08 kann damit abgefangen werden
+
+-CorrectorHelper:
+-----------------
+-Score wird nun nicht mehr gerundet
+
+---------------------------------------------------------------------------
+
+Version 1.0.1:
+==============
+Datum: 22.11.05
+
+MumieExercise:
+--------------
+-try/catch in sendAnswers, um auf jeden Fall eine Messagebox zu zeigen
+
+---------------------------------------------------------------------------
+
+Version 1.0.0:
+==============
+-first release

@@ -1,0 +1,159 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+\newcommand{\SeTest}{SE-Test}
+\newcommand{\SeTests}{SE-Tests}
+
+\begin{document}
+
+\title{Konzept Selbsteinschätzungs-Tests}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: selbsteinschaetzungs_tests_konzept.tex,v 1.5 2006/08/21 13:18:34 rassy Exp $}
+
+\tableofcontents
+
+\section{Prinzip}
+
+\emph{Selbsteinschätzungs-Tests} (kurz: \SeTests) sind völllig analog zu
+Übungsblättern aufgebaut. Sie bestehen also aus Aufgaben, die in einer Netzstruktur
+angeordnet sind. Die Lösungen (auch Teillösungen) können gespeichert und die
+Bearbeitung zu einem späteren Zeitpunt fortgesetzt werden.
+
+Im Gegensatz zu normalen Übungsblättern haben \SeTests keine festen
+Bearbeitungszeiträume. Vielmehr klickt der Benutzer einen ''Auswerten''-Button
+und beendet damit den Test manuell. Er bekommt daraufhin eine Auswertung des
+Tests, die neben der erreichten Punktezahl auch einen Text mit Empfehlungen
+enthält. Danach kann der Benutzer die einzelnen Aufgaben durchgehen und die
+Korrekturen betrachten. Bearbeiten kann er die Aufgaben in diesem Stadium nicht
+mehr.
+
+Nach der Auswertung kann der Benutzer den Test wiederholen. Dazu klickt er
+einen ''Neu''-Button. Daraufhin werden alle personalisierte Daten, Lösungen und
+Korrekturen gelöscht und die Aufgaben wieder zur Bearbeitung freigegeben.
+
+Somit hat jeder \SeTest bezüglich jeden Benuzers zwei Zustände:
+
+\begin{enumerate}
+  \item \val{work} -- Der Test wird gerade bearbeitet
+  \item \val{feedback} -- Bearbeitung abgeschlossen, Auswertung und Korrekturen
+    sichtbar.
+\end{enumerate}
+
+\section{Teilnahme}
+
+Die Teilnahme steht jedem Interessenten frei. Jeder Teilnehmer erhält sein
+eigenes Konto. Die Anmeldung zu diesem Konto erfolgt über eine öffentlich
+zugängliche Webseite. Hier füllt der Benutzer ein Formular mit folgenden Daten
+aus: 
+
+\begin{enumerate}
+\item Vorname
+\item Nachname
+\item Gewünschter Login-Name
+\item Gewünschtes Passwort
+\item E-Mail-Addresse
+\end{enumerate}
+
+Nach Abschicken des Formulars werden die Daten hinsichtlich folgender Regeln
+geprüft:
+
+\begin{enumerate}
+\setcounter{enumi}{5}
+\item Vorname, Nachname und Login-Name dürfen nicht leer sein
+\item Der Login-Name darf noch nicht existieren
+\item Das Passwort muss mindestens 6 Zeichen lang sein
+\item Die E-Mail-Addresse muss mit der entsprechenden Spezifikation
+  (\href{http://www.ietf.org/rfc/rfc822.txt}{RFC 822}) konform sein und existieren
+\end{enumerate}
+
+Schlägt einer der Tests fehl, erhält der Benutzer eine entsprechende Meldung
+mit der Möglichkeit, die Eingaben zu wiederholen. Andernfalls erhält er eine
+Bestätigung. Diese kann ggf. zusätzlich per Mail verschickt werden. Dies sollte
+konfigurierbar sein.
+
+Bei erfolgreicher Anmeldung wird der Benutzer automatisch in die Gruppe
+\val{selftest} eingetragen.
+
+\section{Ablauf}
+
+Nach dem Einloggen sieht der Benutzer ein oder mehrere \SeTests. Von diesen
+wählt er einen aus. Daraufhin bekommt er die \emph{Einstiegsseite} des Tests
+und das Navigationsnetz mit den Aufgaben. Die Einstiegsseite
+enthählt:
+
+\begin{enumerate}
+  \item Die \emph{Kurzbeschreibung} (description) des Tests
+  \item Die \emph{Übersicht} (overview) des Tests. Diese hängt vom Zustand
+    ab. Im Zustand \val{feedback} enthält sie insbesondere die
+    \emph{Auswertung} des Tests.
+  \item Den \emph{''Auswerten''-Button}, im Zustand \val{feedback} inaktiv
+  \item Den \emph{''Neu''-Button}.
+\end{enumerate}
+
+\section{Auswertung}
+
+Die Auswertung informiert den Studenten darüber, wieviele Punkte er erreicht
+hat und was dies im Hinblick auf sein beabsichtigtes Studium bedeutet. Ggf.
+wird eine Empfehlung ausgesprochen, die mathematischen Kentnisse zu verbessern,
+etwa durch den Besuch des Einführungskurses.
+
+Gesteuert wird die Auswertung in der TeX-Quelle der Test-Übersicht. Hier sollte
+Code etwa der folgenden Art auftreten:
+
+\verbatim[code]
+\begin{ifstate}{feedback}
+
+  \begin{switchscore}
+
+    \casescore{0}{33}
+      % Text, der dem Studenten gezeigt werden soll, wenn er weniger
+      % als 33 Prozent der Punkte erreicht hat
+
+    \casescore{33}{67}
+      % Text, der dem Studenten gezeigt werden soll, wenn er 33 oder
+      % mehr, aber weniger als 67 Prozent der Punkte erreicht hat 
+
+    \casescore{67}{100}
+      % Text, der dem Studenten gezeigt werden soll, wenn er 67 oder
+      % mehr  Prozent der Punkte erreicht hat 
+
+  \end{switchscore}
+
+\end{ifstate}
+
+\endverbatim
+
+\section{Technische Realisierung}
+
+Die technische Realisierung ist weitgehend mit der von Übungsblättern
+identisch. Unterschiede ergeben sich daraus, dass \SeTests keine
+Bearbeitungszeiträume haben, sondern bezüglich jeden Benutzers einen der beiden
+Zustände \val{work} und \val{feedback}.
+
+Der Zustand eines \SeTests wird in einer Benutzer-Annotation zum Worksheet
+gespeichert. Die entsprechende Datenbank-Tabelle ist
+\dbtable{anns_user_worksheet}. Sie enthält folgende Spalten:
+
+\begin{enumerate}
+  \item \dbcol{the_user} - Id des Benutzers
+  \item \dbcol{doc} - Id des Worksheets
+  \item \dbcol{ann_type} - Annotations-Typ
+  \item \dbcol{content} - Inhalt der Annotation (Datasheet-Format)
+  \item \dbcol{last_modified} - Zeitpunkt der letzten Änderung der Annotation
+  \item \dbcol{state} - Zustand des \SeTests (numerischer Code)
+\end{enumerate}
+
+Einträge der Tabelle mit dem Annotations-Typ \val{worksheet_state} enthalten
+den Zustand. Dieser ist in der Spalte \dbcol{state} gespeichert. Die Spalte
+\dbcol{content} ist für diese Eintäge leer (SQL-NULL).
+
+Beim Abruf des \SeTests oder einer \SeTest-Aufgabe durch den Browser wird der
+Zustand in das XML eingefügt und steht daher dem XSL-Stylesheet zur Verfügung.
+
+-- ENDE DER DATEI --
+
+\end{document}

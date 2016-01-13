@@ -1,0 +1,228 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!--
+  ================================================================================
+  Definitions
+  ================================================================================
+-->
+
+<!-- Font sizes, relative: -->
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<!-- Colors: -->
+<css:def id="box-fill-color" value="#FBFBFB"/>
+<css:def id="box-border-color" value="#949494"/>
+
+<!-- Values for margin or padding: -->
+<css:def id="no-space" value="0px 0px 0px 0px"/>
+<css:def id="default-space" value="1em 1em 1em 1em"/>
+
+<!--
+  ================================================================================
+  Styles
+  ================================================================================
+-->
+
+<css:rule selector='table.root'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='width' value='55em'/>
+  <css:property name='border-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.root &gt; tr, table.root &gt; tr &gt; td'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='p'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<css:rule selector='p + p'>
+  <css:property name='margin-top' value='1.0ex'/>
+</css:rule>
+
+<css:rule selector='table.header'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='border-style' value='none'/>
+  <css:property name='margin' ref="default-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='width' value='100%'/>
+</css:rule>
+
+<css:rule selector='table.header &gt; tr'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<css:rule selector='table.header &gt; tr &gt; td'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<css:rule selector='table.multicol-list'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='border-style' value='none'/>
+</css:rule>
+
+<css:rule selector='table.multicol-list tr + tr td'>
+  <css:property name='padding-top' value='0.1em'/>
+</css:rule>
+
+<css:rule selector='table.multicol-list td + td'>
+  <css:property name='padding-left' value='1em'/>
+</css:rule>
+
+<css:rule selector='div.document, div.doctype'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value='0px 0.5em 0px 0px'/>
+  <css:property name='text-align' value='left'/>
+  <css:property name='font-weight' value='bold'/>
+  <css:property name='font-size' value='150%'/>
+</css:rule>
+
+<css:rule selector='div.title'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value='0px 0px 0px 0.5em'/>
+  <css:property name='text-align' value='right'/>
+  <css:property name='font-weight' value='bold'/>
+  <css:property name='font-size' value='150%'/>
+</css:rule>
+
+<css:rule selector='div.box'>
+  <css:property name='margin' ref="default-space"/>
+  <css:property name='padding' value="0.8em 1em 0.8em 1em"/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-color' ref="box-border-color"/>
+  <css:property name='background-color' ref="box-fill-color"/>
+</css:rule>
+
+<css:rule selector='div.box p'>
+  <css:property name='margin' value="1em 1em 1em 1em"/>
+  <css:property name='padding' value="0em 0em 0em 0em"/>
+</css:rule>
+
+<css:rule selector='td.separator'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='height' value="0.5em"/>
+</css:rule>
+
+<css:rule selector='div.button-area'>
+  <css:property name='margin' value="2em 0em 0em 0em"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='a'>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='div.link-area'>
+  <css:property name='font-weight' value="bold"/>
+  <css:property name='margin' value="0em 0em 1em 0em"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='div.link-area span.sep'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value="0em 1ex 0em 1ex"/>
+</css:rule>
+
+<css:rule selector='span.nmsp-prf'>
+  <css:property name='color' value="#D2691E"/>
+</css:rule>
+
+<css:rule selector='span.tag-colon'>
+  <css:property name='color' value="#676767"/>
+</css:rule>
+
+<css:rule selector='span.tag-delim'>
+  <css:property name='color' value="#676767"/>
+</css:rule>
+
+<css:rule selector='span.tag-name'>
+  <css:property name='color' value="#8B0000"/>
+</css:rule>
+
+<css:rule selector='span.attr-name'>
+  <css:property name='color' value="#008B8B"/>
+</css:rule>
+
+<css:rule selector='span.attr-delim'>
+  <css:property name='color' value="#008B00"/>
+</css:rule>
+
+<css:rule selector='span.attr-value'>
+  <css:property name='color' value="#008B00"/>
+</css:rule>
+
+<css:rule selector='span.comment'>
+  <css:property name='color' value="#6F6F6F"/>
+  <css:property name='font-style' value="italic"/>
+</css:rule>
+
+<css:rule selector='div.code'>
+  <css:property name='margin' value="1em 0em 1em 0em"/>
+  <css:property name='padding' value="0.75em 0.75em 0.75em 0.75em"/>
+  <css:property name='overflow' value="auto"/>
+  <css:property name='border-style' value="dashed"/>
+  <css:property name='border-width' value="1px"/>
+  <css:property name='border-color' value="#676F8A"/>
+  <css:property name='background-color' value="#F7F7F7"/>
+</css:rule>
+
+<css:rule selector='div.code pre'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='img.image'>
+  <css:property name='margin' value="1em 0em 1em 0em"/>
+</css:rule>
+
+<css:rule selector='p.binary-content'>
+  <css:property name='margin' value="1em 0em 1em 0em"/>
+</css:rule>
+
+</css:style>

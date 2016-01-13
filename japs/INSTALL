@@ -1,0 +1,388 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: INSTALL,v 1.27 2007/10/23 11:41:22 rassy Exp $
+Copyright (C) 2007, Berlin University of Technology
+
+
+
+                       MMJAPS INSTALLATION INSTRUCTIONS
+
+
+0. Terms used in this instructions
+   ===============================
+
+  0.1. <base_dir>
+
+         Root directory of the Mumie Japs package (should be the directory this
+         file is in)
+
+  0.2. <tomcat_home>
+
+         Root directory of the Tomcat installation
+
+  0.3. <user>
+
+         Name of the user running the build script
+
+  0.4. <java_home>
+
+         Root directory of the Java JDK.
+
+  0.5. <home>
+
+         Your home directory
+
+
+1. Requirements
+   ============
+
+  1.1. Java 6 JDK with Xalan updated to version 2.7.0 or better. See appendix
+       A.1 for the last point.
+
+       Note for developers: mumie-japs-for-mf.jar, the special version of the
+       Japs Java library for the mathletfactory_lib package, can be compiled
+       with Java 1.4 or Java 1.5, too. See appendix A.4 for details.
+
+  1.2. Tomcat 5.5
+
+  1.3. Cocoon 2.1.8 (installed in Tomcat)
+
+  1.4. PostgreSQL 8.2.0
+
+  1.5. PostgreSQL JDBC driver 8.2-504 (postgresql-8.2-504.jdbc4.jar)
+
+  1.6. mmjutil (another Mumie package)
+
+  1.7. mmjsql (another Mumie package)
+
+  1.8. japs_client (another Mumie package)
+
+  1.9. japs_datasheet (another Mumie package)
+
+  1.10. japs_checkin (another Mumie package)
+
+  1.11. mathletfactory_lib (another Mumie package)
+
+  The packages 1.8 - 1.11 contain content. Make sure these packages are not
+  only installed, but their content is "mounted" in the global checkin tree,
+  too. (See package documentation.)
+
+  The steps 1.2 - 1.5 can be carried out automatically by the japs_env package,
+  which also installs and configures Apache.
+
+
+2. Preparing the installation
+   ==========================
+
+  2.1. Make sure the PostgreSQL JDBC driver (see 1.5.) is copied to
+       <tomcat_home>/webapps/cocoon/WEB-INF/lib
+
+  2.2. Make sure the PL/pgSQL procedural language is installed in PostgreSQL
+       (cf. the PostgreSQL documentation)
+
+  2.3. Update the Xalan libraries used by Tomcat to 2.7.0 or better (see
+       appendix A.2 for how to do so)
+
+
+3. Setting up the installation
+   ===========================
+
+The installation is done by a Bash script called build.sh. The script reads a
+configuration file called build.conf if present. In this file, you can set some
+variables called build variables in the following to adapt the installation to
+your needs. The most important build variables are listed below, with defaults
+in square brackets. You must at least set 'url_prefix' (see 3.22), but probably
+want to set several more.
+
+  3.1. checkin_root
+
+         Root of the checkin tree for the build.
+         [<home>/mumie/checkin]
+
+  3.2. db_admin_name
+
+         DBMS user name of the database administrator
+         [<user>]
+
+  3.3. db_admin_password
+
+         DBMS password of the database administrator
+         [foo]
+
+  3.4. db_encoding
+
+         Encoding of the database
+         [DEFAULT]
+
+  3.5. db_host
+
+         Database host
+         [localhost]
+
+  3.6. db_name
+
+         Database name
+         [mdb01]
+
+  3.7. db_port
+
+         Post number where PostgreSQL listens for connections
+         [5432]
+
+  3.8. db_user_name
+
+         DBMS user name of the Mumie database user
+         [japs]
+
+  3.9. db_user_password
+
+         DBMS password of the Mumie database user
+         [japsen]
+
+  3.10. java_opts
+
+         Options to pass to the 'java' executable. See appendix A.5 for a
+         possible application of this feature.
+         This build variable has no default.
+
+  3.11. japs_admin_name
+
+         Mumie user name of the Mumie administrator
+         [admin]
+
+  3.12. japs_admin_password
+
+         Mumie password of the Mumie administrator
+         [mumie]
+
+  3.13. mail_domain
+
+         Mail domain Mumie should use when sending mail
+         [localhost]
+
+  3.14. mail_from_address
+
+         'From'-address Mumie should use when sending mail
+         [admin@localhost]
+
+  3.15. mail_from_name
+
+         'From'-name Mumie should use when sending mail
+         [Admin]
+
+  3.16. mail_reply_address
+
+         'Reply'-address Mumie should use when sending mail
+         [admin@localhost]
+
+  3.17. mail_reply_name
+
+         'Reply'-name Mumie should use when sending mail
+         [Admin]
+
+  3.18. mail_smtp_host
+
+         SMTP host Mumie should use for sending mail
+         [localhost]
+
+  3.19. password_encryptor_class
+
+         Fully qualified name of the Java class which encrypts passwords
+         [net.mumie.cocoon.util.MosesPasswordEncryptor]
+
+  3.20. prefix
+
+         Common install prefix of all Mumie packages.
+         [/usr/local]
+         NOTE: If you want to change this, it is recommended that you set the
+         MM_BUILD_PREFIX environment variable instead of setting the 'prefix'
+         build variable in build.conf. The environment variable is recognized
+         by all build scripts of the Mumie project.
+
+  3.21. tomcat_home
+
+         The value of <tomcat_home>. Default is the environment variable
+         TOMCAT_HOME if set. Otherwise, this build variable has no default.
+
+  3.22. upload_dir
+
+         Directory for uploads to the Japs server.
+         [<tomcat_home>/webapps/cocoon/WEB-INF/upload]
+
+  3.23. url_prefix
+
+         Common prefix for all Mumie URLs. This build variable has no default.
+
+
+4. Build and installation
+   ======================
+
+  4.1. Start the PostgreSQL server, and make sure it accepts connections via
+       TCP/IP (starting with '-i' flag; cf. PostgreSQL documentation)
+
+  4.2. Stop Tomcat if running
+
+  4.3. Change into <base_dir> and type
+
+         ./build.sh all-step1
+
+       at the shell prompt.
+
+  4.4. Start Tomcat. If you run Tomcat behind an Apache web server, start
+       Apache, too, if it is not running yet.
+
+  4.5. Change into <base_dir> and type
+
+         ./build.sh all-step2
+
+       at the shell prompt.
+
+  4.6. Type
+
+         ./build.sh all-step3
+
+       at the shell prompt.
+
+
+A.1. Updating the Xalan libraries used by Java 6
+     ===========================================
+
+  A.1.1. You obtain Xalan from http://xml.apache.org/xalan-j/index.html.
+         Download xalan-j_2_7_0-bin.tar.gz or xalan-j_2_7_0-bin.zip and
+         extract the archive in a directory <xalan_extract_dir> of your
+         choice. A new subdirectory xalan-j_2_7_0 will be created.
+
+  A.1.2. Change into <java_home>/jre/lib. Create a subdirectory 'endorsed' if
+         not existing.
+
+  A.1.3. Copy the following files from <xalan_extract_dir>/xalan-j_2_7_0 to
+         <java_home>/jre/lib/endorsed:
+
+           serializer.jar, xalan.jar, xercesImpl.jar, xml-apis.jar
+
+         Instead of copying, you can make softlinks, too.
+
+  IMPORTANT: The files in <java_home>/jre/lib/endorsed must be readable for
+  anybody who uses Java. The directory <java_home>/jre/lib/endorsed must be
+  readable and accessible ('r' and 'x' flag) for anybody who uses Java.
+
+
+A.2. Updating the Xalan libraries used by Tomcat
+     ===========================================
+
+This is done very similar to A.1.
+
+  A.2.1. - Same as A.1.1 -
+
+  A.2.2. Copy the following files from <xalan_extract_dir>/xalan-j_2_7_0 to
+         <tomcat_home>/common/endorsed:
+
+           serializer.jar, xalan.jar, xercesImpl.jar, xml-apis.jar
+
+         Instead of copying, you can make softlinks, too.
+
+  IMPORTANT: The files in <tomcat_home>/common/endorsed must be readable for
+  the user who runs Tomcat. The directory <tomcat_home>/common/endorsed must
+  be readable and accessible ('r' and 'x' flag) for the user who runs Tomcat.
+
+
+A.3. Installing Cocoon
+     =================
+
+Note: Apache, Tomcat, PostgreSQL, and Cocoon can be installed and configured
+automatically by the japs_env package.
+
+The standard Cocoon 2.1.8 build process includes many components not needed by
+Japs. The following instructions lead to a Cocoon containing only the necessary
+parts.
+
+  A.3.1. Download and unpack the Cocoon distribution. Change into the directory
+         created thereby.
+
+  A.3.2. Create a file 'local.blocks.properties' and insert the following
+         lines into it:
+
+           exclude.all.blocks=true
+           include.block.session-fw=true
+           include.block.authentication-fw=true
+
+         Save the file after that.
+
+  A.3.3. Type
+
+           ./build.sh
+
+         at the shell prompt.
+
+         This builds Cocoon. You can ignore warnings.
+
+  A.3.4. Copy the folder build/webapp and all its contents to
+         <tomcat_home>/webapps and rename it 'cocoon':
+
+           cp -r build/webapp <tomcat_home>/webapps
+           mv <tomcat_home>/webapps/webapp <tomcat_home>/webapps/cocoon
+
+
+A.4. Building mumie-japs-for-mf.jar with Java 1.4 or Java 1.5
+     ========================================================
+
+The following instructions are for developers only who want to recompile the
+mumie-japs-for-mf.jar library. As a normal user, you do not need this.
+
+There is a special build target for this. It is called japs-lib-for-mf. Thus,
+
+  ./build.sh japs-lib-for-mf
+
+builds the jar. The only thing you must take care of is that the following
+libraries in <tomcat_home>/webapps/coocn/WEB-INF/lib are compiled with a Java
+version not higher then the one you use:
+
+  cocoon-2.1.8.jar
+  excalibur-xmlutil-2.1.jar
+  excalibur-pool-api-2.1.jar
+  avalon-framework-api-4.3.jar
+
+Usually, all four libraries come from the Cocoon distribution. The latter three
+a contained in the distribution as binaries compiled with Java 1.4, so they
+should not cause any problems. But the first, cocoon-2.1.8.jar, is compiled
+during the Cocoon build, so you must take care which Java version you use in
+that build.
+
+
+A.5. Building for a HTTPS server
+     ===========================
+
+If the Apache resp. Tomcat server runs with HTTPS, you have to take care that
+Java knows and trusts the certificate of the server. To achieve this, proceed as
+follows:
+
+  A.5.1. Create a directory <base_dir>/tools/local and copy the server
+         certificate into this directory. Give the copy the name
+
+           <server_name>.crt
+
+         Choose for <server_name> a string that identifies the server.
+
+  A.5.2. Change into the directory <base_dir>/tools/local and import the server
+         certificate into a newly created keystore named "trusted_certs" by
+         typing: 
+
+           $ keytool -import -keystore trusted_certs -alias <server_name> -file <server_name>.crt
+
+         You will be asked for a password for the new keystore. Type a
+         password of your choice (and make sure you can remember it later).
+
+         keytool is a program that comes with the Java SDK. See the Java SDK
+         documentation for more information about that program.
+
+         Make sure the keystore is accessible and readable for the user who
+         runs the build.sh script.
+
+  A.5.3. Set the following build variable in your build.conf file:
+
+           java_opts="-Djavax.net.ssl.trustStore=<base_dir>/tools/local/trusted_certs"
+
+         where <base_dir> has to be replaced by the actual path, of corse.
+
+
+-- END OF FILE --
+

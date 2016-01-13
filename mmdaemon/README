@@ -1,0 +1,59 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.1 2007/04/01 23:55:10 rassy Exp $
+
+
+
+                                   MMDAEMON
+
+
+
+Provides the 'mmdaemon' program which starts an arbitrary command as a
+daemon process. That means the process runs in the background and has no
+control terminal. mmdaemon retuns immediately after the daemon process has been
+started.
+
+The synopsis of mmdaemon is:
+
+  mmdaemon [OPTIONS] COMMAND [PARAMS]
+
+COMMAND and PARAMS are the command to start and a list of parameters to pass to
+it, respectively. OPTIONS is a list of options passed to the mmdaemon command
+itself. The possibly options are:
+
+  --dir=DIR, -d DIR
+
+      Sets the working directory of the daemon. Defaults to the current working
+      directory.
+
+  --stdin=IN_FILE, -i IN_FILE
+
+      Specifies a file where the standard input of the daemon is read
+      from. Defaults to "/dev/null", i.e., the daemon gets no input.
+
+  --stdout=OUT_FILE, -o OUT_FILE
+
+      Specifies a file where the standard output of the daemon is redirected
+      to. Defaults to "/dev/null", i.e., the standard output is discarded.
+
+  --stderr=ERR_FILE, -e ERR_FILE
+
+      Specifies a file where the standard error stream of the daemon is
+      redirected to. Defaults to "/dev/null", i.e., the standard error stream
+      is discarded. 
+
+In additianal, mmdaemon recognizes the following options for displaying help
+and version informations instead of lauching a daemon process:
+
+  --help, -h
+
+      Prints a help text to stdout and exits
+
+  --version, -v
+
+      Prints version information to stdout and exits
+
+If one of these options are set, COMMAND and PARAMS must not be specified.
+
+
+
+-- END OF FILE --

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Marek Grudzinski <grudzin@math.tu-berlin.de>
+   $Id: xsl_change_language.content.xml,v 1.4 2009/09/19 22:24:50 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- Id of the actually selected language: -->
+<xsl:variable name="language-id">
+  <xsl:value-of select="/*/mumie:dynamic_data/mumie:store[@name = 'user']/mumie:user/mumie:language/@id"/>
+</xsl:variable>
+
+<!--
+  Main template
+-->
+<xsl:template match="/">
+  <html>
+    <head>
+      <title><xsl:value-of select="$i18n-title"/></title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-bounded-width">
+        <!-- Headline: -->
+        <h1><xsl:value-of select="$i18n-change-language"/></h1>
+        <p><xsl:value-of select="$i18n-choose-language"/></p>
+        <form action="{$xsl.url-prefix}/protected/account/change-language"
+                enctype="multipart/form-data"
+                method="post">
+          <xsl:for-each select="/mumie:pseudo_documents/mumie:language">
+            <xsl:sort select="mumie:name"/>
+            <xsl:if test="mumie:name != 'Neutral'">
+              <p>
+                <xsl:call-template name="input">
+                  <xsl:with-param name="value" select="@id"/>
+                  <xsl:with-param name="label" select="mumie:name"/>
+                </xsl:call-template>
+              </p>
+            </xsl:if>
+          </xsl:for-each>
+          <p>
+            <button type="submit" name="submit" value="submit">
+              <xsl:value-of select="$i18n-submit"/>
+            </button>
+          </p>
+        </form>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+<!--
+  Outputs a form input field of type radio for a given value and label.
+  Mark the actual language as selected.
+-->
+
+<xsl:template name="input">
+  <xsl:param name="value"/>
+  <xsl:param name="label"/>
+  <input type="radio" name="new-language">
+    <xsl:attribute name="value">
+      <xsl:value-of select="$value"/>  
+    </xsl:attribute>
+    <xsl:if test="$value = $language-id">
+      <xsl:attribute name="checked">
+        <xsl:value-of select="'checked'"/>
+      </xsl:attribute>
+    </xsl:if>
+  </input>
+  <xsl:value-of select="$label"/>
+</xsl:template>
+
+</xsl:stylesheet>

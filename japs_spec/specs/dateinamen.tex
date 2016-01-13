@@ -1,0 +1,188 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Dateinamen}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: dateinamen.tex,v 1.4 2006/10/05 15:58:43 rassy Exp $}
+
+Diese Spezifikation beschreibt den Standard für \emph{Japs-Checkin-Dateien}.
+Letztere sind Master-, Content- und Preview-Dateien von Dokumenten und
+Pseudo-Dokumenten.
+
+\tableofcontents
+
+\section{Aufbau}\label{aufbau}
+
+Mit Ausnahme von Sections bestehen die Dateinamen von Dokumenten und
+Pseudo-Dokumenten aus einem \emph{Rumpfnamen (pure name)}\label{rumpfname} und
+einer zweiteiligen \emph{Endung (suffix)}; jeweils durch Punkte getrennt; die
+zwei Teile der Endung ebenfalls durch einen Punkt getrennt:
+
+\begin{preformatted}%
+    \var{pure_name}.\var{suffix1}.\var{suffix2}
+\end{preformatted}
+
+Hierbei bezeichnen \var{pure_name} den Rumpfnamen und \var{suffix1} und
+\var{suffix2} die beiden Teile der Endung.
+
+Der Rumpfname ist der inhaltlich motivierte Name der Datei. Er darf nur aus
+Buchstaben, Ziffern und dem Unterstrich ("_") bestehen. Der erste Teil der
+Endung (\var{suffix1}) klassifiziert die Datei nach ihrer technischen Rolle in
+der Mumie, d.h. danach, ob es sich um eine Master-, Content- oder Preview-Datei
+handelt. Die entsprechenden Werte für \var{suffix1} lauten \file{meta} bzw.
+\file{content} bzw. \file{preview}. Der zweite Teil der Endung (\var{suffix2})
+klassifiziert die Datei nach ihrem \emph{Media Type}. Die möglichen Werte sind
+in \ref{media_type_suffixes} definiert. (Für weitere Informationen über Media
+Types s.
+\link{http://www.graphcomp.com/info/specs/mime.html}{www.graphcomp.com/info/specs/mime.html}.)
+
+Da Master-Dateien immer vom Media Type \val{text/xml} sind, lautet ihre Endung
+(erster und zweiter Teil) stets \file{meta.xml}.
+
+Es wird empfohlen, dass der Rumpfname immer mit einem sogenannten
+\emph{Typ-Indikator} beginnt. Der Typ-Indikator ist ein Kürzel für den Typ des
+Dokuments bzw. Pseudo-Dokuments. Er sollte durch einen Unterstich ("_") vom
+restlichen Runpfnamen getrennt sein. Die möglichen Typ-Indikatore sind in
+\ref{type_indicators} definiert. 
+
+\section{Typ-Indikatoren}\label{type_indicators}
+
+Typ-Indikatoren für nicht-generische Dokumenttypen und Pseudo-Dokumenttypen
+bestehen aus Kleinbuchstaben und sind in der Regel drei Zeichen lang. In
+Ausnahmefällen sind auch längere Typ-Indikatoren erlaubt. Die Typ-Indikatoren der
+generischen Dokumenttypen entstehen aus denjenigen der ensprechenden
+nicht-generischen Dokumenttypen durch Voranstellen von \file {g_}.
+
+Die folgende Tabelle fasst alle Typ-Indikatoren zusammen:
+
+\begin{table}
+  \head
+    Typ-Indikator & (Pseudo-)Dokumenttyp  \\
+  \body
+    \file{apl} & \val{applet}  \\
+    \file{bsr} & \val{binary_source} \\
+    \file{cls} & \val{class} \\
+    \file{crs} & \val{course}  \\
+    \file{csb} & \val{course_subsection}  \\
+    \file{csc} & \val{course_section}  \\
+    \file{css} & \val{css_stylesheet}  \\
+    \file{elm} & \val{element}  \\
+    \file{g_css} & \val{generic_css_stylesheet}  \\
+    \file{g_img} & \val{generic_image}  \\
+    \file{g_mov} & \val{generic_movie}  \\
+    \file{g_pge} & \val{generic_page} \\
+    \file{g_snd} & \val{generic_sound}  \\
+    \file{g_xsl} & \val{generic_xsl_stylesheet}  \\
+    \file{img} & \val{image}  \\
+    \file{jar} & \val{jar}  \\
+    \file{jcl} & \val{java_class}  \\
+    \file{jsl} & \val{js_lib}  \\
+    \file{lng} & \val{language} \\
+    \file{mov} & \val{movie}  \\
+    \file{pge} & \val{page}  \\
+    \file{prb} & \val{problem}  \\
+    \file{sbe} & \val{subelement}  \\
+    \file{sem} & \val{semester} \\
+    \file{snd} & \val{sound}  \\
+    \file{tme} & \val{theme} \\
+    \file{tsr} & \val{text_source} \\
+    \file{tut} & \val{tutorial} \\
+    \file{ugr} & \val{user_group} \\
+    \file{usr} & \val{user} \\
+    \file{xsl} & \val{xsl_stylesheet}  \\
+\end{table}
+
+\section{Media-Type-Endungen}\label{media_type_suffixes}
+
+Die folgende Tabelle gibt die möglichen Werte von \var{suffix2} (zweiter Teil der
+Dateiendung, s. \ref{aufbau}) und die entsprechenden Media Types an.
+
+
+\begin{table}
+  \head
+    2. Endung & Media Type  \\
+  \body
+    \file{class} & \val{application/x-java-vm} \\
+    \file{css} & \val{text/css} \\
+    \file{gif} & \val{image/gif} \\
+    \file{html} & \val{text/html} \\
+    \file{jar} & \val{application/x-java-archive} \\
+    \file{java} & \val{text/java} \\
+    \file{jpg} & \val{image/jpeg} \\
+    \file{js} & \val{application/x-javascript} \\
+    \file{mpg} & \val{audio/mpeg} \\
+    \file{png} & \val{image/png} \\
+    \file{swf} & \val{application/x-shockwave-flash} \\
+    \file{tex} & \val{text/tex} \\
+    \file{tiff} & \val{image/tiff} \\
+    \file{txt} & \val{text/plain} \\
+    \file{wav} & \val{audio/wav} \\
+    \file{xml} & \val{text/xml} \\
+    \file{xhtml} & \val{text/xml} \\
+    \file{zip} & \val{application/zip} \\
+\end{table}
+
+Man beachte, das die Endungen \file{xml} und \file{xhtml} beide zum Media Type
+\val{text/xml} gehören. \file{xhtml} kennzeichnet eine XHTML-Datei, \file{xml}
+eine XML-Datei sonstiger Art.
+
+\section{Ausnahme: Sections}
+
+Master-Dateien von Sections haben immer den Namen 
+
+\begin{preformatted}%
+  \file{.meta.xml}
+\end{preformatted}
+
+Content-und Preview-Dateien gibt es bei Sections nicht (vgl.
+\href{sections.xhtml}{Sections-Spezifikation}).
+
+\section{Beispiele}
+
+\begin{enumerate}
+  \item \file{elm_def_erzeugendensystem.meta.xml}
+
+    Master-Datei eines Elements.
+
+  \item \file{elm_def_erzeugendensystem.content.xml}
+
+    Content-Datei von s.o.
+
+  \item \file{elm_def_erzeugendensystem.preview.xhtml}
+
+    Preview-Datei von s.o.
+
+  \item \file{tsr_def_erzeugendensystem.meta.xml}
+
+    Meta-Datei einer Text-Quelle
+
+  \item \file{tsr_def_erzeugendensystem.content.tex}
+
+    Content-Datei einer Text-Quelle
+
+  \item \file{img_lachende_mumie.meta.ml}
+
+    Meta-Datei eines Bildes (Dokumenttyp \val{image})
+
+  \item \file{img_lachende_mumie.content.png}
+
+    Content-Datei von s.o.
+
+  \item \file{img_lachende_mumie.preview.png}
+
+    Preview-Datei von s.o.
+
+\end{enumerate}
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

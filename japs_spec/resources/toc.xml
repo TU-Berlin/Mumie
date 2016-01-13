@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="ISO_8859-2"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<toc>
+  <!--
+  <name>Inhalt</name>
+  -->
+  <entries>
+    <!--
+    <realm>
+      <name>Grundlagen</name>
+      <entries>
+        <entry src="was_ist_mumie"/>
+        <entry src="dokumente"/>
+      </entries>
+    </realm>
+    -->
+    <realm>
+      <name>Konzepte</name>
+      <entries>
+        <entry src="urls"/>
+        <entry src="dateinamen" tooltip="Dateinamen"/>
+        <entry src="sections"/>
+        <entry src="xsl_stylesheet_system"/>
+        <entry src="aufl_gen_dok"/>
+        <entry src="kursmodell" tooltip="Neues Kursmodell"/>
+      </entries>
+    </realm>
+    <realm>
+      <name>Software</name>
+      <entries>
+        <entry src="db_helper_autocoding"/>
+      </entries>
+    </realm>
+    <realm>
+      <name>Konfiguration</name>
+      <entries>
+        <entry src="sitemap_autocoding"/>
+      </entries>
+    </realm>
+    <realm>
+      <name tooltip="Metainfo-XML, Data-Sheet-XML, usw.">Daten</name>
+      <entries>
+        <entry src="document_index_xml" legacy="legacy"/>
+        <entry src="document_member_index_xml"/>
+        <!-- entry src="checkin_list_xml" legacy="legacy" / -->
+        <entry src="checkin_list_xml"/>
+        <entry src="data_sheet_xml"
+               tooltip="Hierarchische Strukturierung beliebiger Daten"/>
+        <entry src="ppd_xml"/>
+      </entries>
+    </realm>
+    <realm>
+      <name>TeX</name>
+      <entries>
+        <entry src="generische_tex_bef_umg"/>
+      </entries>
+    </realm>
+    <realm>
+      <name tooltip="element, subelement, page, usw.">Dokumente</name>
+      <entries>
+        <subrealm>
+          <name>XSL-Stylesheets</name>
+          <entries>
+            <entry src="japs_xsl_bibliothek"/>
+          </entries>
+        </subrealm>
+        <subrealm>
+          <name>Pages</name>
+          <entries>
+            <entry src="page_xml"/>
+          </entries>
+        </subrealm>
+        <subrealm>
+          <name>Kurse</name>
+          <entries>
+            <entry src="kurs_als_netz"/>
+            <entry src="kurs_xml"/>
+	    <entry src="course_creator_new"/>
+          </entries>
+        </subrealm>
+        <subrealm>
+          <name>Elemente und Subelemente</name>
+          <entries>
+            <entry src="elm_subelm_formatvorl"/>
+            <entry src="multiple_choice_xml"
+                   tooltip="Kategorie 'problem', Aufgaben vom Multiple-Choice-Typ"/>
+            <entry src="multiple_choice_tex" legacy="legacy"/>
+            <entry src="applet_aufgaben_xml" legacy="legacy"/>
+            <entry src="applet_aufgaben_tex" legacy="legacy"/>
+          </entries>
+        </subrealm>
+        <subrealm>
+          <name>Aufgaben</name>
+          <entries>
+            <entry src="problem_tex"/>
+            <entry src="problem_xml"/>
+            <entry src="problem_xhtml"/>
+          </entries>
+        </subrealm>
+      </entries>
+    </realm>
+    <realm>
+      <name tooltip="Datenbank">Datenbank</name>
+      <entries>
+        <entry src="attachable" tooltip="... von Dokumenten an andere"/>
+        <entry src="vc_threads" tooltip="..."/>
+        <entry src="unique_references" legacy="legacy"/>
+        <entry src="ref_attr"/>
+      </entries>
+    </realm>
+    <realm>
+      <name>Mathlet Factory</name>
+      <entries>
+        <entry src="entw_dok_mit_java_quellen"/>
+        <entry src="appletentwicklung" legacy="legacy"/>
+        <entry src="korrektoren_metainfos" legacy="legacy"/>
+        <entry src="applet_session" legacy="legacy"
+               tooltip="Session-Wiederherstellung in Applets"/>
+        <entry src="applet_data_sheet" legacy="legacy"/>
+        <entry src="mathlet_server_kom"/>
+        <entry src="io_interface_mathletfactory" legacy="legacy"/>
+        <entry src="skript_interface_mathletfactory" legacy="legacy"/>
+        <entry src="xml_interface_mathletfactory" legacy="legacy"/>
+        <entry src="marking_spec" legacy="legacy"/>
+        <entry src="applet_quality_feedback"/>
+      </entries>
+    </realm>
+    <realm>
+      <name tooltip="Spezifisch f&#252;r TUMULT">TUMULT</name>
+      <entries>
+        <entry src="aufg_lin_unabh" legacy="legacy"/>
+        <entry src="training_urls" legacy="legacy"/>
+        <entry src="dozenten_und_tutoren_ansicht"/>
+        <entry src="aufgaben_korrektur"/>
+        <entry src="moses_sync"/>
+      </entries>
+    </realm>
+    <realm>
+      <name>Selbsteinsch&#228;tzungs-Tests</name>
+      <entries>
+        <entry src="selbsteinschaetzungs_tests_konzept"/>
+      </entries>
+    </realm>
+  </entries>
+</toc>

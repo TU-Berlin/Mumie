@@ -1,0 +1,290 @@
+#! /bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+# $Id: mmping,v 1.2 2008/05/02 09:26:04 rassy Exp $
+
+# Set fixed variabes (constants):
+readonly program_name=mmping
+readonly program_version='$Revision: 1.2 $'
+readonly conf_file=${program_name}.conf
+
+# --------------------------------------------------------------------------------
+# Utility functions
+# --------------------------------------------------------------------------------
+
+# Aborts with an error message
+function error
+  {
+    echo "ERROR: $*" 1>&2
+    echo  1>&2
+    exit 1
+  } 
+
+# Checks the exit code of the last command, terminates with an error message if the
+# exit code is not 0
+function check_exit_code
+  {
+    local exit_code=$?
+    [ "$exit_code" -eq 0 ] || error "Last command returned with code $exit_code"
+  }
+
+# Runs a command, checks the exit code, terminates with an error message if the exit
+# code is not 0
+function run_cmd
+  {
+    "$@"
+    check_exit_code
+  }
+
+# Checks if an host file exists, and aborts with an error message if not
+function check_host_file
+  {
+    [ -e "$host_file" ] || \
+      error "No $host_file file - Not a $program_name working directory?"
+  }
+
+# Filters out the first line of the statistics section in the ping output
+function get_ping_msg
+  {
+    local line
+    while read line ; do
+      if echo "$line" | fgrep 'ping statistics ---' 2>&1 > /dev/null ; then
+        read line && echo "$line"
+        return
+      fi
+    done
+  }
+
+# --------------------------------------------------------------------------------
+# Functions implementing commands
+# --------------------------------------------------------------------------------
+
+function _run_ping
+  {
+    check_host_file
+
+    # Save pid in a file:
+    echo $$ > $pid_file
+
+    # Get host:
+    local host=`cat $host_file`
+
+    # Log file counter and log record counter:
+    local log_file_count=1
+    local log_record_count=0
+
+    # File to temporarily store ping output:
+    local ping_out_file=ping.out
+
+    while true ; do
+
+      # Save current time:
+      local ping_time=`date +"$date_format"`
+
+      # Run ping, save output in a file, and save exit value:
+      local ping_time=`date +"$date_format"`
+      ping -c 1 $host 2>&1 > $ping_out_file
+      local exit_value=$?
+
+      # Log message prefix:
+      local msg_prefix
+      if [ $exit_value -eq 0 ] ; then
+        msg_prefix=OK
+      else
+        msg_prefix=ERROR
+      fi
+      
+      # Log message:
+      local msg=`get_ping_msg < $ping_out_file`
+
+      # If necessary, change log file (log rotating):
+      if [ $log_record_count -gt $max_log_records ] ; then
+        if [ $log_file_count -lt $max_log_files ] ; then
+          log_file_count=$[$log_file_count + 1]
+        else
+          log_file_count=1
+        fi
+        log_record_count=0
+      fi
+
+      # Log file suffix:
+      local log_file_suffix=`printf "%02i" $log_file_count`
+
+      # Print log message to log file:
+      echo "${ping_time}: ${msg_prefix}: $msg" >> ${log_file}.${log_file_suffix}
+
+      sleep $interval
+      
+    done
+  }
+
+function run_ping
+  {
+    _run_ping > $out_file 2> $err_file
+  }
+
+function start_ping
+  {
+    check_host_file
+
+    [ "$mmping_path" ] || mmping_path=`which $program_name`
+    [ "$mmping_path" ] || error "mmping_path not set and cannot determined automatically"
+
+    mmdaemon $mmping_path run
+  }
+
+function stop_ping
+  {
+    check_host_file
+
+    if [ ! -e "$pid_file" ] ; then
+      echo "$program_name is not running"
+      return
+    fi
+
+    kill `cat $pid_file`
+    run_cmd rm $pid_file
+  }
+
+function show_status
+  {
+    check_host_file
+
+    if [ -e "${log_file}.01" ] ; then
+      local total_errors=`fgrep ERROR ${log_file}.* | wc -l`
+      check_exit_code
+    fi
+
+    if [ -e "$pid_file" ] ; then
+      echo "$program_name is running (pid = `cat $pid_file`)"
+      [ "$total_errors" ] && echo "$total_errors error(s)"
+    else
+      echo "$program_name is not running"
+      [ "$total_errors" ] && echo "$total_errors error(s) in last run"
+    fi
+  }
+
+function clear_files
+  {
+    check_host_file
+
+    run_cmd rm -fv ${log_file}.*
+    local msg_file
+    for msg_file in $err_file $out_file ; do
+      [ "$msg_file" != /dev/null ] && rm -vf $msg_file
+    done
+  }
+
+function show_logs
+  {
+    check_host_file
+    if [ -e "${log_file}.01" ] ; then
+      cat ${log_file}.* | less
+    else
+      echo "No log files found"
+    fi
+  }
+
+# --------------------------------------------------------------------------------
+# Functions implementing tasks
+# --------------------------------------------------------------------------------
+
+function execute_command
+  {
+    [ "$cmd" ] || error "No command specified"
+
+    case "$cmd" in
+      run) run_ping ;;
+      start) start_ping ;;
+      stop) stop_ping ;;
+      status) show_status ;;
+      clear) clear_files ;;
+      log) show_logs ;;
+      *) error "Unknown commmand: $cmd"
+    esac
+  }
+
+function print_variables
+  {
+    cat <<EOF
+date_format     = $date_format
+err_file        = $err_file
+interval        = $interval
+log_file        = $log_file
+max_log_files   = $max_log_files
+max_log_records = $max_log_records
+mmping_path     = $mmping_path
+out_file        = $out_file
+path            = $path
+pid_file        = $pid_file
+EOF
+  }
+
+# --------------------------------------------------------------------------------
+# Main program
+# --------------------------------------------------------------------------------
+
+# Customizable variable defaults:
+unset host
+interval=60
+log_file=${program_name}.log
+out_file=/dev/null
+err_file=${program_name}.err
+pid_file=${program_name}.pid
+max_log_files=10
+max_log_records=10000
+date_format='%Y-%m-%d %H:%M:%S'
+
+# Source config file if exists:
+[ -e $conf_file ] && source $conf_file
+
+# Default task:
+task=execute_command
+
+# Process command line parameters:
+params=`getopt \
+  --longoptions help,version,vars \
+  --options h,v \
+  -- \
+  "$@"`
+if [ $? -ne 0 ] ; then exit 1 ; fi
+eval set -- "$params"
+while true ; do
+  case "$1" in
+    --help|-h) task=show_help ; shift ;;
+    --version|-v) task=show_version ; shift ;;
+    --vars) task=print_variables ; shift ;;
+    --) shift ; break ;;
+  esac
+done
+cmd=$1
+shift
+[ "$1" ] && error "Extra parameter(s): $*"
+
+# Non-customizable varaibles:
+host_file=host
+
+# Execute task:
+$task

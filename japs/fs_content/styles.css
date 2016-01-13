@@ -1,0 +1,532 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2010 Technische Universitaet Berlin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+html
+  {
+    font-family: Albany AMT, Verdana, Helvetica, sans-serif;
+    font-size: 10pt;
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 0pt 0pt 0pt 0pt;
+  }
+
+body
+  {
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 0pt 0pt 0pt 0pt;
+  }
+
+body.bounded-width
+  {
+    max-width: 55em;
+  }
+
+div.top
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 2px 2px 2px 2px;
+    height: 85px;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #000000;
+    color: #FFFFFF;
+    background-image: url("top_bar_bg.png");
+    background-color: #27408B;
+  }
+
+div.top-links, div.top-user
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 2px 2px 2px 2px;
+    font-size: 75%;
+  }
+
+div.top-user
+  {
+    text-align: right;
+  }
+
+div.top-links a, div.top-user a
+  {
+    color: #FFFFFF;
+    margin: 1px 1px 1px 1px;
+    padding: 1px 1px 1px 1px;
+  }
+
+div.top-links a:hover, div.top-user a:hover
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #FFFFFF;
+    text-decoration: none;
+    background-color: inherit;
+  }
+
+div.top img
+  {
+    margin: 0px 4px 0px 4px;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+div.top td.left
+  {
+    width: 100px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+div.top td.right
+  {
+    width: 100px;
+    text-align: right;
+    vertical-align: middle;
+  }
+
+div.top td.middle
+  {
+    width: 90%;
+    text-align: center;
+    font-size: 100%;
+  }
+
+div.top span.title
+  {
+    font-size: 11pt;
+    font-weight: bold;
+    color: #FFFFFF;
+  }
+
+div.top span.subtitle
+  {
+    font-size: 10pt;
+    color: #FFFFFF;
+  }
+
+div.main
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+div.main-bounded-width
+  {
+    margin: 1em 2em 1em 2em;
+    padding: 0pt 0pt 0pt 0pt;
+    max-width: 55em;
+  }
+
+h4
+  {
+    font-size: 100%;
+  }
+
+h3
+  {
+    font-size: 125%;
+  }
+
+h2
+  {
+    font-size: 150%;
+  }
+
+h1
+  {
+    font-size: 200%;
+  }
+
+h1, h2, h3, h4, h5
+  {
+    font-weight: bold;
+    margin: 1em 0em 1em 0em;
+  }
+
+p
+  {
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 1.5ex 0px 1.5ex 0px;
+    text-align: justify;
+  }
+
+em
+  {
+    font-style: italic;
+  }
+
+strong
+  {
+    font-style: italic;
+    font-weight: bold;
+  }
+
+span.notion
+  {
+    font-weight: bold;
+  }
+
+table.genuine
+  {
+    border-collapse: collapse;
+    margin: 1.5ex 1em 1.5ex 1em;
+  }
+
+table.genuine thead
+  {
+    background-color: #EAEAEA;
+    font-weight: bold;
+  }
+
+table.genuine td
+  {
+    padding: 0.5ex 0.5em 0.5ex 0.5em;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+  }
+
+table.genuine td.number
+  {
+    text-align: right;
+  }
+
+table.genuine tfoot
+  {
+  }
+
+table.layout
+  {
+    border-collapse: collapse;
+    border-style: none;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+table.layout tr, table.layout td
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+ul
+  { 
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+li
+  { 
+    margin: 0em 0em 0em 0em;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+table.list
+  {
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin: 0.25em 1em 0.25em 1em;
+  }
+
+table.list table.list
+  {
+    margin-top: 0.125em;
+    margin-bottom: 0.125em;
+  }
+
+table.list > tr > td
+  {
+    vertical-align: top;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+table.list > tr > td > p
+  {
+    margin-top: 0.75ex;
+    margin-bottom: 0.75ex;
+  }
+
+table.list > tr > td > p:first-child
+  {
+    margin-top: 0ex;
+  }
+
+table.list > tr > td.list-label
+  {
+    padding-right: 0.5em;
+  }
+
+table.list > tr > td > p > img.strut
+  {
+    width: 0em;
+    height: 2em;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+table.enum
+  {
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+table.enum > tr > td
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0ex 0em 0.5ex 0em;
+  }
+
+a
+  {
+    padding: 0px 0.2em 0px 0.2em;
+  }
+
+a:hover
+  {
+    background-color: yellow;
+    padding: 0px 0.2em 0px 0.2em;
+  }
+
+a.small
+  {
+    font-size: 75%;
+    padding: 0.1ex 0.5em 0.1ex 0.5em;
+  }
+
+div.caption-first
+  {
+    padding: 0pt 0pt 0pt 0pt;
+    margin: 0ex 1em 1ex 1em;
+  }
+
+button[type="button"], button[type="submit"], a.button
+  {
+    font-size: 85%;
+    background-color: #EAEAEA;
+    color: #000000;
+    text-decoration: none;
+    padding: 0.4ex 0.75em 0.5ex 0.75em;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+    cursor: pointer;
+  }
+
+button[type="button"].small, button[type="submit"].small, a.button-small
+  {
+    font-size: 75%;
+    background-color: #EAEAEA;
+    color: #000000;
+    text-decoration: none;
+    padding: 0.2ex 0.5em 0.2ex 0.5em;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+    cursor: pointer;
+  }
+
+button[type="button"].inline, button[type="submit"].inline, a.button-inline
+  {
+    font-size: 85%;
+    background-color: #EAEAEA;
+    color: #000000;
+    text-decoration: none;
+    padding: 0.2ex 0.5em 0.2ex 0.5em;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+    cursor: pointer;
+  }
+
+a.button-small:hover
+  {
+    background-color: #f5f5f5;
+  }
+
+div.footer
+  {
+    margin: 30pt 0pt 0pt 1em;
+    padding: 0pt 0pt 0pt 0pt;
+    border-style: none;
+  }
+
+span.footer
+  {
+    font-size: 75%;
+    color: #404040;
+  }
+
+span.footer a
+  {
+    color: inherit;
+    margin: 0px 1px 0px 1px;
+  }
+
+span.footer a:hover
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #404040;
+    text-decoration: none;
+    background-color: inherit;
+  }
+
+span.footer span.sep
+  {
+    margin: 0em 0.4em 0em 0.4em;
+  }
+
+input[type="text"], input[type="password"]
+  {
+    font-family: Courier, monospace;
+    padding: 0.4ex 0.0em 0.4ex 0.2em;
+    border-style: inset;
+    border-color: #949494;
+    border-width: 2px;
+  }
+
+table.text-input
+  {
+    background-color: #EAEAEA;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+  }
+
+*.label
+  {
+    margin: 0ex 0em 0ex 0em;
+    padding: 0.5ex 0.25em 0.5ex 0.0em;
+  }
+
+*.input
+  {
+    margin: 0ex 0em 0ex 0em;
+    padding: 0.5ex 0.0em 0.5ex 0.25em;
+  }
+
+div.dialog
+  {
+    visibility: hidden;
+    position: absolute;
+    max-width: 42em;
+    font-size: 85%;
+    background-color: #EAEAEA;
+    color: #000000;
+    padding: 1ex 1em 1ex 1em;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+    text-align: center;
+  }
+
+table.dialog
+  {
+    border-collapse: collapse;
+    border-style: none;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }
+
+table.dialog thead
+  {
+    font-weight: bold;
+  }
+
+table.dialog tr, table.dialog td
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 1ex 1ex 1ex 1ex;
+  }
+
+table.dialog td.align-left
+  {
+    text-align: left;
+  }
+
+table.dialog button, table.dialog a.button
+  {
+    font-size: 100%;
+  }
+
+table.menu
+  {
+    visibility: hidden;
+    position: absolute;
+    max-width: 42em;
+    font-size: 85%;
+    background-color: #EAEAEA;
+    color: #000000;
+    border-style: solid;
+    border-color: #949494;
+    border-width: 1px;
+    border-collapse: collapse;
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+    text-align: left;
+  }
+
+table.menu td, table.menu th
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0.25em 1em 0.25em 1em;
+  }
+
+table.menu th
+  {
+    font-weight: bold;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
+
+table.menu td:hover
+  {
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+
+table.menu td.sep-after, table.menu th.sep-after
+  {
+    border-bottom-style: solid;
+    border-bottom-color: #949494;
+    border-bottom-width: 1px;
+  }
+
+table.dialog button, table.dialog a.button, table.menu button, table.menu a.button
+  {
+    font-size: 100%;
+  }
+
+*.error
+  {
+    color: #ff0000;
+  }
+
+div.error
+  {
+    margin: 0pt 0pt 0pt 0pt;
+    padding: 0pt 0pt 0pt 0pt;
+  }

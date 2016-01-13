@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmjutil" default="all" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="mmjutil.src.dir" value="src"/>
+  <property name="mmjutil.src.java.dir" value="${mmjutil.src.dir}/java"/>
+  <property name="mmjutil.lib.dir" value="lib"/>
+  <property name="mmjutil.lib.java.dir" value="${mmjutil.lib.dir}/java"/>
+  <property name="mmjutil.lib.java.classes.dir" value="${mmjutil.lib.java.dir}/classes"/>
+  <property name="mmjutil.test.dir" value="test"/>
+  <property name="mmjutil.doc.dir" value="doc"/>
+  <property name="mmjutil.doc.apidocs.dir" value="${mmjutil.doc.dir}/apidocs"/>
+  <property name="mmjutil.resources.dir" value="resources"/>
+  <property name="mmjutil.resources.apidocs.css.file"
+            value="${mmjutil.resources.dir}/apidocs.css"/>
+  <property name="mmjutil.verbose" value="no"/>
+  <property name="mmjutil.force" value="no"/>
+  <property name="mmjutil.javac.verbose" value="no"/>
+  <property name="mmjutil.javac.deprecation" value="no"/>
+  <property name="mmjutil.javac.debug" value="yes"/>
+  <property name="mmjutil.jar.file" value="mumie-util.jar"/>
+  <property name="mmjutil.jdk.apidocs.url" value=""/>
+  <property name="mmjutil.jar.manifest" value="${mmjutil.lib.java.dir}/META-INF/MANIFEST.MF"/>
+  <property name="mmjutil.vendor" value="Berlin University of Technology"/>
+  <property name="mmjutil.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="mmjutil.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmjutil.internal.force">
+    <istrue value="${mmjutil.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <pathelement path="${mmjutil.lib.java.classes.dir}"/>
+      <fileset dir="${mmjutil.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+    </path>
+    <property name="mmjutil.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmjutil."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmjutil.verbose}">
+      <fileset dir="${mmjutil.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) mmjutil.internal.force is set, which is
+     equivalent to mmjutil.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="mmjutil.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     mmjutil.internal.force is set, which is equivalent to mmjutil.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${mmjutil.src.java.dir}"
+           destdir="${mmjutil.lib.java.classes.dir}"
+           listfiles="${mmjutil.verbose}"
+           classpathref="classpath"
+           deprecation="${mmjutil.javac.deprecation}"
+           verbose="${mmjutil.javac.verbose}"
+           debug="${mmjutil.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Creates the Manifest file for the jar.
+  -->
+
+  <target name="manifest">
+    <manifest file="${mmjutil.jar.manifest}">
+      <attribute name="Created" value="${mmjutil.timestamp}"/>
+      <section name="net/mumie/util">
+        <attribute name="Specification-Title" value="Mumie Java Utilities"/>
+        <attribute name="Specification-Version" value="${mmjutil.version}"/>
+        <attribute name="Specification-Vendor" value="${mmjutil.vendor}"/>
+        <attribute name="Implementation-Title" value="net.mumie.util"/>
+        <attribute name="Implementation-Version" value="${mmjutil.version}"/> 
+        <attribute name="Implementation-Vendor" value="${mmjutil.vendor}"/>
+      </section>
+    </manifest>  
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes"
+          depends="manifest">
+    <jar destfile="${mmjutil.lib.java.dir}/${mmjutil.jar.file}"
+         basedir="${mmjutil.lib.java.classes.dir}"
+         excludes=".KEEP_ME"
+         manifest="${mmjutil.jar.manifest}"/> 
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if mmjutil.internal.force is set, which is equivalent to mmjutil.force being 
+     true.
+  -->
+
+  <target name="all"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs"
+          depends="clear-apidocs, classpath"
+          description="Creates the API docs">
+    <mkdir dir="${mmjutil.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Java Utilities"
+             packagenames="net.mumie.util.*"
+             sourcepath="${mmjutil.src.java.dir}"
+             destdir="${mmjutil.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmjutil.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmjutil.verbose}">
+      <link href="${mmjutil.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="clear-apidocs">
+    <delete verbose="${mmjutil.verbose}"
+            dir="${mmjutil.doc.apidocs.dir}"/>
+  </target>
+
+</project>

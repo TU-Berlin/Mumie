@@ -1,0 +1,111 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Kursmodell}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: kursmodell.tex,v 1.3 2006/08/11 16:18:22 rassy Exp $}
+
+\section{Grundsätzliches}
+
+\begin{enumerate}
+  
+\item Im Zusammenhang mit Kursen gibt es drei Dokumnenttypen (statt wie bisher
+  nur einen):
+
+  \begin{enumerate}
+    
+  \item \emph{course} -- Entspricht einem ganzen Kurs (bisher: toplevel course
+    section)
+    
+  \item \emph{course_section} -- Zur Gliederung von Kursen (bisher: nicht-toplevel
+    course section)
+    
+  \item \emph{course_subsection} -- An eine course_section angehängte
+    Zusatzeinheit, z.B. Prelearning, Training.
+
+  \end{enumerate}
+    
+\item course_sections und course_subsections stehen zueinander wie Elemente und
+  Subelemente. Sie sollen auch analog grafisch dargestellt werden, also:
+       
+  \begin{preformatted}
+    +--------+
+    |        | <-- course_subsection
+    |        |
+    |    +-------------+
+    |    |             |
+    + ---|             |
+         |             |
+         |             | <-- course_section
+         |             |
+         |             |
+         |             |
+         +-------------+
+  \end{preformatted}
+  
+\item Für course_subsections, vielleicht auch für courses und course_sections,
+  werden Kategorien eingeführt (analog wie bei Elementen und Subelementen). Es
+  soll zumindest die folgenden Kategorien geben:
+
+  \begin{enumerate}
+
+  \item \emph{prelearn} --  Die course_subsection ist ein "Prelearning-Arbeitsblatt" 
+
+  \item \emph{training} --  Die course_subsection ist ein "Training-Arbeitsblatt"
+
+  \end{enumerate}
+  
+\item Kurse (courses) sind einem Semester zugeordnet. Dazu wird der Begriff
+  "Semester" in der DB durch eine eigene Tabelle modelliert (s.u.). Die Tabelle
+  \dbtable{courses} enthält eine Spalte \dbcol{semester} mit Fremdschlüssel in der
+  \dbtable{semesters}-Tabelle.
+  
+  In config.xml muss dazu das Attribut \attrib{has-semester} (default: no) eingführt
+  werden.
+   
+\item Semester werden in der DB durch eine Tabelle \dbtable{semesters} dargestellt.
+  Spalten:
+
+  \begin{enumerate}
+
+  \item \dbcol{id} -- Id (Primärschlüssel)
+    
+  \item \dbcol{name} -- Name, z.B. "WS 2004/2005"
+    
+  \item \dbcol{start_time}  -- Semesterbeginn als Timestamp oder Datum
+    
+  \item \dbcol{end_time}    -- Semesterende als Timestamp oder Datum
+
+  \end{enumerate}
+
+  (vgl. prelearning/sketch.txt 7.2.)
+  
+\item course_subsections können einen "Bearbeitungszeitraum" haben. Es ist noch
+  zu klären, ob dieser bei den Metainfos oder im Inhalt der course_secions
+  abgespeichert wird.
+
+\item course_sections können nicht wie bisher geschachtelt werden. Damit ergibt
+   sich folgende Hierarchie:
+
+   \begin{preformatted}
+     courses
+        \verb'^'
+        |  enthalten in
+        +---------------- course_sections
+                                 \verb'^'
+                                 | angehängt an
+                                 +---------------- course_subsections
+   \end{preformatted}
+
+\end{enumerate}
+
+-- ENDE DER DATEI --
+
+\end{document}

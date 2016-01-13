@@ -1,0 +1,14 @@
+# Mumie test environment:
+if [ "$MMTEST_ENV" ] ; then
+  current_dir=`pwd`
+  cd $HOME/projects/mumie_test # adapt this if necessary
+  source util/setup.sh
+  japs_env_conf_dir=$test_dir/packages/japs_env/conf/bash
+  source $japs_env_conf_dir/postgres_bashrc
+  source $japs_env_conf_dir/apache_bashrc
+  source $japs_env_conf_dir/tomcat_bashrc
+  cd $current_dir
+  unset current_dir japs_env_conf_dir
+  PS1="[test] \u@\h:\w > "
+  set +e
+fi

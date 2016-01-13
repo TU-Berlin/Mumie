@@ -1,0 +1,95 @@
+\documentclass[list]{japs.coursesection}
+
+\begin{metainfo}
+
+  \name{Test}
+
+  \begin{description}
+    Test
+  \end{description}
+
+  \genericsummary{samples/course_list/g_sum_something.meta.xml}
+  
+  \begin{components}
+
+    \compgelm{samples/course_list/g_def_something_1.meta.xml}{def-1}{1}
+
+    \compgelm{samples/course_list/g_thm_something_2.meta.xml}{thm-2}{2}
+    \compgsel{samples/course_list/g_rmk_something_2_1.meta.xml}{rem-2-1}{2.1}
+    \compgsel{samples/course_list/g_exm_something_2_2.meta.xml}{exm-2-2}{2.2}
+
+    \compgelm{samples/course_list/g_def_something_3.meta.xml}{def-3}{3}
+    \compgsel{samples/course_list/g_rmk_something_3_1.meta.xml}{rem-3-1}{3.1}
+    \compgsel{samples/course_list/g_exm_something_3_2.meta.xml}{exm-3-2}{3.2}
+
+    \compgelm{samples/course_list/g_thm_something_4.meta.xml}{thm-4}{4}
+    \compgsel{samples/course_list/g_rmk_something_4_1.meta.xml}{rem-4-1}{4.1}
+    \compgsel{samples/course_list/g_exm_something_4_2.meta.xml}{exm-4-2}{4.2}
+    \compgsel{samples/course_list/g_vis_something_4_3.meta.xml}{vis-4-3}{4.2}
+
+    \compgelm{samples/course_list/g_thm_something_5.meta.xml}{thm-5}{5}
+    \compgsel{samples/course_list/g_vis_something_5_1.meta.xml}{vis-5-1}{5.1}
+    \compgsel{samples/course_list/g_vis_something_5_2.meta.xml}{vis-5-2}{5.2}
+
+    \compgelm{samples/course_list/g_def_something_6.meta.xml}{def-6}{6}
+    \compgsel{samples/course_list/g_exm_something_6_1.meta.xml}{exm-6-1}{6.1}
+    \compgsel{samples/course_list/g_exm_something_6_2.meta.xml}{exm-6-2}{6.2}
+    \compgsel{samples/course_list/g_vis_something_6_3.meta.xml}{vis-6-3}{6.3}
+    \compgsel{samples/course_list/g_vis_something_6_4.meta.xml}{vis-6-4}{6.4}
+
+    \compgelm{samples/course_list/g_apl_something_7.meta.xml}{apl-7}{7}
+    \compgsel{samples/course_list/g_vis_something_7_1.meta.xml}{vis-7-1}{7.1}
+    \compgsel{samples/course_list/g_vis_something_7_2.meta.xml}{vis-7-2}{7.2}
+
+    \compgsel{samples/course_list/g_rmk_something_1.meta.xml}{rem-1}{1}
+    \compgsel{samples/course_list/g_exm_something_2.meta.xml}{exm-2}{2}
+    \compgsel{samples/course_list/g_vis_something_3.meta.xml}{vis-3}{3}
+    \compgsel{samples/course_list/g_vis_something_4.meta.xml}{vis-4}{4}
+
+  \end{components}
+
+\end{metainfo}
+
+\begin{content}
+
+  \gelement{def-1}
+
+  \begin{gelement}{thm-2}
+    \gsubelement{rem-2-1}
+    \gsubelement{exm-2-2}
+  \end{gelement}
+
+  \begin{gelement}{def-3}
+    \gsubelement{rem-3-1}
+    \gsubelement{exm-3-2}
+  \end{gelement}
+
+  \begin{gelement}{thm-4}
+    \gsubelement{rem-4-1}
+    \gsubelement{exm-4-2}
+    \gsubelement{vis-4-3}
+  \end{gelement}
+
+  \begin{gelement}{thm-5}
+    \gsubelement{vis-5-1}
+    \gsubelement{vis-5-2}
+  \end{gelement}
+
+  \begin{gelement}{def-6}
+    \gsubelement{exm-6-1}
+    \gsubelement{exm-6-2}
+    \gsubelement{vis-6-3}
+    \gsubelement{vis-6-4}
+  \end{gelement}
+
+  \begin{gelement}{apl-7}
+    \gsubelement{vis-7-1}
+    \gsubelement{vis-7-2}
+  \end{gelement}
+
+  \gsubelement{rem-1}
+  \gsubelement{exm-2}
+  \gsubelement{vis-3}
+  \gsubelement{vis-4}
+
+\end{content}

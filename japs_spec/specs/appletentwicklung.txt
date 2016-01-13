@@ -1,0 +1,248 @@
+Autoren: Tilman Rassy <rassy@math.tu-berlin.de>
+         Tim Paehler <paehler@iram.rwth-aachen.de>
+$Id: appletentwicklung.txt,v 1.1 2005/06/29 11:22:35 rassy Exp $
+
+
+                       APPLETENTWICKLUNG FÜR DEN JAPS
+
+
+ 
+               Inhalt
+
+               0. Bezeichnungen
+               1. Verzeichnisstruktur
+               2. Angabe von Metainformationen in der Quelldatei
+               3. Build-Prozess
+               4. Qualitätskontrolle
+               5. Anbindung an mmcdk
+               6. Betrachten der Applets
+               7. Basisklassen der Applet-Factory
+
+
+
+0. Bezeichnungen
+   =============
+
+  0.1. <basedir>
+
+    Das Wurzelverzeichnis der CVS-Sandbox, in der die Appletentwicklung
+    stattfindet. Dies kann, muss aber nicht das Wurzelverzeichnis der
+    Applet-Factory sein. Die Appletentwicklung für den Japs wird möglicherweise
+    ein eigenes CVS-Repository haben. Dies ist noch zu klären.
+
+  0.2 Quelldatei
+
+    Java-Quelldatei eines Applets oder allgemein einer Java-Klasse. Der Name der
+    Datei ist demnach von der Form
+
+      foo.java
+
+  0.3 Master-Datei
+
+   Auch Meta-Datei oder Metainfo-Datei. XML-Datei mit den Metainformationen zu
+   einem Dokument im Japs-Sinne. Der Dateiname hat die Form
+
+     foo.meta.xml
+
+  0.4 Content-Datei
+
+   Datei mit dem eigentlichen Inhalt eines Dokuments im Japs-Sinne (bei Applets
+   ist dies ein jar-Archiv mit allen Klassen und ggf. benötigten Resourcen). Der
+   Dateiname hat die Form 
+
+     foo.content
+
+
+1. Verzeichnisstruktur
+   ===================
+
+  Die Verzeichnisstruktur ist wie folgt (Ausschnitt):
+
+    <basedir>
+      |
+      +-checkin
+          |
+          +-appfac
+              |
+              +-document
+                  |
+                  +-applet
+                  |   |
+                  |   +-net
+                  |       |
+                  |       +-mumie
+                  |           |
+                  |           +-mathlet
+                  |               |
+                  |               +-linalg
+                  |               |
+                  |               +-analysis
+                  |
+                  +-jar
+
+  Hinzu kommen 
+
+    o  Hilfsverzeichnisse technischer Natur (jedoch nicht unter "checkin"),
+
+    o  ggf. Unterverzeichnisse in "applet" für weitere Gebiete,
+
+    o  ggf. Unterverzeichnisse in "document" für weitere Dokumenttypen.
+ 
+  Die Unterverzeichnisse "applet" und "jar" entsprechen den Japs-Dokumenttypen
+  gleichen Namens. In den Unterverzeichnissen von "applet" liegen die
+  Quelldateien der Applets. Die Master- und Content-Dateien werden ebenfalls
+  dort abgelegt, und zwar stets im selben Verzeichnis wie die entsprechenden
+  Quellen.
+
+  Nur die Quelldateien befinden sich im CVS. Die Master- und Content-Dateien
+  werden automatisch erzeugt (s.u.) und sind nicht CVS-kontrolliert.
+
+  Eine Quelldatei hat, unabhängig vom Status des entsprechenden Dokuments, immer
+  denselben Standort im Verzeichnisbaum (keine Einsortierung in verschiedene
+  Verzeichnisse nach status="pre" oder nicht "pre").
+
+  Bzgl. des Verzeichnisses "jar" s.u.
+
+  Die Struktur des Verzeichnisbaums unter "applet" entspricht der
+  Java-Package-Struktur. Damit wird einer weit verbreiteten Konvention in der
+  Java-Entwicklung Genüge getan.
+
+
+2. Angabe von Metainformationen in der Quelldatei
+   ==============================================
+
+  Die Metainformationen zu einem Applet werden in der Quelldatei eingetragen
+  und nur dort editiert. Dazu werden zusätzliche Javadoc-Tags definiert, und
+  zwar zunächst folgende:
+
+    mm.id           Datenbank-ID. Nur vorhanden, wenn das Applet bereits in die
+                    Datenbank eingecheckt wurde. Braucht vom Entwickler nicht
+		    eingetragen zu werden.
+
+    mm.copyright    Copyright-Angabe. Optional. Default ist "Copyright (C) 2004,
+                    Berlin University of Technology".
+
+    mm.status       QS Status. Erlaubte Werte sind: pre, devel_ok, content_ok,
+                    content_complete, ok_for_publication, final
+
+    mm.description  Kurze Beschreibung (in Deutsch), wird als ToolTip
+                    angezeigt.
+
+    mm.param        Applet-Parameter, Name und Beschreibung, getrennt durch ":"
+
+    mm.rating       Einstufung des Applets durch die content checker. Erlaubte
+                    Werte sind: "none", "good", "average", "poor" oder der Name
+                    eines Applets, welches diesem ähnlich ist, aber als besser
+                    eingestuft wird.
+
+    mm.todo         Hinweise für den Entwickler, was noch zu tun ist
+
+    mm.changelog    Werdegang des Dokuments
+
+    mm.width        Empfohlene Breite des Applets in Pixel. Optional. Default
+                    ist 600.
+
+    mm.height       Empfohlene Höhe des Applets in Pixel. Optional. Default
+                    ist 600.
+
+    mm.requireJar   Ein vom Applet benötigtes Jar-Archiv, spezifiziert durch
+                    dessen Master-Datei relativ zum checkin-Verzeichnis. Dieses
+                    Tag darf mehrfach vorkommen oder auch ganz fehlen. Im
+                    letzten Fall wird als Default
+                    "appfac/document/jar/appfac.meta.xml" eingetragen.
+
+    mm.requireApplet
+                    Ein vom Applet benötigtes anderes Applet, spezifiziert
+                    durch dessen Master-Datei relativ zum checkin-Verzeichnis.
+                    Dieses Tag darf mehrfach vorkommen oder auch ganz fehlen.
+
+  Später können weitere Tags hinzukommen, z.B.
+
+    mm.altimage     Alternatives Bild (referenziert durch seine Datenbank-ID
+                    oder Master-datei)
+
+    mm.thumbnail    Thumbnail (referenziert durch seine Datenbank-ID
+                    oder Master-datei)
+
+  Die Tags sind sämtlich vom Block-Typ und nur im Javadoc-Kommentar zur Klasse
+  erlaubt (also nicht in Methoden- und Variablen-Kommentaren) (vgl.
+  Javadoc-Manual von Sun; im j2sdk enthalten).
+
+  Die Metainformationen werden beim Build-Prozess extrahiert und zur Generierung
+  der Master-Datei verwendet.
+
+
+3. Build-Prozess
+   =============
+
+  Der Build-Prozess wird mit Ant durchgeführt. Das Default-Target soll
+  für jedes Applet, dessen Status höher als "pre" ist, folgende Operationen
+  durchführen:
+
+    o  Kompilieren der Quelldatei,
+
+    o  Packen der dabei entstandenen Klassen und ggf. benötigter Resourcen in
+       ein jar-Archiv und Ablegen des Archivs als Content-Datei,
+
+    o  Erstellen der Master-Datei mit Hilfe der Metainformationen im Quellcode.
+
+  Auf Wunsch soll das Target diese Operationen auch für alle Applets (also
+  einschließlich derer mit dem Status "pre") durchführen.
+
+
+4. Qualitätskontrolle
+   ==================
+
+  Der Status eines Applets wird dadurch geändert, dass in der Quelldatei der
+  Wert des Tags "mm.status" (s.o) geändert wird. Falls die Änderung nicht vom
+  Entwickler selbst, sondern vom zuständigen Qualitätsprüfer vorgenommen wird,
+  sollte dieser die Entwickler per E-Mail über die Änderung informieren.
+
+
+5. Anbindung an mmcdk
+   ==================
+
+  Der Verzeichnisbaum <basedir>/checkin/appfac soll in das
+  mmcdk-Checkin-Verzeichnis "eingemountet" werden. Dies soll automatisch durch
+  das setup-Skript von mmcdk erfolgen, so dass kein manuelles Auschecken des
+  CVS-Repositories durch den Benutzer notwendig ist.
+
+  Für den Aufruf der Ant-Targets sollen mmcdk-Kommandos zur Verfügung stehen.
+
+
+6. Betrachten der Applets
+   ======================
+
+  In mmcdk kann mit dem (bereits existierenden) Kommando
+
+    mmviewapp foo.meta.xml
+
+  ein Applet im Mozilla geladen werden (genauer wird eine dynamisch erzeugte
+  Wrapper-XHTML-Seite, die das Applet einbindet, geladen). mmviewapp akzeptiert
+  wie mozilla die Optionen --new-window und --new-tab und deren Kurzformen -w
+  und -t. Für weitere Optionen
+
+    mmviewapp -h
+
+  eingeben.
+
+
+7. Basisklassen der Applet-Factory
+   ===============================
+
+  Die Basisklassen der Applet-Factory sind in einem jar-Archiv zusammengefasst,
+  das auch die benötigten Nicht-Java-Resourcen (Bilder, Proerty-Dateien, ...)
+  enthält. Für den Japs ist dies ein Dokument vom Typ "jar". Das Archiv stellt
+  die Content-Datei dar; daneben gibt es (wie für jedes Dokument) die
+  entsprechende Master-Datei. Beide Dateien befinden sich in
+
+    <basedir>/checkin/appfac/document/jar
+
+  Im Gegensatz zu den Applets wird die Content-Datei von der Applet-Factory
+  geliefert und Master-Datei von Hand erstellt. Beide befinden sich im CVS der
+  Appletentwicklung für den Japs. Die Quellen der Basisklassen befinden sich im
+  CVS der Applet-Factory, nicht aber in dem der Appletentwicklung für den Japs.
+
+
+
+                           --- Ende der Datei ---

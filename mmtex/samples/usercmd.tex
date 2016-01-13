@@ -1,0 +1,51 @@
+\documentclass{generic}
+
+\begin{document}
+
+
+%\newcommand{\mycmd}[2][1][{Hello}]{#1 \emph{#2}}
+%\newcommand{\mycmdthird}[4][0][]{#1 =  #2 = #3 = #4}
+%\newcommand{\mumie}{MUMIE}
+%\newcommand{\helloworld}{\mycmd{world}}
+
+
+
+\section{User-Command Tests}
+
+
+%\mumie
+%\helloworld
+%\helloworld
+%\helloworld
+%\helloworld
+
+
+
+\newcommand{\mycmdsec}[1]{This is highlighted .. \emph{#1}}
+\mycmdsec{test}
+
+
+\newcommand{\mycmdthird}[1]{\emph{#1}}
+\mycmdthird{test}
+
+\newcommand{\mycmdfourth}[1][][][x]{\emph{#1}}
+\mycmdfourth{test}
+
+\newcommand{\mycmdfifth}[1]{hello #1 hello }
+\mycmdfifth{test}
+
+
+
+
+\newcommand{\mycmdsix}[2][1][{Hello}]{#1 and #2}
+\mycmdsix{test}
+
+
+%\newcommand{\mycmdsix}[1][][]{#1}
+%\mycmdsix{test}
+
+
+
+
+
+\end{document}

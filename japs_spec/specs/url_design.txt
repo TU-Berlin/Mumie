@@ -1,0 +1,96 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: url_design.txt,v 1.1 2005/05/24 10:38:23 rassy Exp $
+
+
+                          MUMIE JAPS URL DESIGN
+
+
+0. Bezeichnungen
+   =============
+
+  0.1. <prefix>
+
+    Konstanter Anfangsteil jeder Japs-URL, hat die Form
+
+      http://<host>[:<port>]/<cocoon>
+
+    dabei bezeichnt <host> den Server, <port> den verwendeten Port und <cocoon>
+    den Namen, unter dem der Servelet-Container das Cocoon-Servelet findet
+    (meist "cocoon"). -- Beispiel:
+
+      http://mumie.math.tu-berlin.de/cocoon
+
+  0.2  Relative [Japs-]URL
+
+    Japs URL ohne <prefix>
+
+  0.3  [URL-]Komponenten
+
+    Durch "/"-Zeichen begrenzte Teile einer relativen URL.
+
+
+1. Geschützte Seiten
+   =================
+
+  Geschützte Seiten sind solche, die nur mit Autentifizierung abrufbar sind.
+  Jede geschützte Seite beginnt mit der Komponente "protected".
+
+
+2. Dokumente
+   =========
+
+  Die relative URL eines Dokuments hat folgende Form:
+
+    protected/document/<mode>/<type-spec>/<type>/<doc-spec>/<doc>
+
+  <mode> gibt an, mit welcher Bestimmung das Dokument ausgeliefert werden soll.
+  Mögliche Werte:
+
+    view       Dokument soll im Browser betrachtet werden (entspricht
+               Use-Mode "serve").
+
+    info       Info-Seite des Dokuments, als XHTML gerendert (entspricht
+               Use-Mode "info").
+
+    info-raw   Info-Seite des Dokuments, als XML (entspricht Use-Mode "info").
+
+    checkout   Dokument soll zur Bearbeitung ausgecheckt werden (entspricht
+               Use-Mode "checkout").
+
+    training   Aufgabe bearbeiten - nur bei Dokumenten, die Aufgaben darstellen
+
+    multipage  ?? (entspricht Use-Mode "multipage").
+
+    content    ?? (entspricht Use-Mode "content").
+
+  Für Spezialzwecke können weitere Werte definiert werden.
+
+  <type-spec> gibt an, wie die folgende Komponente <type> zu interpretieren
+  ist. <type> selbst gibt den Dokument-Typ an (s.u.). Mögliche Werte für
+  <type-spec>:
+
+    type-name  Der Dokument-Typ wird durch seinen Namen angegeben.
+
+    type-code  Der Dokuemnt-Typ wird durch seinen numerischen Code angegeben.
+
+  Im ersten Fall muss <type> ein gültiger Dokument-Typ-Name sein (z.B.
+  "element", "xsl_stylesheet", "generic_image"), im zweiten ein gültiger Code
+  eines Dokument-Typs (z.B. "2", "13").
+
+  <doc-spec> gibt an, wie die folgende Komponente <doc> zu interpretieren ist.
+  <doc> selbst gibt das document an. Mögliche Werte für <doc-spec>:
+
+  id     Das Dokument wird durch seine Datenbank-Id angegeben.
+
+  qname  Das Dokument wird durch seinen qualifizierten Namen (qualified name)
+         angegeben.
+
+  Beispiele:
+
+    protected/document/view/type-name/xsl_stylesheet/id/48
+
+    protected/document/info/type-code/4/id/48
+
+    protected/document/view/type-name/applet/qname/net.mumie.mathlet.linalg.Foo
+
+

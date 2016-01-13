@@ -1,0 +1,194 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Korrektur der Aufgaben}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: aufgaben_korrektur.tex,v 1.8 2006/08/11 16:18:22 rassy Exp $}
+
+\tableofcontents
+
+\section{Voraussetzungen / Änderungen}
+
+\subsection{Neuer Dokumenttyp: java_class}
+
+Dokumente dieses Typs sind kompilierte Java-Klassen. Ihr Content ist binär und
+enthählt den Java-Bytecode (d.h. die *.class-Datei). Der Dokumenttyp ist
+kategorisiert; eine mögliche Kategorie ist \val{problem_corrector}.
+Java-Klassen dieser Kategorie fungieren als \href{\#korrektor}{Korrektoren} von
+Aufgaben.
+
+\subsection{Veränderte Behandlung von jar-Dokumenten}
+
+Dokumente vom Typ \val{jar} geben die im Archiv enthaltenen Java-Klassen als
+Referenzen vom Typ \val{conponent} auf Dokumente vom Typ \val{java_class}
+an. Umgekehrt gilt jedes als \val{component} referenzierte Dokument als
+Archiv-Komponente, auch wenn es nicht vom Typ \val{java_class} ist.
+
+Wird das Jar vom Client angefordert, so wird es on-the-fly aus seinen
+Komponenten generiert oder fertig aus dem Cache geholt. Dank des Cachings
+soll trotz der on-the-fly-Generierung eine gute Performance erzielt werden.
+
+Infolge dieses Mechanismus braucht das Jar-Archiv selbst nicht in der Datenbank
+gespeichert zu werden. Dokumente vom Typ \val{jar} haben also keinen Content.
+
+\subsection{Neuer Dokumenttyp: problem}
+
+Vormals Elemente der Kategorie \val{problem}, also Aufgaben. Die Umwandlung in
+einen eigenen Dokumenttyp ist notwendig, da Problems eine zusätzliche
+Metainformation haben, die es bei Elementen nicht gibt: der sogenannte
+\href{\#korrektor}{Korrektor}.  Das ist ein Dokument vom Typ \val{java_class},
+das für die Korrektur der Aufgabe zuständig ist.
+
+Die entsprechende Db-Spalte heisst \val{corrector} und enthält die id des
+\val{java_class}-Dokuments.
+
+% % Vorerst zu aufwendig und nicht nötig. Einfachere Lösung auch analog zu 'manual'.
+%Im Metainfo-XML wird der Korrektor durch das Element \element{mumie:corrector}
+%angegeben, das die XML-Darstellung der \code{java_class} im Use-Mode \val{link}
+%enthält:
+
+%\begin{preformatted}[code]%
+%  <mumie:corrector>
+%    <mumie:java_class id="\var{id}">
+%      <mumie:name>\var{name}</mumie:name>
+%      <mumie:description>\var{description}</mumie:description>
+%      <mumie:qualified_name>\var{qname}</mumie:qualified_name>
+%    </mumie:java_class>
+%  </mumie:corrector>
+%\end{preformatted}
+
+%Hierbei sind \var{id} die Id, \var{name} der Name, \var{description} die
+%Kurzbeschreibung und \var{qname} der Full Qualified Name der Java-Klasse.
+
+Im Metainfo-XML wird der Korrektor durch das Element \element{mumie:corrector}
+angegeben, das die Id der Java-Klasse als Attribut \attrib{id} enthält:
+
+\begin{preformatted}[code]%
+  <mumie:corrector id="\var{id}"/>
+\end{preformatted}
+
+Hierbei ist \var{id} die Id der Java-Klasse.
+
+In der TeX-Quelle der Aufgabe wird der Korrektor durch den Befehl
+\code{\verb'\corrector'} angegeben, der als Argument den Namen der Masterdatei
+des Korrektors relativ zum Checkin-Wurzelverzeichnis enthält.
+
+Es gibt zwei mögliche Kategorien von Aufgaben: \val{mchoice}
+(Multiple-Choice-Aufgaben) und \val{applet} (Aufgaben mit einem Applet als
+"Bearbeitungs-Engine").
+
+Für den Dokumenttyp \code{problem} wird es in Kürze eigene Spezifikationen
+geben, die diesen Dokumenttyp genauer festlegen.
+
+
+\section{Der Korrektor}
+
+\subsection{Allgemeines}
+
+Jeder Aufgabe (Dokument vom Typ \code{problem}) ist genau eine Java-Klasse
+(Dokument vom Typ \code{java_class}) der Kategorie \val{problem_corrector}
+zugeordnet. Diese Java-Klasse heisst \emph{Korrektor} der Aufgabe. Der
+Korrektor implementiert die Überprüfung und Bewertung der Lösungen, die die
+Studenten für die Aufgabe abgegeben haben. Die für die Daten werden dem
+Korrektor durch ein Data-Sheet bereitgestellt, in das auch die Ergebnisse
+eingetragen werden (s.u.).
+
+Im Fall von Aufgaben der Kategorie \val{applet} wird es üblicherweise zu jeder
+Aufgabe eine eigene Korrektor-Klasse geben, die vom Entwickler des Applets
+erstellt wird.
+
+Im Fall von Aufgaben der Kategorie \val{mchoice} sollte versucht werden, mit
+einer Korrektor-Klasse für alle Aufgaben auszukommen.
+
+
+
+\subsection{Das ProblemCorrector-Interface}
+
+Jeder Korrektor muss als Java-Klasse das Interface
+
+\begin{preformatted}%
+  net.mumie.cocoon.util.ProblemCorrector
+\end{preformatted}
+
+implementieren, das wie folgt definiert ist:
+
+\begin{preformatted}[code]%
+  package net.mumie.cocoon.util;
+
+  public interface ProblemCorrector
+  \{
+    public void correct (CocoonEnabledDataSheet inputDataSheet,
+                         CocoonEnabledDataSheet outputDataSheet)
+      throws ProblemCorrectionException;
+  \}
+\end{preformatted}
+
+Die Methode \code{correct} übernimmt die Korrektur und
+Bewertung. \code{inputDataSheet} ist das Data-Sheet der Aufgabe einschliesslich
+Studenten-Lösungen. Es sollte nicht verändert werden (Änderungen werden nicht
+gespeichert). In das Data-Sheet \code{outputDataSheet} werden die Ergebisse der
+Korrektur eingetragen.
+
+
+\section{Durchführung der Korrektur}
+
+Hinsichtlich des Zeitpunkts und des Auslösens der Korrektur gibt es zwei
+Möglichkeiten: 
+
+\subsection{Bei Bedarf}
+
+Immer dann, wenn auf die Korrektur zugegriffen wird, wird überprüft, ob diese
+bereits existiert. Ist dies nicht der Fall, wird die Korrektur durchgeführt und
+das Ergebnis in der Datenbank gespeichert.
+
+Da in ganz unterschiedlichen Kontexten auf die Korrektur zugegriffen werden
+kann (Betrachtung durch den Studenten, Betrachtung durch den Tutor, Erzeugung
+einer Tabelle mit den erreichten Punktzahlen aller Studenten eines Tutorions
+usw.) sollte diese Funktionalität gut gekapselt sein.
+
+\subsection{Durch Cocoon-Cron-Job}
+
+In regelmäßigen Abständen, z.B. jeden Tag 2 Uhr nachts, wird die Datenbank
+nach Aufgaben durchsucht, deren Bearbeitungszeitraum gerade abgelaufen
+ist. Diese Aufgaben werden dann korriegiert.
+
+Realisieren lässt sie sich diese Lösung mit Hilfe des Cocoon-Cron-Konzepts.
+
+\subsection{Vergleich beider Möglichkeiten}
+
+Die erste Möglichkeit (Korrektur bei Bedarf) ist aufwendiger und weniger
+performant, hat aber den Vorteil, Aufgaben auch sofort nach der Bearbeitung
+durch den Studenten korrigieren zu können. Die zweite Möglichkeit verschenkt
+diesen Vorteil, ist aber einfacher und performanter.
+
+Da auf den eben genannten Vorteil der ersten Möglichkeit nicht verzichtet
+werden soll, wird diese in jedem Fall realisiert. Es wäre jedoch wünschenswert,
+auch die zweite Möglichkeit zu realisieren. Diese könnte zusätzlich eingesetzt
+werden, um die Performance-Nachteile der ersten auszugleichen.
+
+
+\section{Laden der Korrektor-Klassen}
+
+Anders als die übrigen Klassen des Japs liegen die Korrektor-Klassen nicht im
+Classpath, mit dem Cocoon gestartet wurde, sondern in der Datenbank.
+Darüberhinaus ist die Menge dieser Klassen nicht konstant; vielmehr werden neue
+Korrektoren hinzukommen, während der Cocoon bereits läuft.
+
+Dies erfordert eine speziellen Classloader, der Klassen aus der Datenbank laden
+kann. Er muss ausserdem in der Lage sein zu erkennen, wann eine Klasse veraltet
+ist (d.h. durch eine neue Version ersetzt wurde) und neu geladen werden muss.
+
+Dieser Classloader soll nur für das Korriegieren der Aufgaben (und später
+vielleicht in ähnlichen Situationen) eingesetzt werden. Der übrige Japs soll
+weiterhin mit dem Cocoon-Classloader arbeiten.
+
+-- ENDE DER DATEI --
+
+\end{document}

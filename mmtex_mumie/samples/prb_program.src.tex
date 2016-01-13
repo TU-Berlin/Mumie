@@ -1,0 +1,82 @@
+\documentclass{japs.problem.program}
+
+\begin{metainfo}
+  \name{Minimum eines Arrays von Zahlen}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \corrector{system/problem/GenericProgramCorrector.meta.xml}
+  \creategeneric
+\end{metainfo}
+
+\begin{content}
+
+\title{Minimum eines Arrays von Zahlen}
+
+Schreiben Sie ein Java-Methode, die das Minimum in einem Array berechnet und zurückgibt.
+Ist das Array leer, so soll die größte int-Zahl zur"uckgegeben werden. Ergänzen
+Sie dazu folgendes Code-Fragment:
+
+\begin{prganswer}{20}{80}
+  public static int getMin(int[] array) {
+    @USER_ANSWER@
+  }
+\end{prganswer}
+
+\begin{hidden}
+
+\begin{prgwrapper}
+public class Wrapper
+{
+  public static int getMin(int[] array) {
+    @USER_ANSWER@
+  }
+}
+\end{prgwrapper}
+
+\begin{prgevaluator}
+public class Evaluator
+{
+  public static void main (String[] args)
+  {
+    int[] array1 = {1,2,3};
+    int[] array2 = {};
+    int fehler = 0;
+
+    try
+      {
+        if ( Wrapper.getMin(array1) != 1 ) fehler = 2;
+        if ( Wrapper.getMin(array2) != Integer.MAX_VALUE ) fehler = 1;
+      }
+    catch (Throwable throwable)
+      {
+        fehler = 3;
+        throwable.printStackTrace();
+      }
+
+    System.exit(fehler);
+  }
+}
+\end{prgevaluator}
+
+\begin{prgsolution}
+public static int getMin(int[] array) {
+  int length = array.length;
+  int min = Integer.MAX_VALUE;
+  for ( int i = 0; i < length; ++i )
+    min = Math.min(min, array[i]);          
+  return min;
+}
+\end{prgsolution}
+
+\prggrading{0}{1.0}{Herzlichen Glueckwunsch, Sie haben volle Punktzahl}
+\prggrading{1}{0.5}{Beachten Sie, dass das Array auch leer sein kann!}
+\prggrading{2}{0.0}{Sie berechnen leider nicht das Minimum!}
+\prggrading{3}{0.0}{Ihr Code hat leider einen Laufzeitfehler verursacht!}
+
+\end{hidden}
+
+\end{content}

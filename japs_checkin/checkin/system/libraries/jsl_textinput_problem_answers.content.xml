@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+  
+  
+  
+  
+  function TextInputProblemAnswers (_problemRef, _problemId, _worksheetId, _courseId, _worksheetCategory)
+{
+
+  /**
+   * Inherit from ProblemAnswers
+   */
+
+   ProblemAnswers.call(this,_problemRef, _problemId, _worksheetId, _courseId, _worksheetCategory);
+
+  // --------------------------------------------------------------------------------
+  // h1: Global variables and constants
+  // --------------------------------------------------------------------------------
+
+  /**
+  * Data sheet path of the unit with the user answers.
+  */
+  
+  const USER_ANSWER_PATH = this.getUserAnswerPath();
+
+  /**
+   * A reference to this object.
+   */
+
+  const _problemAnswers = this;
+
+  /**
+   * The map (associative array) that represents the contents of the text fields.
+   * The keys are the datasheet paths.
+   */
+
+  var _contents = new Object();
+  
+  
+
+  // --------------------------------------------------------------------------------
+  // h1: Auxiliaries
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Throws an exception with the specified message. The string
+   * "TextInputProblemAnswers: " is prepended to the message.
+   */
+
+  var _error = function (msg)
+    {
+      throw "TextInputProblemAnswers: " + msg;
+    }
+
+  // --------------------------------------------------------------------------------
+  // h1: Setting user answers
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Stores the specified text at the path USER_ANSWER_PATH + '/' + subPath.
+   */
+
+  this.setTextAnswer = function (subPath, text)
+    {    
+    var path = USER_ANSWER_PATH +'/'+ subPath;
+      _contents[path] = text;
+    };
+
+  // --------------------------------------------------------------------------------
+  // h1: Converting to/from datasheet
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Exports the answers to the specified datasheet. If no datasheet is specified,
+   * a new one is created.
+   */
+
+  this.toDataSheet = function (datasheet)
+  {
+  
+      if ( !datasheet ) datasheet = new DataSheet();     
+      for (var aws in _contents)
+      {
+            var path = aws;
+            var value = _contents[aws];
+            datasheet.put(path, value);
+                        
+      }      
+      return datasheet;
+    };
+
+  /**
+   * Imports the answers from the specified datasheet.
+   */
+
+  this.readDataSheet = function (datasheet)
+    {    
+      
+    var match = USER_ANSWER_PATH +"/*";
+      
+      var paths = datasheet.getMatchingDataPaths(match);
+      for (var i = 0; i &lt; paths.length; i++)
+      {
+        
+        var p = paths[i];
+        var answer = datasheet.getAsString(paths[0]);
+        _contents[p] = answer; 
+      }
+
+    };
+
+}
+
+</txt:document>

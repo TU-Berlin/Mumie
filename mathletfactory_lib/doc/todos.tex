@@ -1,0 +1,209 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage{german}
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%%%%%%%%%
+%%%
+                                %Hier gehts los
+%%%
+\begin{document}
+
+\section{TODO's f"ur die AppletFactory}
+
+\subsection{Allgemeine Konzepte}
+
+\begin{description}
+
+\item [Transformer]
+Die Schnittstelle innerhalb der \code{MMObjekt}e zum Setzen des ``transform
+types'' ist etwas unsauber: F"ur die Darstellung in einem \code{MMCanvas}
+muss man die Methode \code{setCanvasTransformer(trafoType,screenType)}
+aufrufen, f"ur die Darstellung als JComponent ruft man
+\code{getAsContainerContent(int trafoType)} auf $\ldots$.
+
+\item [Renderkette]
+Kaum getestet wurde der Einbau neuer \code{MMObject}e ``externer''
+Entwickler. Diese m"ussen neben dem eigenen \code{MMObject} in der Regel
+zus"atzlich einen \code{Transformer} und gegebenenfalls ein \code{Drawable}
+hierf"ur schreiben.
+Die M"oglichkeiten, einem Objekt neue \code{Transformer} zuzuweisen ist noch
+sehr ``krude'' und schlecht strukturiert. Hier sollten die Methoden, mit denen
+die Objekte auf den \code{GeneralTransformer} zugreifen, "uberarbeitet werden.
+
+\item [MMEvents]
+Unsere \code{MMEvent}s stammen noch aus der ersten Implementation und sind
+nicht besonders geschickt aufgebaut: Eigentlich sollen sie lediglich als
+Argument-Protokoll f"ur die \code{doAction}-Methode der \code{MMHandler}
+dienen und m"ussen die Java Keyboard- und MouseEvents beinhalten. "Anderungen
+am \code{MMEvent} f"uhren allerdings auch zu Anpassungen in den Handlern und
+im Controller.
+
+\item [Handler/Events]
+Jeder \code{MMHandler} sagt "uber die Methode \code{canDealWith(MMEvent e)},
+ob er mit einem \code{MMEvent} etwas anfangen kann. Momentan kontrollieren wir
+jedoch nicht, ob es gegebenenfalls mehrere Handler gibt, die f"ur den gleichen
+Event zust"andig sind.
+Die urspr"ungliche Philosophie war hier, da"s jeder Handler auch nur f"ur
+genau einen Event zust"andig ist -- dies ist jetzt nicht mehr so. Hier sollte
+man einen Mechanismus entwickeln, der ``doppelt'' vergebene Zust"andigkeiten
+"uberwacht.
+Ein weiterer Aspekt ist, da"s ein \code{MMHandler} eigentlich ``nur'' ein
+Handler ist, der f"ur eine Darstellung eines Objektes in einem \code{MMCanvas}
+arbeiten kann. Bei den sogenannten Containerdarstellungen "ubernimmt das
+Drawable als Listener selbst die Funktion, das \code{MMObjekt} zu ver"andern/
+anzupassen.
+
+\item [Update-Mechanismus]
+Der Update-Mechanismus arbeitet zwar stabil und garantiert, da"s keine
+Endlosschleifen bei zirkul"aren Abh"angigkeiten auftreten. Er kann aber nicht
+sicherstellen, da"s das Ergebnis alle Abh"angigkeiten richtig aufl"ost!
+Grunds"atzlich w"are es sch"on, wenn man wenigstens den Ablauf der Update-Kette
+herausschreiben k"onnte, um eventuelle Fehler besser nachvollziehen zu
+k"onnen.\\
+Weiterhin fehlt aktuell die M"oglichkeit eine Objekt-Abh"angigkeit und die
+damit verbundenen \code{Updater} wieder sauber zu entfernen, d.h. eine einmal
+festgelegte Abh"angigkeit kann nicht wieder r"uckg"angig gemacht werden.
+
+\item [DisplayProperties]
+Hier haben wir noch kein richtiges Konzept entwickelt --
+die \code{DisplayProperties} sind derzeit auch kaum strukturiert und
+teilweise auch an den Renderer (etwa Graphics2D) gebunden. Weiter trat immer
+die Frage auf, inwieweit man gewisse Eigenschaften (etwa die Farbe) direkt beim
+\code{MMObject} zuweist. Generell m"ussen die DisplayProperties
+verwendet werden, andere Eigenschaften wie Font werden zur Zeit direkt
+zugewiesen.
+
+\item [MMZahlen]
+Unsere bisherigen Zahlen sind keine \code{MMObject}e und k"onnen daher nicht
+einfach im Applet dargestellt werden. Hier hat Markus angefangen, neue
+MMZahlen zu basteln, die dann auch in einer Applikation einfach dargstellt
+werden k"onnen.
+Hier muss man bei der Darstellung eigentlich erst spezifizieren,
+wie man mit den
+verschiedenen Typen umgehen m"ochte, etwa inwieweit man Darstellungsoptionen
+(etwa wissenschaftliche Notation, Dezimalnotation) zulassen m"ochte.
+
+\item [Java native versus MMZahlen]
+Ich habe den Eindruck, da"s bei Operationen mit den Zahlen teilweise zuviel
+"uber \code{setDouble(double)} und \code{getDouble()} gearbeitet wird. Dies
+r"uhrt wohl noch vor unserer Angst her, dass die Arbeit mit MMZahlen wegen
+vermeintlicher ``news'' die Applikationen bremsen werden.
+Diesbez"uglich sollten wir unsere Klassen wieder einmal durchschauen.
+
+\item [MMCompound]
+Hier haben wir ebenfalls noch wenig Arbeit investiert und daher noch kein
+wirklich ausgereiftes Konzept: Aktuell kann man zwar ein ``compound object''
+anlegen, in einem Canvas werden die einzelnen Objekte dann allerdings doch
+wieder solo behandelt $\ldots$.
+
+\item [Unit-Tests]
+In diesen Bereich haben wir ebenfalls noch zu wenig investiert. Zumindest
+die wesentlichen Methoden der ``tiefen'' Klassen (\code{NumberMatrix} etc.)
+sollten besser getestet sein.
+
+\item [Logging]
+Derzeit verwenden wir die \textbf{log4j}-Bibliothek f"ur das Logging. Diese
+hat eine Gr"o"se von etwa 350k. F"ur unsere Belange ist die Logging-API des
+\textbf{J2DK1.4} ausreichend. Vorteil: Die Ladezeiten der Applets k"onnten
+reduziert werden. (Tim:) Ist am 27.06.03 umgestellt worden.
+
+\item [Deployment-Strategien]
+Die Gr"o"se der Bibliothek k"onnte mittelfristig f"ur die Einbindung von
+Applets in HTML-Seiten ein Problem werden (Stand 20.Juni):
+\begin{itemize}
+\item appfac-base.jar  -- 580k
+\item appfac-g2d.jar -- 95k
+\item appfac-j3d.jar -- 41k
+\item appfac-noc.jar -- 142k
+\item appfac-sample.jar -- 134k
+\end{itemize}
+Es ist allerdings nicht ganz trivial, das Paket appfac-base.jar weiter
+aufzusplitten. Denkbar w"are gegebenenfalls eine Zerlegung in die
+mathematischen Themenbereiche (\code{algebra},\code{analysis},$\ldots$), doch
+ist auch das nicht unproblemeatisch! (Beispiel: \code{Polynomial} liegt im
+Paket \code{analysis.function} hat aber auch algebraische Abh"angigkeiten.)
+\end{description}
+
+
+\subsection{Mathematische Objekte}
+Generell gilt, dass unsere mathematischen Klassen bislang nicht sehr
+viele spezifisch-mathematische Methoden enthalten. Tendentiell sind solche
+Methoden implementiert, die zur Darstellung unerl"asslich sind und die wir
+in den aktuellen Beispiel-Applets ben"otigt haben.
+
+\begin{description}
+
+\item [Interval/FiniteBorelSet]
+Die Implementation ist noch sehr einfach. Im Interval ist die interne
+Datendarstellung sogar noch in den projektiven Punkten (von Thorsten) gegeben.
+
+\item [Funktionen/Polynome]
+Generell fehlt bei den Funktionen noch der ``algebraische'' Teil, d.h.
+man kann unsere Funktionen aktuell nicht addieren, subtrahieren $\ldots$
+
+\item [Vektorwertige Funktionen]
+Hier ist die Struktur noch sehr unfertig. Insbesondere haben wir noch kein
+wirklich gutes Konzept, die vektorwertigen Funktionen aus den
+Komponentenfunktionen zusammenzusetzen beziehungsweise umgekehrt,
+Komponentenanteile zur"uckzukriegen.
+
+\item [Vektorfelder]
+Die Klassen zu den Vektorfeldern (etwa \code{MMVectorField2DOverR2}) sind
+bislang lediglich ``R"umpfe''. Einzig die zur Darstellung notwendige
+evaluate-Methode (basierend auf \code{double}) ist hier implementiert.
+
+\item [Projektive Geometrie]
+Unser affinen Objekte bauen der Struktur nach auf den projektiven auf. Diese
+M"oglichkeiten haben wir bislang noch nicht ausprobiert und getestet.
+(Beispiel: Punkt als Schnitt zweier Geraden...)
+
+\end{description}
+
+
+\subsection{Fehlende und erg"anzende Features}
+\begin{description}
+
+\item [Renderkette]
+Derzeit kann ein \code{MMObject} nur in genau einem \code{MMCanvas}
+dargestellt werden, lediglich das Rendern in mehreren Containerdarstellungen
+(z.B. die Komponentendarstellung von Vektoren) ist m"oglich. Hier w"are eine
+Erweiterung w"unschenswert, die allerdings sehr aufw"andig zu implementieren
+sein w"urde, da insbesondere \code{MMHandler}- und \code{Transformer}-Klassen
+momentan auf \textbf{den} \code{MMCanvas} eines \code{MMObject}s zugreifen.
+
+\item [Grafik-Primitive]
+Es fehlt derzeit ein Konzept, um primitive Grafikelemente, wie etwa
+"Uberschriften, Bezeichner, Bilder im \code{MMCanvas} unterzubringen.
+Momentan m"ussen alle Objekte, die in einem \code{MMCanvas} dargestellt
+werden sollen, ``komplette'' \code{MMObjekt}e sein.
+
+\item [Kontext-Menu]
+Zumindest f"ur Objekte, die in einem Canvas dargestellt werden, w"are es
+reizvoll, wenn man mit Klick der rechten Maustaste f"ur dieses Objekt ein
+Kontextmenu erhalten k"onnte, in welchem diverse Informationen (Lage,
+Darstellungseigenschaften) abgefragt und gegebenenfalls neu gesetzt werden
+d"urften.
+
+\item [Canvi]
+Man sollte zwei \code{MMCanvi} ``koppeln'' k"onnen, d.h. etwa, "andere ich in
+einem die affine Transformation, so wird sie im anderen Canvas automatisch
+mitangepasst. Hierzu w"aren wohl nur wenige zus"atliche Methoden im
+\code{MMCanvas} notwendig.\\
+Weiterhin sollte die M"oglichkeit bestehen, einen \code{MMCanvas} zu
+deaktivieren, so da"s er auf keine Mouse- und KeyEvents mehr h"ort. (Dieses
+Feature ist beispielsweise w"ahrend einer laufenden Animation w"unschenswert.)
+
+\end{description}
+
+
+
+
+
+
+%%%%%%%%%%%
+%%%
+                                %Ende des Dokuments
+%%%
+\end{document}
+

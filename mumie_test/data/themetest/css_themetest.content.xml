@@ -1,0 +1,792 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy <rassy@math.tu-berlin.de>
+  $Id: css_themetest.content.xml,v 1.1 2009/06/29 16:16:46 linges Exp $
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!-- ================================================================================ -->
+<!-- h1: Definitions                                                                  -->
+<!-- ================================================================================ -->
+
+<!-- Zero space -->
+<css:def id="no-space" value="0pt 0pt 0pt 0pt"/>
+
+<!-- Font sizes, absolute: -->
+<css:def id="normalsize" value="10pt"/>
+
+<!-- Font sizes, relative: -->
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="scriptsize-rel" value="80%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<!-- Colors: -->
+<css:def id="text-color" value="#00ffff"/>
+<css:def id="text-color-dimmed" value="#00ffff"/>
+<css:def id="link-color" value="#00ffff"/>
+<css:def id="link-hover-color" value="#00ffff"/>
+<css:def id="link-visited-color" value="#00ffff"/>
+<css:def id="link-hover-bgr-color" value="#00ffff"/>  <!-- seashell1 -->
+<css:def id="link-hover-border-color" value="#00ffff"/>  <!-- seashell3 -->
+<css:def id="fill-color" value="#00ffff"/>
+<css:def id="stroke-color" value="#00ffff"/>
+<css:def id="lighter-text-color" value="#00ffff"/>
+<css:def id="footer-text-color" value="#00ffff"/>
+<css:def id="tooltip-fill-color" value="#00ffff"/>
+<css:def id="prev-color" value="#00ffff"/>
+
+<!-- Top bar settings: -->
+<css:def id="top-bar-logo-width" value="100px"/>
+<css:def id="top-bar-text-color" value="#FFFFFF"/>
+<css:def id="top-bar-fill-color" value="#00ffff"/> <!-- Royal Blue 4 -->
+<css:def id="top-bar-stroke-color" value="#00ffff"/>
+
+<!-- Max. text width for pages with bounded width: -->
+<css:def id="max-width" value="55em"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global styles (html, body)                                                   -->
+<!-- ================================================================================ -->
+
+<css:rule selector='html, *.embedded-html'>
+  <css:property name='font-family' value='Albany AMT, Verdana, Helvetica, sans-serif'/>
+  <css:property name='font-size' ref='normalsize'/>
+</css:rule>
+
+<css:rule selector='html'>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='body'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='body.bounded-width'>
+  <css:property name='max-width' ref='max-width'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Top bar                                                                      -->
+<!-- ================================================================================ -->
+
+<css:rule selector='div.top, div.top-small'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value='2px 2px 2px 2px'/>
+  <css:property name='height' value='85px'/>
+  <css:property name='border-bottom-style' value='solid'/>
+  <css:property name='border-bottom-width' value='1px'/>
+  <css:property name='border-bottom-color' ref='top-bar-stroke-color'/>
+  <css:property name='color' ref='top-bar-text-color'/>
+  <css:property name='background-image'>
+    <css:image lid='top-bar-bg-image'/>
+  </css:property>
+  <css:property name='background-color' ref='top-bar-fill-color'/>
+</css:rule>
+
+<css:rule selector='div.top-ctrl-left, div.top-ctrl-right'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' value='2px 2px 2px 2px'/>
+  <css:property name='font-size' ref='small-rel'/>
+</css:rule>
+
+<css:rule selector='div.top-ctrl-right'>
+  <css:property name='text-align' value='right'/>
+</css:rule>
+
+<css:rule selector='div.top-ctrl-left a, div.top-ctrl-right a'>
+  <css:property name='color' ref='top-bar-text-color'/>
+  <css:property name='margin' value='1px 1px 1px 1px'/>
+  <css:property name='padding' value='1px 1px 1px 1px'/>
+</css:rule>
+
+<css:rule selector='div.top-ctrl-left span.checked, div.top-ctrl-right span.checked'>
+  <css:property name='color' ref='top-bar-text-color'/>
+  <css:property name='padding' value='1px 0px 1px 0px'/>
+  <css:property name='margin' value='1px 0px 1px 0px'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='div.top-ctrl-left a:hover, div.top-ctrl-right a:hover'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-color' ref='top-bar-text-color'/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name='background-color' value='inherit'/>
+</css:rule>
+
+<css:rule selector='div.top img'>
+  <css:property name='margin' value='0px 4px 0px 4px'/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='div.top td.left'>
+  <css:property name='width' ref='top-bar-logo-width'/>
+  <css:property name='text-align' value='left'/>
+  <css:property name='vertical-align' value='middle'/>
+</css:rule>
+
+<css:rule selector='div.top td.right'>
+  <css:property name='width' ref='top-bar-logo-width'/>
+  <css:property name='text-align' value='right'/>
+  <css:property name='vertical-align' value='middle'/>
+</css:rule>
+
+<css:rule selector='div.top td.middle'>
+  <css:property name='width' value='90%'/>
+  <css:property name='text-align' value='center'/>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<css:rule selector='div.top span.mumie'>
+  <css:property name='font-size' value='110%'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='div.top-small'>
+  <css:property name='display' value='none'/>
+  <css:property name='height' value='17px'/>
+</css:rule>
+
+<css:rule selector='div.top-small table.layout'>
+  <css:property name='width' value='100%'/>
+</css:rule>
+
+<css:rule selector='div.top-small td.left'>
+  <css:property name='text-align' value='left'/>
+  <css:property name='vertical-align' value='middle'/>
+</css:rule>
+
+<css:rule selector='div.top-small td.right'>
+  <css:property name='text-align' value='right'/>
+  <css:property name='vertical-align' value='middle'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Main block                                                                   -->
+<!-- ================================================================================ -->
+
+<css:rule selector='div.main'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='div.main-bounded-width'>
+  <css:property name='margin' value='1em 2em 1em 2em'/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='max-width' ref='max-width'/>
+</css:rule>
+
+<css:rule selector='div.main-indented'>
+  <css:property name='margin' value='1em 2em 1em 2em'/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Headlines                                                                    -->
+<!-- ================================================================================ -->
+
+<css:rule selector='h4'>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<css:rule selector='h3'>
+  <css:property name='font-size' ref='large-rel'/>
+</css:rule>
+
+<css:rule selector='h2'>
+  <css:property name='font-size' ref='Large-rel'/>
+</css:rule>
+
+<css:rule selector='h1'>
+  <css:property name='font-size' ref='LARGE-rel'/>
+</css:rule>
+
+<css:rule selector='h1, h2, h3, h4, h5'>
+  <css:property name='font-weight' value='bold'/>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' value='1em 0em 0.5em 0em'/>
+</css:rule>
+
+<css:rule selector='div.h1-container'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' value='2em 0em 1em 0em'/>
+</css:rule>
+
+<css:rule selector='div.h1-container &gt; h1'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' value='0.25em 0em 0em 0em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Breadcrumps                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector='div.breadcrumb'>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='font-size' ref='small-rel'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Paragraphs                                                                   -->
+<!-- ================================================================================ -->
+
+<css:rule selector='p'>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' value='1.5ex 0px 1.5ex 0px'/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Inline layout (em, strong, etc.)                                             -->
+<!-- ================================================================================ -->
+
+<css:rule selector='em'>
+  <css:property name='font-style' value='italic'/>
+</css:rule>
+
+<css:rule selector='strong'>
+  <css:property name='font-style' value='italic'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='span.notion'>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<!-- 
+<css:rule selector='span.label'>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+ -->
+
+<!-- ================================================================================ -->
+<!-- h1: Blocks of code or console output                                             -->
+<!-- ================================================================================ -->
+
+<css:rule selector='pre.code, pre.output, pre.error-output'>
+  <!-- <css:property name='background-color' value="#F3F3F3"/> -->
+  <css:property name='padding' value="0.5em 0.5em 0.5em 0.5em"/>
+  <css:property name='margin' value="0.5em 0.5em 0.5em 0.5em"/>
+  <css:property name='font-family' value="courier, monospace"/>
+</css:rule>
+
+<css:rule selector='pre.error-output'>
+  <css:property name='color' value="red"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Icons                                                                        -->
+<!-- ================================================================================ -->
+
+<css:rule selector='span.icon-wrapper'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' ref='no-space'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Genuine tables                                                               -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.genuine'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' value='1.5ex 1em 1.5ex 1em'/>
+</css:rule>
+
+<css:rule selector='table.genuine thead'>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='table.genuine td'>
+  <css:property name='padding' value='0.5ex 0.5em 0.5ex 0.5em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.number, table.genuine td.flush-left'>
+  <css:property name='text-align' value='right'/>
+</css:rule>
+
+<css:rule selector='table.genuine tfoot'>
+  <!-- <css:property name='font-size' ref='small-rel'/> -->
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Layout tables                                                                -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.layout, table.grid'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name="border-style" value="none"/>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='table.layout tr, table.grid tr, table.layout td'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='table.grid td'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value="0.2em 0.2em 0.2em 0.2em"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: List Tables                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.list'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='border-spacing' value='0px'/>
+  <css:property name='margin' value='0.25em 1em 0.25em 1em'/>
+</css:rule>
+
+<css:rule selector='table.list table.list'>
+  <css:property name='margin-top' value='0.125em'/>
+  <css:property name='margin-bottom' value='0.125em'/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td'>
+  <css:property name='vertical-align' value='top'/>
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td &gt; p'>
+  <css:property name="margin-top" value="0.75ex"/>
+  <css:property name="margin-bottom" value="0.75ex"/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td &gt; p:first-child'>
+  <css:property name="margin-top" value="0ex"/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td.list-label'>
+  <css:property name='padding-right' value='0.5em'/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td.number, table.list &gt; tr &gt; td.flush-left'>
+  <css:property name='text-align' value='right'/>
+</css:rule>
+
+<css:rule selector='table.list &gt; tr &gt; td &gt; p &gt; img.strut'>
+  <css:property name='width' value='0em'/>
+  <css:property name='height' value='2em'/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='table.enum'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='border-spacing' value='0px'/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='table.enum &gt; tr &gt; td'>
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0ex 0em 0.5ex 0em"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Tables, general                                                              -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.align-top td'>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Links                                                                        -->
+<!-- ================================================================================ -->
+
+<css:rule selector='a'>
+  <css:property name='padding' value='0px 0.2em 0px 0.2em'/>
+  <css:property name="color" ref="link-color"/>
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" value="transparent"/>
+  <css:property name='text-decoration' value='underline'/>
+  <css:property name="cursor" value="pointer"/>
+</css:rule>
+
+<css:rule selector='a:hover'>
+  <css:property name="color" ref="link-color"/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name="background-color" ref="link-hover-bgr-color"/> 
+  <css:property name="border-color" ref="link-hover-border-color"/>
+</css:rule>
+
+<css:rule selector='a:visited'>
+  <css:property name="color" ref="link-visited-color"/>
+</css:rule>
+
+<css:rule selector='a.small'>
+  <css:property name='font-size' ref='Small-rel'/>
+  <css:property name='padding' value='0.1ex 0.5em 0.1ex 0.5em'/>
+</css:rule>
+
+<css:rule selector='sup a'>
+  <css:property name='padding' value='0px 0.2em 0px 0.2em'/>
+  <css:property name="color" ref="link-color"/>
+  <css:property name="font-size" ref="scriptsize-rel"/>
+  <css:property name="text-decoration" value="none"/>
+</css:rule>
+
+<css:rule selector="a.image">
+  <css:property name='padding' ref='no-space'/>
+  <css:property name="border-style" value="none"/>
+  <css:property name='background-color' value='inherit'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Captions                                                                     -->
+<!-- ================================================================================ -->
+
+<css:rule selector='div.caption-first'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' value="0ex 1em 1ex 1em"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Buttons                                                                      -->
+<!-- ================================================================================ -->
+
+<css:rule selector='button[type="button"], button[type="submit"], a.button'>
+  <css:property name='font-size' ref='small-rel'/>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name='padding' value='0.4ex 0.75em 0.5ex 0.75em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='cursor' value='pointer'/>
+</css:rule>
+
+<css:rule selector='button[type="button"].small, button[type="submit"].small,
+                    a.button-small'>
+  <css:property name='font-size' ref='Small-rel'/>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name='padding' value='0.2ex 0.5em 0.2ex 0.5em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='cursor' value='pointer'/>
+</css:rule>
+
+<css:rule selector='button[type="button"].inline, button[type="submit"].inline,
+                    a.button-inline'>
+  <css:property name='font-size' ref='small-rel'/>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name='padding' value='0.2ex 0.5em 0.2ex 0.5em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='cursor' value='pointer'/>
+</css:rule>
+
+<css:rule selector='button[type="button"]:hover, a.button:hover, a.button-small:hover, a.button-inline:hover'>
+  <css:property name='background-color' value='#f5f5f5'/>
+</css:rule>
+
+<css:rule selector='table.genuine td.button-wrapper'>
+  <css:property name='padding-bottom' value='1ex'/>
+  <css:property name='padding-top' value='0.75ex'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Footer                                                                       -->
+<!-- ================================================================================ -->
+
+<css:rule selector="div.footer, div.footer-indented">
+  <css:property name="margin" value="2em 0em 0em 0em"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+</css:rule>
+
+<css:rule selector="div.footer-indented">
+  <css:property name="margin-left" value="1em"/>
+</css:rule>
+
+<css:rule selector="span.footer">
+  <css:property name="font-size" ref="Small-rel"/>
+  <css:property name="color" ref="footer-text-color"/>
+</css:rule>
+
+<css:rule selector="span.footer a">
+  <css:property name="color" value="inherit"/>
+  <css:property name='margin' value='0px 1px 0px 1px'/>
+</css:rule>
+
+<css:rule selector="span.footer a:hover">
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-color' ref='footer-text-color'/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name='background-color' value='inherit'/>
+</css:rule>
+
+<css:rule selector="span.footer span.sep">
+  <css:property name='margin' value='0em 0.4em 0em 0.4em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Form elements                                                                -->
+<!-- ================================================================================ -->
+
+<css:rule selector='input[type="text"], input[type="password"], textarea'>
+  <css:property name='font-family' value='Courier, monospace'/>
+  <css:property name='font-size' ref='normalsize'/>
+  <css:property name='padding' value='0.4ex 0.0em 0.4ex 0.2em'/>
+  <css:property name='border-style' value='dotted'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='select'>
+  <css:property name='padding' value='0.0ex 0.0em 0.0ex 0.0em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='input[type="text"].focus, input[type="password"].focus, textarea.focus'>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' value='#000000'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='input[type="text"][readonly], input[type="text"][disabled]'>
+  <css:property name='border-color' value='#A5A5A5'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='color' value='inherit'/>
+  <css:property name='background-color' value='#F5F5F5'/>
+</css:rule>
+
+<css:rule selector='table.text-input'>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='input[type="checkbox"]'>
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' value="0ex 1ex 0ex 0ex"/>
+</css:rule>
+
+<css:rule selector='*.label'>
+  <css:property name='margin' value='0ex 0em 0ex 0em'/>
+  <css:property name='padding' value='0.5ex 0.25em 0.5ex 0.0em'/>
+</css:rule>
+
+<css:rule selector='*.input'>
+  <css:property name='margin' value='0ex 0em 0ex 0em'/>
+  <css:property name='padding' value='0.5ex 0.0em 0.5ex 0.25em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Button area                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector="div.buttons">
+  <css:property name='padding' ref='no-space'/>
+  <css:property name='margin' value='2em 0em 0em 0em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Dialog boxes, popup "windows"                                                -->
+<!-- ================================================================================ -->
+
+<css:rule selector="div.dialog">
+  <css:property name="visibility" value="hidden"/>
+  <css:property name="position" value="absolute"/>
+  <css:property name="max-width" value="42em"/>
+  <css:property name="font-size" ref="small-rel"/>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='padding' value='1ex 1em 1ex 1em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='text-align' value='center'/>
+</css:rule>
+
+<css:rule selector='table.dialog'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name="border-style" value="none"/>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+</css:rule>
+
+<css:rule selector='table.dialog thead'>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='table.dialog tr, table.dialog td'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value='1ex 1ex 1ex 1ex'/>
+</css:rule>
+
+<css:rule selector='table.dialog td.align-left'>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<css:rule selector='table.dialog button, table.dialog a.button'>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<css:rule selector='table.menu'>
+  <css:property name="visibility" value="hidden"/>
+  <css:property name="position" value="absolute"/>
+  <css:property name="max-width" value="42em"/>
+  <css:property name="font-size" ref="small-rel"/>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<css:rule selector='table.menu td, table.menu th'>
+  <css:property name='margin' ref="no-space"/>
+  <css:property name='padding' value="0.25em 1em 0.25em 1em"/>
+</css:rule>
+
+<css:rule selector='table.menu th'>
+  <css:property name='font-weight' value='bold'/>
+  <css:property name='padding-top' value='0.3em'/>
+  <css:property name='padding-bottom' value='0.3em'/>
+</css:rule>
+
+<css:rule selector='table.menu td:hover'>
+  <css:property name='background-color' value='#f5f5f5'/>
+  <css:property name='cursor' value='pointer'/>
+</css:rule>
+
+<css:rule selector='table.menu td.sep-after, table.menu th.sep-after'>
+  <css:property name='border-bottom-style' value='solid'/>
+  <css:property name='border-bottom-color' ref='stroke-color'/>
+  <css:property name='border-bottom-width' value='1px'/>
+</css:rule>
+
+<css:rule selector='table.dialog button, table.dialog a.button, table.menu button, table.menu a.button'>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Tooltips                                                                     -->
+<!-- ================================================================================ -->
+
+<css:rule selector="div.tooltip">
+  <css:property name="visibility" value="hidden"/>
+  <css:property name="position" value="absolute"/>
+  <css:property name="max-width" value="10em"/>
+  <css:property name="font-size" ref="small-rel"/>
+  <css:property name='background-color' ref='tooltip-fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='padding' value='0.5ex 0.5em 0.5ex 0.5em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Error messages                                                               -->
+<!-- ================================================================================ -->
+
+<css:rule selector='*.error'>
+  <css:property name='color' value="#ff0000"/>
+</css:rule>
+
+<css:rule selector='div.error'>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Other statuses: warn, ok                                                     -->
+<!-- ================================================================================ -->
+
+<css:rule selector='*.warn'>
+  <!-- <css:property name='color' value="#EE7600"/> --> <!-- DarkOrange2 -->
+  <css:property name='color' value="#8B0000"/> <!-- DarkRed -->
+</css:rule>
+
+<css:rule selector='*.ok'>
+  <css:property name='color' value="#228B22"/> <!-- ForestGreen -->
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: "Preview" styles                                                             -->
+<!-- ================================================================================ -->
+
+<css:rule selector="div.prev-container">
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' value='0.2em 0.3em 0.2em 0.3em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='prev-color'/>
+  <css:property name='border-width' value='1px'/>
+</css:rule>
+
+<css:rule selector="div.prev-container &gt; div.prev-container">
+  <css:property name='margin' value='0.2em 0.3em 0.2em 0.3em'/>
+</css:rule>
+
+<css:rule selector="div.prev-remark">
+  <css:property name="font-size" ref="small-rel"/>
+  <css:property name='color' ref='prev-color'/>
+  <css:property name='padding' value='0.1em 0.2em 0.1em 0.2em'/>
+  <css:property name='border-style' value='none'/>
+  <css:property name='text-align' value='left'/>
+</css:rule>
+
+</css:style>

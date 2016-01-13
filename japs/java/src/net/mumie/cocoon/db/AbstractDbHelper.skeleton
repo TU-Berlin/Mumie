@@ -1,0 +1,366 @@
+package net.mumie.cocoon.db;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import net.mumie.cocoon.content.ContentObjectItem;
+import net.mumie.cocoon.documents.Document;
+import net.mumie.cocoon.notions.AnnType;
+import net.mumie.cocoon.notions.Category;
+import net.mumie.cocoon.notions.DbColumn;
+import net.mumie.cocoon.notions.DbTable;
+import net.mumie.cocoon.notions.DbValue;
+import net.mumie.cocoon.notions.DocType;
+import net.mumie.cocoon.notions.Id;
+import net.mumie.cocoon.notions.Lang;
+import net.mumie.cocoon.notions.Nature;
+import net.mumie.cocoon.notions.PseudoDocType;
+import net.mumie.cocoon.notions.RefAttrib;
+import net.mumie.cocoon.notions.RefType;
+import net.mumie.cocoon.notions.Theme;
+import net.mumie.cocoon.notions.UserGroupName;
+import net.mumie.cocoon.notions.UserRole;
+import net.mumie.cocoon.notions.WorksheetState;
+import net.mumie.cocoon.pseudodocs.GeneralUser;
+import net.mumie.cocoon.pseudodocs.User;
+import net.mumie.cocoon.service.AbstractJapsService;
+import net.mumie.cocoon.util.LogUtil;
+import net.mumie.cocoon.util.PathTokenizer;
+import net.mumie.sql.SQLComposer;
+import net.mumie.util.IntList;
+import org.apache.avalon.excalibur.pool.Recyclable;
+import org.apache.avalon.framework.configuration.Configurable;
+import org.apache.avalon.framework.configuration.Configuration;
+import org.apache.avalon.framework.configuration.ConfigurationException;
+import org.apache.avalon.framework.logger.AbstractLoggable;
+import org.apache.avalon.framework.parameters.ParameterException;
+import org.apache.avalon.framework.parameters.Parameterizable;
+import org.apache.avalon.framework.parameters.Parameters;
+import org.apache.avalon.framework.service.ServiceException;
+import org.apache.avalon.framework.service.ServiceManager;
+import org.apache.avalon.framework.service.ServiceSelector;
+import org.apache.avalon.framework.service.Serviceable;
+
+/**
+ * <p>
+ *   Implementation of {@link DbHelper} as far as possible without relying to a special DBMS.
+ * </p>
+ */
+
+public abstract class AbstractDbHelper extends AbstractJapsService
+  implements DbHelper, Configurable, Recyclable
+{
+  // --------------------------------------------------------------------------------
+  // Global variables
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The database connection used by this db helper.
+   */
+
+  protected Connection connection;
+
+  /**
+   * The url of the connection this db helper should use.
+   */
+
+  protected String connectionUrl = "";
+
+  /**
+   * The name of the connection this db helper should use.
+   */
+
+  protected String connectionName = "default";
+
+  /**
+   * The userName this db helper should use.
+   */
+
+  protected String userName = "";
+
+  /**
+   * The userPassword of the connection this db helper should use.
+   */
+
+  protected String userPassword = "";
+
+  /**
+   * The SQL composer of this instance
+   */
+
+  protected SQLComposer sqlComposer = new SQLComposer();
+
+  /**
+   * The path tokenizer of this instance
+   */
+
+  protected PathTokenizer pathTokenizer = new PathTokenizer();
+
+  /**
+   * Old autocommit state
+   */
+
+  protected boolean oldAutoCommitState = true;
+
+  /**
+   * Old isolation level
+   */
+
+  protected int oldIsolationLevel = Connection.TRANSACTION_NONE;
+
+  /**
+   * Object that required the transaction
+   */
+
+  protected Object locker = null; 
+
+  // --------------------------------------------------------------------------------
+  // Lifecycle related methods
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Sets the connection name ({@link #connectionName}), connection URL 
+   * ({@link #connectionUrl}), user name ({@link #userName}), and password
+   * ({@link #userPassword}). The values are read from the child elements
+   * <code>connection-name</code>, <code>connection-url</code>, <code>user-name</code>, and
+   * <code>user-password</code>, respectively.
+   */
+
+  public void configure (Configuration configuration)
+    throws ConfigurationException 
+  {
+    final String METHOD_NAME = "configure";
+    this.logDebug(METHOD_NAME + " 1/4: Started");
+    this.connectionName = configuration.getChild("connection-name").getValue().trim();
+    this.connectionUrl = configuration.getChild("connection-url").getValue().trim();
+    this.userName = configuration.getChild("user-name").getValue().trim();
+    this.userPassword = configuration.getChild("user-password").getValue().trim();
+    this.logDebug
+      (METHOD_NAME + " 2/2: Done." +
+       " this.connectionName = " + this.connectionName +
+       ", this.connectionUrl = " + this.connectionUrl +
+       ", this.userName = " + this.userName +
+       ", this.userPassword = " + LogUtil.hide(this.userPassword));
+  }
+
+  /**
+   * Recycles this <code>AbstractDbHelper</code>.
+   */
+
+  public void recycle ()
+  {
+    this.oldAutoCommitState = true;
+    this.oldIsolationLevel = Connection.TRANSACTION_NONE;
+    if ( this.locker != null )
+      {
+        this.logWarn("Locker not null: this.locker = " + this.locker);
+        this.locker = null;
+      }
+  }
+
+  // --------------------------------------------------------------------------------
+  // Identification method
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns a string that identificates this instance. Used in log messages.
+   */
+
+  public String getIdentification ()
+  {
+    return this.toString();
+  }
+
+  // --------------------------------------------------------------------------------
+  // Utilities
+  // --------------------------------------------------------------------------------
+
+  /**
+   * <p>
+   *  Returns the default columns of the document table for document type
+   *  <code>doctype</code>. These columns are used for queries if the columns are not
+   *  specified explicitely.
+   * </p>
+   * <p>
+   *   See {@link DbHelper#getDefaultColumns(int) getDefaultColumns} in the
+   *   <code>DbHelper</code>  interface for a list of the included columns.
+   * </P>
+   */
+
+  public String[] getDefaultColumns (int docType)
+  {
+    List columns = new ArrayList(20);
+    columns.add(DbColumn.ID);
+    columns.add(DbColumn.NAME);
+    columns.add(DbColumn.DESCRIPTION);
+    if ( !DocType.isGeneric[docType] )
+      {
+        columns.add(DbColumn.VC_THREAD);
+        columns.add(DbColumn.VERSION);
+        columns.add(DbColumn.LAST_MODIFIED);
+        columns.add(DbColumn.CONTENT_TYPE);
+        columns.add(DbColumn.INFO_PAGE);;
+      }
+    if ( DocType.hasWidthAndHeight[docType] )
+      {
+        columns.add(DbColumn.WIDTH);
+        columns.add(DbColumn.HEIGHT);;
+      }
+    if ( DocType.hasTimeframe[docType] )
+      {
+        columns.add(DbColumn.TIMEFRAME_START);
+        columns.add(DbColumn.TIMEFRAME_END);;
+      }
+    if ( DocType.hasThumbnail[docType] )
+      {
+        columns.add(DbColumn.THUMBNAIL);;
+      }
+    return (String[])columns.toArray(new String[columns.size()]);
+  }
+
+  /**
+   * <p>
+   *  Returns name of the document table for document type
+   *  <code>doctype</code>. 
+   *  If <code>onlyLatest</code> is true, return the name of the corresponding
+   *  view containing only documents which have maximal version in their vc_thread.
+   * </p>
+   */
+
+  protected String getTableName (int docType, boolean onlyLatest)
+  {
+    return (onlyLatest ? DbTable.LATEST_DOC[docType] : DbTable.DOC[docType]);
+  }
+
+  /**
+   * Returns the name of the table to query data of the specified pseudo document type.
+   * The purpose of this method is to add an <code>"_ext"</code> to the table names of
+   * pseudo documents for which an "extended" table is defined as a view.
+   */
+
+  protected String getPseudoDocTableName (int pseudoDocType)
+  {
+    return
+      (pseudoDocType == PseudoDocType.TUTORIAL
+       ? DbTable.TUTORIALS + "_ext"
+       : DbTable.PSEUDO_DOC[pseudoDocType]);
+  }
+
+  /**
+   * Returns the name of the user annotation table for the specified document type.
+   */
+
+  protected String getUserAnnsTable (int docType)
+  {
+    if ( docType == DocType.WORKSHEET  )
+      return DbTable.ANNS_USER_WORKSHEET;
+    else if ( docType == DocType.SUBELEMENT  )
+      return DbTable.ANNS_USER_SUBELEMENT;
+    else
+      throw new IllegalArgumentException
+        ("No user annotations table for document type: " + docType);
+  }
+
+  /**
+   * Returns the name of the user annotation table for the two specified document types.
+   */
+
+  protected String getUserAnnsTable (int docType1, int docType2)
+  {
+    if ( docType1 == DocType.WORKSHEET && docType2 == DocType.PROBLEM )
+      return DbTable.ANNS_USER_WORKSHEET_PROBLEM;
+    else if ( docType1 == DocType.WORKSHEET && docType2 == DocType.GENERIC_PROBLEM )
+      return DbTable.ANNS_USER_WORKSHEET_GENERIC_PROBLEM;
+    else
+      throw new IllegalArgumentException
+        ("No user annotations table for document types: " + docType1 + ", " + docType2);
+  }
+
+  /**
+   * <p>
+   *   Pre-processes the specified column name. Provides a means to replace a column name in
+   *   a <code>SELECT</code> query by another expressions dynamically. A typical application
+   *   is to replace <code>foo</code> by
+   *   <pre>
+   *     <var>expression</var> AS foo</pre>
+   *   where <var>expression</var> is code to retrieve the column value.
+   * </p>
+   * <p>
+   *   This implementation does nothing (returns <code>column</code> unchanged). Extending
+   *   classes may overwrite this method.
+   * </p>
+   */
+
+  protected String filterColumn (String column)
+    throws SQLException
+  {
+    return column;
+  }
+
+  /**
+   * Does the same as {@link #filterColumn(String) filterColumn(String)}, but adds the
+   * specified prefix to the column name in addition. This implementaion simply returns
+   * <code>prefix + "." +column</code>.
+   */
+
+  protected String filterColumn (String column, String prefix)
+    throws SQLException
+  {
+    return prefix + "." + column;
+  }
+
+  /**
+   * Pre-processes the specified column names. Provides a means to replace a column name in
+   * a <code>SELECT</code> query by another expressions dynamically. See
+   * {@link #filterColumn(String) filterColumn} for an example. This implementation applies
+   * {@link #filterColumn(String) filterColumn} to each element of the array. Note that the
+   * original array is altered by this method.
+   */
+
+  protected String[] filterColumns (String[] columns)
+    throws SQLException
+  {
+    for (int i = 0; i < columns.length; i++)
+      columns[i] = this.filterColumn(columns[i]);
+    return columns;
+  }
+
+  /**
+   * Does the same as {@link #filterColumns(String[]) filterColumns(String[])}, but adds the
+   * specified prefix to each column name in addition.  This implementation applies
+   * {@link #filterColumn(String,String) filterColumn} to each element of the array.
+   */
+
+  protected String[] filterColumns (String[] columns, String prefix)
+    throws SQLException
+  {
+    for (int i = 0; i < columns.length; i++)
+      columns[i] = this.filterColumn(columns[i], prefix);
+    return columns;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+}

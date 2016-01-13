@@ -1,0 +1,62 @@
+\documentclass{generic}
+
+\begin{document}
+
+\section{A short table of markup commands}
+
+
+\begin{table}
+\head
+The result in the left col & and the source code in the right col ...\\
+\body
+\code{Some code-highlighted text} & \verb/\code{Some code-highlighted text}/  \\
+
+\emph{Some emphasised text}& \verb/\emph{Some emphasised text}/  \\
+
+\keyb{This is highlighted as keyboard style}& \verb/\keyb{This is highlighted as keyboard style}/  \\
+
+\plhld{This is the plhld style}& \verb/\plhld{This is the plhld style}/  \\
+
+\quoted{This text should appear quoted}& \verb/\quoted{This text should appear quoted}/  \\
+
+\span{This text is fenced by span tags}& \verb/\span{This text is fenced by span tags}/  \\
+
+\var{This text is highlighted as a variable}& \verb/\var{This text is highlighted as a variable}/ 
+\end{table}
+
+
+
+\section{Tests for nesting markups..}
+\subsection{The source code}
+
+\subsection{The result}
+
+\emph{Now, lets try some multiline text, first with a \% at the end, to see if this is %
+  working. Then we will go to the next line, without qouting the not visible newline tag, to
+  confuse the scanner a little bit..
+  Okay, this is working without any problems. But what will happen, if some nested ohter
+  highlighting commands are used in this multiline text.. \keyb{This will highlight like a
+    keyboard entered text, also containing a linebrake after "like a"}..
+Now some really deep nesting, \quoted{ \keyb{This is keyb \plhld{plus placeholder which
+      is quoted and \var{where a variable might be found}}}}
+  }
+
+Last but not least, there is still the task to describe what highlighting enviroment allows
+nesting, quoted text for example, is not allowed somewhere.. (but where )
+
+\plhld{ test \quoted{qouted} }
+\keyb{ test \quoted{qouted} }
+\emph{ test \quoted{qouted} }
+
+\emph{ \keyb{ test \quoted{qouted} } }
+\emph{ \keyb{ test \plhld{ test \quoted{qouted} } } }
+
+\var{ \keyb{ test \plhld{ test \quoted{qouted} } } }
+
+\emph{ \keyb{ test \var{ test \quoted{qouted} } } }
+
+There seems to be no limit, perhaps the error I got a few lines earlier where just a typo,
+I'm unable to reproduce it at the moment.. Perhaps we will give it a try sometimes later..
+
+
+\end{document}

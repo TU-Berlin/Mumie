@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN" "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <head>
+    <title>Layout Testseite</title>
+    <link type="text/css" rel="stylesheet" href="sample_01.css"
+          title="Styles 1 (light blue)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_02.css"
+          title="Styles 2 (dark blue)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_03.css"
+          title="Styles 3 (brown)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_04.css"
+          title="Styles 4 (grey)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_05.css"
+          title="Styles 5 (light green)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_06.css"
+          title="Styles 6 (light orange)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_07.css"
+          title="Styles 7 (orange)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_08.css"
+          title="Styles 8 (light blue, pattern, small ractangles)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_09.css"
+          title="Styles 9 (light blue, pattern, large rectangles)"/>
+    <link type="text/css" rel="alternate stylesheet" href="sample_10.css"
+          title="Styles 10 (dark blue, pattern, large rectangles)"/>
+  </head>
+
+  <body>
+
+    <div class="top">
+      <table class="layout">
+        <tr>
+          <td class="left" rowspan="2">
+             <img alt="Mumie-Logo" height="75" width="91"
+                  src="mumie_logo.png" />
+           </td>
+          <td class="middle">
+            <span class="mumie">MUMIE - Multimediale Mathematikausbildung</span><br />
+            TU Berlin &#183;
+            Institut f&#252;r Mathematik
+          </td>
+          <td class="right" rowspan="2">
+            <img alt="TU-Logo" height="65" width="90"
+                 src="tu_logo_for_darkblue.png" />
+          </td>
+        </tr>
+        <tr>
+          <td>
+             <div class="top-links">
+              <a href="/protected/alias/start" title="Zur Startseite">Startseite</a>
+              &middot;
+              <a href="/protected/alias/account" title="&#196;nderung der Konto-Daten">Konto</a>
+              &middot;
+              <a href="/protected/auth/logout" title="Gesch&#252;tzten Bereich verlassen">Abmelden</a>
+              &middot;
+              <a href="/protected/alias/courses" title="Zur Kursauswahl">Kurse</a>
+              &middot;
+              <a href="/protected/alias/db-browser" title="Zum DB-Browser">DB-Browser</a>
+            </div>
+           </td>
+        </tr>
+      </table>
+    </div>
+
+
+    <div class="main-bounded-width">
+
+    <h1>&#220;berschrift h1</h1>
+    <h2>&#220;berschrift h2</h2>
+    <h3>&#220;berschrift h3</h3>
+    <h4>&#220;berschrift h4</h4>
+    <p>
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+    </p>
+    <p>
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Ein Absatz. Dies ist ein Test-Text. Er braucht keinen Sinn zu machen.
+      Er dient nur dazu, den Absatz zu f&#252;llen. Er wird sich immer wiederholen.
+      Etwas <em>hervorgehobener Text.</em> Etwas <strong>stark hervorgehobener
+      Text</strong>.
+    </p>
+    <p>
+      Eine Tablelle:
+    </p>
+    <table class="genuine">
+      <thead>
+        <tr>
+          <td>Id</td><td>Name</td><td>Vorname</td><td>Konto</td><td />
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>134</td>
+          <td>M&#252;ller</td>
+          <td>Hans</td>
+          <td>234343</td>
+          <td><a href="/foo">Details</a></td>
+        </tr>
+        <tr>
+          <td>206</td>
+          <td>Schmitt</td>
+          <td>Werner</td>
+          <td>656465</td>
+          <td><a href="/foo">Details</a></td>
+        </tr>
+        <tr>
+          <td>164</td>
+          <td>Schneider</td>
+          <td>Marta</td>
+          <td>75757</td>
+          <td><a href="/foo">Details</a></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Buttons:
+    </p>
+
+    <p>
+      <button type="button" onclick="javascript:alert('Hallo Welt!')">Speichern</button>
+      <button type="button" onclick="javascript:alert('Hallo Welt!')">Abbrechen</button>
+    </p>
+
+    <p>
+      Links als Buttons:
+    </p>
+
+    <p>
+      <a class="button" href="/foo">Speichern</a>
+      <a class="button" href="/foo">Abbrechen</a>
+    </p>
+
+    <p>
+      Links als kleine Buttons:
+    </p>
+
+    <p>
+      <a class="button-small" href="/foo">Speichern</a>
+      <a class="button-small" href="/foo">Abbrechen</a>
+    </p>
+
+    <p>
+      Texteingabefelder, einzeilig:
+    </p>
+
+    <table class="layout">
+      <tr>
+        <td>
+          <div class="label">Vorname:</div>
+        </td>
+        <td>
+          <div class="input">
+            <input type="text" name="foo" size="20" value="Test" />
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <div class="label">
+            Nachname:
+          </div>
+        </td>
+        <td>
+          <div class="input">
+            <input type="text" name="foo2" size="20" value="Test" />
+          </div>
+        </td>
+      </tr>
+    </table>
+
+  </div>
+
+  </body>
+
+</html>

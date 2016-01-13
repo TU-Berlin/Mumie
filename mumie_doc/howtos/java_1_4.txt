@@ -1,0 +1,50 @@
+$Id: java_1_4.txt,v 1.1 2007/09/28 09:07:18 rassy Exp $
+
+                     BIBLIOTHEKEN UND APPLETS MIT JAVA 1.4
+
+Die Pakete
+
+  matheltfactory_lib
+  japs_datasheet
+  japs_client
+
+können jetzt alle mit Java 1.4 (und höher) kompiliert werden. Im Fall von
+japs_client muss dazu die Build-Variable with_console=false gesetzt werden;
+s. INSTALL.
+
+Das Multiple-Choice-Aufgaben-Applet, also
+
+  system/problem/MultipleChoiceApplet
+
+ist jetzt mit Java 1.4.2_10 kompliliert und so ins CVS eingecheckt.
+
+Applets und Korrektoren: Es ist besser, Korrektoren weiterhin mit Java 6 zu
+kompilieren. Korrektoren laufen ja im Server, der ohnehin Java 6 braucht. Das
+Problem ist nämlich, dass Korrektoren Jars referenzieren (können), die nur in
+Java 6 vorliegen. Um die Applets mit 1.4 zu bauen, wie folgt vorgehen:
+
+1. mathletfactory_content ganz normal mit Java 6 bauen. "Bauen" heisst hier
+   ./build.sh mount-checkin aufrufen.
+
+2. In <prefix>/bin drei Skripte javac4.sh, jar4.sh, jarsigner4.sh
+   anlegen, die das javac- bzw. jar- bzw. jarsigner-Kommando von Java 1.4
+   aufrufen. <prefix> ist der Build-Prefix der Mumie-Pakete.
+
+3. in <prefix>/etc/mmcdk eine Datei local_mmcdk.init anlegen und
+   folgende Zeilen eintragen:
+
+     mmjvmc setprop net.mumie.cdk.javacCmd=<prefix>/bin/javac4.sh
+     mmjvmc setprop net.mumie.cdk.jarCmd=<prefix>/bin/jar4.sh
+     mmjvmc setprop net.mumie.cdk.jarsignerCmd=<prefix>/bin/jarsigner4.sh
+
+4. mmjvmd neu starten.
+
+5. Die Applets (nicht die Korrektoren) mit Java 1.4 noch einmal bauen, also
+   z.B. in lineare_algebra/media/applets
+
+     mmjava -f *.src.java
+
+   eingeben.
+
+
+- ENDE DER DATEI -

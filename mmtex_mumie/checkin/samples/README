@@ -1,0 +1,236 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.1 2009/10/27 16:00:12 linges Exp $
+
+
+                                    SAMPLES
+
+
+This directory contains sample documents for the LaTeX dialect in which the
+content for the Mumie e-learning platform is written. Use them as templates
+for your own documents and as a source of information how to use the commands
+and environments implemented by this package.
+
+If you want to create previews and/or checkin the documents on a Mumie server,
+you must mount this directory to your checkin tree. Section 2 explains how to
+do that.
+
+
+1. Overview of the files
+   =====================
+
+1.1. Basic examples
+     --------------
+
+Recall that there are predefined structures for Mumie elements and subelements,
+e.g., "equivalence side-by-side" or "proposition list". The following files
+give examples for that. The filenames should be self-explanatory:
+
+  alg_top_bottom.src.tex
+  app_free.src.tex
+  def_free.src.tex
+  def_multiple_mixed.src.tex
+  def_multiple_side_by_side.src.tex
+  def_multiple_top_bottom.src.tex
+  def_side_by_side.src.tex
+  def_simple.src.tex
+  def_top_bottom.src.tex
+  exm_free.src.tex
+  mot_free.src.tex
+  thm_equivalence_side_by_side.src.tex
+  thm_equivalence_top_bottom.src.tex
+  thm_free.src.tex
+  thm_implication_side_by_side.src.tex
+  thm_implication_top_bottom.src.tex
+  thm_multiple_mixed.src.tex
+  thm_prop_list.src.tex
+  thm_simple.src.tex
+  vis_free.src.tex
+
+The following files provide examples for different categories of problems:
+
+  prb_applet.src.tex
+  prb_mchoice.src.tex
+  prb_traditional.src.tex
+
+The first one references an applet. The source, master, and content files of
+the applet are all contained in this directory; they are:
+
+  ProblemApplet.src.java
+  ProblemApplet.content.jar
+  ProblemApplet.meta.xml
+
+There is also an example for including multimedia components in a document:
+
+  thm_with_media.src.tex
+
+The document (a theorem) includes an image, an applet and a flash movie. The
+master and content files of the three multimedia documents are:
+
+  img_an_image.meta.xml
+  img_an_image.content.png
+  apl_an_applet.meta.xml
+  apl_an_applet.content.jar
+  fla_a_flash_movie.meta.xml
+  fla_a_flash_movie.content.swf
+
+They are contained in this directory, too.
+
+The following file demonstrates the use of the \cnum command:
+
+  cnum_demo.src.tex
+
+The following file is an example for a summary:
+
+  sum_free.src.tex
+
+It references a generic document, the master file of which,
+
+  g_sum_fee.meta.xml,
+
+is contained in this section as well.
+
+The directory provides an example for links from one document to another. The
+document containing the links is:
+
+  thm_link_origin.src.tex
+
+The link targets are the following two generic documents:
+
+  g_def_link_target.meta.xml
+  g_exm_link_target.meta.xml
+
+They are implemented by:
+
+  def_link_target.src.tex
+  exm_link_target.src.tex
+
+
+1.2. Course-like documents, list structure
+     -------------------------------------
+
+There are examples for course-like documents with list structure. The files are
+contained in the subdirectory
+
+  course_list
+
+In the following, all filenames denote files in this subdirectory.
+
+The subdirectory contains one course:
+
+  crs_list.src.tex
+
+The course is composed of seven course sections
+
+  csc_lecture_1.src.tex
+  csc_lecture_2.src.tex
+  csc_lecture_3.src.tex
+  csc_lecture_4.src.tex
+  csc_lecture_5.src.tex
+  csc_lecture_6.src.tex
+  csc_lecture_7.src.tex
+
+and 19 worksheets
+
+  wks_homework_2_1.src.tex
+  wks_homework_2_2.src.tex
+  wks_homework_3_1.src.tex
+  wks_homework_3_2.src.tex
+  wks_homework_4_1.src.tex
+  wks_homework_4_2.src.tex
+  wks_homework_4_3.src.tex
+  wks_homework_5_1.src.tex
+  wks_homework_5_2.src.tex
+  wks_homework_6_1.src.tex
+  wks_homework_6_2.src.tex
+  wks_homework_6_3.src.tex
+  wks_homework_6_4.src.tex
+  wks_homework_7_1.src.tex
+  wks_homework_7_2.src.tex
+  wks_homework_1.src.tex
+  wks_homework_2.src.tex
+  wks_homework_3.src.tex
+  wks_homework_4.src.tex
+
+The worksheets wks_homework_<N>_<M>.src.tex are attached to the course section
+csc_lecture_<N>.src.tex, where <N> and <M> are numbers. The worksheets
+wks_homework_<N>.src.tex are directly included in the course.
+
+The course section csc_lecture_1.src.tex is filled with dummy elements and
+subelements. The other course sections are empty. The dummy elements and
+subelements are:
+
+  apl_something_7.src.tex
+  def_something_1.src.tex
+  def_something_3.src.tex
+  def_something_6.src.tex
+  exm_something_2_2.src.tex
+  exm_something_2.src.tex
+  exm_something_3_2.src.tex
+  exm_something_4_2.src.tex
+  exm_something_6_1.src.tex
+  exm_something_6_2.src.tex
+  rmk_something_1.src.tex
+  rmk_something_2_1.src.tex
+  rmk_something_3_1.src.tex
+  rmk_something_4_1.src.tex
+  thm_something_2.src.tex
+  thm_something_4.src.tex
+  thm_something_5.src.tex
+  vis_something_3.src.tex
+  vis_something_4_3.src.tex
+  vis_something_4.src.tex
+  vis_something_5_1.src.tex
+  vis_something_5_2.src.tex
+  vis_something_6_3.src.tex
+  vis_something_6_4.src.tex
+  vis_something_7_1.src.tex
+  vis_something_7_2.src.tex
+
+The worksheet wks_homework_2_1.src.tex is filled with dummy problems. The other
+worksheets are empty. The dummy problems are:
+
+  prb_something_1.src.tex
+  prb_something_2.src.tex
+  prb_something_3.src.tex
+  prb_something_4.src.tex
+
+The course and all course sections and worksheets have the same summary, which
+is the generic of
+
+  sum_something.src.tex
+
+(the generic document is automatically created by means of the \creategeneric
+command).
+
+The course is assigned to the class
+
+  cls_something.meta.xml
+
+which, in turn, is assigned to the semenester
+
+  sem_something.meta.xml
+
+
+2. Mounting to the checkin tree
+   ============================
+
+To mount the directory to the checkin tree, type
+
+  ./mount_checkin.sh
+
+in this directory. After that, you will find this directory as
+
+  <checkin_root>/samples
+
+in your checkin tree, where <checkin_root> is your checkin root directory. The
+latter is the value of the environment variable MM_CHECKIN_ROOT, or
+$HOME/mumie/checkin if the environment variable is not set.
+
+To unmount the directory from the checkin tree, type
+
+  ./unmount_checkin.sh
+
+in this directory.
+
+
+-- END Of FILE --

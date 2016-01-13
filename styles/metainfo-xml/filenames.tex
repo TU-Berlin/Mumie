@@ -1,0 +1,242 @@
+%Autoren: Tilman Rasy, Fritz Lehmann-Grube
+%$Id: filenames.tex,v 1.1 2005/01/04 18:33:59 lehmannf Exp $
+
+
+%                 MIGRATION VON CVS NACH JAPS -- ÜBERSICHT
+
+
+\subsection{Sections-Konzept}
+   ================
+
+  Für den Japs wird eine abstrakte hierarchische Gliederungsstruktur
+  definiert. Diese hat eine Implementation in der Japs-DB einerseits und im
+  lokalen Dateisystem des Benutzers andererseits.
+
+  Die Gliederungsstruktur wird durch sog. ''Sections'' gebildet. Es gelten
+  folgende Prinzipien:
+\begin{enumerate}
+\item    Sections sind Pseudo-Dokumente.
+
+\item    Jedes Dokument, Pseudo-Dokument und jede Dokumenten-Quelle ist in
+         genau einer Section enthalten.
+
+\item    Damit ist insbesondere jede Section in genau einer Section
+         enthalten. Dadurch entsteht die hierarchische Struktur.
+
+\item    Die Struktur hat eine eindeutige Wurzel, die sog. ''Rootsection''. Die
+         Rootsection ist in sich selbst enthalten. Ansonsten sind Zyklen
+         verboten.
+
+\item    Jede Section darf Dokumente, Pseudo-Dokumente und Dokumenten-Quellen
+         enthalten. 
+\end{enumerate}
+\label{sec_sections}
+
+%%------------- AKUT ! ------------------
+%%Dez. 04 
+%%Kleine "Anderung des Konzepts:\\
+%%Alle (bisher nur <mumie:element>s, siehe \ref{sec_elements}) Dokumente sind in sections enthalten
+%%(<mumie:contained_in> , siehe \ref{sec_contained_in}).\\
+%%Daher brauchen Sections jetzt endlich mal eine korrekte Spezifikation.
+
+siehe auch cvs/japs/docs/notes/section\_concept.txt\\
+
+\emph{Knoten-Name:} \texttt{<mumie:section> ... </mumie:section>}
+
+\emph{Attribute:} \verb+xmlns:mumie, use_mode, id, url+ wie oben in \emph{Abschnitt
+  \ref{sec_common_attrs}} beschrieben, und im Wesentlichen mit den gleichen Bedeutungen wie dort.\\
+
+Mindestens die Usemodi info, checkout und checkin sollen definiert sein.
+
+
+Es k"onnen f"ur Sections eventuell andere Usemodi verwendet werden, sie beschreiben
+aber jedenfalls einen Kontext innerhalb des JAPS.\\
+
+\emph{Kinder:}\\ 
+
+\texttt{<mumie:name></mumie:name>} siehe \emph{\ref{sec_name}}\\
+\texttt{<mumie:description></mumie:description>} siehe \emph{\ref{sec_description}}\\
+\texttt{<mumie:filename></mumie:filename>} \emph{nicht beim checkin!} siehe \emph{\ref{sec_filename}}\\
+\texttt{<mumie:contained\_in></mumie:contained\_in>} \emph{nicht beim checkin!} siehe \emph{\ref{sec_contained_in_section}}\\
+
+\texttt{<mumie:permission></mumie:permission>} siehe \emph{\ref{sec_document_permission}}\\
+
+\subsubsection{Beispiel}
+\begin{verbatim}
+<?xml version="1.0" encoding="UTF-8"?>
+<mumie:section xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" use_mode="checkin">
+  <mumie:name>System</mumie:name>
+  <mumie:description>Technical Stuff</mumie:description>
+
+<!--  filename und contained_in werden dem Filesystem bzw. dem zipfile entnommen. Also:
+          So nicht beim checkin !!
+  <mumie:filename>system</mumie:filename>
+  <mumie:contained_in id="0"/>
+-->
+
+  <mumie:permission type="read">
+    <mumie:user_group id="0"/>
+    <mumie:user_group url="japs/pseudo_document/user_group/authors.meta.xml"/>
+  </mumie:permission>
+  <mumie:permission type="write">
+    <mumie:user_group id="0"/>
+  </mumie:permission>
+
+
+<!--    gibt's nicht mehr !!
+  <mumie:level level="1" sublevel="0"/>
+  <mumie:final value="false"/>
+-->
+</mumie:section>
+\end{verbatim}
+
+
+\subsection{Implementation in der DB}
+   ========================
+
+  Sections werden durch die Tabelle ''sections'' dargestellt. Diese hat
+  mindestens die folgenden Spalten:
+\begin{enumerate}
+\item    id :  Primärschlüssel
+
+\item    filename :  Verzeichnisname bei Implemetierung im Dateisystem.
+
+\item    contained\_in :  id der Section, in der diese Section enthalten ist.
+\end{enumerate}
+  Die Spalte 2.3 (contained\_in) ist auch in den Tabellen der übrigen
+  Pseudo-Dokumente, der Dokumente und Quellen enthalten.
+
+
+\subsection{Implementation auf dem lokalen Dateisystem}
+   ==========================================
+
+  Die Gliederungsstruktur wird auf eine Verzeichnisstruktur abgebildet. Dabei
+  gelten folgende Prinzipien:
+
+\begin{enumerate}
+\item    Jede Section entspricht genau einem Verzeichnis. Solche Verzeichnisse
+         sollen ''Section-Verzeichnisse'' genannt werden. Die Master-Datei einer
+         Section liegt in ihrem Section-Verzeichnis.
+
+\item    Die ''ist-enthalten-in''-Beziehung der Sections wird durch die
+         ''ist-Unterverzeichnis-von''-Beziehung der Section-Verzeichnisse
+         dargestellt.
+
+\item    Für alle (Pseudo-)Dokumenttypen <typ> ausser ''section'' gilt: Enth"alt
+         eine Section (Pseudo-)Dokumente des Typs <typ>, so enthält das 
+         entsprechende Section-Verzeichnis ein Unterverzeichnis mit dem Namen
+         <typ>. Hierin befinden sich die Master- und ggf. Content-Dateien der
+         entsprechenden (Pseudo-)Dokumente. Solche Verzeichnisse sollen
+         ''(Pseudo-)Dokumenten-Verzeichnisse'' genannt werden.
+
+\item    Enthält eine Section Text- und/oder Bin"ar-Quellen, so enthält das
+         entsprechende Section-Verzeichnis ein Unterverzeichnis ''src\_txt''
+         und/oder ''src\_bin'', in denen sich die Quellen befinden. Solche
+         Verzeichnisse sollen ''Quellen-Verzeichnisse'' genannt werden.
+\end{enumerate}
+
+
+\subsection{Dateien}
+   =======
+
+  Zu einem nicht-generischen Dokument geh"oren folgende Dateien:
+
+\begin{enumerate}
+\item    Master-Datei :\\
+           XML-Datei mit den Meta-Informationen.
+
+\item    Content-Datei :\\
+           Datei mit dem eigentlichen Inhalt; bei Text-Dokumenten: XML; bei
+           Bin"ar-Dokumenten: entsprechendes Binär-Format.
+
+\item    Keine, eine oder mehrere Quelldateien :\\
+           Datei(en) mit den Quellen des Dokuments; bei Text-Quellen: XML,
+           ggf. Wrapper-XML für das eigentliche Format; bei Binär-Quellen:
+           entsprechendes Binär-Format.
+\end{enumerate}
+
+  Master- und Content-Datei gehören eindeutig zu einem Dokument. Quelldateien
+  können auch zu mehreren Dokumenten gehören.
+
+  Master- und Content-Datei eines Dokuments müssen immer im selben Verzeichnis
+  liegen.
+
+  Text-Quellen müssen grundsätzlich als XML vorliegen. Ist das eigentliche
+  Format nicht XML (was meistens der Fall ist), so existiert zu der
+  eigentlichen Quelldatei eine sog. ''XML-Wrapper-Datei''.
+
+  Generische Dokumente und Pseudo-Dokumente haben lediglich eine Master-Datei.
+
+
+\subsection{Dateinamen}
+   ==========
+
+  Dateinamen bestehen aus einem sog. ''Rumpf'' (''body''), ggf. einem sog. ''Zusatz''
+  (''addition'') und einer zweiteiligen Endung (suffix); jeweils durch Punkte
+  getrennt; die zwei Teile der Endung ebenfalls durch einen Punkt getrennt:
+
+    <body>[.<addition>].<suffix1>.<suffix2>
+
+  (<suffix1> und <suffix2> bezeichnen die beiden Teile der Endung.)
+
+  Der Rumpf ist der inhaltlich motivierte Name der Datei. Der Zusatz, wenn
+  vorhanden, bezeichnet eine inhaltliche Variante. Der erste Teil der Endung
+  klassifiziert die Datei nach ihrer technischen Rolle in der Mumie, der zweite
+  nach ihrem Format.
+
+  Rumpf und Zusatz sollten nur aus Kleinbuchstaben und Unterstrich (''\_'')
+  bestehen. Ausser bei Sections darf der Rumpf nicht leer sein. Bei Sections
+  muss der Rumpf leer sein; der Dateiname beginnt in diesem Fall mit einem
+  Punkt (vgl. Beispiel (f) unten).
+
+  Für die Endung gilt:
+
+    Master-Dateien:   meta.xml
+
+    Content-Dateien:  content.<type>
+
+    Quelldateien:     src.<type>
+
+  Hierbei ist <type> eine Endung in Kleinbuchstaben, die dem Dateityp
+  entspricht , z.B. ''xml'' für XML-Dateien, ''png'' für PNG-Dateien usw.
+
+  Beispiele:
+\begin{enumerate}
+\item[a]    thm\_satz\_ueber\_irgendwas.nach\_mueller.meta.xml
+          Master-Datei eines Dokuments über den ''Satz von Irgendwas'' in der
+          Variante von ''Müller''.
+
+\item[b]    thm\_satz\_ueber\_irgendwas.nach\_schmidt.meta.xml
+          Master-Datei eines Dokuments über den ''Satz von Irgendwas'' in der
+          Variante von ''Schmidt''.
+
+\item[c]    thm\_satz\_ueber\_irgendwas.nach\_schmidt.content.xml
+          Content-Datei von s.o.
+
+\item[d]    thm\_satz\_ueber\_irgendwas.nach\_schmidt.src.tex
+          Quelldatei von s.o.
+
+\item[e]    thm\_satz\_ueber\_irgendwas.nach\_schmidt.src.xml
+          XML-Wrapper-Datei von s.o.
+
+\item[f]    .meta.xml
+          Master-Datei einer Section.        
+\end{enumerate}
+
+\subsection{Anhängbarkeit von Dokumenten an andere}
+   ========================================
+
+  Die ''Anhängbarkeit'' von Subelementen an Elemente wird im neuen System durch
+  eine normale Referenz dargestellt. Dafür wird ein neuer Referenztyp
+  ''attachable'' eingführt.
+
+  Dieser Referenztyp verallgemeinert diese bisherige Relation ''contained\_in''.
+  Die Sonderrolle der Subelement-Element-Beziehung entfällt also.
+
+  Referenzen des Typs ''attachable'' sind prinzipiell auch zwischen anderen
+  Dokumenttypen erlaubt, insbesondere aber nicht, wenn "uberhaupt keine Referenzen
+  zwischen den jeweiligen Typen erlaubt sind wie in config/config.xml durch das
+  Attribut "no-refs-to" des referenzierenden Dokumenttyps definiert.
+
+
+

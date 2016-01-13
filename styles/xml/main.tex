@@ -1,0 +1,1057 @@
+\documentclass[12pt]{article}
+
+\RequirePackage{../macros/mumie}
+
+% defs für dieses dokument:
+\def\xml{\texttt{mumie}XML}
+
+\newcommand{\note}[1]
+{%
+  \fboxsep3mm%
+  \fbox{%
+    {\Huge!}
+    \hspace{1mm}%
+    \begin{minipage}{12cm}#1\end{minipage}%
+    \hspace{1mm}%
+    {\Huge!}%
+  }%
+}
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+\texttt{\Huge mumie} \textsf{\Huge Style Guide}
+\bigskip
+
+\styletitle{\texttt{mumie}XML}
+\phantom.
+\vspace*{3cm}
+\begin{center}
+Dominik Eberlein, Andreas Hoffmann, Sabina Jeschke, Lutz Lenzen,
+Tilman Rassy
+\end{center}
+
+\ifx\pdfoutput\undefined
+  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+\else
+  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Maintainer:}& Dominik Eberlein \\
+\textsf{Datum:}& 
+   \verb+$Date: 2004/01/28 19:36:53 $+\\ % Wird vom cvs eingetragen
+\textsf{CVS-Version:}& 
+   \verb+$Revision: 1.57 $+\\            % Wird vom cvs eingetragen
+\textsf{CVS-Source:}&\verb+$Source: /net/mumie/cvs/styles/xml/main.tex,v $+\\ % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%% 
+
+\tableofcontents
+\eject
+
+\section{Einführung}
+Dieser Style spezifiziert das \texttt{mumieXML}. Es wird die
+Funktionalität und im groben das Layout der durch das XML bestimmten
+Objekte festgelegt.
+
+Zur Terminologie: Wir betrachten \texttt{<para>Das ist ein
+Text-Knoten.</para>}. Dann heißt~\texttt{<para> </para>} Knoten und
+der davon umschlossene Text ist der aktuelle Text-Knoten oder kurz der
+Text-Knoten.
+
+
+\section{Knoten-Kategorien}
+Es gibt folgende Kategorien von Knoten im \texttt{mumie}XML:
+
+\begin{center}
+\ifx\pdfoutput\undefined
+  \epsfig{file=pics/kapseln.eps,angle=0}
+\else
+  \includegraphics[angle=0]{pics/kapseln.pdf}
+\fi
+\end{center}
+
+\begin{description}
+\item[KC0 \normalfont Content-Knoten:]
+Knoten, der die Struktur-Knoten der Inhalte des (Sub-)Elements aufnimmt.
+\item[KC1${}_{\text{T}}$ \normalfont Titel-Knoten:] Knoten, der den
+Titel des Dokuments enth"alt.
+\item[KC1 \normalfont Hauptteil-Knoten:] Knoten, der strukturell die
+Hauptteile (bei einem Theorem etwa: ``einfache'' Voraussetzung,
+Implikation 1, Implikation 2) des (Sub-)Elements wiedergibt und als
+Kinder die Unterteile hat.
+\item[KC2 \normalfont Unterteil-Knoten:] Knoten, der die Unterteile
+(bei einer Implikation etwa Voraussetzung und Aussage) wiedergibt.
+\item[KC3${}_{\text{IO}}$ \normalfont Interaktions-Objekt-Knoten:]
+Knoten, die Interaktions-Objekte wie Bilder und JavaApplets
+einbetten.
+\item[KC3${}_{\text{IB}}$ \normalfont Interaktions-Button-Knoten und Events:]
+Knoten zur Steuerung von Interaktions-Objekten, also etwa
+ein Button, der bei Klick eine Bildsequenz oder Methode eines
+JavaApplets startet (Interaktions-Objekt).
+\item[KC3${}_{\text{LM}}$ \normalfont Logische MarkUp-Knoten:]
+Logische MarkUp-Knoten, die sich auf einzelne Textstücke beziehen.
+\end{description}
+
+
+\section{\textbf{KC0} Content-Knoten}
+
+\subsection{Elemente}
+
+\emph{Knoten-Name:} \texttt{<element> ... </element>}
+
+\emph{Attribute:}  ---
+
+\emph{Beschreibung:} Hiermit wird ein \mumie-Element angegeben.
+%Der (Sub-)Elementtyp wird durch die Metainformationen spezifiziert.
+
+\emph{Kinder:} Genau ein \texttt{<title/>} und mindestens ein
+\texttt{<part/>}-Knoten.
+
+\subsection{Subelemente}
+
+\emph{Knoten-Name:} \texttt{<subelement> ... </subelement>}
+
+\emph{Attribute:}  ---
+
+\emph{Beschreibung:} Hiermit wird ein \mumie-Subelement angegeben.
+%Der (Sub-)Elementtyp wird durch die Metainformationen spezifiziert.
+
+\emph{Kinder:} Genau ein \texttt{<title/>} und mindestens ein
+\texttt{<part/>}-Knoten.
+
+
+\section{\textbf{KC1${}_{\text{T}}$} Titel-Knoten}
+
+\emph{Knoten-Name:} \texttt{<title> ... </title>}
+
+\emph{Attribute:} --
+
+\emph{Beschreibung:} Titel des Dokuments.
+
+\emph{Kinder:} Textknoten, \texttt{emph}- und \texttt{code}-Knoten,
+\texttt{comment}-Knoten.
+
+
+\section{\textbf{KC1} Hauptteile}
+
+\emph{Knoten-Name:} \texttt{<part> ... </part>}
+
+\emph{Attribute bei Element ``Motivation'' und Element ``Anwendung'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Element ``Definition'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+
+\begin{minipage}[t]{75mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{main}\\
+\texttt{layout}&\texttt{side-by-side|top-bottom}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+\begin{minipage}[t]{55mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\end{center}
+
+\emph{Attribute bei Element ``Theorem'' und Element ``Lemma'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+
+\begin{minipage}[t]{75mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{implication|equivalence}\\
+\texttt{layout}&\texttt{side-by-side|top-bottom}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+\begin{minipage}[t]{55mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\begin{minipage}[t]{55mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{impllist}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\begin{minipage}[t]{55mm}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{equivlist}\\
+\end{tabular}
+\end{center}
+\end{minipage}
+
+\end{center}
+
+\emph{Attribute bei Element ``Algorithmus'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{target}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{main}\\
+\texttt{layout}&\texttt{side-by-side|top-bottom}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Elementen ``Beweis'' und ``Herleitung''`:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{requirement}\\
+\end{tabular}
+\end{center}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{proofstep}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Elementen ``Motivation zu ...'',
+``Visualisierung'', ``Beispiel'', ``Tabelle'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{freeenv}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Element ``Bemerkungen'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{sloppy|alarm|reflection|associative}\\
+\end{tabular}
+\end{center}
+
+\emph{Attribute bei Sub-Element ``Historisches'':}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{subtype}&\texttt{abstract|mathactivity|histrelevance|picture|lifespan|freeenv}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Beispiel für alle Elemente und Subelemente
+
+\emph{Kinder:} Nur Unterteile.
+
+
+\section{\textbf{KC2} Unterteile}
+
+\emph{Knoten-Name:} \texttt{<subpart> ... </subpart>}
+
+% DE: Die Attribute haben sich als unnötig herausgestellt.
+%     Daher einstweilen auskommentiert.
+%\emph{Attribute:}
+%
+%\begin{center}
+%\begin{tabular}{l|l}
+%Name&Wertebereich\\ \hline \texttt{subtype}&\texttt{single|multi}\\
+%\texttt{maxnumber}&\textit{Zahl zwischen 1 und $n$, $n \in
+%\mathbb{N}\setminus\{0\}$}\\ \texttt{positionnumber}&\textit{Zahl
+%zwischen 1 und $n$}\\
+%\end{tabular}
+%\end{center}
+%
+%\emph{Beschreibung:} Beispiel für alle Elemente und Subelemente;\\
+%der subtype gibt an, ob der "ubergeordnete Part einen (\texttt{single})
+%oder mehrere (\texttt{multi}) Subparts hat.
+
+\emph{Erl"auterung:}
+Deklinationstabelle f"ur die Anzahl der Subparts zu einen Part,\\
+abgeleitet aus dem Inhalt-Style:
+
+\begin{center}
+\begin{tabular}{l|l|l}
+(Sub-)Element&subtype von (Sub-)Element&Wert maxnumber\\
+\hline
+Motivation u. Anwendung         &freeenv                        &1\\
+Definition                      &requirement                    &1\\
+Definition                      &main                           &2\\
+Definition                      &freeenv                        &1\\
+Theorem u. Lemma                &requirement                    &1\\
+Theorem u. Lemma                &implication u. equivalence     &2\\
+Theorem u. Lemma                &freeenv                        &1\\
+Theorem u. Lemma                &impllist u. equivlist          &1\\
+Algorithmus                     &requirement                    &1\\
+Algorithmus                     &target                         &1\\
+Algorithmus                     &main                           &$n$\\
+Beweis u. Herleitung            &requirement                    &1\\
+Beweis u. Herleitung            &proofstep                      &2\\
+Motivation zu... u. Beispiel    &freeenv                        &1\\
+Visualisierung u. Tabelle       &freeenv                        &1\\
+Bemerkungen                     &-- alle subtypes --            &1\\
+Historisches                    &abstract                       &1\\
+Historisches                    &mathactivity                   &$2n$\\
+Historisches                    &histrelevance                  &1\\
+Historisches                    &picture                        &1\\
+Historisches                    &lifespan                       &1\\
+Historisches                    &freeenv                        &1\\
+
+\end{tabular}
+\end{center}
+
+\emph{Kinder:} Text-Knoten, \texttt{<emph />}, \texttt{<code />},
+\texttt{<balloon />}, \texttt{<list />}, \texttt{<table />},
+\texttt{<notion />}, \texttt{<keyb />}, \texttt{<links />},
+\texttt{<comment />}, \texttt{<iabutton}, \texttt{<iaobject />}.
+
+\section{\textbf{KC3${}_{\text{IO}}$} Interaktions-Objekt-Knoten}
+
+\subsection{Interaktions-Objekt}\label{subsection_IO_Interaktions-Objekt}
+\emph{Knoten-Name:} \texttt{<iaobject> ... </iaobject>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{image|javaapplet|xmlactive|mboy|audio}\\
+\texttt{id}&\texttt{ID}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+Einbettung eines Interaktions-Objekts in die Seite. Wesentlich
+ist die Unterscheidung in die Typen \texttt{type}:
+\begin{description}
+\item[\texttt{image}] Das Objekt ist ein Bild.
+\item[\texttt{javaapplet}] Im wesentlichen Einbinden des Applets.
+\item[\texttt{xmlactive}] Angabe der möglichen XML-Stücke.
+%DE: muß noch konkretisiert werden.
+\item[\texttt{mboy}] Evtl.~Mumie (Hauptfigur) und Skarabäus (Begleiter).
+%DE: muß noch konkretisiert werden.
+\item[\texttt{audio}] Audio-Sequenz, die nicht direkt den angezeigten
+Text wiedergibt. Wird erstmal zurückgestellt.
+\end{description}
+
+\texttt{ID} ist die Objekt-ID.
+
+\emph{Kinder:} \texttt{<view />}, \texttt{<controls />},
+\texttt{<action />}
+
+
+
+\subsection{View}
+
+\emph{Knoten-Name:} \texttt{<view />}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:}
+Bettet das eigentliche Interaktions-Objekt ein. 
+Die für die Erstanzeige nötigen Parameter werden mit einer Parameterliste wie
+bei \texttt{<action/>} übergeben, darunter:
+
+\texttt{src} für externe Quellen (Dateiname), z.B.~für
+\texttt{type="{}image"} das Startbild, für~\texttt{type="{}javaapplet"}
+das Applet.
+
+\texttt{width} und \texttt{height} für Java-Applets.
+
+\emph{Kinder:} \texttt{<params />}
+
+
+\subsection{Steuerungselemente}
+
+\emph{Knoten-Name:} \texttt{<controls> ... </controls>}
+
+\emph{Attribute:}
+-
+
+\emph{Beschreibung:} Ist ein Container für die
+Steuerungselemente. Diese werden über \texttt{<controlbutton>}
+spezifiziert.
+
+\emph{Kinder:}
+\texttt{<controlbutton />}
+
+
+\subsection{Kontroll-Buttons}
+
+\emph{Knoten-Name:} \texttt{<controlbutton> ... </controlbutton>}
+
+\emph{Attribute:}
+
+für Interaktions-Objekt vom Typ \texttt{image}:
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{flip|show\_all|start|stop|next|previous}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Im Unterschied zu \texttt{<iabutton>} tritt
+\texttt{<controlbutton>} nicht im laufenden Text, sondern nur direkt beim
+Interaktions-Objekt auf. 
+
+Der Typ wird durch \texttt{<type>} angegeben. Je nach Typ können auch
+Parameter übergeben werden. Die beim Klick auf den Button auszulösende
+Aktion wird durch \texttt{<action />} spezifiziert.
+
+\emph{Kinder:}  Parameter und \texttt{<action />}
+
+\subsection{Aktionen}
+
+\emph{Knoten-Name:} \texttt{<action> ... </action>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{jslib}&\texttt{ID}\\
+\texttt{jsfunction}&\texttt{STRING}\\
+\texttt{onevent}&\texttt{STRING}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Eine Aktion wird durch den angegebenen Event
+\texttt{onevent} aufgerufen und ruft dann ihrerseits die Funktion
+\texttt{jsfunction} aus der JavaScript Bibliothek \texttt{jslib}
+mit den Parametern \texttt{<params />} auf. 
+
+\emph{Kinder: } Parameter, über diese werden dann auch die Inhalte
+(für Bildsequenzen die einzelnen Bilder, für XML-Bausteine die
+einzelnen XML-Stücke) angegeben.
+
+
+\subsection{Parameterliste}
+
+\emph{Knoten-Name:} \texttt{<params> ... </params>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Nimmt die einzelnen Parameter auf.
+
+\emph{Kinder:} \texttt{<param />}
+
+
+\subsection{Parameter}
+
+\emph{Knoten-Name:} \texttt{<param> ... </param>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{name}&\texttt{STRING}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+Der Wert des Parameters ist der Inhalt des Text-Knotens.
+
+\emph{Kinder:} Text-Knoten
+
+
+\section{\textbf{KC3${}_{\text{IB}}$} Interaktions-Button-Knoten und Events}
+
+\subsection{Interaktions-Button}\label{subsection_IB_Interaktions-Button}
+
+\emph{Knoten-Name:} \texttt{<iabutton> ... </iabutton>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{onestep|animation}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Hiermit wird eine Instanz von Interaktions-Button
+erzeugt. Es gibt zwei Typen:
+\begin{description}
+\item[onestep] Wird für Aktionen verwendet, die wie ein einzelner
+Schritt erscheinen (keine für den Benutzer erkennbare zeitliche
+Dauer). Beispiele: Auswechseln zweier Bilder, Öffnen eines Fensters,
+Schlagartiges (ohne Bewegung) Einstellen einer bestimmten Position
+eines Objektes in einem JavaApplet.
+
+Bei nochmaligen Klick auf diesen Button wird die Aktion in der Regel
+zurückgenommen.
+
+\item[animation] Wird für Animationssequenzen und zusammengesetzte,
+komplexe oder automatische Abläufe verwendet (für den Benutzer ist
+eine zeitliche Dauer erkennbar). Beispiele: Film, Bildfolge,
+Schrittweises automatisches Lösen eines linearen
+Gleichungssystems. Wird während des Abspielens der Animation erneut
+der Button geklickt, so wird auch die entsprechende Aktion ein
+weiteres Mal aufgerufen. Das entsprechende Event-Handling (etwa
+Start/Pause/Weiter der Bildsequenz) muß dann von der Aktion bearbeitet
+werden.
+\end{description}
+
+\emph{Kinder:} \texttt{<text />}, \texttt{<action />}
+
+
+\subsection{Events}
+
+\emph{Knoten-Name:} \texttt{<onevent> ... </onevent>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{sleeping|load\_page|close\_page|quit\_browser|error|warning}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Ordnet dem jeweiligen Event eine oder mehrer
+Aktionen zu.
+
+\emph{Kinder:} \texttt{<action />} zum Aufruf der entsprechenden
+Aktionen bei Eintritt des angebenen Ereignisses.
+
+
+\subsection{Verweistext}
+
+\emph{Knoten-Name:} \texttt{<text> ... </text>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Enthält den Text (vor dem Button), der als Verweis
+unterlegt sein soll.
+
+\emph{Kinder:} -
+
+
+\section{\textbf{KC3${}_{\text{LM}}$} Logische MarkUp-Knoten}
+
+\subsection{Hervorhebung}\label{subsection_LM_Hervorhebung}
+
+\emph{Knoten-Name:} \texttt{<emph> ... </emph>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird hervorgehoben.
+
+\emph{Kinder:}   Text-Knoten, \texttt{<comment />}.
+
+
+\subsection{Fachbegriffe, Definitionsbegriffe}\label{subsection_LM_Fachbegriffe}
+
+\emph{Knoten-Name:} \texttt{<notion> ... </notion>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird hervorgehoben.
+
+\emph{Kinder:} nur Text-Knoten, \texttt{<comment />}.
+
+
+\subsection{Code-Knoten}\label{subsection_LM_Code}
+
+\emph{Knoten-Name:} \texttt{<code> ... </code>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird als Programm-Code (Stil)
+ausgegeben.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<balloon />}, \texttt{<comment />}.
+
+
+\subsection{Tastatur-Eingabe}\label{subsection_LM_Tastatur}
+
+\emph{Knoten-Name:} \texttt{<keyb> ... </keyb>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Der Text-Knoten wird als Tastatur-Eingabe (Stil)
+ausgegeben.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<balloon />}, \texttt{<comment />}.
+
+
+\subsection{Ballon}\label{subsection_LM_Ballon}
+
+\emph{Knoten-Name:} \texttt{<balloon> ... </balloon>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Ist der Mauszeiger "uber dem \texttt{bln\_anchor}-Kindknoten, so wird
+der Inhalt des \texttt{bln\_content}-Kindknotens in einem Popup-Fenster nahe dem Mauszeiger
+dargestellt.
+
+\emph{Kinder:} Genau ein \texttt{bln\_anchor} und ein \texttt{bln\_content}-Knoten.
+
+\subsubsection{Ballon-Anker}\label{subsection_LM_Ballon-Anker}
+
+\emph{Knoten-Name:} \texttt{<bln\_anchor> ... </bln\_anchor>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Aktiver Text f"ur ein Balloon-Popup-Fenster.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<code />}.
+
+\subsubsection{Ballon-Inhalt}\label{subsection_LM_Ballon-Inhalt}
+
+\emph{Knoten-Name:} \texttt{<bln\_content> ... </bln\_content>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Inhalt eines Balloon-Popup-Fensters.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<code />}.
+
+\subsection{Listen}
+
+\subsubsection{Beispiel}\label{subsubsection_LM_Listen_Beispiel}
+
+\begin{verbatim}
+  <list numbering="no" class="circle">
+    <item>
+      ...
+    </item>
+  </list>
+\end{verbatim}
+
+\subsubsection{Liste}\label{subsubsection_LM_Listen_Liste}
+
+\emph{Knoten-Name:} \texttt{<list> ... </list>}
+
+\emph{Attribute:}
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{numbering}&\texttt{no|yes}\\
+\texttt{class}&\texttt{normal|bullet|circle|square bzw. arabic|roman|Roman|alph|Alph|greek}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Listenknoten.
+\begin{description}
+\item[\textit{numbering}] Gibt an, ob es sich um eine einfache (= \texttt{no})
+oder eine nummerierte Liste (= \texttt{yes}) handelt.
+\item[\textit{class}] Spezifiziert für eine einfache Liste optional, welches Symbol
+den einzelnen Punkten der Liste vorangestellt werden soll. Folgende Symbole
+sind verfügbar:
+
+    \begin{center}
+    \begin{tabular}[c]{|c|c|c|c|c|}
+        \hline
+        Symbol&Darstellung\\
+        \hline
+        \texttt{normal}& $\cdot$ \\
+        \texttt{bullet}& $\bullet$ \\
+        \texttt{circle}& $\circ$ \\
+        \texttt{square}& $\diamond$ \\
+        \hline
+    \end{tabular}
+    \end{center}
+
+Spezifiziert für eine nummerierte Liste optional, in welchem Stil die Liste
+nummeriert werden soll. Folgende Möglichkeiten stehen zur Verfügung:
+
+    \begin{center}
+    \begin{tabular}[c]{|c|c|c|c|c|}
+        \hline
+        Style&Beschreibung&Darstellung (z.B.: Punkt 14)\\
+        \hline
+        \texttt{arabic}& arabische Zahlen & 14.\\
+        \texttt{roman}& römische Zahlen (klein) & xiv.\\
+        \texttt{Roman}& römische Zahlen (groß) & XIV.\\
+        \texttt{alph}& alphabetisch (Kleinbuchstaben) & n.\\
+        \texttt{Alph}& alphabetisch (Großbuchstaben) & N.\\
+        \texttt{greek}& griechisch (Kleinbuchstaben) & $\xi$. \\
+        \hline
+    \end{tabular}
+    \end{center}
+\end{description}
+
+\emph{Kinder:} \texttt{<item />} \textit{siehe \ref{subsubsection_LM_Listen_Listeneintrag}}.
+
+\subsubsection{Listeneintrag}\label{subsubsection_LM_Listen_Listeneintrag}
+
+\emph{Knoten-Name:} \texttt{<item> ... </item>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Einzelner Punkt einer Liste.
+
+\emph{Kinder:}\\
+\texttt{<list />} \textit{siehe \ref{subsubsection_LM_Listen_Liste}}.\\
+\texttt{<emph />} \textit{siehe \ref{subsection_LM_Hervorhebung}}.\\
+\texttt{<code />} \textit{siehe \ref{subsection_LM_Code}}.\\
+\texttt{<balloon />} \textit{siehe \ref{subsection_LM_Ballon}}.\\
+\texttt{<iaobject />} \textit{siehe \ref{subsection_IO_Interaktions-Objekt}}.\\
+\texttt{<iabutton />} \textit{siehe \ref{subsection_IB_Interaktions-Button}}.\\
+\texttt{<notion />} \textit{siehe \ref{subsection_LM_Fachbegriffe}}.\\
+\texttt{<links />} \textit{siehe \ref{subsection_LM_Links}}.\\
+\texttt{<comment />} \textit{siehe \ref{subsection_LM_Kommentare}}.\\
+und Text-Knoten.
+
+
+%---------------------------------------------------------------
+\newpage
+\subsection{Tabelle}
+
+\subsubsection{Beispiel}\label{subsubsection:table-example}
+
+\begin{verbatim}
+   ...
+  <table align="center">
+      <thead>
+        <trow>
+          <tcell>Inhalte Kopf 11 </tcell><tcell>12 </tcell><tcell>13 </tcell>
+        </trow>
+      </thead>
+      <tbody>
+        <trow>
+          <tcell class="plhld" valign="top" align="center" rowspan="2">11 </tcell>
+          <tcell class="keyb" valign="bottom">12 </tcell>
+          <tcell valign="baseline" align="justify">13 </tcell>
+        </trow>
+        <trow>
+          <tcell class="keyb" valign="bottom">22 </tcell>
+          <tcell valign="baseline" align="justify">23 </tcell>
+        </trow>
+        <trow>
+          <tcell class="code" valign="top" align="center">41 </tcell>
+          <tcell class="keyb" valign="bottom" colspan="2">42 43 </tcell>
+        </trow>
+      </tbody>
+  </table>
+   ...
+\end{verbatim}
+
+%--------------------------------------------------------------------------------
+
+\subsubsection{Tabelle}\label{subsubsection:table-table}
+
+\begin{verbatim}
+  <table class="plhld" valign="middle" align="center">
+     ...
+  </table> 
+\end{verbatim}
+
+\emph{Knoten-Name:} \texttt{<table> ... </table>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{class}&\texttt{siehe Beschreibung}\\
+\texttt{align}&\texttt{siehe Tabelle \ref{subsubsection:table-param}}\\
+\texttt{valign}&\texttt{siehe Tabelle \ref{subsubsection:table-param}}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Umgebung einer Tabelle.
+
+\begin{description}
+\item[\texttt{class}] Name der anzuwendenen CSS-Klasse. Das Stylesheet (CSS) muß extra in das XHTML-File eingebunden werden.
+\item[\texttt{align}] Spezifiziert die horizontale Ausrichtung der Tabelle.
+\item[\texttt{valign}] Spezifiziert die vertikale Ausrichtung der Tabelle.
+\end{description}
+
+\emph{Kinder:} -
+
+\subsubsection{Zeilen}\label{subsubsection:table-line}
+
+\begin{verbatim}
+ <trow>
+   <tcell>Inhalte Zelle 1 </tcell><tcell>Inhalte Zelle 2 </tcell>
+ </trow>
+\end{verbatim}
+
+\emph{Knoten-Name:} \texttt{<trow> ... </trow>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Jede Zeile der Tabelle wird von \texttt{<trow> ... </trow>} eingeschlossen.
+
+\emph{Kinder:} -
+
+\subsubsection{Zellen}\label{subsubsection:table-cell}
+
+\begin{verbatim}
+  ...
+  <trow>
+    <tcell class="plhld" rowspan="2">11 </tcell><tcell>12 </tcell><tcell>13 </tcell>
+  </trow>  
+  ...
+  <trow>
+    <tcell>41 </tcell><tcell class="plhld" colspan="2">42 43 </tcell>
+  </trow>
+  ...
+\end{verbatim}
+
+\emph{Knoten-Name:} \texttt{<tcell> ... </tcell>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{class}&\texttt{siehe Beschreibung}\\
+\texttt{align}&\texttt{siehe Tabelle \ref{subsubsection:table-param}}\\
+\texttt{valign}&\texttt{siehe Tabelle \ref{subsubsection:table-param}}\\
+\texttt{colspan}&\texttt{VALUE}\\
+\texttt{rowspan}&\texttt{VALUE}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Enthält den Inhalt einer Zelle.
+
+\begin{description}
+\item[\texttt{class}] Name der anzuwendenen CSS-Klasse. Das Stylesheet (CSS) muß extra in das XHTML-File eingebunden werden.
+\item[\texttt{align}] Spezifiziert die horizontale Ausrichtung der Zellinhalte
+in Spalten. Das Argument ist eine Reihe von Formatierungskürzeln, in der jedes
+Kürzel der Reihe nach genau einer Spalte zugeordnet wird. (Dazu: Siehe unten.)
+\item[\texttt{valign}] Spezifiziert die vertikale Ausrichtung der Zellinhalte
+in Spalten. Das Argument ist eine Reihe von Formatierungskürzeln, in der jedes
+Kürzel der Reihe nach genau einer Spalte zugeordnet wird. (Dazu: Siehe unten.)
+\item[\texttt{colspan}] Verbindung benachbarter Zellen in Zeilen, wobei \texttt{VALUE} 
+die Anzahl der zu verbindenden Zellen angibt. 
+\item[\texttt{rowspan}] Verbindung benachbarter Zellen in Spalten, wobei \texttt{VALUE} 
+die Anzahl der zu verbindenden Zellen angibt. 
+\end{description}
+
+\emph{Kinder:} -
+
+\subsubsection{Angaben für Ausrichtung}\label{subsubsection:table-param}
+
+Die folgende Tabelle gibt eine Übersicht über die möglichen Angaben zur Formatierung
+der Tabelle und der in ihr enthaltenen Zellen. Alle Angaben sind sowohl für die
+Tabellen- als auch für die Zellausrichtung verfügbar.
+
+    \begin{center}
+    \begin{tabular}[c]{|c|c|}
+        \hline
+        \texttt{align} &\texttt{valign}\\
+        \hline
+        \textit{default} &\textit{default}\\
+        \textit{center}  &\textit{top}\\
+        \textit{left}    &\textit{middle}\\
+        \textit{right}   &\textit{bottom}\\
+        \textit{justified}&\textit{baseline}\\
+        \hline
+    \end{tabular}
+    \end{center}
+
+\subsubsection{Tabellenkopf}\label{subsubsection:table-parthead}
+
+\begin{verbatim}
+      <thead>
+        <trow>
+          <tcell> head </tcell>
+        </trow>
+      </thead>
+\end{verbatim}
+
+\emph{Knoten-Name:} \texttt{<thead> ... </thead>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Leitet den Abschnitt \texttt{thead} ein.
+
+\emph{Kinder:} -
+
+\subsubsection{Tabellhauptteil}\label{subsubsection:table-partbody}
+
+\begin{verbatim}
+      <tbody>
+        <trow>
+          <tcell> body </tcell>
+        </trow>
+      </tbody>
+\end{verbatim}
+
+\emph{Knoten-Name:} \texttt{<tbody> ... </tbody>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Leitet den Abschnitt \texttt{tbody} ein.
+
+\emph{Kinder:} -
+
+\subsubsection{Tabellenfuß}\label{subsubsection:table-partfoot}
+
+\begin{verbatim}
+      <tfoot>
+        <trow>
+          <tcell> foot </tcell>
+        </trow>
+      </tfoot>
+\end{verbatim}
+
+\emph{Knoten-Name:} \texttt{<tfoot> ... </tfoot>}
+
+\emph{Attribute:} -
+
+\emph{Beschreibung:} Leitet den Abschnitt \texttt{tfoot} ein.
+
+\emph{Kinder:} -
+
+%-----------------------------------------------------------
+
+\subsection{Links}\label{subsection_LM_Links}
+
+\emph{Knoten-Name:} \texttt{<links> ... </links>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{type}&\texttt{internal|external}\\
+\texttt{target}&\texttt{reference}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:} Der Text-Knoten wird mit ``reference'' verlinkt.
+
+\emph{Kinder:} Text-Knoten und \texttt{<emph />}, \texttt{<code />}.
+
+\subsection{Kommentare}\label{subsection_LM_Kommentare}
+
+\emph{Knoten-Name:} \texttt{<comment> ... </comment>}
+
+\emph{Attribute:}
+
+\emph{Beschreibung:} F"ur Autorenkommentare (inhaltlicher Natur): Der
+Knoten ist im Ergebnis unsichtbar. ( \texttt{<comment />} ist nicht
+zul"assig in ``technischen'' Umgebungen.)
+
+\emph{Kinder:} -
+
+
+\end{document}
+
+
+
+%template
+\subsection{XXX-Knoten}
+
+\emph{Knoten-Name:} \texttt{<xxx> ... </xxx>}
+
+\emph{Attribute:}
+
+\begin{center}
+\begin{tabular}{l|l}
+Name&Wertebereich\\
+\hline
+\texttt{}&\texttt{}\\
+\end{tabular}
+\end{center}
+
+\emph{Beschreibung:}
+
+\emph{Kinder:}

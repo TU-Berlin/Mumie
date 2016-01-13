@@ -1,0 +1,123 @@
+\documentclass{generic}
+
+\input{../../resources/macros.tex}
+
+\begin{document}
+
+\title{Dokumente}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: documents.tex,v 1.4 2007/07/25 15:40:02 rassy Exp $}
+
+\tableofcontents
+
+\section{\lang{de}{Dokumente und Pseudo-Dokumente}\lang{en}{Documents and pseudo-documents}}
+
+\lang{de}{\emph{Dokumente} sind in Mumie Einheiten mit textuellem oder binärem
+  Inhalt, z.B. (mathematische) Sätze, Definitionen, Bilder oder Java-Applets.
+  Neben Dokumenten gibt es in Mumie auch sogenannte \emph{Pseudo-Dokumente}.
+  Das sind Einheiten, die sich formal wie Dokumente behandeln lassen, aber der
+  anschaulichen Bedeutung des Begriffes nach keine wirklichen Dokumente sind
+  und i.d.R. auch keinen Inhalt haben. Beispiele: Benutzer, Benutzergruppen,
+  Semester.
+
+  Jedes Dokument oder Pseudo-Dokument hat einen \emph{Typ}. Abschnitt
+  \ref{types} stellt die möglichen Typen vor. Darüberhinaus besitzt jedes
+  Dokument oder Pseudo-Dokument einen Satz von \emph{Metainformationen}. Welche
+  Metainformationen es gibt, hängt vom Typ ab. Im Kapitel
+  "\href{metainfos.xhtml}{Metainformationen}" wird ausführlich darauf
+  eingegenagen.}
+
+\section{\lang{de}{Generische Dokumente}\lang{en}{Generic
+    documents}}\label{generic_documents}
+
+\lang{de}{Eine besondere Art von Dokumenten sind die sogenannten
+  \emph{generischen Dokumente}. Sie haben keinen eigenen Inhalt, sondern
+  stellen gewissermassen Platzhalter für "reale" Dokumente dar. Diese
+  Platzhalter können in unterschiedlichen Kontexten durch unterschiedliche
+  reale Dokumente implementiert werden. Generische Dokumente dienen in Mumie
+  zur Realisierung der folgenden beiden Konzepte:
+
+  \begin{itemize}
+    \item \emph{Themes:} Um dem Benutzer denselben Inhalt in verschiedenen
+      Layouts anzubieten, sind in Mumie verschiedene "Themes" möglich, ähnlich
+      wie bei modernen Desktops. Umgesetzt wird dies mit Hilfe generischer
+      Dokumente, die in verschiedenen Themes durch verschiedene reale
+      Dokumente implementiert werden.
+    \item \emph{Mehrsprahigkeit:} Mumie ist in der Lage, dem Benutzer denselben
+      Inhalt in verschiedenen Sprachen anzubieten. Umgesetzt wird dies mit
+      Hilfe generischer Dokumente, die in verschiedenen Sprachen durch
+      verschiedene reale Dokumente implementiert werden.
+  \end{itemize}
+}
+
+\section{\lang{de}{Typen}\lang{en}{Types}}\label{types}
+
+\lang{de}{Jedes Dokument oder Pseudo-Dokument hat einen bestimmten
+  \emph{Typ}. Typen werden durch Namen (intern auch durch ganze Zahlen)
+  charakterisiert. 
+
+  Die folgende Tabelle listet alle Dokument-Typen auf:
+
+  \begin{table}
+    \head
+      Typ & Beschreibung \\
+    \body
+      \code{applet} & Ein Java-Applet \\
+      \code{course} & Ein Kurs \\
+      \code{course_section} & Ein Kursabschnitt \\
+      \code{css_stylesheet} & Ein CSS-Stylesheet \\
+      \code{element} & Ein Inhaltsbaustein \\
+      \code{flash} & Ein Flash-Movie \\
+      \code{image} & Ein Bild \\
+      \code{jar} & Ein Java-Arvhiv \\
+      \code{java_class} & Eine Java-Klasse\\
+      \code{js_lib} & Eine JavaScript-Bibliothek\\
+      \code{movie} & Ein Film\\
+      \code{page} & Eine Webseite \\
+      \code{problem} & Eine Aufgabe \\
+      \code{sound} & Ein Audi-Dokument\\
+      \code{subelement} & Ein Inhalts-Unterbaustein \\
+      \code{summary} & Eine Zusammenfassung \\
+      \code{worksheet} & Ein Aufgabenblatt \\
+      \code{xsl_stylesheet} & Ein XSL-Stylesheet\\
+      \code{generic_css_stylesheet} & Ein generisches CSS-Stylesheet \\
+      \code{generic_element} & Ein generischer Inhaltsbaustein \\
+      \code{generic_image} & Ein generisches Bild \\
+      \code{generic_page} & Eine generische Webseite \\
+      \code{generic_problem} & Eine generische Aufgabe\\
+      \code{generic_subelement} & Ein generischer Inhalts-Unterbaustein \\
+      \code{generic_summary} & Eine generische Zusammenfassung  \\
+      \code{generic_xsl_stylesheet} & Ein generisches XSL-Stylesheet
+  \end{table}
+
+  Dokumente eines mit \code{generic_} beginnenden Typs sind generische
+  Dokumente. Alle anderen sind nicht-generische Dokumente. Wir sprechen auch
+  kurz von generischen bzw. nicht-generischen Dokument-Typen.
+
+  Zu jedem generischen Dokument-Typ gibt es einen entsprechenden
+  nicht-generischen, der durch Weglassen des \code{generic_} ensteht. Ein
+  generisches Dokument kann nur durch Dokumente des entsprechenden
+  nicht-generischen Typs implementiert werden.
+
+  Die folgende Tabelle listet alle Pseudo-Dokument-Typen auf:
+
+  \begin{table}
+    \head
+      Typ & Beschreibung \\
+    \body
+      \code{class} & Eine Lehrveranstaltung\\
+      \code{language} & Eine Sprache \\
+      \code{section} & Eine Art Verzeichnis \\
+      \code{semester} & Ein Semester \\
+      \code{theme} & Ein Theme im Sinne des Theme-Konzepts (s.o.) \\
+      \code{tutorial} & Ein Tutorium \\
+      \code{user} & Ein Benutzer \\
+      \code{user_group} & Eine Benutzer-Gruppe \\
+  \end{table}
+}
+
+\end{document}

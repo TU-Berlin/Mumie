@@ -1,0 +1,158 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<css:def id="no-space" value="0pt 0pt 0pt 0pt"/>
+
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="scriptsize-rel" value="80%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<css:def id="text-color" value="#000000"/>
+<css:def id="fill-color" value="#EAEAEA"/>
+<css:def id="stroke-color" value="#949494"/>
+<css:def id="lighter-text-color" value="#303030"/>
+
+<css:rule selector='html, *.embedded-html'>
+  <css:property name='font-family' value='Albany AMT, Verdana, Helvetica, sans-serif'/>
+  <css:property name='font-size' ref='normalsize'/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' ref="no-space"/>
+</css:rule>
+  
+<css:rule selector='div.tooltip-position-anchor'>
+  <css:property name='border-style' value='none'/>
+  <css:property name='margin' value='0px 0px 0px 0px'/>
+  <css:property name='padding' value='0px 0px 0px 0px'/>
+  <css:property name='width' value='150px'/>
+</css:rule>
+
+<css:rule selector='div.tooltip'>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-color' value='#000000'/>
+  <css:property name='background-color' value='#fff8ea'/>
+  <css:property name='padding' value='2px 2px 2px 2px'/>
+  <css:property name='font-size' value='11pt'/>
+  <css:property name='font-family' value='Helvetica, Arial, sans-serif'/>
+  <css:property name='visibility' value='hidden'/>
+  <css:property name='cursor' value='default'/>
+</css:rule>
+
+
+<css:rule selector='div.button-tooltip'>
+  <css:property name='padding' value='2px 2px 2px 2px'/>
+</css:rule>
+
+<css:rule selector='div.label'>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='border-color' value='#704c4c'/>
+  <css:property name='background-color' value='#d4dce8'/>
+  <css:property name='padding' value='2px 2px 2px 2px'/>
+  <css:property name='font-size' value='10pt'/>
+  <css:property name='font-family' value='Helvetica, Arial, sans-serif'/>
+  <css:property name='visibility' value='hidden'/>
+  <css:property name='max-width' value='120px'/>
+  <css:property name='visibility' value='hidden'/>
+</css:rule>
+
+<css:rule selector='img.close-tooltip-button, img.expand-tooltip-button, img.collapse-tooltip-button'>
+  <css:property name='margin' value='1px 1px 1px 1px'/>
+  <css:property name='visibility' value='inherit'/>
+</css:rule>
+
+<css:rule selector="div.buttons">
+  <css:property name="margin" value="1px 1px 1px 1px"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="text-align" value="center"/>
+</css:rule>
+
+<css:rule selector="div.buttons a + a">
+  <css:property name="margin-left" value="1em"/>
+</css:rule>
+
+<css:rule selector='a.button-small'>
+  <css:property name='font-size' ref='Small-rel'/>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='color' ref='text-color'/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name='padding' value='0.2ex 0.5em 0.2ex 0.5em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name='cursor' value='pointer'/>
+  <css:property name='white-space' value='nowrap'/>
+</css:rule>
+
+<css:rule selector='a.button-small:hover'>
+  <css:property name='background-color' value='#f5f5f5'/>
+</css:rule>
+
+<css:rule selector="table.crslist">
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="margin" value="1em 1em 1em 1em"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.crslist table.subitems">
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.crslist td">
+  <css:property name="border-style" value="none"/>
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.crslist td.icon">
+  <css:property name="width" value="35px"/>
+  <css:property name="height" value="35px"/>
+  <css:property name="text-align" value="center"/>
+  <css:property name="vertical-align" value="middle"/>
+</css:rule>
+
+<css:rule selector="table.crslist td">
+  <css:property name="padding" value="0.2em 0.5em 0.2em 0.5em"/>
+</css:rule>
+
+<css:rule selector="table.subitems td.icon">
+  <css:property name="width" value="25px"/>
+  <css:property name="height" value="25px"/>
+</css:rule>
+
+</css:style>

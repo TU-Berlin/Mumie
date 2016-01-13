@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_edit_user.content.xml,v 1.7 2009/03/07 23:59:31 rassy Exp $
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The mode of the page ("form" or "feedback"): -->
+<xsl:variable name="mode">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">mode</xsl:with-param>
+    <xsl:with-param name="default">form</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Which task had been performed ("created-user" or "modified-user"; feedback mode
+   only) -->
+<xsl:variable name="performed-task">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">performed-task</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Size of the text fields: -->
+<xsl:variable name="text-field-size">20</xsl:variable>
+
+<!-- Id of the edited user (or -1 if new user): -->
+<xsl:variable name="user-id" select="/mumie:user/@id"/>
+
+<!-- Whether the edited user is a new user: -->
+<xsl:variable name="new-user">
+  <xsl:choose>
+    <xsl:when test="$user-id &gt; 0">no</xsl:when>
+    <xsl:otherwise>yes</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Title and headline of the page: -->
+<xsl:variable name="title">
+  <xsl:choose>
+    <xsl:when test="$new-user = 'yes'">
+      <xsl:value-of select="$i18n-new-user"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$i18n-edit-user"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<xsl:variable name="fb-message">
+  <xsl:choose>
+    <xsl:when test="$performed-task = 'created-user'">
+      <xsl:value-of select="$i18n-created-new-user"/>
+    </xsl:when>
+    <xsl:when test="$performed-task = 'modified-user'">
+      <xsl:value-of select="$i18n-modified-user"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- All user groups: -->
+<xsl:variable
+  name="all-user-groups"
+  select="//mumie:dynamic_data/mumie:store/mumie:pseudo_documents[@type_name='user_group']/mumie:user_group"/>
+
+<!-- All classes: -->
+<xsl:variable
+  name="all-classes"
+  select="//mumie:dynamic_data/mumie:store/mumie:pseudo_documents[@type_name='class']/mumie:class"/>
+
+<!-- All tutorials: -->
+<xsl:variable
+  name="all-tutorials"
+  select="//mumie:dynamic_data/mumie:store/mumie:pseudo_documents[@type_name='tutorial']/mumie:tutorial"/>
+
+<!-- The groups the edited user is currently a member of: -->
+<xsl:param name="current-user-groups" select="/mumie:user/mumie:user_groups/mumie:user_group"/>
+
+<!-- The tutorials the edited user is currently a member of: -->
+<xsl:param name="current-tutorials" select="/mumie:user/mumie:tutorials/mumie:tutorial"/>
+
+<!-- The groups currently having read permission on the edted user: -->
+<xsl:param name="current-read-permissions"
+           select="/mumie:user/mumie:read_permissions/mumie:user_group"/>
+
+<!-- The groups currently having write permission on the edted user: -->
+<xsl:param name="current-write-permissions"
+           select="/mumie:user/mumie:write_permissions/mumie:user_group"/>
+
+<!-- Whether the edited user is a student: -->
+<xsl:variable name="is-student">
+  <xsl:choose>
+    <xsl:when test="$current-user-groups[mumie:name='students']">yes</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the edited user is a tutor: -->
+<xsl:variable name="is-tutor">
+  <xsl:choose>
+    <xsl:when test="$current-user-groups[mumie:name='tutors']">yes</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the edited user is a lecturer: -->
+<xsl:variable name="is-lecturer">
+  <xsl:choose>
+    <xsl:when test="$current-user-groups[mumie:name='lecturers']">yes</xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Path of the default section: -->
+<xsl:variable name="default-section-path">org/users</xsl:variable>
+
+<!-- Mode of the pure-name input field: -->
+<xsl:variable name="pure-name-mode">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">pure-name-mode</xsl:with-param>
+    <xsl:with-param name="default">auto</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Mode of the section input field: -->
+<xsl:variable name="section-mode">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">section-mode</xsl:with-param>
+    <xsl:with-param name="default">auto</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Mode of the sync-id input field: -->
+<xsl:variable name="sync-id-mode">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">sync-id-mode</xsl:with-param>
+    <xsl:with-param name="default">auto</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Mode of the sync-home input field: -->
+<xsl:variable name="sync-home-mode">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">sync-home-mode</xsl:with-param>
+    <xsl:with-param name="default">auto</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Error message, if any: -->
+<xsl:variable name="error">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">error</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Total number of user groups: -->
+<xsl:variable name="group-count" select="count($all-user-groups)"/>
+
+<!-- Number of columns of the groups table: -->
+<xsl:variable name="group-cols-count">4</xsl:variable>
+
+<!-- Number of rows of the groups table: -->
+<xsl:variable name="group-rows-count" select="ceiling($group-count div $group-cols-count)"/>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript">
+
+  var isStudent = <!-- 
+  --><xsl:choose>
+       <xsl:when test="$is-student = 'yes'">true;</xsl:when>
+       <xsl:otherwise>false;</xsl:otherwise>
+     </xsl:choose>
+
+  var isTutor = <!-- 
+  --><xsl:choose>
+       <xsl:when test="$is-tutor = 'yes'">true;</xsl:when>
+       <xsl:otherwise>false;</xsl:otherwise>
+     </xsl:choose>
+
+  var isLecturer = <!-- 
+  --><xsl:choose>
+       <xsl:when test="$is-lecturer = 'yes'">true;</xsl:when>
+       <xsl:otherwise>false;</xsl:otherwise>
+     </xsl:choose>
+
+  function createPureName ()
+  {
+    var loginName = document.getElementById("INPUT.login-name").value;
+    var syncId = document.getElementById("INPUT.sync-id").value;
+    if ( loginName &amp;&amp; loginName != "" )
+      return "usr_" + loginName;
+    else if ( syncId &amp;&amp; syncId != "" )
+      return "usr_" + syncId;
+    else
+      return "";
+  }
+
+  function setDefaultPureNameIfNecessary ()
+  {
+    var mode = document.getElementById("INPUT.pure-name-mode").getAttribute("value");
+    if ( mode == "auto" )
+      document.getElementById("INPUT.pure-name").value = createPureName();
+  }
+
+  function toggleAutoset (name)
+  {
+    var inputField = document.getElementById("INPUT." + name);
+    var inputModeField = document.getElementById("INPUT." + name + "-mode");
+    var oldMode = inputModeField.getAttribute("value");
+    var newMode = (oldMode == "normal" ? "auto" : "normal");
+    if ( newMode == "normal" )
+      inputField.removeAttribute("disabled");
+    else
+      inputField.setAttribute("disabled", "disabled");
+    inputModeField.setAttribute("value", newMode);
+    return newMode;
+  }
+
+  function toggleAutosetPureName ()
+  {
+    var newMode = toggleAutoset("pure-name");
+    if ( newMode == "auto" )
+      document.getElementById("INPUT.pure-name").value = createPureName();
+  }
+
+  function toggleAutosetSection ()
+  {
+    var newMode = toggleAutoset("section");
+    if ( newMode == "auto" )
+      document.getElementById("INPUT.section").value = "<xsl:value-of select="$default-section-path"/>";
+  }
+
+  function toggleAutosetSyncId ()
+  {
+    toggleAutoset("sync-id");
+  }
+
+  function toggleAutosetSyncHome ()
+  {
+    toggleAutoset("sync-home");
+  }
+
+  function toggleGroupStudents ()
+  {
+    isStudent = !isStudent;
+    var tutorialsSection = document.getElementById("SECTION.tutorials");
+    tutorialsSection.style.display = (isStudent? "block" : "none");
+  }
+
+  function toggleGroupTutors ()
+  {
+    isTutor = !isTutor;
+    var tutorshipSection = document.getElementById("SECTION.tutor-of-tutorials");
+    tutorshipSection.style.display = (isTutor? "block" : "none");
+
+  }
+
+  function toggleGroupLecturers ()
+  {
+    isLecturer = !isLecturer;
+    var classesSection = document.getElementById("SECTION.lecturer-of-classes");
+    classesSection.style.display = (isLecturer? "block" : "none");
+  }
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Utilities                                                                    -->
+<!-- ================================================================================ -->
+
+<xsl:template name="text-field">
+  <xsl:param name="name"/>
+  <xsl:param name="default-value"/>
+  <xsl:param name="size" select="$text-field-size"/>
+  <xsl:param name="html-id" select="concat('INPUT.', $name)"/>
+  <xsl:param name="onblur"/>
+  <xsl:param name="mode"/>
+  <xsl:variable name="value">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name" select="$name"/>
+      <xsl:with-param name="default" select="$default-value"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <input id="{$html-id}"
+         type="text"
+         class="normal"
+         name="{$name}"
+         value="{$value}"
+         size="{$size}"
+         onfocus="setInputFocusStyle('{$html-id}')"
+         onblur="setInputNormalStyle('{$html-id}');{$onblur}">
+    <xsl:if test="$mode='auto'">
+      <xsl:attribute name="disabled">disabled</xsl:attribute>
+    </xsl:if>
+  </input>
+  <input id="INPUT.{$name}-mode" type="hidden" name="{$name}-mode" value="{$mode}"/>
+</xsl:template>
+
+<xsl:template name="password-field">
+  <xsl:param name="name"/>
+  <xsl:param name="size" select="$text-field-size"/>
+  <xsl:param name="html-id" select="concat('INPUT.', $name)"/>
+  <xsl:param name="onblur"/>
+  <input id="{$html-id}"
+         type="password"
+         name="{$name}"
+         size="{$size}"
+         onfocus="setInputFocusStyle('{$html-id}')"
+         onblur="setInputNormalStyle('{$html-id}');{$onblur}"/>
+</xsl:template>
+
+<xsl:template name="mark-as-mandatory">
+  <span class="mandatory-mark">*</span>
+</xsl:template>
+
+<xsl:template name="set-automatically-switch">
+  <xsl:param name="mode"/>
+  <xsl:param name="onclick"/>
+  <input type="checkbox" onclick="{$onclick}">
+    <xsl:if test="$mode='auto'">
+      <xsl:attribute name="checked">checked</xsl:attribute>
+    </xsl:if>
+  </input>
+  <xsl:value-of select="$i18n-set-automatically"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Error message                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template name="error-message">
+  <div class="error">
+    <h2><xsl:value-of select="$i18n-error"/></h2>
+    <xsl:choose>
+      <xsl:when test="$error='login-name-missing'">
+        <xsl:value-of select="$i18n-login-name-missing"/>
+      </xsl:when>
+      <xsl:when test="$error='invalid-characters-in-login-name'">
+        <xsl:value-of select="$i18n-invalid-characters-in-login-name"/>
+      </xsl:when>
+      <xsl:when test="$error='surname-missing'">
+        <xsl:value-of select="$i18n-surname-missing"/>
+      </xsl:when>
+      <xsl:when test="$error='first-name-missing'">
+        <xsl:value-of select="$i18n-first-name-missing"/>
+      </xsl:when>
+      <xsl:when test="$error='password-missing'">
+        <xsl:value-of select="$i18n-password-missing"/>
+      </xsl:when>
+      <xsl:when test="$error='invalid-characters-in-password'">
+        <xsl:value-of select="$i18n-invalid-characters-in-password"/>
+      </xsl:when>
+      <xsl:when test="$error='password-too-short'">
+        <xsl:value-of select="$i18n-password-too-short"/>
+      </xsl:when>
+      <xsl:when test="$error='repeated-password-missing'">
+        <xsl:value-of select="$i18n-repeated-password-missing"/>
+      </xsl:when>
+      <xsl:when test="$error='repeated-password-does-not-match'">
+        <xsl:value-of select="$i18n-repeated-password-does-not-match"/>
+      </xsl:when>
+    </xsl:choose>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main properties                                                              -->
+<!-- ================================================================================ -->
+
+<xsl:template name="main-properties">
+  <table class="grid">
+    <xsl:if test="$new-user='no'">
+      <tr>
+        <td>Id:</td>
+        <td>
+          <xsl:value-of select="/mumie:user/@id"/>
+          <input id="INPUT.id" type="hidden" name="id" value="{/mumie:user/@id}"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <!-- Surname: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-surname"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">surname</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:user/mumie:surname"/>
+        </xsl:call-template>
+        <xsl:call-template name="mark-as-mandatory"/>
+      </td>
+      <td/>
+    </tr>
+    <!-- First name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-first-name"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">first-name</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:user/mumie:first_name"/>
+        </xsl:call-template>
+        <xsl:call-template name="mark-as-mandatory"/>
+      </td>
+      <td/>
+    </tr>
+    <!-- Login name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-login-name"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">login-name</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:user/mumie:login_name"/>
+          <xsl:with-param name="onblur">setDefaultPureNameIfNecessary()</xsl:with-param>
+        </xsl:call-template>
+        <xsl:call-template name="mark-as-mandatory"/>
+      </td>
+      <td/>
+    </tr>
+    <!-- Password: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-password"/>:</td>
+      <td>
+        <xsl:call-template name="password-field">
+          <xsl:with-param name="name">password</xsl:with-param>
+        </xsl:call-template>
+        <xsl:call-template name="mark-as-mandatory"/>
+      </td>
+      <td/>
+    </tr>
+    <!-- Password repeated: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-password-repeated"/>:</td>
+      <td>
+        <xsl:call-template name="password-field">
+          <xsl:with-param name="name">password-repeated</xsl:with-param>
+        </xsl:call-template>
+        <xsl:call-template name="mark-as-mandatory"/>
+      </td>
+      <td/>
+    </tr>
+    <!-- Email: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-email"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">email</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:user/mumie:email"/>
+        </xsl:call-template>
+        <!-- Not mandatory -->
+      </td>
+      <td/>
+    </tr>
+    <!-- Pure name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-filename"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">pure-name</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:user/mumie:pure_name"/>
+          <xsl:with-param name="mode" select="$pure-name-mode"/>
+        </xsl:call-template>
+        <!-- Not mandatory -->
+      </td>
+      <td>
+        <xsl:call-template name="set-automatically-switch">
+          <xsl:with-param name="mode" select="$pure-name-mode"/>
+          <xsl:with-param name="onclick">toggleAutosetPureName()</xsl:with-param>
+        </xsl:call-template>
+      </td>
+    </tr>
+    <!-- Section: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-section"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">section</xsl:with-param>
+          <xsl:with-param name="default-value" select="$default-section-path"/>
+          <xsl:with-param name="mode" select="$section-mode"/>
+        </xsl:call-template>
+        <!-- Not mandatory -->
+      </td>
+      <td>
+        <xsl:call-template name="set-automatically-switch">
+          <xsl:with-param name="mode" select="$section-mode"/>
+          <xsl:with-param name="onclick">toggleAutosetSection()</xsl:with-param>
+        </xsl:call-template>
+      </td>
+    </tr>
+    <!-- Sync id: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-sync-id"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">sync-id</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:user/mumie:sync_id"/>
+          <xsl:with-param name="mode" select="$sync-id-mode"/>
+        </xsl:call-template>
+        <!-- Not mandatory -->
+      </td>
+      <td>
+        <xsl:call-template name="set-automatically-switch">
+          <xsl:with-param name="mode" select="$sync-id-mode"/>
+          <xsl:with-param name="onclick">toggleAutosetSyncId()</xsl:with-param>
+        </xsl:call-template>
+      </td>
+    </tr>
+    <!-- Sync home: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-sync-home"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">sync-home</xsl:with-param>
+          <xsl:with-param name="mode" select="$sync-home-mode"/>
+        </xsl:call-template>
+        <!-- Not mandatory -->
+      </td>
+      <td>
+        <xsl:call-template name="set-automatically-switch">
+          <xsl:with-param name="mode" select="$sync-home-mode"/>
+          <xsl:with-param name="onclick">toggleAutosetSyncHome()</xsl:with-param>
+        </xsl:call-template>
+      </td>
+    </tr>
+  </table>
+  <input type="hidden" name="form-stage" value="1"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Groups                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="groups">
+  <h2><xsl:value-of select="$i18n-groups"/></h2>
+  <p><xsl:value-of select="$i18n-groups-description"/></p>
+  <table class="grid">
+    <xsl:call-template name="groups-table-body"/>
+  </table>
+</xsl:template>
+
+<xsl:template name="groups-table-body">
+  <xsl:param name="row">1</xsl:param>
+  <xsl:variable name="first" select="(($row - 1) * $group-cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $group-cols-count -1"/>
+  <tr>
+    <xsl:for-each select="$all-user-groups">
+      <xsl:sort select="mumie:name"/>
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <xsl:variable name="group-name" select="mumie:name"/>
+        <td>
+	  <input type="checkbox" name="member-of-group-{@id}" value="yes">
+            <xsl:if test="$current-user-groups[mumie:name=$group-name]">
+              <xsl:attribute name="checked">checked</xsl:attribute>
+            </xsl:if>
+            <xsl:choose>
+              <xsl:when test="$group-name='students'">
+                <xsl:attribute name="onclick">toggleGroupStudents()</xsl:attribute>
+              </xsl:when>
+              <xsl:when test="$group-name='tutors'">
+                <xsl:attribute name="onclick">toggleGroupTutors()</xsl:attribute>
+              </xsl:when>
+              <xsl:when test="$group-name='lecturers'">
+                <xsl:attribute name="onclick">toggleGroupLecturers()</xsl:attribute>
+              </xsl:when>
+            </xsl:choose>
+          </input>
+          <xsl:value-of select="$group-name"/>
+        </td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  <xsl:if test="$row &lt; $group-rows-count">
+    <xsl:call-template name="groups-table-body">
+      <xsl:with-param name="row" select="$row + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Tutorials (as student)                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="tutorials">
+  <xsl:variable name="display">
+    <xsl:choose>
+      <xsl:when test="$is-student='yes'">block</xsl:when>
+      <xsl:otherwise>none</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <div id="SECTION.tutorials" class="optional" style="display:{$display}">
+    <h2><xsl:value-of select="$i18n-tutorials"/></h2>
+    <p><xsl:value-of select="$i18n-tutorials-description"/></p>
+    <table class="grid">
+      <xsl:for-each select="$all-classes">
+        <xsl:sort select="mumie:name"/>
+        <xsl:variable name="class-id" select="@id"/>
+        <xsl:variable name="current-tutorial" select="$current-tutorials[mumie:class/@id=$class-id]"/>
+        <tr>
+          <td><xsl:value-of select="mumie:name"/>:</td>
+          <td>
+            <select name="tutorial-for-class-{$class-id}">
+              <option value="void">
+                <xsl:if test="not($current-tutorial)">
+                  <xsl:attribute name="selected">selected</xsl:attribute>
+                </xsl:if>
+              </option>
+              <xsl:for-each select="$all-tutorials[mumie:class/@id=$class-id]">
+                <xsl:sort select="mumie:name"/>
+                <option value="{@id}">
+                  <xsl:if test="@id = $current-tutorial/@id">
+                    <xsl:attribute name="selected">selected</xsl:attribute>
+                  </xsl:if>
+                  <xsl:value-of select="mumie:name"/>
+                </option>
+              </xsl:for-each>
+            </select>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Tutor of tutorials                                                           -->
+<!-- ================================================================================ -->
+
+<xsl:template name="tutor-of-tutorials">
+  <xsl:variable name="display">
+    <xsl:choose>
+      <xsl:when test="$is-tutor='yes'">block</xsl:when>
+      <xsl:otherwise>none</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <div id="SECTION.tutor-of-tutorials" class="optional" style="display:{$display}">
+    <h2><xsl:value-of select="$i18n-tutor-of-tutorials"/></h2>
+    <p><xsl:value-of select="$i18n-tutor-of-tutorials-description"/></p>
+    <table class="grid align-top">
+      <xsl:for-each select="$all-classes">
+        <xsl:sort select="mumie:name"/>
+        <xsl:variable name="class-id" select="@id"/>
+        <tr>
+          <td>
+            <xsl:value-of select="mumie:name"/>:
+            <div class="tutorial-list">
+              <xsl:for-each select="$all-tutorials[mumie:class/@id=$class-id]">
+                <xsl:sort select="mumie:name"/>
+                <xsl:variable name="current-tutor" select="mumie:tutor/mumie:user"/>
+	        <input type="checkbox" name="tutor-of-tutorial-{@id}" value="yes">
+                  <xsl:if test="$current-tutor/@id = /mumie:user/@id">
+                    <xsl:attribute name="checked">checked</xsl:attribute>
+                  </xsl:if>
+                </input>
+                <xsl:value-of select="mumie:name"/>
+                <xsl:text> (</xsl:text>
+                <xsl:value-of select="$current-tutor/mumie:first_name"/>
+                <xsl:text> </xsl:text>
+                <xsl:value-of select="$current-tutor/mumie:surname"/>
+                <xsl:text> )</xsl:text>
+                <xsl:if test="position() != last()"><br/></xsl:if>
+              </xsl:for-each>
+            </div>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Lecturer of classes                                                          -->
+<!-- ================================================================================ -->
+
+<xsl:template name="lecturer-of-classes">
+  <xsl:variable name="display">
+    <xsl:choose>
+      <xsl:when test="$is-lecturer='yes'">block</xsl:when>
+      <xsl:otherwise>none</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <div id="SECTION.lecturer-of-classes" class="optional" style="display:{$display}">
+    <h2><xsl:value-of select="$i18n-lecturer-of-classes"/></h2>
+    <p><xsl:value-of select="$i18n-lecturer-of-classes-description"/></p>
+    <table class="grid">
+      <xsl:for-each select="$all-classes">
+        <xsl:sort select="mumie:name"/>
+        <tr>
+          <td>
+	    <input type="checkbox" name="lecturer-of-class-{@id}" value="yes">
+              <xsl:variable name="current-lecturers" select="mumie:lecturers/mumie:user"/>
+              <xsl:if test="$current-lecturers[@id = $user-id]">
+                <xsl:attribute name="checked">checked</xsl:attribute>
+              </xsl:if>
+            </input>
+            <xsl:value-of select="mumie:name"/>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Read permissions                                                             -->
+<!-- ================================================================================ -->
+
+<xsl:template name="read-permissions">
+  <h2><xsl:value-of select="$i18n-read-permissions"/></h2>
+  <p><xsl:value-of select="$i18n-read-permissions-description"/></p>
+  <table class="grid">
+    <xsl:call-template name="read-permissions-table-body"/>
+  </table>
+</xsl:template>
+
+<xsl:template name="read-permissions-table-body">
+  <xsl:param name="row">1</xsl:param>
+  <xsl:variable name="first" select="(($row - 1) * $group-cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $group-cols-count -1"/>
+  <tr>
+    <xsl:for-each select="$all-user-groups">
+      <xsl:sort select="mumie:name"/>
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <xsl:variable name="group-name" select="mumie:name"/>
+        <td>
+	  <input type="checkbox" name="read-permission-for-group-{@id}" value="yes">
+            <xsl:if test="$current-read-permissions[mumie:name=$group-name]">
+              <xsl:attribute name="checked">checked</xsl:attribute>
+            </xsl:if>
+          </input>
+          <xsl:value-of select="$group-name"/>
+        </td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  <xsl:if test="$row &lt; $group-rows-count">
+    <xsl:call-template name="read-permissions-table-body">
+      <xsl:with-param name="row" select="$row + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Write permissions                                                             -->
+<!-- ================================================================================ -->
+
+<xsl:template name="write-permissions">
+  <h2><xsl:value-of select="$i18n-write-permissions"/></h2>
+  <p><xsl:value-of select="$i18n-write-permissions-description"/></p>
+  <table class="grid">
+    <xsl:call-template name="write-permissions-table-body"/>
+  </table>
+</xsl:template>
+
+<xsl:template name="write-permissions-table-body">
+  <xsl:param name="row">1</xsl:param>
+  <xsl:variable name="first" select="(($row - 1) * $group-cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $group-cols-count -1"/>
+  <tr>
+    <xsl:for-each select="$all-user-groups">
+      <xsl:sort select="mumie:name"/>
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <xsl:variable name="group-name" select="mumie:name"/>
+        <td>
+	  <input type="checkbox" name="write-permission-for-group-{@id}" value="yes">
+            <xsl:if test="$current-write-permissions[mumie:name=$group-name]">
+              <xsl:attribute name="checked">checked</xsl:attribute>
+            </xsl:if>
+          </input>
+          <xsl:value-of select="$group-name"/>
+        </td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  <xsl:if test="$row &lt; $group-rows-count">
+    <xsl:call-template name="write-permissions-table-body">
+      <xsl:with-param name="row" select="$row + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Button area                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template name="button-area">
+  <div class="buttons">
+    <button type="submit" name="submit" value="submit">
+      <xsl:value-of select="$i18n-submit"/>
+    </button>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Feedback                                                                     -->
+<!-- ================================================================================ -->
+
+<xsl:template name="fb-main-properties">
+  <table class="grid">
+    <!-- Id: -->
+    <tr>
+      <td>Id:</td>
+      <td><xsl:value-of select="/mumie:user/@id"/></td>
+    </tr>
+    <!-- Surname: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-surname"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:surname"/></td>
+    </tr>
+    <!-- First name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-first-name"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:first_name"/></td>
+    </tr>
+    <!-- Login name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-login-name"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:login_name"/></td>
+    </tr>
+    <!-- Email: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-email"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:email"/></td>
+    </tr>
+    <!-- Pure name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-filename"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:pure_name"/></td>
+    </tr>
+    <!-- Section: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-section"/>:</td>
+      <td><xsl:value-of select="/mumie:user/@path"/></td>
+    </tr>
+    <!-- Sync id: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-sync-id"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:sync_id"/></td>
+    </tr>
+    <!-- Sync home: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-sync-home"/>:</td>
+      <td><xsl:value-of select="/mumie:user/mumie:sync_home/mumie:section/@path"/></td>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template name="fb-groups">
+  <h2><xsl:value-of select="$i18n-groups"/></h2>
+  <p><xsl:value-of select="$i18n-fb-groups-description"/></p>
+  <table class="grid">
+    <xsl:call-template name="fb-groups-table-body"/>
+  </table>
+</xsl:template>
+
+<xsl:template name="fb-groups-table-body">
+  <xsl:param name="row">1</xsl:param>
+  <xsl:variable name="first" select="(($row - 1) * $group-cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $group-cols-count -1"/>
+  <tr>
+    <xsl:for-each select="$current-user-groups">
+      <xsl:sort select="mumie:name"/>
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <xsl:variable name="group-name" select="mumie:name"/>
+        <td><xsl:value-of select="$group-name"/></td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  <xsl:if test="$row &lt; $group-rows-count">
+    <xsl:call-template name="fb-groups-table-body">
+      <xsl:with-param name="row" select="$row + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="fb-tutorials">
+  <xsl:if test="$is-student='yes'">
+    <h2><xsl:value-of select="$i18n-tutorials"/></h2>
+    <p><xsl:value-of select="$i18n-fb-tutorials-description"/></p>
+    <table class="grid">
+      <xsl:for-each select="$all-classes">
+        <xsl:sort select="mumie:name"/>
+        <xsl:variable name="class-id" select="@id"/>
+        <xsl:variable name="current-tutorial"
+                      select="$current-tutorials[mumie:class/@id=$class-id]"/>
+        <xsl:if test="$current-tutorial">
+          <tr>
+            <td><xsl:value-of select="mumie:name"/>:</td>
+            <td><xsl:value-of select="$current-tutorial/mumie:name"/></td>
+          </tr>
+        </xsl:if>
+      </xsl:for-each>
+    </table>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="fb-tutor-of-tutorials">
+  <xsl:if test="$is-tutor='yes'">
+    <h2><xsl:value-of select="$i18n-tutor-of-tutorials"/></h2>
+    <p><xsl:value-of select="$i18n-fb-tutor-of-tutorials-description"/></p>
+    <table class="grid align-top">
+      <xsl:for-each select="$all-classes">
+        <xsl:sort select="mumie:name"/>
+        <xsl:variable name="class-id" select="@id"/>
+        <tr>
+          <td>
+            <xsl:value-of select="mumie:name"/>:
+            <div class="tutorial-list">
+              <xsl:for-each select="$all-tutorials[mumie:class/@id=$class-id and mumie:tutor/mumie:user/@id = $user-id]">
+                <xsl:sort select="mumie:name"/>
+                <xsl:value-of select="mumie:name"/>
+              </xsl:for-each>
+            </div>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="fb-lecturer-of-classes">
+  <xsl:if test="$is-lecturer='yes'">
+    <h2><xsl:value-of select="$i18n-lecturer-of-classes"/></h2>
+    <p><xsl:value-of select="$i18n-fb-lecturer-of-classes-description"/></p>
+    <table class="grid">
+      <xsl:for-each select="$all-classes[mumie:lecturers/mumie:user/@id = $user-id]">
+        <xsl:sort select="mumie:name"/>
+        <tr>
+          <td>
+            <xsl:value-of select="mumie:name"/>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </table>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="fb-read-permissions">
+  <h2><xsl:value-of select="$i18n-read-permissions"/></h2>
+  <p><xsl:value-of select="$i18n-fb-read-permissions-description"/></p>
+  <table class="grid">
+    <xsl:call-template name="fb-read-permissions-table-body"/>
+  </table>
+</xsl:template>
+
+<xsl:template name="fb-read-permissions-table-body">
+  <xsl:param name="row">1</xsl:param>
+  <xsl:variable name="first" select="(($row - 1) * $group-cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $group-cols-count -1"/>
+  <tr>
+    <xsl:for-each select="$current-read-permissions">
+      <xsl:sort select="mumie:name"/>
+      <xsl:comment><xsl:value-of select="position()"/>
+        <xsl:text>: </xsl:text>
+        <xsl:value-of select="mumie:name"/></xsl:comment>      
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <td>
+          <xsl:value-of select="mumie:name"/>
+        </td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  <xsl:if test="$row &lt; $group-rows-count">
+    <xsl:call-template name="fb-read-permissions-table-body">
+      <xsl:with-param name="row" select="$row + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="fb-write-permissions">
+  <h2><xsl:value-of select="$i18n-write-permissions"/></h2>
+  <p><xsl:value-of select="$i18n-fb-write-permissions-description"/></p>
+  <table class="grid">
+    <xsl:call-template name="fb-write-permissions-table-body"/>
+  </table>
+</xsl:template>
+
+<xsl:template name="fb-write-permissions-table-body">
+  <xsl:param name="row">1</xsl:param>
+  <xsl:variable name="first" select="(($row - 1) * $group-cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $group-cols-count -1"/>
+  <tr>
+    <xsl:for-each select="$current-write-permissions">
+      <xsl:sort select="mumie:name"/>
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <td>
+          <xsl:value-of select="mumie:name"/>
+        </td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  <xsl:if test="$row &lt; $group-rows-count">
+    <xsl:call-template name="fb-write-permissions-table-body">
+      <xsl:with-param name="row" select="$row + 1"/>
+    </xsl:call-template>
+  </xsl:if>
+</xsl:template>
+
+<xsl:template name="fb-button-area">
+  <div class="buttons">
+    <a class="button"
+       href='{$xsl.url-prefix}/protected/admin/edit-user?id={$user-id}'>
+      <xsl:value-of select="$i18n-change"/>
+    </a>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main template                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="$title"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute> 
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-edit-user"/></xsl:attribute> 
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="input-element-javascript"/>
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-indented">
+
+        <div class="h1-container">
+          <div class="breadcrumb">
+            <a xsl-ext:href="pge-admin-home"><xsl:value-of select="$i18n-admin"/></a> &gt;
+            <a xsl-ext:href="pge-user-management"><xsl:value-of select="$i18n-user-management"/></a> &gt;
+          </div>
+          <h1><xsl:value-of select="$title"/></h1>
+        </div>
+
+        <xsl:choose>
+          <xsl:when test="$mode = 'form'">
+            <p><xsl:call-template name="i18n-hints"/></p>
+            <xsl:if test="$error != ''">
+              <xsl:call-template name="error-message"/>
+            </xsl:if>
+            <form action="{$xsl.url-prefix}/protected/admin/edit-user"
+                  enctype="multipart/form-data"
+                  method="post">
+              <xsl:call-template name="main-properties"/>
+              <xsl:call-template name="groups"/>
+              <xsl:call-template name="tutorials"/>
+              <xsl:call-template name="tutor-of-tutorials"/>
+              <xsl:call-template name="lecturer-of-classes"/>
+              <xsl:call-template name="read-permissions"/> 
+              <xsl:call-template name="write-permissions"/>
+              <xsl:call-template name="button-area"/>
+            </form>
+          </xsl:when>
+          <xsl:when test="$mode = 'feedback'">
+            <p><xsl:value-of select="$fb-message"/></p>
+            <xsl:call-template name="fb-main-properties"/>
+            <xsl:call-template name="fb-groups"/>
+            <xsl:call-template name="fb-tutorials"/>
+            <xsl:call-template name="fb-tutor-of-tutorials"/>
+            <xsl:call-template name="fb-lecturer-of-classes"/>
+            <xsl:call-template name="fb-read-permissions"/> 
+            <xsl:call-template name="fb-write-permissions"/>
+            <xsl:call-template name="fb-button-area"/>
+          </xsl:when>
+        </xsl:choose>
+
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

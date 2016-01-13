@@ -1,0 +1,4 @@
+Tester: grudzin
+Beginn/Ende: 2008-04-14
+Grund: Ueberarbeitung des Selftest-Worksheets, der Summary-Ansicht und der Problem-Ansicht,
+       Release-Cycle

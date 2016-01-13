@@ -1,0 +1,67 @@
+%$Id: prb_mchoice.src.tex,v 1.1 2009/10/27 16:00:13 linges Exp $
+
+\documentclass{japs.problem.mchoice}
+
+\begin{metainfo}
+  \name{Test}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \begin{components}
+
+  \end{components}
+  \creategeneric
+\end{metainfo}
+
+\begin{content}
+  \title{Der Titel}
+
+  Einleitender Text
+
+  \begin{choices}{unique}
+    \choice
+      \assertion{Erste Behauptung}
+      \begin{explanation}
+        Erklärung
+      \end{explanation}
+    \choice
+      \assertion{Zweite Behauptung}
+      \solution{true}
+      \begin{explanation}
+        Erklärung
+      \end{explanation}
+    \choice
+      \assertion{Dritte Behauptung}
+      \solution{false}
+      \begin{explanation}
+        Erklärung
+      \end{explanation}
+  \end{choices}
+
+  Zwischentext
+
+  \begin{choices}{multiple}
+    \choice
+      \assertion{Erste Behauptung}
+      \solution{true}
+      \begin{explanation}
+        Erklärung
+      \end{explanation}
+    \choice
+      \assertion{Zweite Behauptung}
+      \solution{false}
+      \begin{explanation}
+        Erklärung
+      \end{explanation}
+    \choice
+      \assertion{Dritte Behauptung}
+      \solution{true}
+      \begin{explanation}
+        Erklärung
+      \end{explanation}
+  \end{choices}
+
+\end{content}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_classes_and_courses_i18n_en.content.xml,v 1.8 2009/12/15 10:14:30 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-title">MUMIE: Classes and Courses</xsl:param>
+<xsl:param name="i18n-headline">Classes and Courses</xsl:param>
+<xsl:param name="i18n-courses">Courses</xsl:param>
+<xsl:param name="i18n-tutorials">Tutorials</xsl:param>
+<xsl:param name="i18n-tutorial">Tutorial</xsl:param>
+<xsl:param name="i18n-tutor">Tutor</xsl:param>
+<xsl:param name="i18n-members">Members</xsl:param>
+<xsl:param name="i18n-show">Show</xsl:param>
+<xsl:param name="i18n-results">Results</xsl:param>
+<xsl:param name="i18n-sheets-vs-students">Sheets vs. students</xsl:param>
+<xsl:param name="i18n-sheets-vs-problems">Sheets vs. problems</xsl:param>
+<xsl:param name="i18n-csv-export">CSV export</xsl:param>
+<xsl:param name="i18n-grades">Grades</xsl:param>
+</xsl:stylesheet>
+

@@ -1,0 +1,95 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Versionskontrolle (VCThreads)}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+\end{authors}
+
+\version{$Id: vc_threads.tex,v 1.3 2006/08/11 16:18:23 rassy Exp $}
+
+\section{Einleitung}
+
+Für unser Dokumentenverwaltungssystem JAPS brauchen wir ein Konzept von
+Versionen von Dokumenten.
+Wir nehmen an, dass es sich bei Texten nicht lohnt und bei Binärdaten
+fehleranfällig ist, ein 'merge'-Konzept, wie es aus CVS bekannt ist, zu
+adaptieren.
+Die Versionskontrolle soll eine \emph{unabhängige} Funktionalität
+sein. Das entspricht unserer Vorstellung von einem Pool von Inhalten.
+
+\section{Zusammenfassung}
+
+Wir speichern verschiedene Versionen als selbständige, komplette
+Dokumente. Wird eine neue Version zugefügt, bleiben ältere Versionen davon
+unberührt.
+
+Insbesondere werden wir ein Dokument im allgemeinen direkt über seine id
+ansprechen, und nur, wenn es im Kontext der Versionskontrolle betrachtet wird, 
+als bestimmte Version eines Threads.
+
+Wird eine neue Version eines Dokuments der Datenbank hinzugefügt, so werden in
+allen anderen Dokumenten, welche dieses als Komponente enthalten, die neue
+Version eingefügt.
+
+Während Leserechte sich auf einzelne Dokumente beziehen, werden Schreibrechte
+auf VCThreads definiert. Das Schreibrecht auf einem VCThread bedeutet also das
+Recht, neue Versionen hinzuzufügen.
+
+VCThreads sind Dokumenttypweise definiert, das heißt, Dokumente eines
+vc\_threads müssen alle denselben Typ haben.
+
+Generische Dokumente haben keine Versionskontrolle.
+
+\section{Modell}
+
+Ein vernünftiges Versionskontrollsystem für Dokumente, die in einer
+relationalen Datenbank gespeichert sind, lässt sich auf folgender einfachen
+Struktur aufbauen:
+
+Wir führen (für jeden nicht-generischen Dokumenttyp) die Entität 'Version
+Control Thread', kurz VCThread, mit den Attributen 'name', 'description' und
+'created' ein, sowie die 1:n Relation 'ist Version von' zwischen Dokumenten und
+VCThreads. Diese Relation erhält noch das eindeutige Attribut 'Versionsnummer'.
+%\image{ER_VCT}
+\begin{preformatted}
+   -------------                     ------------------
+   |           |    version (nr)     |                | ---name
+   |  Page     |  n -------------> 1 |  VCThread Page | ---description
+   |           |                     |                | ---created
+   -------------                     ------------------
+\end{preformatted}
+
+Jedes nicht-generische Dokument ist damit eine Version genau eines
+VCThreads. Jedes Dokument hat also ein Paar (vc_thread,version) von Attributen,
+wobei 'vc_thread' eine Referenz (Fremdschlüssel)  auf einen VCThread und
+'version' eine Nummer ist. Jedes solche Paar kommt unter den Dokumenten eines
+Typs höchstens einmal vor.
+Beispiel:
+\begin{preformatted}
+
+|----------------------
+|  vc_threads_page    |
+|--------------------------------------------------------------------------------
+| id |              name               | description |          created         |
+|----+---------------------------------+-------------+---------------------------
+|  1 | Thread Blank Page               | 'BLA'       | xxx
+|  2 | Thread Course Browser           | 'BLUBB'     | xxy
+
+|------------
+|  pages    |
+|-----------------------------------------------------------------
+| id |              name               | vc_thread | version |....
+|----+---------------------------------+-----------+--------------
+|  0 | Blank Page                      |         1 |       1 |
+|  1 | Course Browser                  |         2 |       1 |
+|  2 | Blank Page 2                    |         1 |       2 |
+
+\end{preformatted}
+
+
+\end{document}

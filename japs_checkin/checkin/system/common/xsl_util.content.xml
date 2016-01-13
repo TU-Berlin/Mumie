@@ -1,0 +1,789 @@
+<?xml version="1.0"  encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE xsl-stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_util.content.xml,v 1.36 2009/12/15 12:55:47 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:svg="http://www.w3.org/2000/svg"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie svg">
+
+<xsl-ext:import lid="xsl-util-i18n" internal="yes"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The mumie:user element describing the user: -->
+<xsl:param name="user" select="/*/mumie:dynamic_data/mumie:store[@name='user']/mumie:user"/>
+
+<!-- The mumie:user_group elements describing the user groups: -->
+<xsl:variable name="user-groups" select="$user/mumie:user_groups/mumie:user_group"/>
+
+<!-- HTML id of the expanded top bar: -->
+<xsl:variable name="expanded-top-bar-html-id">_TOP_BAR_EXPANDED_</xsl:variable>
+
+<!-- HTML id of the folded top bar: -->
+<xsl:variable name="folded-top-bar-html-id">_TOP_BAR_FOLDED_</xsl:variable>
+
+<!-- Number of pixels the frame resize icons are shifted to the bottom: -->
+<xsl:variable name="frs-icon-top-offset">2</xsl:variable>
+
+<!-- Opacity of disabled frame resize icons: -->
+<xsl:variable name="frs-disabled-icon-opacity">0.55</xsl:variable>
+
+<!-- Whether the user is a staff member (member of at least one of the groups 'admins',
+  'lecturers', 'tutors' -->
+<xsl:variable name="user-is-staff">
+  <xsl:choose>
+    <xsl:when test="$user-groups[string(mumie:name)='admins' or
+                                 string(mumie:name)='lecturers' or
+                                 string(mumie:name)='tutors']">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the user is an administrator (member of the group 'admins') -->
+<xsl:variable name="user-is-admin">
+  <xsl:choose>
+    <xsl:when test="$user-groups[string(mumie:name)='admins']">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Whether the user is a lecturer (member of the group 'lecturers') -->
+<xsl:variable name="user-is-lecturer">
+  <xsl:choose>
+    <xsl:when test="$user-groups[string(mumie:name)='lecturers']">
+      <xsl:text>yes</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>no</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- width and height for link popup -->
+<xsl:variable name="popup-width">650</xsl:variable>
+
+<xsl:variable name="popup-height">600</xsl:variable>
+<!-- ================================================================================ -->
+<!-- h1: Icons for the top bar                                                        -->
+<!-- ================================================================================ -->
+
+
+<!-- Creates a frame resize icon. The parameters have the following meaning:
+
+    id-prefix
+           Prepended to the HTML id of the icon
+
+    state  State of the icon.
+           Possible Values: normal, hover, disabled
+           Default: normal
+
+    top    Whether the icon contains a symbol for the top bar
+           Possible Values: yes, no
+           Default: yes
+
+    nav    Whether the icon contains a symbol for the navigation frame
+           Possible Values: yes, no
+           Default: yes
+
+    onclick
+           Event handler for mouse clicks
+           Default: none
+
+    tooltip
+           A tooltip for the icon
+           Default: none
+
+  The variables have the following meaning:
+
+        p1    pm                    p2
+      . | . . | . . . . . . . . . . | ._________
+  q1 _   ___________________________  .___   ^ 
+      . |     .                     | . ^    |
+      . |     .                     | .
+  qm _  |___________________________| . |    |
+      . |     |                     | .
+      . |     |                     | . |    |
+      . |     |                     | .
+      . |     |                     | . h  height
+      . |     |                     | .
+      . |     |                     | . |    |  
+      . |     |                     | .
+      . |     |                     | . |    |
+  q2 _  |_____|_____________________| .
+      .                               ._v_   |
+      . . . . . . . . . . . . . . . . .______v__
+      | |                           | |
+      | |< - - - - - w - - - - - - >| |
+      |                               |
+      |< - - - - - width - - - - - - >|
+ -->
+
+<xsl:template name="frs-icon">
+
+  <!-- Parameters: -->
+  <xsl:param name="id-prefix"></xsl:param>
+  <xsl:param name="state">normal</xsl:param>
+  <xsl:param name="top">yes</xsl:param>
+  <xsl:param name="nav">yes</xsl:param>
+  <xsl:param name="onclick"/>
+  <xsl:param name="tooltip"/>
+
+  <!-- Variables controlling the icon drawing -->
+  <xsl:variable name="width">16</xsl:variable>
+  <xsl:variable name="height">12</xsl:variable>
+  <xsl:variable name="p1">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">0.5</xsl:when>
+      <xsl:otherwise>1.5</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="p2">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">15.5</xsl:when>
+      <xsl:otherwise>14.5</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="pm">4.5</xsl:variable>
+  <xsl:variable name="q1">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">0.5</xsl:when>
+      <xsl:otherwise>1.5</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="q2">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">11.5</xsl:when>
+      <xsl:otherwise>10.5</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="qm">3.5</xsl:variable>
+  <xsl:variable name="qn">
+    <xsl:choose>
+      <xsl:when test="$top='yes'">
+        <xsl:value-of select="$qm"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="$q1"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="w">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">15</xsl:when>
+      <xsl:otherwise>13</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+  <xsl:variable name="h">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">11</xsl:when>
+      <xsl:otherwise>9</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <!-- The 'display' CSS property of the icon: -->
+  <xsl:variable name="display">
+    <xsl:choose>
+      <xsl:when test="$state='hover'">none</xsl:when>
+      <xsl:otherwise>inline</xsl:otherwise>
+    </xsl:choose>
+  </xsl:variable>
+
+  <!-- The "base" HTML id of the icon (id without the state suffix): -->
+  <xsl:variable name="id">
+    <xsl:value-of select="$id-prefix"/>
+    <xsl:text>_ICON</xsl:text>
+    <xsl:if test="$top='yes'">_TOP</xsl:if>
+    <xsl:if test="$nav='yes'">_NAV</xsl:if>
+    <xsl:text>_MAIN</xsl:text>
+  </xsl:variable>
+
+  <!-- Event handler for hover effect: -->
+  <xsl:variable name="onmouseover">
+    <xsl:if test="$state='normal'">
+      <xsl:text>frs_startHover("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>")</xsl:text>
+    </xsl:if>
+  </xsl:variable>
+  <xsl:variable name="onmouseout">
+    <xsl:if test="$state='hover'">
+      <xsl:text>frs_endHover("</xsl:text>
+      <xsl:value-of select="$id"/>
+      <xsl:text>")</xsl:text>
+    </xsl:if>
+  </xsl:variable>
+
+  <!-- Wrapper: -->
+  <span class="icon-wrapper"
+        id="{$id}-{$state}"
+        style="display: {$display};">
+    <xsl:if test="$tooltip and $tooltip!=''">
+      <xsl:attribute name="title">
+        <xsl:value-of select="$tooltip"/>
+      </xsl:attribute>
+    </xsl:if>
+
+    <!-- SVG code: -->
+    <svg xmlns="http://www.w3.org/2000/svg"
+         version="1.1"
+         width="{$width}px" height="{$height}px"
+         style="position: relative; top: {$frs-icon-top-offset}px;">
+      <xsl:if test="$onmouseover and $onmouseover!=''">
+        <xsl:attribute name="onmouseover">
+          <xsl:value-of select="$onmouseover"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="$onmouseout and $onmouseout!=''">
+        <xsl:attribute name="onmouseout">
+          <xsl:value-of select="$onmouseout"/>
+        </xsl:attribute>
+      </xsl:if>
+      <xsl:if test="$onclick and $onclick!=''">
+        <xsl:attribute name="onclick">
+          <xsl:value-of select="$onclick"/>
+        </xsl:attribute>
+      </xsl:if>
+      <rect x="{$p1}" y="{$q1}" width="{$w}" height="{$h}" style="stroke: white; fill: none">
+        <xsl:if test="$state='disabled'">
+          <xsl:attribute name="opacity">
+            <xsl:value-of select="$frs-disabled-icon-opacity"/>
+          </xsl:attribute>
+        </xsl:if>
+      </rect>
+      <xsl:if test="$top='yes'">
+        <line x1="{$p1}" y1="{$qm}" x2="{$p2}" y2="{$qm}" style="stroke: white; fill: none">
+          <xsl:if test="$state='disabled'">
+            <xsl:attribute name="opacity">
+              <xsl:value-of select="$frs-disabled-icon-opacity"/>
+            </xsl:attribute>
+          </xsl:if>
+        </line>
+      </xsl:if>
+      <xsl:if test="$nav='yes'">
+        <line x1="{$pm}" y1="{$qn}" x2="{$pm}" y2="{$q2}" style="stroke: white; fill: none">
+          <xsl:if test="$state='disabled'">
+            <xsl:attribute name="opacity">
+              <xsl:value-of select="$frs-disabled-icon-opacity"/>
+            </xsl:attribute>
+          </xsl:if>
+        </line>
+      </xsl:if>
+    </svg>
+
+  </span>
+
+</xsl:template>
+
+<xsl:template name="frs-icon-group">
+
+  <!-- Parameters: -->
+  <xsl:param name="id-prefix"></xsl:param>
+  <xsl:param name="top">yes</xsl:param>
+  <xsl:param name="nav">yes</xsl:param>
+  <xsl:param name="enabled">yes</xsl:param>
+  <xsl:param name="onclick"/>
+  <xsl:param name="tooltip"/>
+
+  <xsl:choose>
+    <xsl:when test="$enabled='yes'">
+      <xsl:call-template name="frs-icon">
+        <xsl:with-param name="id-prefix" select="$id-prefix"/>
+        <xsl:with-param name="state">normal</xsl:with-param>
+        <xsl:with-param name="top" select="$top"/>
+        <xsl:with-param name="nav" select="$nav"/>
+      </xsl:call-template>
+      <xsl:call-template name="frs-icon">
+        <xsl:with-param name="id-prefix" select="$id-prefix"/>
+        <xsl:with-param name="state">hover</xsl:with-param>
+        <xsl:with-param name="top" select="$top"/>
+        <xsl:with-param name="nav" select="$nav"/>
+        <xsl:with-param name="onclick" select="$onclick"/>
+        <xsl:with-param name="tooltip" select="$tooltip"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:call-template name="frs-icon">
+        <xsl:with-param name="id-prefix" select="$id-prefix"/>
+        <xsl:with-param name="state">disabled</xsl:with-param>
+        <xsl:with-param name="top" select="$top"/>
+        <xsl:with-param name="nav" select="$nav"/>
+      </xsl:call-template>
+    </xsl:otherwise>
+  </xsl:choose>
+  
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top bar                                                                      -->
+<!-- ================================================================================ -->
+
+<!-- Creates the top bar. -->
+
+<xsl:template name="top-bar">
+  <xsl:param name="with-account">yes</xsl:param>
+  <xsl:param name="with-admin" select="$user-is-admin"/>
+  <xsl:param name="with-db-browser" select="$user-is-staff"/>
+  <xsl:param name="with-mm-browser" select="$user-is-staff"/>
+  <xsl:param name="with-nav">no</xsl:param>
+  <xsl:param name="checked"/>
+  <xsl:param name="checked"/>
+  <!-- Expanded version of the top bar -->
+  <div id="{$expanded-top-bar-html-id}" class="top">
+    <table class="layout">
+      <tr>
+        <td class="left" rowspan="2">
+          <xsl-ext:image lid="mumie-logo" alt="Mumie-Logo"/>
+        </td>
+        <td class="middle" colspan="2">
+          <span class="mumie"><xsl:value-of select="$i18n-top-bar-title"/></span><br/>
+          <xsl:value-of select="$i18n-top-bar-subtitle"/>
+        </td>
+        <td class="right" rowspan="2">
+          <xsl-ext:image lid="logo" alt="Logo"/> 
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <xsl:call-template name="top-ctrl-left">
+            <xsl:with-param name="with-account" select="$with-account"/>
+            <xsl:with-param name="with-admin" select="$with-admin"/>
+            <xsl:with-param name="with-db-browser" select="$with-db-browser"/>
+            <xsl:with-param name="with-mm-browser" select="$with-mm-browser"/>
+            <xsl:with-param name="checked" select="$checked"/>
+          </xsl:call-template>
+        </td>
+        <td>
+          <xsl:call-template name="top-ctrl-right">
+            <xsl:with-param name="with-nav" select="$with-nav"/>
+            <xsl:with-param name="icon-id-prefix">_TOP_BAR</xsl:with-param>
+          </xsl:call-template>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <!-- Folded version of the top bar: -->
+  <div id="{$folded-top-bar-html-id}" class="top-small">
+    <table class="layout">
+      <tr>
+        <td class="left">
+          <xsl:call-template name="top-ctrl-left">
+            <xsl:with-param name="with-account" select="$with-account"/>
+            <xsl:with-param name="with-admin" select="$with-admin"/>
+            <xsl:with-param name="with-db-browser" select="$with-db-browser"/>
+            <xsl:with-param name="with-mm-browser" select="$with-mm-browser"/>
+          </xsl:call-template>
+        </td>
+        <td class="right">
+          <xsl:call-template name="top-ctrl-right">
+            <xsl:with-param name="with-nav" select="$with-nav"/>
+            <xsl:with-param name="icon-id-prefix">_SMALL_TOP_BAR</xsl:with-param>
+          </xsl:call-template>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <xsl:call-template name="top-bar-javascript"/>
+</xsl:template>
+
+<xsl:template name="top-link">
+  <xsl:param name="name"/>
+  <xsl:param name="checked"/>
+  <xsl:param name="path"/>
+  <xsl:param name="text"/>
+  <xsl:param name="tooltip"/>
+  <xsl:choose>
+    <xsl:when test="$checked=$name">
+      <span class="checked">
+        <xsl:value-of select="$text"/>
+      </span>
+    </xsl:when>
+    <xsl:otherwise>
+      <a>
+        <xsl:attribute name="href">
+          <xsl:value-of select="concat($xsl.url-prefix, '/', $path)"/>
+        </xsl:attribute>
+        <xsl:attribute name="target">
+          <xsl:text>_top</xsl:text>
+        </xsl:attribute>
+        <xsl:attribute name="title">
+          <xsl:value-of select="$tooltip"/>
+        </xsl:attribute>
+        <xsl:value-of select="$text"/>
+      </a>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<!-- Creates the top link list -->
+
+<xsl:template name="top-ctrl-left">
+  <xsl:param name="with-account">yes</xsl:param>
+  <xsl:param name="with-admin">no</xsl:param>
+  <xsl:param name="with-db-browser">no</xsl:param>
+  <xsl:param name="with-mm-browser">no</xsl:param>
+  <xsl:param name="checked"/>
+  <div class="top-ctrl-left">
+    <!-- Start page: -->
+    <xsl:call-template name="top-link">
+      <xsl:with-param name="name">start-page</xsl:with-param>
+      <xsl:with-param name="checked" select="$checked"/>
+      <xsl:with-param name="path">protected/alias/start</xsl:with-param>
+      <xsl:with-param name="text" select="$i18n-start-page"/>
+      <xsl:with-param name="tooltip" select="$i18n-start-page-descr"/>
+    </xsl:call-template>
+    &#183;
+    <!-- Courses: -->
+    <xsl:call-template name="top-link">
+      <xsl:with-param name="name">courses</xsl:with-param>
+      <xsl:with-param name="checked" select="$checked"/>
+      <xsl:with-param name="path">protected/alias/courses</xsl:with-param>
+      <xsl:with-param name="text" select="$i18n-classes"/>
+      <xsl:with-param name="tooltip" select="$i18n-courses-descr"/>
+    </xsl:call-template>
+    &#183;
+    <!-- MM browser: -->
+    <xsl:if test="$with-mm-browser='yes'">
+      <xsl:call-template name="top-link">
+        <xsl:with-param name="name">mm-browser</xsl:with-param>
+        <xsl:with-param name="checked" select="$checked"/>
+        <xsl:with-param name="path">protected/alias/mm-browser</xsl:with-param>
+        <xsl:with-param name="text" select="$i18n-mm-browser"/>
+        <xsl:with-param name="tooltip" select="$i18n-mm-browser-descr"/>
+      </xsl:call-template>
+      &#183;
+    </xsl:if>
+    <!-- DB browser: -->
+    <xsl:if test="$with-db-browser='yes'">
+      <xsl:call-template name="top-link">
+        <xsl:with-param name="name">db-browser</xsl:with-param>
+        <xsl:with-param name="checked" select="$checked"/>
+        <xsl:with-param name="path">protected/alias/db-browser</xsl:with-param>
+        <xsl:with-param name="text" select="$i18n-db-browser"/>
+        <xsl:with-param name="tooltip" select="$i18n-db-browser-descr"/>
+      </xsl:call-template>
+      &#183;
+    </xsl:if>
+    <!-- Admin: -->
+    <xsl:if test="$with-admin='yes'">
+      <xsl:call-template name="top-link">
+        <xsl:with-param name="name">admin</xsl:with-param>
+        <xsl:with-param name="checked" select="$checked"/>
+        <xsl:with-param name="path">protected/alias/admin</xsl:with-param>
+        <xsl:with-param name="text" select="$i18n-admin"/>
+        <xsl:with-param name="tooltip" select="$i18n-admin-descr"/>
+      </xsl:call-template>
+      &#183;
+    </xsl:if>
+    <!-- Account: -->
+    <xsl:if test="$with-account='yes'">
+      <xsl:call-template name="top-link">
+        <xsl:with-param name="name">account</xsl:with-param>
+        <xsl:with-param name="checked" select="$checked"/>
+        <xsl:with-param name="path">protected/alias/account</xsl:with-param>
+        <xsl:with-param name="text" select="$i18n-account"/>
+        <xsl:with-param name="tooltip" select="$i18n-account-descr"/>
+      </xsl:call-template>
+    </xsl:if>
+  </div>
+</xsl:template>
+
+<!-- Creates the user login name and the logout link -->
+
+<xsl:template name="top-ctrl-right">
+  <xsl:param name="with-nav"/>
+  <xsl:param name="icon-id-prefix"/>
+  <div class="top-ctrl-right">
+    <!-- User: -->
+    <xsl:value-of select="$i18n-logged-in-as"/>
+    <xsl:text>: </xsl:text>
+    <xsl:variable name="login-name" select="$user/mumie:login_name"/>
+    <xsl:choose>
+      <xsl:when test="$login-name and $login-name != ''">
+        <xsl:value-of select="$login-name"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:value-of select="concat($user/mumie:first_name, '&#160;', $user/mumie:surname)"/>
+      </xsl:otherwise>
+    </xsl:choose>
+    &#183;
+    <!-- Logout: -->
+    <a>
+      <xsl:attribute name="href">
+        <xsl:value-of select="concat($xsl.url-prefix, '/public/auth/logout')"/>
+      </xsl:attribute>
+      <xsl:attribute name="target">
+        <xsl:text>_top</xsl:text>
+      </xsl:attribute>
+      <xsl:attribute name="title">
+        <xsl:value-of select="$i18n-logout-descr"/>
+      </xsl:attribute>
+      <xsl:value-of select="$i18n-logout"/>
+    </a>
+    &#183;
+    <!-- Icon to toggle top bar: -->
+    <xsl:call-template name="frs-icon-group">
+      <xsl:with-param name="id-prefix" select="$icon-id-prefix"/>
+      <xsl:with-param name="top">yes</xsl:with-param>
+      <xsl:with-param name="nav">no</xsl:with-param>
+      <xsl:with-param name="onclick">frs_toggleTopBar()</xsl:with-param>
+      <xsl:with-param name="tooltip" select="$i18n-toggle-top-bar"/>
+    </xsl:call-template>
+    &#183;
+    <!-- Icon to toggle nav frame: -->
+    <xsl:call-template name="frs-icon-group">
+      <xsl:with-param name="id-prefix" select="$icon-id-prefix"/>
+      <xsl:with-param name="top">no</xsl:with-param>
+      <xsl:with-param name="nav">yes</xsl:with-param>
+      <xsl:with-param name="onclick">frs_toggleNavFrame()</xsl:with-param>
+      <xsl:with-param name="enabled" select="$with-nav"/>
+      <xsl:with-param name="tooltip" select="$i18n-toggle-nav-frame"/>
+    </xsl:call-template>
+  </div>
+</xsl:template>
+
+<xsl:template name="top-bar-javascript">
+  <script type="text/javascript" xsl-ext:src="frame-resize-javascript"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: "Powered by MUMIE"                                                           -->
+<!-- ================================================================================ -->
+
+<xsl:template name="powered-by-mumie">
+  <xsl:value-of select="$i18n-powered-by"/>
+  <a href="http://www.mumie.net" target="_top">MUMIE</a>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Footer                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="footer">
+  <xsl:param name="with-metainfo-link" select="$user-is-staff"/>
+  <div class="footer-indented">
+    <span class="footer">
+      <xsl:variable name="copyright" select="/*/mumie:copyright"/>
+      <xsl:if test="$copyright and $copyright != ''">
+        <!-- Copyright note: -->
+        <xsl:value-of select="/*/mumie:copyright"/>
+        <span class="sep">&#183;</span>
+      </xsl:if>
+      <xsl:if test="$with-metainfo-link='yes'">
+        <xsl:variable name="url">
+          <xsl:call-template name="xsl.document-url">
+            <xsl:with-param name="document-type.name" select="local-name(/*)"/>
+            <xsl:with-param name="context" select="'info'"/>
+            <xsl:with-param name="id" select="/*/@id"/>
+           </xsl:call-template>
+         </xsl:variable>
+        <a>
+          <xsl:attribute name="href">
+            <xsl:value-of select="$url"/>
+          </xsl:attribute>
+          <xsl:attribute name="onclick">
+            return (window.open('<xsl:value-of select="$url"/>?as-popup=true' ,'','width=<xsl:value-of select="$popup-width"/>,height=<xsl:value-of select="$popup-height"/>,scrollbars=yes')==null);            
+          </xsl:attribute> 
+          
+          <xsl:attribute name="title">
+            <xsl:value-of select="$i18n-info-expl"/>
+          </xsl:attribute>
+          <xsl:value-of select="$i18n-info"/>
+        </a>
+        <span class="sep">&#183;</span>
+      </xsl:if>
+      <!-- "Powered by MUMIE" -->
+      <xsl:call-template name="powered-by-mumie"/>
+    </span>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Popup "windows"                                                              -->
+<!-- ================================================================================ -->
+
+<xsl:template name="popup-javascript">
+  <xsl:param name="main"/>
+
+  <!-- Pops-up the element with the specified id at the mouse position. The
+    second parameter, e, is the mouse event. By default, the element pops-up
+    right and below the mouse position (i.e., the mouse position becomes the
+    top-left corner of the element). If the element would be cropped because
+    there is not enough space right to the mouse position, the element pops-up
+    left to the mouse position. If the element would be cropped because there
+    is not enough space below the mouse position, the element pops-up above
+    the mouse position. -->
+  
+  function popupAtMouse (id, e)
+  {
+    var element = document.getElementById(id);
+
+    var width = element.clientWidth;
+    var totalWidth = document.documentElement.clientWidth;
+    var height = element.clientHeight;
+    var totalHeight = document.documentElement.clientHeight;
+    var posX = e.clientX;
+    var posY = e.clientY;
+
+    if ( posX + width &gt; totalWidth )
+      {
+        element.style.left = "";
+        var right = totalWidth - posX - window.pageXOffset;
+        element.style.right = right + "px";
+      }
+    else
+      {
+        element.style.right = "";
+        var left = posX + window.pageXOffset;
+        element.style.left = left + "px";
+      } 
+
+    if ( posY + height &gt; totalHeight )
+      {
+        element.style.top = "";
+        var bottom = totalHeight - posY - window.pageYOffset;
+        element.style.bottom = bottom + "px";
+      }
+    else
+      {
+        element.style.bottom = "";
+        var top = posY + window.pageYOffset;
+        element.style.top = top + "px";
+      } 
+
+    element.style.visibility = "visible";
+  }
+
+  <!-- Pops-up the element with the specified id so that it is horizontally and
+    vertically centered.-->
+  
+  <xsl:choose>
+  <xsl:when test="$main and $main!=''">
+  function popupCentered (id)
+  {
+    var element = document.getElementById(id);
+    var width = element.clientWidth;
+    var height = element.clientHeight;
+
+    var documentWidth = document.documentElement.clientWidth;
+    var documentHeight = document.documentElement.clientHeight;
+
+    var mainElement = document.getElementById("<xsl:value-of select="$main"/>");
+    var mainWidth = mainElement.clientWidth;
+    var mainHeight = mainElement.clientHeight;
+
+    var x = (mainWidth &lt; documentWidth
+             ? (mainWidth - window.pageXOffset - width)/2 + window.pageXOffset
+             : (documentWidth - width)/2 + window.pageXOffset);
+
+    var y = (mainHeight &lt; documentHeight
+             ? (mainHeight - window.pageXOffset - height)/2 + window.pageXOffset
+             : (documentHeight - height)/2 + window.pageYOffset);
+
+    if ( x &lt; 0 ) x = 0;
+    if ( y &lt; 0 ) y = 0;
+
+    element.style.left = x + "px";
+    element.style.top = y + "px";
+    element.style.visibility = "visible";
+  }
+  </xsl:when>
+  <xsl:otherwise>
+  function popupCentered (id)
+  {
+    var element = document.getElementById(id);
+
+    var width = element.clientWidth;
+    var totalWidth = document.documentElement.clientWidth;
+    var height = element.clientHeight;
+    var totalHeight = document.documentElement.clientHeight;
+
+    var x = (totalWidth - width)/2 + window.pageXOffset;
+    var y = (totalHeight - height)/2 + window.pageYOffset;
+    if ( x &lt; 0 ) x = 0;
+    if ( y &lt; 0 ) y = 0;
+
+    element.style.left = x + "px";
+    element.style.top = y + "px";
+    element.style.visibility = "visible";
+  }
+  </xsl:otherwise>
+  </xsl:choose>
+
+  <!-- Closes the popup window with the specified id -->
+
+  function closeWindow (id)
+  {
+    var element = document.getElementById(id);
+    element.style.left = -element.clientWidth + "px";
+    element.style.top = -element.clientHeight + "px";
+
+    element.style.visibility = "hidden";
+  }
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Input elements, style change on focus                                        -->
+<!-- ================================================================================ -->
+
+<xsl:template name="input-element-javascript">
+
+  <!-- Sets the style to that of a focused text input field -->
+  function setInputFocusStyle (id)
+  {
+    document.getElementById(id).setAttribute("class", "focus");
+  }
+
+  <!-- Sets the style to that of a normal (unfocused) text input field -->
+  function setInputNormalStyle (id)
+  {
+    document.getElementById(id).setAttribute("class", "normal");
+  }
+  
+</xsl:template>
+
+</xsl:stylesheet>

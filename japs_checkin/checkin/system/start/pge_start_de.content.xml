@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   $Id: pge_start_de.content.xml,v 1.4 2008/08/26 10:28:36 rassy Exp $
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+
+  <head>
+    <title>MUMIE Startseite</title>
+    <mmx:css-stylesheet/>
+  </head>
+
+  <body>
+
+    <mmx:top-bar checked="start-page"/>
+
+    <div class="main-bounded-width">
+
+    <h1>Willkommen bei der MUMIE!</h1>
+
+    <p>
+      Sie sind im gesch&#252;tzten Bereich der MUMIE angemeldet. Wenn Sie Ihre
+      Sitzung beenden m&#246;chten, klicken Sie bitte oben auf "Abmelden". Wenn der
+      Server &#252;ber eine l&#228;ngere Zeit keine Aktivit&#228;t von Ihnen feststellt,
+      werden Sie automatisch abgemeldet. Sie m&#252;ssen sich dann ggf. erneut anmelden.
+    </p>
+
+    <h2>Aktuelles</h2>
+
+    <p>
+      &#8212; Im Moment keine aktuellen Nachrichten &#8212;
+    </p>
+
+    <!--h2>Navigation</h2>
+
+    <p>
+      Alle hier angegebenen Links sind auch &#252;ber obige Navigationsleiste zu
+      erreichen.
+    </p-->
+
+    <!--table class="list">
+      <tr>
+        <td class="list-label">
+          <a href="%{prefix}/protected/alias/courses">Kurse</a>
+        </td>
+        <td>
+          Kurse, nach Lehrveranstaltungen geordnet
+        </td>
+      </tr>
+      <mmx:if-group or="{admins}{lecturers}{tutors}">
+        <mmx:then>
+          <tr>
+            <td class="list-label">
+              <a href="%{prefix}/protected/alias/db-browser">DB-Browser</a>
+            </td>
+            <td>
+              Browsen in der Datenbank
+            </td>
+          </tr>
+        </mmx:then>
+        <mmx:else--><!-- suppressed --><!--/mmx:else>
+      </mmx:if-group>
+      <mmx:if-group name="admins">
+        <mmx:then>
+          <tr>
+            <td class="list-label">
+              <a href="%{prefix}/protected/alias/admin">Admin</a>
+            </td>
+            <td>
+              Server-Administration
+            </td>
+          </tr>
+        </mmx:then>
+        <mmx:else--><!-- suppressed --><!--/mmx:else>
+      </mmx:if-group>
+      <tr>
+        <td class="list-label">
+          <a href="%{prefix}/protected/alias/account">Konto</a>
+        </td>
+        <td>
+          &#196;nderung Ihrer Konto-Daten
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <a href="%{prefix}/protected/auth/logout">Abmelden</a>
+        </td>
+        <td>
+          Sitzung beenden
+        </td>
+      </tr>
+    </table-->
+
+    </div>
+
+  </body>
+
+</html>

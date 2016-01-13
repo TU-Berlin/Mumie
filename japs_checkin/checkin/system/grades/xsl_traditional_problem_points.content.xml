@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy <rassy@math.tu-berlin.de>
+
+   $Id: xsl_traditional_problem_points.content.xml,v 1.6 2009/12/03 14:07:48 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:grades="http://www.mumie.net/xml-namespace/grades"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext grades">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-problem-grades-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- Id of the course: -->
+<xsl:variable name="course-id" select="/*/@course_id"/>
+
+<!-- Id of the tutorial: -->
+<xsl:variable name="tutorial-id" select="/*/@tutorial_id"/>
+
+<!-- URL of the page: -->
+<xsl:variable name="this-url">
+  <xsl:value-of select="$xsl.url-prefix"/>
+  <xsl:text>/protected/view/traditional-problem-points?course=</xsl:text>
+  <xsl:value-of select="$course-id"/>
+  <xsl:text>&amp;tutorial=</xsl:text>
+  <xsl:value-of select="$tutorial-id"/>
+</xsl:variable>
+
+<!-- Number of users: -->
+<xsl:variable name="num-users" select="count(/*/grades:user)"/>
+
+<!-- Maximal number of problems per worksheet: -->
+<xsl:variable name="max-num-problems">
+  <xsl:for-each select="/*/grades:worksheet">
+    <xsl:sort select="count(/*/grades:problem[@worksheet_id=current()/@id])"/>
+    <xsl:sort order="ascending" data-type="number"/>
+    <xsl:if test="position() = last()">
+      <xsl:value-of select="count(/*/grades:problem[@worksheet_id=current()/@id])"/>
+    </xsl:if>
+  </xsl:for-each>
+</xsl:variable>
+
+
+<!-- Border values for percentage values -->
+<xsl:variable name="point-border-low">60</xsl:variable>
+<xsl:variable name="point-border-high">80</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: Keys                                                                         -->
+<!-- ================================================================================ -->
+
+<xsl:key name="user-problem-grade"
+         match="/*/grades:user_problem_grade"
+         use="concat(@user_id, ',', @ref_id)"/>
+
+<xsl:key name="problem"
+         match="/*/grades:problem"
+         use="@worksheet_id"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Auxiliary templates                                                          -->
+<!-- ================================================================================ -->
+
+
+
+
+
+<xsl:template name="td-class">
+  <xsl:param name="prefix"></xsl:param>
+  <xsl:attribute name="class">
+    <xsl:value-of select="$prefix"/>
+    <xsl:choose>
+      <xsl:when test="last()=1">single</xsl:when>
+      <xsl:when test="position()=1">first</xsl:when>
+      <xsl:when test="position()=last()">last</xsl:when>
+      <xsl:otherwise>inner</xsl:otherwise>
+    </xsl:choose>
+  </xsl:attribute>
+</xsl:template>
+
+<xsl:template name="javascript">
+
+  <!-- Maps [HTML] ids of input elements to the corresponding "result" values -->
+  var results = new Array();
+  <xsl:for-each select="/*/grades:user_problem_grade">
+  results["<xsl:value-of select="concat('GRADE.', @user_id, '.', @ref_id)"/>"] = <!-- 
+  -->"<xsl:value-of select="@result"/>";
+  </xsl:for-each>
+
+  <!-- Contains all problem ref ids: -->
+  var problemRefIds = new Array(<!-- 
+  --><xsl:for-each select="/*/grades:problem">
+       <xsl:value-of select="@ref_id"/><xsl:if test="not(position()=last())">,</xsl:if>
+     </xsl:for-each>);
+
+  <!-- Returns the total number of points of a user: -->
+  function sumUserPoints (userId)
+  {
+    var sum = 0;
+    for (var i = 0; i &lt; problemRefIds.length; i++)
+      {
+        var input = document.getElementById("GRADE." + userId + "." + problemRefIds[i]);
+        var value = parseFloat(input.value);
+        if ( !isNaN(value) ) sum += value;
+      }
+    return sum;
+  }
+
+  <!-- Dislays an error message: -->
+  function raiseError (input, errSpan, errMsg)
+  {
+    input.setAttribute("class", "error");
+    errSpan.firstChild.nodeValue = errMsg;
+    errSpan.style.display = "inline";
+  }
+
+  <!-- Removes an error message: -->
+  function clearError (input, errSpan)
+  {
+    input.setAttribute("class", "normal");
+    errSpan.firstChild.nodeValue = "none";
+    errSpan.style.display = "none";
+  }
+
+  <!-- Called when the value of an input element has changed: -->
+  function valueChangedHandler (id, userId, maxPoints)
+  {
+    var input = document.getElementById(id);
+    var value = input.value;
+    var errExpl = document.getElementById(id + ".ERR_MSG");
+    if ( !value.match(/^\s*[0-9]+(\.[0-9]+)?\s*$/) )
+      raiseError(input, errExpl, "<xsl:value-of select="$i18n-invalid-input"/>");
+    else if ( value.match(/\.[0-9][0-9]+\s*$/) )
+      raiseError(input, errExpl, "<xsl:value-of select="$i18n-too-many-digits"/>");
+    else if ( value &gt; maxPoints )
+      raiseError(input, errExpl, "<xsl:value-of select="$i18n-points-greater-than-max"/>");
+    else if ( value &lt; 0 )
+      raiseError(input, errExpl, "<xsl:value-of select="$i18n-points-negative"/>");
+    else
+      {
+        clearError(input, errExpl);
+        if ( value != results[id] ) input.setAttribute("class", "changed");
+        var sumDisplay = document.getElementById("SUM." + userId);
+        sumDisplay.firstChild.nodeValue = sumUserPoints(userId); 
+      }
+  }
+
+  <!-- Called when input element gets the focus -->
+  function onFocusHandler (id)
+  {
+    var input = document.getElementById(id);
+    if ( input.getAttribute("class") == "normal" )
+      input.setAttribute("class", "focus");
+  }
+
+  <!-- Called when input element loses the focus -->
+  function onBlurHandler (id)
+  {
+    var input = document.getElementById(id);
+    if ( input.getAttribute("class") == "focus" )
+      input.setAttribute("class", "normal");
+  }
+
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Creating grade tables                                                        -->
+<!-- ================================================================================ -->
+
+<xsl:template name="grades">
+  <xsl:variable name="worksheets" select="/*/grades:worksheet[@category='homework']"/>
+  <table class="genuine">
+    <thead>
+      <tr>
+        <td rowspan="2" class="name">
+          <xsl:value-of select="$i18n-name"/>
+        </td>
+        <td rowspan="2" class="id">
+          <xsl:value-of select="$i18n-id"/>
+        </td>
+        <xsl:for-each select="$worksheets">
+          <xsl:sort select="@label"/>
+          <xsl:variable name="worksheet-id" select="@id"/>
+          <xsl:variable name="problems"
+            select="key('problem', $worksheet-id)"/>
+          <td colspan="{count($problems) * 2}">
+            <xsl:value-of select="concat($i18n-worksheet-abbrev, '&#160;', @label)"/>
+          </td>
+        </xsl:for-each>
+        <td rowspan="2">
+          <xsl:value-of select="$i18n-abbrev-sum"/>
+        </td>
+        <td rowspan="2">
+          <xsl:value-of select="$i18n-abbrev-sum"/>%
+        </td>
+      </tr>
+      <tr>
+        <xsl:for-each select="$worksheets">
+          <xsl:sort select="@label"/>
+          <xsl:variable name="worksheet-id" select="@id"/>
+          <xsl:for-each 
+            select="key('problem', $worksheet-id)">
+            <xsl:sort select="@label"/>
+            <td colspan="2">
+              <xsl:call-template name="td-class"/>
+              <xsl:value-of select="concat($i18n-problem-abbrev, '&#160;', @label)"/>
+            </td>
+          </xsl:for-each>
+        </xsl:for-each>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <td rowspan="2" colspan="2" class="label">
+          <xsl:value-of select="$i18n-abbrev-max"/>
+        </td>
+        <xsl:for-each select="$worksheets">
+          <xsl:sort select="@label"/>
+          <xsl:variable name="worksheet-id" select="@id"/>
+          <xsl:variable name="problems" select="key('problem', $worksheet-id)"/>
+          <xsl:for-each select="$problems">
+            <xsl:sort select="@label"/>
+            <td colspan="2">
+              <xsl:if test="count($problems)=1">
+                <xsl:attribute name="rowspan">2</xsl:attribute>
+              </xsl:if>
+              <xsl:call-template name="td-class"/>
+              <xsl:value-of select="@points"/>
+            </td>
+          </xsl:for-each>
+        </xsl:for-each>
+        <td rowspan="2">
+          <xsl:value-of select="sum(/*/grades:problem/@points)"/>
+        </td>
+        <td rowspan="2">
+          100
+        </td>
+      </tr>
+      <tr>
+        <xsl:for-each select="$worksheets">
+          <xsl:sort select="@label"/>
+          <xsl:variable name="worksheet-id" select="@id"/>
+          <xsl:variable name="problems" select="key('problem', $worksheet-id)"/>
+          <xsl:if test="count($problems)&gt;1">
+            <td colspan="{count($problems) * 2}">
+              <xsl:value-of select="sum($problems/@points)"/>
+            </td>
+          </xsl:if>
+        </xsl:for-each>
+      </tr>
+    </tfoot>
+    <tbody>
+      <xsl:for-each select="/*/grades:user">
+        <xsl:sort select="@surname"/>
+        <xsl:sort select="@first_name"/>
+        <xsl:variable name="user-id" select="@id"/>
+        <xsl:variable name="user-pos" select="position()"/>
+        <xsl:variable name="user-name" select="concat(@surname, ',&#160;', @first_name)"/>
+        <tr>
+          <td class="name">
+            <xsl:value-of select="$user-name"/>
+          </td>
+          <td class="id">
+            <xsl:value-of select="@id"/>
+          </td>
+          <xsl:for-each select="$worksheets">
+            <xsl:sort select="@label"/>
+            <xsl:variable name="worksheet-id" select="@id"/>
+            <xsl:variable name="worksheet-pos" select="position()"/>
+            <xsl:variable name="explanation" select="concat($i18n-worksheet-abbrev, '&#160; ', @label)"/>
+            <xsl:for-each select="key('problem', $worksheet-id)">
+              <xsl:sort select="@label"/>
+              <xsl:variable name="problem-pos" select="position()"/>
+              <xsl:variable name="ref-id" select="@ref_id"/>
+              <xsl:variable name="html-id" select="concat('GRADE.', $user-id, '.', $ref-id)"/>
+              <xsl:variable name="name" select="concat('grade.', $user-id, '.', $ref-id)"/>
+              <xsl:variable name="grade"
+                select="key('user-problem-grade', concat($user-id, ',', $ref-id))"/>
+              <xsl:variable name="value">
+                <xsl:choose>
+                  <xsl:when test="$grade/@input and $grade/@input!=''">
+                    <xsl:value-of select="$grade/@input"/>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <xsl:value-of select="$grade/@result"/>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <xsl:variable name="class">
+                <xsl:choose>
+                  <xsl:when test="$grade/@error">error</xsl:when>
+                  <xsl:otherwise>normal</xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <xsl:variable name="err-html-id" select="concat($html-id, '.ERR_MSG')"/>
+              <xsl:variable name="err-display">
+                <xsl:choose>
+                  <xsl:when test="$grade/@error">inline</xsl:when>
+                  <xsl:otherwise>none</xsl:otherwise>
+                </xsl:choose>
+              </xsl:variable>
+              <xsl:variable name="tabindex"
+                select="($worksheet-pos - 1) * $max-num-problems * $num-users +
+                        ($problem-pos - 1) * $num-users +
+                        $user-pos"/>
+              <xsl:variable name="title" select="concat($user-name, ',&#160;', $explanation)"/>
+              <td title= "{$title}">
+                <xsl:call-template name="td-class">
+                  <xsl:with-param name="prefix">input-</xsl:with-param>
+                </xsl:call-template>
+                <input id="{$html-id}"
+                       type="text"
+                       class="{$class}"
+                       name="{$name}"
+                       size="5"
+                       value="{$value}"
+                       tabindex="{$tabindex}"
+                       onfocus="onFocusHandler('{$html-id}')"
+                       onblur="onBlurHandler('{$html-id}')"
+                       onchange="valueChangedHandler('{$html-id}', {$user-id}, {@points})"/>
+              </td>
+              <td>
+                <xsl:call-template name="td-class">
+                  <xsl:with-param name="prefix">input-error-</xsl:with-param>
+                </xsl:call-template>
+                <span id="{$err-html-id}"
+                      class="error"
+                      style="display: {$err-display}">
+                  <xsl:choose>
+                    <xsl:when test="$grade/@error">
+                      <xsl:choose>
+                        <xsl:when test="$grade/@error = 'Input exceeds maximum number of points'">
+                          <xsl:value-of select="$i18n-points-greater-than-max"/>
+                        </xsl:when>
+                        <xsl:when test="$grade/@error = 'Input is not a number'">
+                          <xsl:value-of select="$i18n-invalid-input"/>
+                        </xsl:when>
+                        <xsl:when test="$grade/@error = 'Input is negative'">
+                          <xsl:value-of select="$i18n-points-negative"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                          <xsl:value-of select="$i18n-unknown-error"/>
+                        </xsl:otherwise>
+                      </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise>none</xsl:otherwise>
+                  </xsl:choose>
+                </span>
+              </td>
+            </xsl:for-each>
+          </xsl:for-each>
+          <td id="{concat('SUM.', $user-id)}">
+            <xsl:value-of
+              select="round(sum(/*/grades:user_problem_grade
+                      [@user_id=$user-id and @result and @result!='']/@result)
+                      * 10) div 10"/>
+          </td>
+          <td>
+            <xsl:variable name="one-pro" select="sum(/*/grades:problem/@points) div 100"/>
+            <xsl:variable name="points" select="sum(/*/grades:user_problem_grade
+                      [@user_id=$user-id and @result and @result!='']/@result)"/>
+            <xsl:variable name="pro" select="round($points div $one-pro)"/>
+            
+            <xsl:choose>
+              <!-- if all worksheets have zero points -->
+              <xsl:when test="sum(/*/grades:problem/@points) = 0"> 
+                -
+              </xsl:when>
+              <xsl:when test="$pro &lt; $point-border-low">
+                <span class="low">
+                  <xsl:value-of select="$pro"/>
+                </span>
+              </xsl:when>
+              <xsl:when test="$pro &gt; $point-border-high">
+                <span class="high">
+                  <xsl:value-of select="$pro"/>
+                </span>
+              </xsl:when>
+              <xsl:otherwise>
+                <span class="mid">
+                  <xsl:value-of select="$pro"/>
+                </span>
+              </xsl:otherwise>
+            </xsl:choose>
+            
+          </td>
+        </tr>
+      </xsl:for-each>
+    </tbody>
+  </table>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Creating the page                                                            -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="$i18n-title-traditional-problem-points"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute> 
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-grades"/></xsl:attribute> 
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-bounded-width" style="max-width:100%">
+        <div class="h1-container">
+          <div class="breadcrumb">
+            <a href="{$xsl.url-prefix}/protected/view/classes-and-courses-index">
+              <xsl:value-of select="$i18n-classes"/>
+            </a>
+            &gt;
+            <span class="item"><xsl:value-of select="/*/@class_name"/></span>
+            &gt;
+            <a href="{$xsl.url-prefix}/protected/view/tutorials-for-class?class={/*/@class_id}">
+              <xsl:value-of select="$i18n-tutorials"/>
+            </a>
+            &gt;
+            <span class="item"><xsl:value-of select="/*/@tutorial_name"/></span>
+            &gt;
+          </div>
+          <h1><xsl:value-of select="$i18n-headline-traditional-problem-points"/></h1>
+        </div>
+        <table class="list">
+          <tr>
+            <td class="list-label"><xsl:value-of select="$i18n-course"/>:</td>
+            <td><xsl:value-of select="/*/@course_name"/></td>
+          </tr>
+          <tr>
+            <td class="list-label"><xsl:value-of select="$i18n-tutorial"/>:</td>
+            <td><xsl:value-of select="/*/@tutorial_name"/></td>
+          </tr>
+        </table>
+        <form action="{$this-url}"
+              enctype="multipart/form-data"
+              method="post">
+          <xsl:call-template name="grades"/>
+          <input type="hidden" name="store" value="yes"/>
+          <p>
+            <button type="submit" name="submit" value="submit">
+              <xsl:value-of select="$i18n-save"/>
+            </button>
+          </p>
+        </form>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

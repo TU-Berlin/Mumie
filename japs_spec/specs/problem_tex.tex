@@ -1,0 +1,931 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\newcommand{\MISC}{\href{\#abbrev_misc}{MISC}}
+\newcommand{\ANY}{\href{\#abbrev_any}{ANY}}
+\newcommand{\cmdref}[1]{\href{\#cmd_#1}{\backslash\/#1}}
+\newcommand{\envref}[1]{\href{\#env_#1}{#1}}
+\newcommand{\b}{\backslash}
+\newcommand{\c}[1]{\backslash#1}
+
+\begin{document}
+
+\title{Problem-TeX}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: problem_tex.tex,v 1.11 2006/10/13 13:00:42 rassy Exp $}
+
+Diese Spezifikation beschreibt das TeX, in dem Dokumente vom Typ \val{problem}
+geschrieben werden.
+
+\tableofcontents
+
+\section{Dokumentenklasse}
+
+Die Dokumentenklasse ist
+\begin{preformatted}%
+  japs.problem.\var{category}
+\end{preformatted}
+wobei \var{category} für die Kategorie (\val{applet}, \val{mchoice} oder
+\val{traditional}) steht.
+
+
+\section{Metainfos}
+
+Die Metainfos sind mit denen von Elementen identisch mit Ausnahme des
+Korrektors, den es bei Elementen nicht gibt. Zur Angabe des Korrektors dient
+der Befehl \texcmd{corrector}, der an beliebiger Stelle innerhalb der
+\texenv{metainfo}-Umgebung stehen darf.
+
+Prototyp des \texcmd{corrector}-Befehls:
+
+\begin{preformatted}[code]%
+  \backslash\/corrector\{\var{master}\}
+\end{preformatted}
+
+Hierbei ist \var{master} der Name der Master-Datei des Korrektors relativ zum
+Checkin-Root-Verzeichnis. Es muss sich hierbei um die Master-Datei eines
+Dokuments vom Typ \val{java_class} und der Kategorie \val{problem_corrector}
+handeln.
+
+
+\section{Content}\label{content}
+
+In allen Kategorien darf der Content Text mit den üblichen Formatierungen
+(Absätze, Listen, Tabellen usw.) sowie mathematische Formeln und Multimedia
+(Bilder usw.) enthalten; also die unter \MISC aufgeführten Konstrukte; ferner
+den Befehl \cmdref{title}. Dieser sollte am Anfang stehen. Zusätzlich dürfen
+die sogenannten Daten-Befehle und Umgebungen vorkommen. Diese sind in Abschnitt
+\ref{daten_bef_umg} beschrieben.
+
+Die restlichen Regeln für den Content sind für alle Kategorien unterschiedlich
+und werden in den folgenden Abschnitten erklärt.
+
+\section{Kategorie "{}applet"}
+
+In der Kategorie \val{applet} darf der Content neben den in Abschnitt
+\ref{content} aufgeführten Konstrukten die Umgebungen \envref{subtasks},
+\envref{subtasks*} und \envref{execute} enthalten. Letztere muss genau einmal
+vorkommen und sollte am Ende stehen.
+
+Die Umgebungen \envref{subtasks} und \envref{subtasks*} definieren Listen von Teilaufgaben.
+Jede Teilaufgabe wird durch einem \cmdref{subtask}- oder \cmdref{subtask*}-Befehl
+eingeleitet. Beispiel:
+
+\begin{preformatted}[code]%
+  \c{begin}\{subtasks*\}
+    \c{subtask} Berechnen Sie \$\c{det} A\$
+    \c{subtask} Berechnen Sie \$\c{det} B\$
+    \c{subtask} Berechnen Sie \$\c{det} (AB)\$
+    \c{subtask} Berechnen Sie \$\c{det} A \c{det} B\$
+  \c{end}\{subtasks*\}
+\end{preformatted}
+
+Der Unterschied zwischen den gesternten und normalen Formen ist folgender: Eine
+mit \cmdref{subtask*} eingeleitete Teilaufgabe ist in der XHTML-Darstellung
+anklickbar. Beim Klick wird die entsprechende Teilaufgabe im
+Bearbeitungs-Applet ausgewählt. Bei der \envref{subtasks}-Umgebung sind mit
+\cmdref{subtask} eingeleitete Teilaufgaben nicht anklickbar. Bei der
+\envref{subtasks*}-Umgebung hingegen sind auch diese Teilaufgaben anklickbar.
+
+Die Teilaufgaben werden durchnumeriert. Die Numerierung beginnt bei 0. Die
+Numerierung ist in der ganzen Aufgabe fortlaufend. Werden mehrere
+\envref{subtasks}- bzw. \envref{subtasks*}-Umgebungen verwendet, so wird die
+Numerierung am Beginn einer Umgebungen dort fortgesetzt, wo sie bei der vorigen
+Umgebungen endete.
+
+Die \envref{execute}-Umgebung definiert das Bearbeitungs-Applet. Sie muss genau
+einen \texcmd{applet}-Befehl oder entsprechende Umgebung enthalten. Beispiel:
+
+\begin{preformatted}[code]%
+  \c{begin}\{execute\}
+    \c{applet}\{bearb_appl\}
+  \c{end}\{execute\}
+\end{preformatted}
+
+\section{Kategorie "mchoice"}
+
+In der Kategorie \val{mchoice} darf der Content neben den in Abschnitt
+\ref{content} aufgeführten Konstrukten die Umgebung \envref{choices} enthalten.
+Sie definiert eine Gruppe von Multiple-Choice-Antworten. Die
+\envref{choices}-Umgebung hat ein zwingendes Argument mit den folgenden
+möglichen Werten (s.  auch
+\href{problem_xml.xhtml\#choices_type}{Problem-XML}):\label{choices_type}
+
+\begin{enumerate}
+\item \val{unique} : Genau eine Antwort kann angekreuzt werden.
+\item \val{multiple} :  Eine oder mehrere Antworten können angekreuzt werden.
+\item \val{yesno} : Für jede Antwort muss "ja" oder "nein" angekreuzt werden.
+\end{enumerate}
+
+Der Wert wird auch kurz der \emph{Typ} der \envref{choices}-Umgebung bzw. der
+entsprechenden Antwort-Gruppe genannt.
+
+Die \envref{choices}-Umgebung enthält eine oder mehrere
+\texenv{choice}-Pseudo-Umgebungen, die jeweils eine Antwort definieren und
+durch den Befehl \cmdref{choice} eingeleitet werden. Am Ende darf eine
+\envref{commonexpl}-Umgebung oder ein \cmdref{commonexpl}-Befehl stehen. Sie
+enthält eine ausführliche Begründung der Lösung (im Fall des Befehls als
+zwingendes Argument). Beispiel:
+
+\begin{preformatted}[code]%
+  \c{begin}\{choices\}\{yesno\}
+    \c{choice} \% Erste mögliche Antwort
+    \c{choice} \% Zweite mögliche Antwort
+    \c{choice} \% Dritte mögliche Antwort
+    \c{begin}\{commonexpl\}
+      \% Begründung
+    \c{end}\{commonexpl\}
+  \c{end}\{subtasks*\}
+\end{preformatted}
+
+Jede \texenv{choice}- Pseudo- Umgebung enthält folgendes: 
+
+\begin{enumerate}
+\setcounter{enumi}{3}
+\item Eine \envref{assertion}-Umgebung oder einen \cmdref{assertion}-Befehl.
+\item Einen \cmdref{solution}-Befehl.
+\item Optional eine \envref{explanation}-Umgebung oder einen
+  \cmdref{explanation}-Befehl. 
+\end{enumerate}
+
+Die \envref{assertion}-Umgebung bzw. der gleichnamige Befehl sind
+obligatorisch. Sie enthalten den Wortlaut der zur Wahl stehenden Antwort (im
+Fall des Befehls als zwingendes Argument).
+
+Der \cmdref{solution}-Befehl gibt die Lösung an (d.h. ob die Antwort richtig
+oder falsch ist). Er hat ein zwingendes Argument; dessen mögliche Werte sind:
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item \val{true} - Antwort ist richtig
+\item \val{false}- Antwort ist falsch
+\item \val{compute} - Die Richtigkeit der Antwort hängt von
+  den personalisierten Daten ab und kann erst später ermittelt werden
+\end{enumerate}
+
+Der Befehl braucht bei \texenv{choices} vom Typ \val{unique} (s.o.) nur bei der
+richtigen Antwort zu stehen, sonst ist er zwingend. Statt \val{true} und
+\val{false} kann auch \val{yes} bzw. \val{no} geschrieben werden [ins XML
+sollte jedoch immer \val{true} bzw. \val{false} eingetragen werden].
+
+Die \envref{explanation}-Umgebung bzw. der gleichnamige Befehl sind
+optional. Sie enthalten eine ausführliche Begründung der Lösung (im Fall des
+Befehls als zwingendes Argument).
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  \c{choice}
+    \c{assertion}\{Es gilt stets \$\c{det}(AB) = \c{det}(BA)\$\}
+    \c{solution}\{true\}
+    \c{begin}\{explanation\}
+      Folgt aus \$\c{det} (AB) = \c{det} A \c{det} B\$
+    \c{end}\{explanation\}
+
+  \c{choice}
+    \% Nächste mögliche Antwort
+\end{preformatted}
+
+
+\section{Kategorie "traditional"}
+
+Die Kategorie \val{traditional} ist mit \val{applet} identisch abgesehen davon,
+dass die \envref{execute}-Umgebung fehlt.
+
+\section{Daten-Befehle und Umgebungen}\label{daten_bef_umg}
+
+Hierzu gehören:
+
+\begin{enumerate}
+\item die Datasheet-Befehle und -Umgebungen \cmdref{data},
+  \envref{data}, \cmdref{datalabel};
+\item die Befehle für personalisierte Daten \cmdref{ppdrandint},
+  \cmdref{ppdrandrat}, \cmdref{ppdrandreal}, \cmdref{ppdcopy},
+  \cmdref{ppdimportanswer};
+\item die \envref{hidden}-Umgebung.
+\end{enumerate}
+
+Mit den Konstrukten der ersten Gruppe können Teile des Dokuments als Daten in
+das Datasheet übertragen werden. Die Konstrukte sind auch im mathematischen
+Modus erlaubt. Einzelheiten s. Befehls- bzw. Umgebungs-Referenz.
+
+Die Befehle der zweiten Gruppe dienen zur Erzeugung und Verwendung
+personaliiserte Daten. Einzelheiten s. Befehls- bzw. Umgebungs-Referenz.
+
+Die \envref{hidden}-Umgebung unterdrückt die Darstellung ihres Inhalts. Dies
+ist bei der Verwendung obiger Konstrukte oft erwünscht.
+
+\section{Befehls-Referenz}
+
+\subsection{\backslash\/assertion}\label{cmd_assertion}
+
+Definiert den Wortlaut einer zur Wahl stehenden Antwort. Erlaubt innerhalb der
+\texenv{choice}-Pseudo-Umgebung. Äquivalent zur gleichnahmigen Umgebung
+(s. \ref{env_assertion}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/assertion\{\MISC\}
+\end{preformatted}
+
+Im Argument steht der Wortlaut der zur Wahl stehenden Antwort.
+
+
+\subsection{\backslash\/choice}\label{cmd_choice}
+
+Leitet innerhalb der \texenv{choices}-Umgebung eine neue mögliche Antwort ein,
+indem eine \texenv{choice}-Pseudo-Umgebung geöffnet wird. Eine eventuell offene
+\texenv{choice}-Pseudo-Umgebung wird vorher geschlossen.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/choice
+\end{preformatted}
+
+
+\subsection{\backslash\/commonexpl}\label{cmd_commonexpl}
+
+Gibt eine gemeinsame ausführliche Begründung für die Lösungen zu allen zur
+Auswahl stehenden Antworten. Äquivalent zur gleichnahmigen Umgebung (s.
+\ref{env_commonexpl}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/commonexpl\{\MISC\}
+\end{preformatted}
+
+Im Argument steht die ausführliche Begründung.
+
+
+\subsection{\backslash\/data}\label{cmd_data}
+
+Ordnet ein Stück des Dokuments (bzw. das entsprechende XML-Fragment) unter
+einem bestimmten Pfad in das Data-Sheet ein. Das Dokument-Stück und der Pfad
+werden als Argumente übergeben. Das Dokument-Stück wird bei der
+Benutzer-Darstellung normal gerendert, es sei denn, es befindet sich innerhalb
+einer \texenv{hidden}-Umgebung.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/data\{\var{piece}\}\{\var{path}\}
+\end{preformatted}
+
+Dabei sind \var{piece} das in das Data-Sheet einzuordnende Dokument-Stück und
+\var{path} der Pfad. 
+
+Beispiel:
+
+\verbatim[code]
+  $t_0\,=\,\data{0}{common/problem/initial_value}$
+\endverbatim
+
+Der XML-Knoten, der durch die Übersetzung von \code{0} hervorgeht -- dies ist
+das MathML-Element
+
+\begin{preformatted}[code]%
+  <mn xmlns="http://www.w3.org/1998/Math/MathML">0</mn>
+\end{preformatted}
+
+-- wird unter dem Pfad \val{common/problem/initial_value} in das Data-Sheet eingeordnet.
+
+
+\subsection{\backslash\/datalabel}\label{cmd_datalabel}
+
+Ordnet die laufende Umgebung (bzw. das ihr entsprechende XML-Fragment) unter
+dem Pfad \var{path} in das Data-Sheet ein. \var{path} wird als Argument
+übergeben. Die laufende Umgebung wird bei der Benutzer-Darstellung normal
+gerendert, es sei denn, sie befindet sich innerhalb einer
+\texenv{hidden}-Umgebung.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/datalabel\{\var{path}\}
+\end{preformatted}
+
+Beispiel:
+
+\verbatim[code]
+  \begin{bmatrix}
+    \datalabel{common/problem/matrix-1}
+    0 & 1 & 2 &  3\\
+    4 & 5 & 6 & 7\\
+    8 & 9 & 10 & 11
+  \end{bmatrix}
+\endverbatim
+
+Der XML-Knoten, der durch die Übersetzung der \texenv{bmatrix}-Umgebung
+hervorgeht, wird unter dem Pfad \val{common/problem/matrix-1} in das Data-Sheet
+eingetragen.
+
+
+
+\subsection{\backslash\/explanation}\label{cmd_explanation}
+
+Gibt für eine zur Wahl stehende Antwort eine ausführliche Begründung der
+Lösung an. Äquivalent zur gleichnahmigen Umgebung (s. \ref{env_explanation}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/explanation\{\MISC\}
+\end{preformatted}
+
+Im Argument steht die ausführliche Begründung der Lösung.
+
+
+\subsection{\backslash\/ppdcopy}\label{cmd_ppdcopy}
+
+Erzeugt eine Kopie eines mit \cmdref{ppdrandint}, \cmdref{ppdrandrat} oder
+\cmdref{ppdrandreal} erzeugten Ausdrucks.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/ppdcopy\{\var{path}\}
+\end{preformatted}
+
+\var{path} gibt den Pfad an, unter dem der zu kopierende Ausdruck im
+Datasheet eingeordnet ist.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  \backslash\/randint\{user/problem/value1\}\{1\}\{4\}
+
+  ...
+
+  \backslash\/ppdcopy\{user/problem/value1\}
+\end{preformatted}
+
+Der erste Befehl erzeugt eine zufällige ganze Zahl zwischen 1 und 4 (s.
+\ref{cmd_ppdrandint}), der zweite eine Kopie davon.
+
+\subsection{\backslash\/ppdrandint}\label{cmd_ppdrandint}
+
+Erzeugt für jeden Benutzer eine zufällige ganze Zahl. Gedacht für
+personalisierte Aufgabenstellungen. Die Zahl wird bei der Benutzer-Darstellung
+normal gerendert, es sei denn, sie befindet sich innerhalb einer
+\texenv{hidden}-Umgebung.
+
+Dieser Befehl ist nur im mathematischen Modus erlaubt.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/ppdrandint[\var{non_zero}]\{\var{path}\}\{\var{min}\}\{\var{max}\}
+\end{preformatted}
+
+\var{min} und \var{max} bestimmen den Bereich, in dem die Zufallszahl $x$
+liegen soll. Es müssen ganze Zahlen mit $\,\mbox{\var{min}} \le
+\mbox{\var{max}}$ sein. \var{non_zero} darf die Werte \val{z} und \val{Z}
+annehmen. Ist \var{non_zero} gleich \val{Z}, so muss $x$ von Null verschieden
+sein, sonst nicht. Default ist \val{z}. \var{path} gibt den Pfad an, unter dem
+$x$ in das Datasheet eingeordnet wird.
+
+[Genauer gilt: Der Bereich $\Omega$, aus dem $x$ kommt, ist gleich $ \{
+\mbox{\var{min}}, \ldots, \mbox{\var{max}} \}\setminus\{0\}$, falls \var{non_zero} den
+Wert \val{Z} hat, andernfalls $\{ \mbox{\var{min}}, \ldots, \mbox{\var{max}}
+\}$. Innerhalb von $\Omega$ sind die Zufallszahlen gleichverteilt.]
+
+Die Erzeugung der Zufallszahl erfolgt noch nicht bei der Konvertierung nach
+XML. Hierbei wird der Befehl zunächst in das PPD-Element
+\href{ppd_xml.xhtml\#element_random_integer}{ppd:random_integer}
+transformiert. Die Zufallszahl entsteht später bei der XML-Verarbeitung im Japs.
+
+Beispiele:
+
+\verbatim[code]
+  \ppdrandint{foo/bar}{-10}{10}
+    % Erzeugt eine zufällige ganze Zahl zwischen -10 und 10, die unter
+    % dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+
+  \ppdrandint[z]{foo/bar}{-10}{10}
+    % Erzeugt eine zufällige ganze Zahl zwischen -10 und 10, die unter
+    % dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+
+  \ppdrandint[Z]{foo/bar}{-10}{10}
+    % Erzeugt eine zufällige ganze Zahl zwischen -10 und 10 ungleich 0,
+    % die unter dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+\endverbatim
+
+
+\subsection{\backslash\/ppdrandrat}
+
+Erzeugt für jeden Benutzer eine zufällige rationale Zahl. Gedacht für
+personalisierte Aufgabenstellungen. Die Zahl wird bei der Benutzer-Darstellung
+normal gerendert, es sei denn, sie befindet sich innerhalb einer
+\texenv{hidden}-Umgebung.
+
+Dieser Befehl ist nur im mathematischen Modus erlaubt.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/ppdrandrat[\var{non_zero}][\var{reduce}]\{\var{path}\}\{\var{num_min}\}\{\var{num_max}\}\{\var{den_min}\}\{\var{den_max}\}
+\end{preformatted}
+
+\var{num_min} und \var{num_max} bestimmen den Bereich, in dem der Zähler der
+Zufallszahl $x$ liegen soll, \var{den_min}, \var{den_max} den entsprechenden
+Bereich für den Nenner. Es müssen ganze Zahlen mit $\,\mbox{\var{num_min}} \le
+\mbox{\var{num_max}}$ und $\,\mbox{\var{den_min}} \le \mbox{\var{den_max}}$
+sein. \var{non_zero} darf die Werte \val{z} und \val{Z} annehmen. Ist
+\var{non_zero} gleich \val{Z}, so muss $x$ von Null verschieden sein, sonst
+nicht. Default ist \val{z}. \val{reduce} darf die Werte \val{r} und \val{R}
+annehmen. Ist \var{reduce} gleich \val{r}, wird $x$ so weit wie möglich
+gekürzt, sonst nicht gekürzt. Default ist \val{r}. \var{path} gibt den Pfad an,
+unter dem $x$ in das Datasheet eingeordnet wird.
+
+[Genauer gilt: Zähler und Nenner werden zufällig und unabhängig aus Bereichen
+$\Omega_Z$ bzw. $\Omega_N$ gezogen, die wie folgt definiert sind: Hat
+\var{non_zero} den Wert \val{Z}, so ist $\Omega_Z = \{
+\mbox{\var{num_min}}, \ldots, \mbox{\var{num_max}} \}\setminus\{0\}$,
+andernfalls $\Omega_Z = \{ \mbox{\var{num_min}}, \ldots, \mbox{\var{num_max}}
+\}$. Unabhängig von \val{non_zero} ist $\Omega_N = \{ \mbox{\var{den_min}},
+\ldots, \mbox{\var{den_max}} \}\setminus\{0\}$. Zähler und Nenner sind in
+$\Omega_Z$ bzw. $\Omega_N$ gleichverteilt.]
+
+Die Erzeugung der Zufallszahl erfolgt noch nicht bei der Konvertierung nach
+XML. Hierbei wird der Befehl zunächst in das PPD-Element
+\href{ppd_xml.xhtml\#element_random_rational}{ppd:random_integer}
+transformiert. Die Zufallszahl entsteht später bei der XML-Verarbeitung im Japs.
+
+Beispiele:
+
+\verbatim[code]
+  \ppdrandrat{foo/bar}{2}{4}{3}{7}
+    % Erzeugt eine zufällige, maximal gekürzte rationale Zahl, deren
+    % Zähler (vor dem Kürzen) zwischen 2 und 4 und deren Nenner (vor
+    % dem Kürzen) zwischen 3 und 7 liegt, und die unter dem Pfad
+    % "foo/bar" in das Datasheet eingeordnet wird
+
+  \ppdrandrat[Z]{foo/bar}{-2}{2}{1}{4}
+    % Erzeugt eine zufällige, maximal gekürzte rationale Zahl, deren
+    % Zähler (vor dem Kürzen) zwischen -2 und 2 und deren Nenner (vor
+    % dem Kürzen) zwischen 1 und 4 liegt und die ungleich 0 ist, und
+    % die unter dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+
+  \ppdrandrat[z][r]{foo/bar}{-2}{2}{1}{4}
+    % Erzeugt eine zufällige, ungekürzte rationale Zahl, deren Zähler
+    % zwischen -2 und 2 und deren Nenner zwischen 1 und 4 liegt, und
+    % die unter dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+\endverbatim
+
+
+\subsection{\backslash\/ppdrandreal}\label{cmd_ppdrandreal}
+
+Erzeugt für jeden Benutzer eine zufällige reelle Zahl. Gedacht für
+personalisierte Aufgabenstellungen. Die Zahl wird bei der Benutzer-Darstellung
+normal gerendert, es sei denn, sie befindet sich innerhalb einer
+\texenv{hidden}-Umgebung.
+
+Dieser Befehl ist nur im mathematischen Modus erlaubt.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/ppdrandreal[\var{non_zero}]\{\var{path}\}\{\var{min}\}\{\var{max}\}
+\end{preformatted}
+
+\var{min} und \var{max} bestimmen den Bereich, in dem die Zufallszahl $x$
+liegen soll. Es müssen reelle Zahlen mit $\,\mbox{\var{min}} \le
+\mbox{\var{max}}$ sein. \var{non_zero} darf die Werte \val{z} und \val{Z}
+annehmen. Ist \var{non_zero} gleich \val{Z}, so muss $x$ von Null verschieden
+sein, sonst nicht. Default ist \val{z}. \var{path} gibt den Pfad an, unter dem
+$x$ in das Datasheet eingeordnet wird.
+
+[Genauer gilt: Der Bereich $\Omega$, aus dem $x$ kommt, ist gleich $[
+\mbox{\var{min}} , \mbox{\var{max}} ]\setminus\{0\}$, falls \var{non_zero} den
+Wert \val{Z} hat, andernfalls $[ \mbox{\var{min}}, \mbox{\var{max}} ]$.
+Innerhalb von $\Omega$ sind die Zufallszahlen gleichverteilt.]
+
+
+Die Erzeugung der Zufallszahl erfolgt noch nicht bei der Konvertierung nach
+XML. Hierbei wird der Befehl zunächst in das PPD-Element
+\href{ppd_xml.xhtml\#element_random_real}{ppd:random_real}
+transformiert. Die Zufallszahl entsteht später bei der XML-Verarbeitung im Japs.
+
+Beispiele:
+
+\verbatim[code]
+  \ppdrandreal{foo/bar}{-0.5}{0.5}
+    % Erzeugt eine zufällige reelle Zahl zwischen -0.5 und 0.5, die unter
+    % dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+
+  \ppdrandreal[z]{foo/bar}{-0.5}{0.5}
+    % Erzeugt eine zufällige reelle Zahl zwischen -0.5 und 0.5, die unter
+    % dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+
+  \ppdrandreal[Z]{foo/bar}{-0.5}{0.5}
+    % Erzeugt eine zufällige reelle Zahl zwischen -0.5 und 0.5 ungleich 0,
+    % die unter dem Pfad "foo/bar" in das Datasheet eingeordnet wird
+\endverbatim
+
+
+\subsection{\backslash\/solution}\label{cmd_solution}
+
+Gibt für eine zur Wahl stehenden Antwort an, ob diese richtig oder falsch ist.
+Hat ein Argument; dieses darf die Werte \val{true}, (Antwort ist richtig),
+\val{false} (Antwort ist falsch) oder \val{compute} (Antwort hängt von den
+personalisierten Daten ab) annehemen (s. \ref{solution}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/solution\{\alt{{true}{false}{compute}}\}
+\end{preformatted}
+
+
+
+\subsection{\backslash\/subtask}\label{cmd_subtask}
+
+Leitet eine neue Teilaufgabe innerhalb einer \texenv{subtasks}-Umgebung ein
+(s. \ref{env_subtasks}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/subtask
+\end{preformatted}
+
+
+\section{Umgebungs-Referenz}
+
+\subsection{assertion}\label{env_assertion}
+
+Definiert den Wortlaut einer zur Wahl stehenden Antwort. Erlaubt innerhalb der
+\texenv{choice}-Pseudo-Umgebung. Äquivalent zum gleichnahmigen Befehl
+(s. \ref{cmd_assertion}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{assertion\}
+    \% Content: \MISC
+  \backslash\/end\{assertion\}
+\end{preformatted}
+
+Der Inhalt der Umgebung ist der Wortlaut der zur Wahl stehenden Antwort.
+
+
+\subsection{choices}\label{env_choices}
+
+Definiert die Liste der zur Wahl stehenden Antworten für eine
+Multiple-Choice-Aufgabe. Der Typ der Aufgabe (s. \ref{choices_type}) wird als
+Argument übergeben.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{choices\}\{\alt{{unique}{multiple}{yesno}}\}
+    \% Content: \meta{(}\cmdref{choice} \MISC\meta{)}*
+  \backslash\/end\{choices\}
+\end{preformatted}
+
+Die \texcmd{choice}-Befehle entsprechen den \texcmd{item}-Befehlen einer
+normalen Listenumgebung. Sie leiten jeweils eine zur Wahl stehende Antwort ein
+ein.
+
+Beispiel (Skizze):
+
+\verbatim[code]
+  \begin{choices}{multiple}
+    \choice
+      % Erste mögliche Antwort
+     \choice
+      % Zweite mögliche Antwort
+     % . . .
+  \end{choices}
+\endverbatim
+
+
+\subsection{commonexpl}\label{env_commonexpl}
+
+Gibt eine gemeinsame ausführliche Begründung für die Lösungen zu allen zur
+Auswahl stehenden Antworten. Äquivalent zum gleichnahmigen Befehl (s.
+\ref{cmd_commonexpl}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{commonexpl\}
+    \% Content: \MISC
+  \backslash\/end\{commonexpl\}
+\end{preformatted}
+
+Der Inhalt der Umgebung ist die ausführliche Begründung.
+
+
+
+\subsection{data}\label{env_data}
+
+Zeichnet seinen Inhalt (d.h. den Inhalt der \texenv{data}-Umgebung) als Daten
+für das Data-Sheet aus. Der Pfad, unter dem die Daten in das Data-Sheet
+eingeordnet werden, wird als Argument übergeben.  Der Inhalt wird bei der
+Benutzer-Darstellung normal gerendert, es sei denn, er befindet sich innerhalb
+einer \texenv{hidden}-Umgebung.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{data\}\{\var{path}\}
+    \% Content: \MISC
+  \backslash\/end\{data\}
+\end{preformatted}
+
+Dabei ist \var{path} der Pfad der Daten im Data-Sheet. Die Daten selbst
+entstehen durch die Übersetzung des Inhalts der Umgebung nach XML.
+
+Beispiel:
+
+\verbatim[code]
+  \begin{data}{common/problem/matrix-1}
+    \begin{bmatrix}
+      0 & 1 & 2 &  3\\
+      4 & 5 & 6 & 7\\
+      8 & 9 & 10 & 11
+    \end{bmatrix}
+  \end{data}
+\endverbatim
+
+Der XML-Knoten, der durch die Übersetzung der \texenv{bmatrix}-Umgebung
+hervorgeht, wird unter dem Pfad \val{common/problem/matrix-1} in das Data-Sheet
+eingetragen.
+
+
+\subsection{execute}\label{env_execute}
+
+Enthält das Applet, das als "Bearbeitungs-Engine" für die Aufgabe fungieren
+soll.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{execute\}
+    \% Content: \backslash\/applet \meta{|} applet
+  \backslash\/end\{execute\}
+\end{preformatted}
+
+
+\subsection{explanation}\label{env_explanation}
+
+Gibt für eine zur Wahl stehende Antwort eine ausführliche Begründung der
+Lösung an. Äquivalent zum gleichnahmigen Befehl (s. \ref{cmd_explanation}).
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{explanation\}
+    \% Content: \MISC
+  \backslash\/end\{explanation\}
+\end{preformatted}
+
+Der Inhalt der Umgebung ist die ausführliche Begründung der Lösung.
+
+
+\subsection{hidden}\label{env_hidden}
+
+Enthält Dokument-Teile, die bei der Benutzer-Darstellung nicht angezeigt werden
+sollen. Der Inhalt der \texenv{hidden}-Umgebung wird normal nach XML übersetzt,
+aber bei der Transformation in die Benutzer-Darstellung (im Normalfall
+XHTML+MathML) ignoriert.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{hidden\}
+    \% Content: \ANY
+  \backslash\/end\{hidden\}
+\end{preformatted}
+
+
+\subsection{subtasks}\label{env_subtasks}
+
+Spezielle Listenumgebung zur Definition von Teilaufgaben.
+
+Prototyp:
+
+\begin{preformatted}[code]%
+  \backslash\/begin\{subtasks\}
+    \% Content: \meta{(}\cmdref{subtask} \MISC\meta{)}*
+  \backslash\/end\{subtasks\}
+\end{preformatted}
+
+Die \texcmd{subtask}-Befehle entsprechen den \texcmd{item}-Befehlen einer
+normalen Listenumgebung. Sie leiten jeweils eine Teilaufgabe ein.
+
+Beispiel:
+
+\verbatim[code]
+  \begin{subtasks}
+    \subtask
+      Berechnen Sie $A^{-1}$
+    \subtask
+      Berechnen Sie $B^{-1}$
+    \subtask
+      Berechnen Sie $A \times B$
+  \end{subtasks}
+\endverbatim
+
+Die Teilaufgaben werden in der Benutzer-Darstellung numeriert, und zwar
+defaultmäßig mit a), b), \ldots
+
+
+\section{Beispiele}
+
+\subsection{Kategorie "{}applet"}
+
+\verbatim[code]
+  \documentclass{japs.problem.applet}
+
+  \begin{metainfo}
+    \name{Der Name}
+    \begin{description}
+      Die Beschreibung
+    \end{description}
+    \copyrightinfo{(c) 2005, Technische Universitaet Berlin}
+    \status{pre}
+    \begin{changelog}
+      Die Aenderungshistorie
+    \end{changelog}
+    \begin{components}
+      \defapplet{pfad/zur/applet/master_datei.meta.xml}{engine}
+    \end{components}
+    \corrector{pfad/zum/corrector/master_datei.meta.xml}
+  \end{metainfo}
+
+  \begin{content}
+
+    \title{Multiplikation von Matrizen}
+
+    Gegeben seien die folgenden Matrizen:
+
+    \begin{displaymath}
+      A =
+      \begin{data}{common/problem/matrix_1}
+        \begin{bmatrix}
+          1 & 2 & 3 \\
+          4 & 5 & 6 \\
+          7 & 8 & 9
+        \end{bmatrix}
+      \end{data}
+      \, , \quad B =
+      \begin{data}{common/problem/matrix_2}
+        \begin{bmatrix}
+          2 & 3 & 4 \\
+          5 & 6 & 7 \\
+          8 & 9 & 0
+        \end{bmatrix}
+      \end{data}
+      \, , \quad C =
+      \begin{data}{common/problem/matrix_3}
+        \begin{bmatrix}
+          3 & 4 & 5 \\
+          6 & 7 & 8 \\
+          9 & 0 & 1
+        \end{bmatrix}
+      \end{data}
+    \end{displaymath}
+
+    \begin{subtasks*}
+      \subtask Berechnen Sie $A B$
+      \subtask Berechnen Sie $B C$
+      \subtask Berechnen Sie $A C$
+    \end{subtasks*}
+
+    \begin{execute}
+      \applet{engine}
+    \end{execute}
+
+  \end{content}
+\endverbatim
+
+
+\subsection{Kategorie "mchoice"}
+
+\verbatim[code]
+  \documentclass{japs.problem.mchoice}
+
+  \begin{metainfo}
+    \name{Der Name}
+    \begin{description}
+      Die Beschreibung
+    \end{description}
+    \copyrightinfo{(c) 2005, Technische Universitaet Berlin}
+    \status{pre}
+    \begin{changelog}
+      Die Aenderungshistorie
+    \end{changelog}
+    \corrector{pfad/zum/corrector/master_datei.meta.xml}
+  \end{metainfo}
+
+  \begin{content}
+
+    \title{Matrizen}
+
+    Gegeben seien die Matrizen
+
+    \begin{displaymath}
+      A \, = \,
+      \begin{bmatrix}
+        0 & 1 & 2 &  3 \\
+        4 & 5 & 6 & 7 \\
+        8 & 9 & 10 & 11
+      \end{bmatrix}
+      \quad\mbox{und}\quad
+      B \, = \,
+      \begin{bmatrix}
+        3 & 5 & 2 & 0\\
+        7 & 0 & 1 & 4\\
+        0 & 1 & 4 & 1\\
+        7 & 4 & 9 & 0\\
+      \end{bmatrix}
+      \, .
+    \end{displaymath}
+
+    Welche der folgenden Aussagen sind richtig?
+
+    \begin{choices}{multiple}
+      \choice
+        \assertion{$A$ ist quadratisch}
+        \solution{no}
+        \explanation{Zeilenzahl (3) $\neq$ Spaltenzahl (4)}
+      \choice
+        \assertion{$B$ ist quadratisch}
+        \solution{yes}
+        \explanation{Zeilenzahl (4) $=$ Spaltenzahl (4)}
+      \choice
+        \assertion{$B$ ist eine Diagonalmatrix}
+        \solution{no}
+        \explanation{Es gibt Nicht-Diagonalelemente $\neq 0$,
+          z.B. das Element $B_{12}$, welches $= 5$ ist.}
+    \end{choices}
+
+    Betrachten Sie nun das Matrixprodukt $AB$. welche Dimension
+    (Zeilenzahl$\times$Spaltenzahl) hat die resultierende Matrix?
+
+    \begin{coices}{unique}
+      \choice
+        \assertion{$0 \times 0$}
+      \choice
+        \assertion{$4 \times 4$}
+      \choice
+        \assertion{$3 \times 3$}
+      \choice
+        \assertion{$4 \times 3$}
+      \choice
+        \assertion{$3 \times 4$}
+        \solution{true}
+      \begin{commonexpl}
+        Allgemein gilt: Das Produkt einer $n \times m$-Matrix mit einer
+        $m \times p$-Matrix ist eine $n \times p$-Matrix.
+      \end{commonexpl}
+    \end{choices}
+
+    Welche der folgenden Matrixprodukte sind ebenfalls definiert?
+
+    \begin{coices}{yesno}
+      \choice
+        \assertion{$AA$}
+        \solution{no}
+        \explanation{Denn Spaltenzahl von $A$ (4) $\neq$ Zeilenzahl
+          von $A$ (3)}
+      \choice
+        \assertion{$BB$}
+        \solution{yes}
+        \explanation{Denn Spaltenzahl von $B$ (4) $\neq$ Zeilenzahl
+          von $B$ (4)}
+      \choice
+        \assertion{$BA$}
+        \solution{no}
+        \explanation{Denn Spaltenzahl von $B$ (4) $\neq$ Zeilenzahl
+          von $A$ (3)}
+    \end{choices}
+
+  \end{content}
+\endverbatim
+
+\section{Verwendete Abkürzungen}
+
+\begin{enumerate}
+\item MISC\label{abbrev_misc} 
+
+  Konstrukte wie definiert in \href{generische_tex_bef_umg.xhtml}{Generische
+    TeX-Befehle und Umgebungen}; mathematische Formeln; Multimedia (Bilder usw.).
+\end{enumerate}
+
+
+-- ENDE DER DATEI --
+
+\end{document}
+
+

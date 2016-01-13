@@ -1,0 +1,157 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.5 2007/07/25 00:13:27 rassy Exp $
+
+
+
+                                    MMJVMD
+
+
+
+1. Introduction
+   ============
+
+Mmjvmd is a Java VM daemon. It runs as a Java process in the background. Clients
+can communicate with the daemon (or server, how the daemon is called, too) via
+Unix sockets. Usually, a client starts a command on the server. Commands are
+represented as certain Java classes having an execute method. Starting a command
+means calling its execute method. Each command runs in its own thread of the
+daemon process. The standard input, standard output, and standard error steams
+are sent through the socket from the client to the server resp. from the server
+to the client.
+
+Mmjvmd comes with two executables: mmjvmd and mmjvmc. The former is a Bash
+script to start and stop the server. The latter is a client program written in
+C.
+
+
+2. Starting the server
+   ===================
+
+To start the server, type
+
+  $ mmjvmd start
+
+at the shell prompt. After a few messages, the command returns. If no error
+occurred, the server is now running.
+
+
+3. Testing whether the server is running
+   =====================================
+
+To test whether the server is running or not, type
+
+  $ mmjvmd status
+
+at the shell prompt. A short message is printed which gives you the desired
+information.
+
+
+4. Stopping the server
+   ===================
+
+To stop the server, type
+
+  $ mmjvmd stop
+
+at the shell prompt. This stops the server provided that currently no commands
+are executed on the server. If this condition is not fulfilled, the server
+refuses to stop. To stop the server regardless of whether this condition is
+fulfilled or not, type
+
+  $ mmjvmd stop-force
+
+instead. This stops the server and all currently executed commands.
+
+
+5. Starting commands
+   =================
+
+To start a Jvmd command, type
+
+  $ mmjvmc <name> [ <param1> <param2> ... ]
+
+Where <name> and <param1>, <param2>, ... are the name and the parameters of the
+command (PLEASE NOTE: the program name is "mmjvmc" now instead of "mmjvmd" as
+in the foregoing sections). Here is an example:
+
+  $ mmjvmc lscmds -h
+
+calls the Jvmd command "lscmds" with the parameter "-h".
+
+
+6. Files
+   =====
+
+There are two important directories for Mmjvmd, <prefix>/etc/mmjvmd and
+~/.mmjvmd (<prefix> stands for the install prefix). The former contains global,
+the latter user-specific files. The files are:
+
+  (1) <prefix>/etc/mmjvmd/mmjvmd.conf
+
+    Sourced by mmjvmd. This is done before Java is started when mmjvmd is
+    launched to start the server.
+
+  (2) <prefix>/etc/mmjvmd/mmjvmd.init
+
+    Sourced by mmjvmd when launched to start the server, i.e., when called with
+    the "start" parameter. Sourcing is done after Java has been started and the
+    server is ready to handle requests.
+
+  (3) ~/.mmjvmd/mmjvmd.conf
+
+    If existing, this file is sourced by mmjvmd immediately after (1), so the
+    settings in this file take precedence over those in (1).
+
+  (4) ~/.mmjvmd/mmjvmd.init
+
+    If existing, this file is sourced by mmjvmd when launched to start the
+    server. This is done immediately after (2) has been sourced, so the
+    settings in this file take precedence over those in (2).
+
+  (5) ~/.mmjvmd/mmjvmd.socket
+
+    The socket file. This is created when the server starts and removed when
+    the server is shut down. When the socket file is created, the file creation
+    mask (umask) is temporarily set to ---rwxrwx to guarantee that only the
+    user running Mmjvmd can access the socket file.
+
+  (5) ~/.mmjvmd/mmjvmd.log.01, ~/.mmjvmd/mmjvmd.log.02, ...
+
+    The log files. Mmjvmd uses log rotating. The maximum number of log files is
+    10 be default (can be changed in the global or user-specific mmjvmd.conf
+    file). The number at the end of the filenames indicate the number of the
+    files in the log rotate.
+
+Please note: The mmjvmd.conf files are sourced regardless which parameters you
+specify on the command line, whereas the mmjvmd.init files are sourced only of
+you call mmjvmd with the "start" parameter.
+
+
+7. Troubleshooting
+   ===============
+
+  6.1. Problem: If you try to start the server, you get an error of the form:
+
+         Socket file exists
+
+       or
+
+         java.io.IOException: Binding socket to filename
+         "/home/foo/.mmjvmd/mmjvmd.socket" failed: Address already in use
+
+       There are two possible reasons for this problem:
+
+       6.1.1. The last mmjvmd process was not cleanly shut down (this is the
+              most likely reason). The socket file of the old process still
+              exists, and the new process can not bind its socket to it. The
+              solution is to delete the socket file:
+
+                rm $HOME/.mmjvmd/mmjvmd.socket
+
+       6.1.2. You are in a computer network, your home directory is mounted via
+              NFS on all computers, and you already run mmjvmd from another
+              computer. The only solution in this case is to stop the mmjvmd
+              process on the other computer.
+
+
+-- END OF FILE --

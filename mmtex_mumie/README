@@ -1,0 +1,15 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.2 2007/12/04 16:54:38 rassy Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                                  MMTEX-MUMIE
+
+
+This package contains Mmtex document classes and libraries implementing the
+LaTeX dialect in which the content for the Mumie e-learning platform is
+written.
+
+You can use Mmtex-Mumie under the terms of the GNU General Public Licence. See
+the file "LICENSE" for details.

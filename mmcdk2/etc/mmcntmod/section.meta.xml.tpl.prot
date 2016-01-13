@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ASCII"?>
+<mumie:section xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:name>@name@</mumie:name>
+  <mumie:description>
+   - No description available -
+  </mumie:description>
+</mumie:section>

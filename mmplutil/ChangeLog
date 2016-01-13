@@ -1,0 +1,26 @@
+2007-04-26  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* lib/perl/Mumie/XML/Writer.pm (xml_continuous_text): Return if
+	text is void. Corrected typo:  'process_row_string' ->
+	'process_raw_string'.
+
+2007-03-05  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* build.sh: Changed target print-vars into option --vars.
+
+	* INSTALL: Revised section 2, "Installation location". Adapted it
+	to other build.sh scripts.
+
+	* README: Created this file.
+
+	* LICENSE: Added this file.
+
+2006-07-18  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* build.sh: Corrected typo in function uninstall_version_file
+	which prevented the version file from being deleted. 
+	Corrected typo in function show_targets (target "dist" was wrongly
+	named "create-dist").
+	Pasted utility functions into main code (no "source
+	tools/bash/build.inc" any more).
+	

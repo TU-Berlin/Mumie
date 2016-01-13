@@ -1,0 +1,205 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!--
+  ================================================================================
+  Definitions
+  ================================================================================
+-->
+
+<!-- Values for margin or padding: -->
+<css:def id="no-space" value="0px 0px 0px 0px"/>
+<css:def id="default-space" value="1em 1em 1em 1em"/>
+
+<!-- Font sizes, absolute: -->
+<css:def id="normalsize" value="12pt"/>
+
+<!-- Font sizes, relative: -->
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="slightly-larger-rel" value="110%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<!-- Colors: -->
+<css:def id="box-fill-color" value="#FBFBFB"/>
+<css:def id="box-border-color" value="#949494"/>
+<css:def id="hover-fill-color" value="#E3FFE3"/>
+<css:def id="fill-color" value="#EAEAEA"/>
+<css:def id="stroke-color" value="#949494"/>
+
+<!--
+  ================================================================================
+  Headlines
+  ================================================================================
+-->
+
+<css:rule selector='h3'>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<css:rule selector='h2'>
+  <css:property name='font-size' ref='slightly-larger-rel'/>
+</css:rule>
+
+<css:rule selector='h1'>
+  <css:property name='font-size' ref='large-rel'/>
+</css:rule>
+
+<css:rule selector='h1, h2, h3, h4, h5'>
+  <css:property name='font-weight' value='bold'/>
+  <css:property name='margin' value='1em 0em 1em 0em'/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Meta block (timeframe, editable)
+  ================================================================================
+-->
+
+<css:rule selector="div.meta">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" value="0.75ex 0.5em 0.75ex 0.5em"/>
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" ref="box-border-color"/>
+  <css:property name="background-color" ref="box-fill-color"/>
+</css:rule>
+
+<css:rule selector="table.meta">
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="width" value="100%"/>
+</css:rule>
+
+<css:rule selector="table.meta &gt; tr &gt; td">
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" ref="box-border-color"/>
+  <css:property name="background-color" ref="box-fill-color"/>
+  <css:property name="margin" ref="no-space"/>
+  <css:property name="padding" value="0.75ex 0.5em 0.75ex 0.5em"/>
+</css:rule>
+
+<css:rule selector="table.meta &gt; tr &gt; td.left">
+  <css:property name="text-align" value="left"/>
+  <css:property name="border-right-style" value="none"/>
+</css:rule>
+
+<css:rule selector="table.meta td.right">
+  <css:property name="text-align" value="right"/>
+  <css:property name="border-left-style" value="none"/>
+</css:rule>
+
+<css:rule selector="span.label">
+  <css:property name="margin"  value="0em 0.5em 0em 1em"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="span.label:first-child">
+  <css:property name="margin-left" value="0em"/>
+</css:rule>
+
+<css:rule selector="span.value">
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="span.edit">
+  <css:property name="margin"  value="0em 0em 0em 1em"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Button area
+  ================================================================================
+-->
+
+<css:rule selector="div.buttons, div.grades">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<css:rule selector="div.buttons a + a">
+  <css:property name="margin-left" value="1em"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Grades area
+  ================================================================================
+-->
+
+<css:rule selector="div.grades">
+  <css:property name="margin" ref="default-space"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<css:rule selector="div.grades &gt; h1">
+  <css:property name="margin-top" value="0em"/>
+  <css:property name="margin-bottom" value="0.25em"/>
+</css:rule>
+
+<!--
+  ================================================================================
+  Grades table
+  ================================================================================
+-->
+
+<css:rule selector='table.grades'>
+  <css:property name='border-collapse' value='collapse'/>
+  <css:property name='margin' value='1.5ex 0em 1.5ex 0em'/>
+</css:rule>
+
+<css:rule selector='table.grades thead'>
+  <css:property name='background-color' ref='fill-color'/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='table.grades td'>
+  <css:property name='padding' value='0.5ex 0.5em 0.5ex 0.5em'/>
+  <css:property name='border-style' value='solid'/>
+  <css:property name='border-color' ref='stroke-color'/>
+  <css:property name='border-width' value='1px'/>
+  <css:property name="text-align" value="center"/>
+</css:rule>
+
+<css:rule selector='table.grades tfoot'>
+  <css:property name='font-size' ref='small-rel'/>
+</css:rule>
+
+</css:style>

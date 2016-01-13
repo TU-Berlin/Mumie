@@ -1,0 +1,2554 @@
+<?xml version="1.0"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Authors:  Tilman Rassy
+             Fritz Lehman-Grube
+
+  Author:  Tilman Rassy
+
+  Version: $Id: config.xml,v 1.271 2010/01/13 15:01:16 rassy Exp $
+-->
+
+<config filename="config.xml" cvs-id="$Id: config.xml,v 1.271 2010/01/13 15:01:16 rassy Exp $">
+
+  <!--
+     ==========================================================================================
+     Document types
+     ==========================================================================================
+  -->
+
+  <document-types thumbnail="generic_image" corrector="java_class">
+
+    <document-type name="generic_page"
+                   is-generic-of="page"
+                   description="Multi purpose page"/>
+
+    <document-type name="generic_image"
+                   is-generic-of="image"
+                   has-width-and-height="yes"
+                   description="Image"/>
+
+    <document-type name="page"
+                   role="page"
+                   has-text-source="yes"
+                   no-refs-to="generic_summary,summary"
+                   has-binary-source="no"
+                   description="Multi purpose page"/>
+
+    <document-type name="summary"
+                   description="An abstract to a course, course_section or worksheet"/>
+
+    <document-type name="generic_summary"
+                   is-generic-of="summary"
+                   description="A multi language abstract to a course, course_section or worksheet"/>
+
+    <document-type name="element"
+                   role="element"
+                   has-category="yes"
+                   no-refs-to="course,course_section,worksheet,generic_summary,summary"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   description="E-learning element"/>
+
+    <document-type name="generic_element"
+                   is-generic-of="element"
+                   has-category="yes"
+                   description="multi language element"/>
+
+    <document-type name="subelement"
+                   role="subelement"
+                   has-category="yes"
+                   no-refs-to="course,course_section,worksheet,generic_summary,summary"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   description="E-learning subelement"/>
+
+    <document-type name="generic_subelement"
+                   is-generic-of="subelement"
+                   has-category="yes"
+                   description="multi language subelement"/>
+
+    <document-type name="java_class"
+                   no-refs-to="*"
+                   format="binary"
+                   has-qualified-name="yes"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   description="Java class"/>
+
+    <document-type name="problem"
+                   no-refs-to="course,course_section,worksheet,generic_summary,summary"
+                   has-text-source="yes"
+                   has-category="yes"
+                   has-corrector="yes"
+                   description="E-learning problem">
+
+<!-- DEPRECATED
+      <has-corrector default="yes">
+        <except-category name="traditional"/>
+      </has-corrector>
+-->
+    </document-type>
+
+    <document-type name="generic_problem"
+                   is-generic-of="problem"
+                   has-category="yes"
+                   description="multi language problem"/>
+
+   <document-type name="image"
+                   no-refs-to="*"
+                   format="binary"
+                   has-width-and-height="yes"
+                   has-text-source="no"
+                   has-binary-source="yes"
+                   description="Image"/>
+
+    <document-type name="applet"
+                   format="binary"
+                   no-refs-to="*"
+                   refs-to="jar"
+                   is-recursive-component="yes"
+                   has-qualified-name="yes"
+                   has-width-and-height="yes"
+                   has-alt-image="yes"
+                   has-text-source="yes"
+                   has-binary-source="yes"
+                   description="Java applet"/>
+
+    <document-type name="sound"
+                   format="binary"
+                   no-refs-to="*"
+                   has-duration="yes"
+                   has-alt-image="yes"
+                   has-text-source="no"
+                   has-binary-source="yes"
+                   description="Audio document"/>
+
+    <document-type name="generic_sound"
+                   is-generic-of="sound"
+                   format="binary"
+                   has-duration="yes"
+                   has-alt-image="yes"
+                   description="Audio document"/>
+    
+    <document-type name="movie"
+                   format="binary"
+                   no-refs-to="*"
+                   has-duration="yes"
+                   has-alt-image="yes"
+                   has-text-source="no"
+                   has-binary-source="yes"
+                   description="video document"/>
+    
+    <document-type name="generic_movie"
+                   is-generic-of="movie"
+                   has-duration="yes"
+                   has-alt-image="yes"
+                   description="video document"/>
+    
+    <document-type name="jar"
+                   format="binary"
+                   no-refs-to="*"
+                   refs-to="jar"
+                   is-recursive-component="yes"
+                   has-text-source="no"
+                   has-binary-source="yes"
+                   description="Java archive"/>
+    
+    <document-type name="js_lib"
+                   no-refs-to="*"
+                   refs-to="js_lib"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   description="JavaScript library"/>
+    
+    <document-type name="xsl_stylesheet"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   no-refs-to="course,course_section,worksheet,generic_summary,summary,element,generic_element,subelement,generic_subelement,problem,generic_problem"
+                   description="XSL stylesheet"/>
+    
+    <document-type name="generic_xsl_stylesheet"
+                   is-generic-of="xsl_stylesheet"
+                   description="XSL stylesheet"/>
+
+    <document-type name="css_stylesheet"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   no-refs-to="course,course_section,worksheet,generic_summary,summary,element,generic_element,subelement,generic_subelement,problem,generic_problem"
+                   description="CSS stylesheet"/>
+
+    <document-type name="generic_css_stylesheet"
+                   is-generic-of="css_stylesheet"
+                   description="CSS stylesheet"/>
+
+    <document-type name="course"
+                   has-class="yes"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   has-summary="yes"
+                   may-be-wrapper="yes"
+                   refs-to="course_section,worksheet"
+                   description="Course, structured collection of Course sections and worksheets" />
+		   
+    <document-type name="course_section"
+                   has-text-source="yes"
+                   has-binary-source="no"
+                   has-summary="yes"
+                   refs-to="element,generic_element,subelement,generic_subelement"
+                   description="Course section" />
+		   
+    <document-type name="worksheet"
+                   has-text-source="yes"
+                   has-timeframe="yes"
+                   has-binary-source="no"
+                   has-category="yes"
+                   has-summary="yes"
+                   may-be-wrapper="yes"
+                   refs-to="problem,generic_problem"
+                   description="Course subsection" />
+
+    <document-type name="flash"
+                   format="binary"
+                   refs-to="flash,image,sound"
+                   is-recursive-component="yes"
+                   has-width-and-height="yes"
+                   has-text-source="yes"
+                   description="Flash movie"/>
+
+  </document-types>
+
+  <!--
+     ==========================================================================================
+     Pseudo-document types
+     ==========================================================================================
+  -->
+
+  <pseudodoc-types>
+
+    <pseudodoc-type name="section"
+                    description="A section."/>
+
+    <pseudodoc-type name="theme"
+                    description="A theme."/>
+
+    <pseudodoc-type name="language"
+                    description="A language."/>
+
+    <pseudodoc-type name="user"
+                    description="A MUMIE user."
+                    java-class="DefaultGeneralUser"/>
+
+    <pseudodoc-type name="user_group"
+                    description="A user group"/>
+
+    <pseudodoc-type name="semester"
+                    description="An university semester."/>
+
+    <pseudodoc-type name="class"
+                    description="An e-learning class."
+                    java-class="DefaultELClass"/>
+
+    <pseudodoc-type name="tutorial"
+                    description="A tutorial."/>
+
+  </pseudodoc-types>
+
+  <!--
+     ==========================================================================================
+     Use modes
+     ==========================================================================================
+  -->
+
+  <use-modes>
+
+    <use-mode name="serve"
+              description="The (pseudo-)document is about to be served to the client"/>
+
+    <use-mode name="component"
+              description="A component of another (pseudo-)document"/>
+
+    <use-mode name="link"
+              description="A link in another (pseudo-)document"/>
+
+    <use-mode name="info"
+              description="An info page about the (pseudo-)document"/>
+
+    <use-mode name="checkin"
+              description="The (pseudo-)document is about to be checked-in into the database"/>
+
+    <use-mode name="checkout"
+              description="The (pseudo-)document is about to be checked-out from the database"/>
+
+  </use-modes>
+
+  <!--
+     ==========================================================================================
+     Categories
+     ==========================================================================================
+  -->
+
+  <categories corrector="corrector">
+
+    <category name="definition"
+              description="A definition"/>
+
+    <category name="theorem"
+              description="A theorem"/>
+
+    <category name="lemma"
+              description="A lemma"/>
+
+    <category name="application"
+              description="An application"/>
+
+    <category name="motivation"
+              description="A motivation"/>
+
+    <category name="algorithm"
+              description="An algorithm"/>
+
+    <!-- DEPRECEDED soon: -->
+    <category name="problem"
+              description="A problem to be solved by students"/>
+
+    <category name="proof"
+              description="A proof"/>
+
+    <category name="visualization"
+              description="A visualization"/>
+
+    <category name="deduction"
+              description="A deduction"/>
+
+    <category name="remark"
+              description="A remark"/>
+
+    <category name="history"
+              description="Historical information"/>
+
+    <category name="example"
+              description="An example"/>
+
+    <category name="test"
+              description="A test"/>
+
+    <category name="prelearn"
+              applies-to="worksheet"
+              description="A prelearning worksheet"/>
+
+    <category name="homework"
+              applies-to="worksheet"
+              description="A homework worksheet"/>
+
+    <category name="applet"
+              applies-to="problem"
+              description="A problem that is to be solved with an applet"/>
+
+    <category name="mchoice"
+              applies-to="problem"
+              description="A problem consisting of multiple choice questions"/>
+
+    <category name="freetext"
+              applies-to="problem"
+              description="A problem consisting of questions answered by free-text"/>
+
+    <category name="corrector"
+              applies-to="java_class"
+              description="A corrector for problems"/>
+
+    <category name="corrector_inner_class"
+              applies-to="java_class"
+              description="Inner class of a corrector for problems"/>
+
+    <category name="pretest"
+              applies-to="worksheet"
+              description="A pretest worksheet"/>
+
+    <category name="traditional"
+              applies-to="problem"
+              description="A problem without corrector"/>
+
+    <category name="selftest"
+              applies-to="worksheet"
+              description="A selftest worksheet"/>
+
+    <category name="program"
+              applies-to="problem"
+              description="A programming problem"/>
+
+    <category name="training"
+              applies-to="worksheet"
+              description="training"/>
+
+    <category name="special"
+              applies-to="worksheet"
+              description="Hidden worksheet for speacial purposes"/>
+
+  </categories>
+
+  <!--
+     ==========================================================================================
+     Database tables
+     ==========================================================================================
+  -->
+
+  <db-tables>
+    <db-table name="media_types"
+              description="The possible media types"/>
+
+    <db-table name="semesters"
+              description="The time interval, for which a course( or such) is valid. "/>
+
+    <db-table name="categories"
+              description="The possible categories"/>
+
+    <db-table name="ref_types"
+              description="The possible reference types"/>
+
+    <db-table name="ann_types"
+              description="The possible annotation types"/>
+
+    <db-table name="user_roles"
+              description="The possible user roles"/>
+
+    <db-table name="sections"
+              description="The sections"/>
+
+    <db-table name="text_sources"
+           description="Sources of documents in text format (e.g. tex)"/>
+
+    <db-table name="binary_sources"
+           description="Sources of documents in binary format (e.g. jar)"/>
+
+    <db-table name="themes"
+              description="The themes, subject of generic document implementation (gdim)"/>
+
+    <db-table name="languages"
+              description="The languages, subject of generic document implementation (gdim)"/>
+
+    <db-table name="users"
+              description="The user table"/>
+
+    <db-table name="user_groups"
+           description="Groups of users"/>
+
+    <db-table name="user_group_members"
+           description="Junction. Binds users to groups"/>
+
+    <!-- DEPRECATED soon: -->
+    <db-table name="subelement_in_element"
+           description="The table that controles to which elements a subelement may be attached"/>
+
+    <db-table name="tutorials"
+           description="Tutorials"/>
+
+    <db-table name="classes"
+           description="E-learning classes."/>
+
+    <db-table name="class_course"
+           description="Junction which classes are teaching which ourses"/>
+
+    <db-table name="class_lecturers"
+           description="Junction, describes which users are lecturers of a class."/>
+
+    <db-table name="tutorial_members"
+           description="Junction, binds users to tutorials"/>
+
+    <db-table name="user_problem_context"
+              description="Table for exporting homework data"/>
+
+    <db-table name="problem_context"
+              description="Table for problem context data, that is tutorials, classes, courses, worksheets and problems that are connected as
+   - tutorial belongs to a single class
+   - course belongs to a single class
+   - worksheet belongs to a (by convention a single) course
+   - problem belongs to worksheets"/>
+
+    <db-table name="user_group_members_detailed"
+              description="view with memberships and detailed user-data combined."/>
+
+    <db-table name="content_objects"
+             description="View with a union of common metadata of all Documents and Pseudodocuments"/>
+    <db-table name="latest_content_objects"
+             description="View with a union of common metadata of all Documents and Pseudodocuments- only lates and not deleted"/>
+
+    <db-table name="classes_and_courses"
+              description="List containing all e-learning classes and all (latest) courses"/>
+
+    <db-table name="assigned_problems"
+              description="A view with data (ref_id, label, points etc.) about problems referenced from worksheets"/>
+
+    <db-table name="course_members"
+              description="View mapping users to courses "/>
+
+    <db-table name="worksheet_context" description="View providing data about worksheets"/>
+
+    <db-table name="user_worksheet_edited"
+              description="Auxiliary view; provides number of edited problems per usr/worksheet pair"/>
+
+    <db-table name="user_worksheet_corrected"
+              description="Auxiliary view; provides number of edited problems and number of achieved points per usr/worksheet pair"/>
+
+
+    <db-table name="user_worksheet_grades" description="View providing data about user/worksheet grades"/>
+
+    <db-table name="tutorial_occupancies"
+              description="How many members each tutorial has"/>
+
+    <db-table name="tutorials_ext"
+              description="Tutorials table plus occupancies"/>
+
+  </db-tables>
+
+  <!--
+     ==========================================================================================
+     Database table columns
+     ==========================================================================================
+  -->
+
+  <db-columns>
+
+    <db-column name="id"
+               description="A database id"/>
+
+    <db-column name="vc_thread"
+               description="A version control thread"/>
+
+    <db-column name="version"
+               description="A version number"/>
+
+    <db-column name="deleted"
+               description="marks a vc_thread as deleted"/>
+
+    <db-column name="hide"
+               description="Indicates that a (pseudo-)document is not shown in the mm browser"/>
+
+    <db-column name="category"
+               description="A category in the Mumie sense"/>
+
+    <db-column name="pure_name"
+               description="A file or directory name without leading path
+                            and without trailing suffix"/>
+
+    <db-column name="path"
+               description="Path of a document or pseudo-document"/>
+
+    <db-column name="name"
+               description="A name"/>
+
+    <db-column name="login_name"
+               description="A login name"/>
+
+    <db-column name="filename"
+               description="A filename of a source"/>
+
+    <db-column name="email"
+               description="The email address of a person"/>
+
+    <db-column name="qualified_name"
+               description="A qualified name, e.g., for Java classes"/>
+
+    <db-column name="description"
+               description="A short description"/>
+
+    <db-column name="copyright"
+               description="A copyright information"/>
+
+    <db-column name="time"
+               description="Initialization time of answers"/>
+
+    <db-column name="last_modified"
+               description="Last modification time"/>
+
+    <db-column name="last_login"
+               description="Last access time of a person"/>
+
+    <db-column name="created"
+               description="Creation time"/>
+
+    <db-column name="first_modified"
+               description="First modification time"/>
+
+    <db-column name="start_time"
+               description="Beginning of a semester (the validity of a course)"/>
+
+    <db-column name="end_time"
+               description="End of a semester (the validity of a course). Defaults to SQL 'NULL'"/>
+
+    <db-column name="timeframe_start"
+               description="Beginning of the validity of a worksheet"/>
+
+    <db-column name="timeframe_end"
+               description="End the validity of a worksheet. Defaults to SQL 'NULL'"/>
+
+    <db-column name="contained_in"
+               description="Section a document is contained in"/>
+
+    <db-column name="custom_metainfo"
+               description="Arbitrary metainfos in XML format"/>
+
+    <db-column name="content"
+               description="Document content"/>
+
+    <db-column name="content_type"
+               description="Internet media type of a document content"/>
+
+    <db-column name="content_length"
+               description="Length of a document content"/>
+
+    <db-column name="info_page"
+               description="An info page for a document"/>
+
+    <db-column name="summary"
+               description="A reference to a generic(!) summary for a course document (formaly known as abstract)"/>
+
+    <db-column name="thumbnail"
+               description="A thumbnail for a document"/>
+
+    <db-column name="semester"
+               description="Validity of courses"/>
+
+    <db-column name="changelog"
+               description="Developers notes about a document"/>
+
+    <db-column name="width"
+               description="Width (e.g., of an image)"/>
+
+    <db-column name="height"
+               description="Height (e.g., of an image)"/>
+
+    <db-column name="duration"
+               description="Duration (e.g., of a sound or movie)"/>
+
+    <db-column name="from_doc"
+               description="Referencing document"/>
+
+    <db-column name="to_doc"
+               description="Referenced document"/>
+
+    <db-column name="doc"
+               description="a document's id in a single-annotations table"
+               xml-element-constant="SDOC"/>
+
+    <db-column name="doc1"
+               description="a document's id in an annotations table"/>
+
+    <db-column name="doc2"
+               description="a document's id in an annotations table"/>
+
+    <db-column name="lid"
+               description="A local id"/>
+
+    <db-column name="param"
+               description="A document parameter"/>
+
+    <db-column name="ref_type"
+               description="A reference type"/>
+
+    <db-column name="ann_type"
+	       description="An annotation type"/>
+
+    <db-column name="document"
+               description="A document"/>
+
+    <db-column name="generic_document"
+               description="A generic document"/>
+
+    <db-column name="pseudo_document"
+               description="A document"/>
+
+    <db-column name="element"
+               description="An element document"/>
+
+    <db-column name="subelement"
+               description="A subelement document"/>
+
+    <db-column name="worksheet"
+               description="A worksheetdocument"/>
+
+    <db-column name="course"
+               description="A course document"/>
+
+    <db-column name="section"
+               description="A section"/>
+
+    <db-column name="author"
+               description="An author"/>
+
+    <db-column name="role"
+               description="A role, e.g., the role of an author with respect to a document."/>
+
+    <db-column name="theme"
+               description="A theme referecnce"/>
+
+    <db-column name="language"
+               description="A language referecnce"/>
+
+    <db-column name="password"
+               description="A password"/>
+
+    <db-column name="surname"
+               constant="SURNAME"
+               description="A person's surname"/>
+
+    <db-column name="first_name"
+               description="A person's first name"/>
+
+    <db-column name="type"
+               description="A type (used with media types as major type)"/>
+
+    <db-column name="subtype"
+               description="A subtype (used with media types as minor type)"/>
+
+    <db-column name="admin"
+               description="The administrator of something"/>
+
+    <db-column name="final"
+               description="Boolean indicating whether a section is final or not"/>
+
+    <db-column name="member"
+               description="A member of a user_group or a document that can have members"/>
+
+    <db-column name="user_group"
+               description="A user_group"/>
+
+    <db-column name="the_user"
+               constant="USER"
+               description="A user (cannot use 'user', which is a reserved word in sql)"/>
+
+    <db-column name="ref"
+               description="A reference to a reference (in annotations table)"/>
+
+    <db-column name="corrector"
+               description="Corrector for a problem."/>
+
+    <db-column name="sync_id"
+               description="The synchronization id"/>
+
+    <db-column name="tutorial"
+               description="An id in the tutorials table"/>
+
+    <db-column name="tutor"
+               description="The tutor of a tutorial"/>
+
+    <db-column name="class"
+               description="The class a tutorial belongs to"/>
+
+    <db-column name="lecturer"
+               description="A lecturer of a  class"/>
+
+    <db-column name="class_id"
+               description="Id of an e-learning class (homework results export table)"/>
+
+    <db-column name="class_name"
+               description="Name of an e-learning class (homework results export table)"/>
+
+    <db-column name="class_sync_id"
+               description="Synchronization id of an e-learning class (homework results export table)"/>
+
+    <db-column name="course_id"
+               description="Id of a course"/>
+
+    <db-column name="course_name"
+               description="Name of a course"/>
+
+    <db-column name="course_vc_thread_id"
+               description="Id of the VC thread of a course"/>
+
+    <db-column name="worksheet_name"
+               description="Name of a worksheet (homework results export table)"/>
+
+    <db-column name="worksheet_vc_thread_id"
+               description="Id of a worksheet vc thread (homework results export table)"/>
+
+    <db-column name="worksheet_lid"
+               description="Lid of a worksheet (homework results export table)"/>
+
+    <db-column name="worksheet_label"
+               description="Label of a worksheet (homework results export table)"/>
+
+    <db-column name="vc_thread_id"
+               description="Id of a vc thread"/>
+
+    <db-column name="category_id"
+               description="Id of a category"/>
+
+    <db-column name="worksheet_category_id"
+               description="Id of a worksheet category (homework results export table)"/>
+
+    <db-column name="worksheet_category_name"
+               description="Name of a worksheet category (homework results export table)"/>
+
+    <db-column name="problem_id"
+               description="Id of a problem"/>
+
+    <db-column name="problem_name"
+               description="Name of a problem"/>
+
+    <db-column name="problem_lid"
+               description="Lid of a problem (homework results export table)"/>
+
+    <db-column name="problem_label"
+               description="Label of a problem"/>
+
+    <db-column name="problem_category_id"
+               description="Id of a problem category"/>
+
+    <db-column name="problem_ref_id"
+               description="Id of a worksheet-problem reference (homework results export table)"/>
+
+    <db-column name="problem_max_points"
+               description="Maximum number of points for a problem (homework results export table)"/>
+
+    <db-column name="user_id"
+               description="Id of an user"/>
+
+    <db-column name="user_login_name"
+               description="Login name of an user"/>
+
+    <db-column name="user_surname"
+               description="Surname of an user"/>
+
+    <db-column name="user_sync_id"
+               description="Sync id of a user"/>
+
+    <db-column name="user_email"
+               description="Email address of an user"/>
+
+    <db-column name="tutorial_id"
+               description="Id of a tutorial"/>
+
+    <db-column name="tutorial_name"
+               description="Name of a tutorial (homework results export table)"/>
+
+    <db-column name="tutorial_sync_id"
+               description="Synchronization id of a tutorial (homework results export table)"/>
+
+    <db-column name="score"
+               description="Score for a homework problem"/>
+
+    <db-column name="state"
+               description="State for a worksheet to a user"/>
+
+    <db-column name="new_id">
+      <description>
+        <l>New id, in the result set returned when querying references</l>
+        <l>with same lids</l>
+      </description>
+    </db-column>
+
+    <db-column name="old_id">
+      <description>
+        <l>Old id, in the result set returned when querying references</l>
+        <l>with same lids</l>
+      </description>
+    </db-column>
+
+    <db-column name="new_ref_type">
+      <description>
+        <l>New reference type, in the result set returned when querying references</l>
+        <l>with same lids</l>
+      </description>
+    </db-column>
+
+    <db-column name="old_ref_type">
+      <description>
+        <l>Old reference type, in the result set returned when querying references</l>
+        <l>with same lids</l>
+      </description>
+    </db-column>
+
+    <db-column name="section_path"
+               description="Path of a the section of a (pseudo-)document"/>
+
+    <db-column name="code"
+               description="few-letter code for languages"/>
+
+    <db-column name="source"
+               description="Document source"/>
+
+    <db-column name="source_type"
+               description="Internet media type of a document source"/>
+
+    <db-column name="source_length"
+               description="Length of a document source"/>
+
+    <db-column name="doc_type"
+               description="A (pseudo-)document type (view content objects)"/>
+
+    <db-column name="sync_home"
+               description="A home section for each sync-user to contain semesters, classes and tutorials"/>
+
+    <db-column name="worksheet_id"
+               description="A worksheets id"/>
+
+    <db-column name="points"
+               description="A problem's maximal points"/>
+
+    <db-column name="label"
+               description="A components label"/>
+
+    <db-column name="result"
+               description="Result of a user in a problem"/>
+
+    <db-column name="ref_id"
+               description="Id of a reference"/>
+
+    <db-column name="problem_category"
+               description="Category of a (generic) problem"/>
+
+    <db-column name="worksheet_category"
+               description="Category of a worksheet"/>
+
+    <db-column name="user_first_name"
+               description="First name of a user"/>
+
+    <db-column name="tutor_id"
+               description="Id of a tutor"/>
+
+    <db-column name="tutor_first_name"
+               description="First name of a tutor"/>
+
+    <db-column name="tutor_surname"
+               description="Surname of a tutor"/>
+
+    <db-column name="student_id"
+               description="Id of a student"/>
+
+    <db-column name="student_first_name"
+               description="First name of a student"/>
+
+    <db-column name="student_surname"
+               description="Surname of a student"/>
+
+    <db-column name="num_problems"
+               description="Number of problems in a worksheet"/>
+
+    <db-column name="num_edited"
+               description="Number of problems in a worksheet edited by a certain user"/>
+
+    <db-column name="num_corrected"
+               description="Number of problems in a worksheet corrected for a certain user"/>
+
+    <db-column name="grade"
+               description="Grade (number of points achieved)"/>
+
+    <db-column name="is_wrapper"
+               description="Whether this document is a wrapper"/>
+
+    <db-column name="capacity"
+               description="Capacity of a tutorial"/>
+
+    <db-column name="occupancy"
+               description="Occupancy of a tutorial"/>
+    
+  </db-columns>
+
+  <!--
+     ==========================================================================================
+     Database constants
+     ==========================================================================================
+  -->
+
+  <db-constants>
+
+    <db-constant name="name_length"
+                 value="128"
+                 description="Maximum length of names (number of characters)"/>
+
+    <db-constant name="filename_length"
+                 value="512"
+                 description="Maximum length of filenames (number of characters)"/>
+
+    <db-constant name="sync_id_length"
+                 value="128"
+                 description="Maximum length of synchronization ids (number of characters)"/>
+
+    <db-constant name="password_length"
+                 value="128"
+                 description="Maximum length of encrypted users passwords (number of characters)"/>
+
+    <db-constant name="fallback-theme.id"
+                 value="0"
+                 description="Database id of the default theme"/>
+
+  </db-constants>
+
+  <!--
+     ==========================================================================================
+     XML elements
+     ==========================================================================================
+  -->
+
+  <xml-elements>
+
+    <xml-element name="components"
+                 description="The components of a document"/>
+
+    <xml-element name="links"
+                 description="The links in a document"/>
+
+    <xml-element name="attachable"
+                 description="A list of documents to which this document is attachable"/>
+
+    <xml-element name="sources"
+                 description="The sources of a document"/>
+
+    <xml-element name="text_source"
+                 description="The source of a document in text format"/>
+
+    <xml-element name="binary_source"
+                 description="The source of a document in binary format"/>
+
+    <xml-element name="contained_in"
+                 description="The elements a subelement is contained in"/>
+
+    <xml-element name="authors"
+                 description="The authors of a document"/>
+
+    <xml-element name="section"
+                 description="A section"/>
+
+    <xml-element name="user"
+                 description="A user"/>
+
+    <xml-element name="themes"
+                 description="The themes a document is used in"/>
+
+    <xml-element name="permission"
+                 description="collects usergroups having the (read or write) permission
+                 in a document's master file"/>
+
+    <xml-element name="read_permissions"
+                 description="Collects documents the members of a user_group may read"/>
+
+    <xml-element name="write_permissions"
+                 description="Collects vc_threads the members of a user_group may edit"/>
+
+    <xml-element name="create_permissions"
+                 description="Collects the document types the members of a user_group may edit"/>
+
+    <xml-element name="document_type"
+                 description="Type of documents the members of a user_group may create"/>
+
+    <xml-element name="link"
+                 description='The "link" child of "content" in a document to check in.'/>
+
+    <xml-element name="documents"
+                 description="A list of documents"/>
+
+    <xml-element name="pseudo_documents"
+                 description="A list of pseudo documents"/>
+
+    <xml-element name="large_objects"
+                 description="A group of large objects (in the database sence)"/>
+
+    <xml-element name="checkin"
+                 description="Root element of the build checkin file"/>
+
+    <xml-element name="large_object"
+                 description="A large object (in the database sence)"/>
+
+    <xml-element name="root_admin"
+                 description="The RootAdmin, when being member of a UserGroup"/>
+
+    <xml-element name="dynamic_data"
+                 description="Data that may very from request to request."/>
+
+    <xml-element name="document"
+                 description="Wrappes a document-describing XML fragment"/>
+
+    <xml-element name="document_index"
+                 description="A document index"/>
+
+    <xml-element name="document_member_index"
+                 description="A document member index"/>
+
+    <xml-element name="members"
+                 description="A list of members of a document, a tutorial, or something like that"/>
+
+    <xml-element name="store"
+                 description="Generic data container"/>
+
+    <xml-element name="random_integer"
+                 description="Generates a random integer (PPD namespace)."/>
+
+    <xml-element name="random_rational"
+                 description="Generates a random rational number (PPD namespace)."/>
+
+    <xml-element name="random_real"
+                 description="Generates a random real number (PPD namespace)."/>
+
+    <xml-element name="random_select"
+                 description="Randomly selects one of several numbers."/>
+
+    <xml-element name="copy"
+                 description="A copy of a personalized problem data item (PPD namespace)."/>
+
+    <xml-element name="sync_id"
+                 description="A syncronization id."/>
+
+    <xml-element name="semester"
+                 description="An id in the semesters table"/>
+    
+    <!--
+    commented out as this leads to the constant THEME to be defined twice in 
+    net.mumie.cocoon.notions.XMLElement
+    <xml-element name="theme"
+                 description="A theme."/>
+    --> 
+
+    <xml-element name="ref_attribute"
+                 description="A reference attribute."/>
+
+    <xml-element name="lecturers"
+                 description="The lecturers of an e-learning class"/>
+
+    <xml-element name="tutorials"
+                 description="The tutorials of an e-learning class"/>
+
+    <xml-element name="user_groups"
+                 description="A list of user groups."/>
+
+    <xml-element name="from"
+                 description="A reference origin"/>
+
+    <xml-element name="to"
+                 description="A reference target"/>
+
+    <xml-element name="sessions"
+                 description="A list of sessions"/>
+
+    <xml-element name="session"
+                 description="A session"/>
+
+    <xml-element name="last_accessed"
+                 description="The time of the last access, for example, of a session"/>
+
+    <xml-element name="owner"
+                 description="The owner of a session"/>
+
+    <xml-element name="service_status"
+                 description="The status of a service in the Avalon/Excalubur sense"/>
+
+    <xml-element name="service_status_overview"
+                 description="Overview over the statuses of services in the Avalon/Excalubur sense"/>
+
+    <xml-element name="service_class"
+                 description="The class implementing a service  (status namespace)"/>
+
+    <xml-element name="number_of_created_instances"
+                 description="Number of created instances of a class (status namespace)"/>
+
+    <xml-element name="number_of_running_instances"
+                 description="Number of running instances of a class (status namespace)"/>
+
+    <xml-element name="number_of_active_instances"
+                 description="Number of active instances of a class (status namespace)"/>
+
+    <xml-element name="number_of_recycled_instances"
+                 description="Number of recycled instances of a class (status namespace)"/>
+
+    <xml-element name="number_of_disposed_instances"
+                 description="Number of disposed instances of a class (status namespace)"/>
+
+    <xml-element name="number_of_lookedup_instances"
+                 description="Number of looked-up instances of a class (status namespace)"/>
+
+    <xml-element name="number_of_used_instances"
+                 description="Number of used instances of a class (status namespace)"/>
+
+    <xml-element name="instance_statuses"
+                 description="Container for a list of instance statuses (status namespace)"/>
+
+    <xml-element name="instance_status"
+                 description="Status of a single instance of a class (status namespace)"/>
+
+    <xml-element name="lifecycle"
+                 description="The lifecycle status of a service instance (status namespace)"/>
+
+    <xml-element name="number_of_starts"
+                 description="The number of starts of a service instance (status namespace)"/>
+
+    <xml-element name="number_of_recycles"
+                 description="The number of recycles of a service instance (status namespace)"/>
+
+    <xml-element name="number_of_stops"
+                 description="The number of stops of a service instance (status namespace)"/>
+
+    <xml-element name="number_of_lookups"
+                 description="The number of lookups of a service instance (status namespace)"/>
+
+    <xml-element name="number_of_releases"
+                 description="The number of releases of a service instance (status namespace)"/>
+
+    <xml-element name="first_started"
+                 description="The time of the first start of a service instance (status namespace)"/>
+
+    <xml-element name="last_recycled"
+                 description="The time of the last recycle of a service instance (status namespace)"/>
+
+    <xml-element name="last_stopped"
+                 description="The time of the last recycle of a service instance (status namespace)"/>
+
+    <xml-element name="last_lookup"
+                 description="The time of the last lookup of a service instance (status namespace)"/>
+
+    <xml-element name="last_release"
+                 description="The time of the last release of a service instance (status namespace)"/>
+
+    <xml-element name="not_available"
+                 description="indicates that status information are not available (status namespace)"/>
+
+    <xml-element name="disposed"
+                 description="The time of the dispose of a service instance (status namespace)"/>
+
+    <!-- DEPRECATED: -->
+    <xml-element name="homework_results"
+                 description="List of homework results"/>
+
+    <!-- DEPRECATED: -->
+    <xml-element name="homework_result"
+                 description="Item in the list of homework results"/>
+
+    <xml-element name="data"
+                 description="Root element of the exported data"/>
+
+    <xml-element name="record"
+                 description="Record of the exported data"/>
+
+    <xml-element name="item"
+                 description="Item of the exported data"/>
+
+    <xml-element name="user_problem_data"
+                 description="Data of a certain problem/user pair"/>
+
+    <xml-element name="answers_last_modified"
+                 description="Last modification time of problem answers"/>
+
+    <xml-element name="correction_last_modified"
+                 description="Last modification time of problem correction"/>
+
+    <xml-element name="common_data_last_modified"
+                 description="Last modification time of problem common data"/>
+
+    <xml-element name="correction_reports"
+                 description="List of correction reports"/>
+
+    <xml-element name="correction_report"
+                 description="A correction report"/>
+
+    <xml-element name="error"
+                 description="An error report"/>
+
+    <xml-element name="message"
+                 description="A message, e.g., in an error report."/>
+
+    <xml-element name="checkin_report"
+                 description="Report after a checkin"/>
+
+    <xml-element name="gdim_entries"
+                 description="List of GDIM entries"/>
+
+    <xml-element name="gdim_entry"
+                 description="A single GDIM entry"/>
+
+    <xml-element name="classes_and_courses"
+                 description="List containing all e-learning class and all (latest) courses"/>
+
+    <xml-element name="contains"
+                 description="Section index"/>
+
+    <xml-element name="user_worksheet_grades"
+                 description="Grades of a user in the problems of a given worksheet"/>
+
+    <!-- DEPRECATED: -->
+    <xml-element name="problem_grade"
+                 description="Grade of a user in a certain problem"/>
+
+    <!-- DEPRECATED: -->
+    <xml-element name="worksheet_grade"
+                 description="Grade in a worksheet"/>
+
+    <!-- DEPRECATED: -->
+    <xml-element name="total_grade"
+                 description="Total grade (e.g., in a worksheet or course)"/>
+
+    <xml-element name="tutorial_user_problem_grades"
+                 description="List of grades per user and problem in a tutorial"/>
+
+    <xml-element name="user_problem_grade"
+                 description="Grade of a user in a problem"/>
+
+    <xml-element name="user_problem_grades"
+                 description="All grades of an user"/>
+
+    <xml-element name="user_course_grade"
+                 description="Grade of a user in a course"/>
+
+    <xml-element name="total_class_grades"
+                 description="All grades of all user"/>
+    
+    <xml-element name="worksheet_user_problem_grades"
+                 description="All grades for a user of a worksheet"/>
+    
+    <xml-element name="problem"
+                 description="Comprises (generic) problem data in a grades list"/>
+
+    <xml-element name="worksheet"
+                 description="Comprises worksheet data in a grades list"/>
+
+    <xml-element name="class_tutorials"
+                 description="List of tutorials of an e-lerning class"/>
+
+    <xml-element name="courses_and_tutorials"
+                 description="List of courses and tutorials of an e-lerning class"/>
+
+    <xml-element name="class_members"
+                 description="List of members of an e-lerning class"/>
+
+    <xml-element name="choices"
+                 description="List of choices in a multiple choice problem"/>
+
+    <xml-element name="option"
+                 description="Option in a multiple choice problem"/>
+
+    <xml-element name="class_user_worksheet_grades"
+                 description="Total grades per worksheet for all users of a class"/>
+    
+    <xml-element name="class_user_problem_grades"
+                 description="Total grades per problem for all users of a class"/>
+
+    <xml-element name="user_worksheet_grade"
+                 description="Total grade of a user in a worksheet"/>
+
+    <xml-element name="sync_home"
+                 description="Synchronisation home section of a user"/>
+
+    <xml-element name="user_import_report"
+                 description="Report after import of users"/>
+
+    <xml-element name="container"
+                 description="Container for something"/>
+
+    <xml-element name="generic_document_impl"
+                 description="Real document implementing a generic document"/>
+
+    <xml-element name="id"
+                 description="In id (used with search requests)"/>
+
+    <xml-element name="user_search"
+                 description="Search for users"/>
+
+    <xml-element name="request"
+                 description="Request (e.g., of a search)"/>
+
+    <xml-element name="result"
+                 description="Result (e.g., of a search)"/>
+
+    <xml-element name="component_of"
+                 description="List of documents a given document is a component of"/>
+
+    <xml-element name="link_of"
+                 description="List of documents a given document is a link of"/>
+
+    <xml-element name="delete"
+                 description="Controls the deletion of (pseudo-)documents"/>
+
+    <xml-element name="last"
+                 description="Last deleted (pseudo-)document"/>
+
+    <xml-element name="next"
+                 description="Next (pseudo-)document to delete"/>
+
+    <xml-element name="content_code"
+                 description="XML code of the content as a string"/>
+
+    <xml-element name="user_problem_data_index"
+                 description="List of all problem data (ppd, answers, corrections) for a user"/>
+
+  </xml-elements>
+
+  <!--
+     ==========================================================================================
+     XML attributes
+     ==========================================================================================
+  -->
+
+  <xml-attributes>
+
+    <xml-attribute name="use_mode"
+                   description="The use mode of a document"/>
+
+    <xml-attribute name="id"
+                   description="The id of a document"/>
+
+    <xml-attribute name="oid"
+                   description="A database oid"/>
+
+    <xml-attribute name="lid"
+                   description="The local id of a document"/>
+
+    <xml-attribute name="param"
+                   description="A parameter"/>
+
+    <!-- DEPRECATED?: -->
+    <xml-attribute name="id_ref_param"
+                   description="The parameter containing the id of a document"/>
+
+    <xml-attribute name="ref_id"
+                   description="The id of the reference pointing to a document."/>
+
+    <xml-attribute name="url"
+                   description="An URL"/>
+
+    <xml-attribute name="doc_url"
+                   description="URL of a document"/>
+
+    <xml-attribute name="generic_doc_path"
+                   description="Path of a generic document"/>
+
+    <xml-attribute name="generic_doc_url"
+                   description="URL of a generic document"/>
+
+    <xml-attribute name="generic_doc_id"
+                   description="ID of a generic document"/>
+
+    <xml-attribute name="value"
+                   description="The value of a datum"/>
+
+    <xml-attribute name="raw"
+                   description="The raw value of a datum"/>
+
+    <xml-attribute name="name"
+                   description="The name of a something"/>
+
+    <xml-attribute name="type">
+      <description>
+        <l>A type. Used e.g. with media types as major type, or with permissions</l>
+        <l>to destinguish between "read" and "write", or for (pseudo-)document types.</l>
+      </description>
+    </xml-attribute>
+
+    <xml-attribute name="subtype"
+                   description="A subtype (used with media types as minor type)"/>
+
+    <xml-attribute name="type_name"
+                   description="The type of a (pseudo-)document as a string name."/>
+
+    <xml-attribute name="format"
+                   description="A time format"/>
+
+    <xml-attribute name="level"
+                   description="A level"/>
+
+    <xml-attribute name="sublevel"
+                   description="A sublevel"/>
+
+    <xml-attribute name="admin"
+                   description="boolean flag on a user - user_group relationship"/>
+
+    <xml-attribute name="read_default">
+      <description>
+        <l>A boolean marker used with group permissions. Specifes whether</l>
+        <l>this group is the one that shall, by default, have read permissions</l>
+        <l>on documents created by this user.</l>
+      </description>
+    </xml-attribute>
+
+    <xml-attribute name="write_default"
+                   description="A boolean marker specifying whether 
+                   this group is the one, that shall, by default, have write-permissions 
+                   on documents created by this user."/>
+
+    <xml-attribute name="given"
+                   description="boolean flag on a user_group-document relationship:
+                   set to 'true' if a permission is given"/>
+
+    <xml-attribute name="role"
+                   description="role of the author to a document.
+                   One of 'developer', 'content checker', 'tech checker'"/>
+
+    <xml-attribute name="originator"
+                   description='Originator of a "dynamic_data" element.'/>
+
+    <xml-attribute name="path"
+                   description='A path, e.g., in a data sheet.'/>
+
+    <xml-attribute name="min"
+                   description='Minimum value of something'/>
+
+    <xml-attribute name="max"
+                   description='Maximum value of something'/>
+
+    <xml-attribute name="numerator_min"
+                   description='Minimum value of the numerator (PPD namespace)'/>
+
+    <xml-attribute name="numerator_max"
+                   description='Maximum value of the numerator (PPD namespace)'/>
+
+    <xml-attribute name="denominator_min"
+                   description='Minimum value of the denominator (PPD namespace)'/>
+
+    <xml-attribute name="denominator_max"
+                   description='Maximum value of the denominator (PPD namespace)'/>
+
+    <xml-attribute name="non_zero"
+                   description='Wether a number should be non-zero'/>
+
+    <xml-attribute name="reduce"
+                   description='Wether a fraction should be reduced'/>
+
+    <xml-attribute name="reason"
+                   description='The reason of something (esp. status namespace)'/>
+
+    <xml-attribute name="recyclable"
+                   description='Whether a java class is recyclable (status namespace)'/>
+
+    <xml-attribute name="disposable"
+                   description='Whether a java class is disposable (status namespace)'/>
+
+    <xml-attribute name="startable"
+                   description='Whether a java class is startable (status namespace)'/>
+
+    <xml-attribute name="lookup_notifyable"
+                   description='Whether a java class is lookup notifyable (status namespace)'/>
+
+    <xml-attribute name="user_id"
+                   description='The id of an user'/>
+
+    <xml-attribute name="score"
+                   description='The score of an user in a problem'/>
+
+    <xml-attribute name="state"
+                   description='The state of a worksheet to a user'/>
+
+    <xml-attribute name="status">
+      <description>
+        <l>The status of something. (Used e.g. in the correction report namespace</l>
+      </description>
+    </xml-attribute>
+
+    <xml-attribute name="old_path"
+                   description="Old path of a document to check in"/>
+
+    <xml-attribute name="old_url"
+                   description="Same as old_path. Deprecated"/>
+
+    <xml-attribute name="theme_path"
+                   description="Path of a theme"/>
+
+    <xml-attribute name="lang"
+                   description="A Language path."/>
+
+    <xml-attribute name="lang_code"
+                   description="A Language code."/>
+
+    <xml-attribute name="only_latest"
+                   description="boolean - indicates, whether an index contains only current versions."/>
+
+    <xml-attribute name="worksheet_id"
+                   description="A worksheets id"/>
+
+    <xml-attribute name="problem_id"
+                   description="A problem id"/>
+
+    <xml-attribute name="category"
+                   description="A category name"/>
+
+    <xml-attribute name="label"
+                   description="A label"/>
+
+    <xml-attribute name="points"
+                   description="Maximum number of points"/>
+
+    <xml-attribute name="result"
+                   description="Achieved number of points"/>
+
+    <xml-attribute name="course_id"
+                   description="Id of a course"/>
+
+    <xml-attribute name="problem_categories"
+                   description="List of problem categories"/>
+
+    <xml-attribute name="worksheet_categories"
+                   description="List of worksheet categories"/>
+
+    <xml-attribute name="tutorial_id"
+                   description="Id of a worksheet"/>
+
+    <xml-attribute name="first_name"
+                   description="First name of a user"/>
+
+    <xml-attribute name="surname"
+                   description="Surname of a user"/>
+
+    <xml-attribute name="tutorial_name"
+                   description="Name of a tutorial"/>
+
+    <xml-attribute name="course_name"
+                   description="Name of a course"/>
+
+    <xml-attribute name="vc_thread_id"
+                   description="Id of a VC thread"/>
+
+    <xml-attribute name="class_id"
+                   description="Id of an e-learning class"/>
+
+    <xml-attribute name="class_name"
+                   description="Name of an e-learning class"/>
+
+    <xml-attribute name="total"
+                   description="The total number of something"/>
+
+    <xml-attribute name="tutor_id"
+                   description="Id of a tutor"/>
+
+    <xml-attribute name="tutor_first_name"
+                   description="First name of a tutor"/>
+
+    <xml-attribute name="tutor_surname"
+                   description="Surname of a tutor"/>
+
+    <xml-attribute name="edited_problems"
+                   description="Sum of all edited problems of an user"/>
+
+    <xml-attribute name="corrected_problems"
+                   description="Sum of all corrected problems of an user"/>
+
+    <xml-attribute name="total_problems"
+                   description="Sum of all problems of a course"/>
+    
+    <xml-attribute name="total_points"
+                   description="Sum of all points of all problems of a course"/>
+
+    <xml-attribute name="sync_id"
+                   description="The syncId of something"/>
+
+    <xml-attribute name="key"
+                   description="A key, may occur in different contexts"/>
+
+    <xml-attribute name="number"
+                   description="A number, may occur in different contexts"/>
+
+    <xml-attribute name="edited"
+                   description="Number of edited problems"/>
+
+    <xml-attribute name="corrected"
+                   description="Number of corrected problems"/>
+
+    <xml-attribute name="problems"
+                   description="Number of problems in a worksheet"/>
+
+    <xml-attribute name="src"
+                   description="The source of something"/>
+
+    <xml-attribute name="input"
+                   description="Value a user entered in a form"/>
+
+    <xml-attribute name="error"
+                   description="An error message"/>
+
+    <xml-attribute name="id_of_generic"
+                   description="Id of a generic document"/>
+
+    <xml-attribute name="capacity"
+                   description="Capacity of a tutorial"/>
+
+    <xml-attribute name="occupancy"
+                   description="Occupancy of a tutorial"/>
+    
+    <xml-attribute name="timeframe_start"
+               description="Beginning of the validity of a worksheet"/>
+    
+    <xml-attribute name="timeframe_end"
+                   description="End the validity of a worksheet."/>
+    
+    <xml-attribute name="current_time"
+                   description="Current time."/>
+    
+    <xml-attribute name="done"
+                   description="Done items of something"/>
+    
+    <xml-attribute name="current"
+                   description="Current item of something"/>
+    
+    <xml-attribute name="last_modified"
+                   description="Date of last modification"/>
+    
+    <xml-attribute name="last_modified_raw"
+                   description="Date of last modification, as number of milliseconds since 00:00 Jan 1 1970"/>
+    
+    <xml-attribute name="worksheet_label"
+                   description="Label of a worksheet"/>
+    
+    <xml-attribute name="problem_label"
+                   description="Label of a (generic) problem"/>
+    
+    <xml-attribute name="mode"
+                   description="Mode of something"/>
+    
+    <xml-attribute name="task"
+                   description="Task"/>
+    
+  </xml-attributes>
+
+  <!--
+     ==========================================================================================
+     XML namespaces
+     ==========================================================================================
+  -->
+
+  <xml-namespaces>
+
+    <xml-namespace name="meta"
+                   uri="http://www.mumie.net/xml-namespace/document/metainfo"
+                   prefix="mumie"
+                   description="Namespace of the meta informations of a document"/>
+
+    <!-- DEPRECATED: -->
+    <xml-namespace name="custom_meta"
+                   uri="http://www.mumie.net/xml-namespace/document/custom-metainfo"
+                   prefix="custom"
+                   description="Namespace of the custom meta informations of a document"/>
+
+    <xml-namespace name="PPD"
+                   uri="http://www.mumie.net/xml-namespace/personalized-problem-data"
+                   prefix="ppd"
+                   description="Personalized problem data"/>
+
+    <xml-namespace name="status"
+                   uri="http://www.mumie.net/xml-namespace/status"
+                   prefix="status"
+                   description="Status reports of the server"/>
+
+    <xml-namespace name="session"
+                   uri="http://www.mumie.net/xml-namespace/session"
+                   prefix="ses"
+                   description="Sessions"/>
+
+    <!-- DEPRECATED: -->
+    <xml-namespace name="data-record-list"
+                   uri="http://www.mumie.net/xml-namespace/data-record-list"
+                   prefix="drl"
+                   description="Data organized as a list of records"/>
+
+    <xml-namespace name="correction-report"
+                   uri="http://www.mumie.net/xml-namespace/correction-report"
+                   prefix="cr"
+                   description="Report about a (bulk) correction"/>
+
+    <xml-namespace name="error"
+                   uri="http://www.mumie.net/xml-namespace/error"
+                   prefix="err"
+                   description="Error report"/>
+
+    <xml-namespace name="sitemap"
+                   uri="http://apache.org/cocoon/sitemap/1.0"
+                   prefix="map"
+                   description="Sitemap"/>
+
+    <xml-namespace name="sitemap-autocoding"
+                   uri="http://www.mumie.net/xml-namespace/sitemap-autocoding"
+                   prefix="smac"
+                   description="Sitemap autocoding"/>
+
+    <xml-namespace name="grades"
+                   uri="http://www.mumie.net/xml-namespace/grades"
+                   prefix="grades"
+                   description="Grades, that is, achieved points in problems and worksheets"/>
+
+    <xml-namespace name="data-records"
+                   uri="http://www.mumie.net/xml-namespace/data-records"
+                   prefix="dr"
+                   description="List data records"/>
+
+    <!-- FIXME: Same as "correction-report" ? -->
+    <xml-namespace name="correction-reports"
+                   uri="http://www.mumie.net/xml-namespace/correction-reports"
+                   prefix="cr"
+                   description="Protocol of a bulk correction"/>
+
+    <xml-namespace name="problem"
+                   uri="http://www.mumie.net/xml-namespace/document/problem"
+                   prefix="prb"
+                   description=""/>
+
+    <xml-namespace name="import-report"
+                   uri="http://www.mumie.net/xml-namespace/import-report"
+                   prefix="scr"
+                   description="Report after a data import"/>
+
+  </xml-namespaces>
+
+  <!--
+     ==========================================================================================
+     Media types
+     ==========================================================================================
+  -->
+
+  <media-types>
+
+    <media-type type="application"
+                subtype="x-java-archive"
+                suffix="jar"
+                description="A jar archive"/>
+
+    <media-type type="application"
+                subtype="x-java-vm"
+                suffix="class"
+                description="A Java class"/>
+
+    <media-type type="application"
+                subtype="x-javascript"
+                suffix="js"
+                description="JavaScript"/>
+
+    <media-type type="application"
+                subtype="x-shockwave-flash"
+                suffix="swf"
+                description="A SWF Flash document"/>
+    
+    <media-type type="application"
+                subtype="zip"
+                description="A zip archive"/>
+
+    <media-type type="audio"
+                subtype="mpeg"
+                suffix="mpg"
+                description="An MPEG audio document"/>
+
+    <media-type type="audio"
+                subtype="wav"
+                description="A WAV audio document"/>
+
+    <media-type type="image"
+                subtype="gif"
+                description="A GIF image"/>
+
+    <media-type type="image"
+                subtype="jpeg"
+                suffix="jpg"
+                description="A JPEG image"/>
+
+    <media-type type="image"
+                subtype="png"
+                description="A PNG image"/>
+
+    <media-type type="image"
+                subtype="tiff"
+                description="A TIFF image"/>
+
+    <media-type type="text"
+                subtype="plain"
+                suffix="txt"
+                description="A plain text document"/>
+
+    <media-type type="text"
+                subtype="xml"
+                description="An XML document"/>
+    
+    <media-type type="text"
+                subtype="html"
+                description="A HTML document"/>
+
+    <media-type type="text"
+                subtype="css"
+                description="A CSS stylesheet"/>
+
+    <media-type type="text"
+                subtype="tex"
+                description="A TeX document (TeX, LaTeX, MmTeX, ...)"/>
+
+    <media-type type="text"
+                subtype="java"
+                description="A Java source document"/>
+    
+  </media-types>
+
+  <!--
+     ==========================================================================================
+     Request parameters
+     ==========================================================================================
+  -->
+
+  <request-params>
+
+      <request-param name="sync-id"
+                     description="A synchronization id"/>
+
+      <request-param name="pure-name"
+                     description="A filename body"/>
+
+      <request-param name="contained-in"
+                     description="A section id"/>
+
+      <request-param name="login-name"
+                     description="The login name of a user"/>
+
+      <request-param name="password"
+                     description="The decrypted password of a user"/>
+      
+      <request-param name="password-encrypted"
+                     description="The encrypted password of a user"/>
+
+      <request-param name="first-name"
+                     description="The first name of a user"/>
+
+      <request-param name="surname"
+                     description="The surname of a user"/>
+
+      <request-param name="matr-number"
+                     description="The matriculation number of a student"/>
+
+      <request-param name="name"
+                     description="A name; may be used in various circumstances"/>
+
+      <request-param name="description"
+                     description="A description, mostly of a (pseudo-)document"/>
+
+      <request-param name="section"
+                     description="A section (path)"/>
+
+      <request-param name="semester"
+                     description="A semester"/>
+
+      <request-param name="lecturers"
+                     description="List of lecturers of a class. Used with synchronisation."/>
+
+      <request-param name="tutor"
+                     description="A tutor. Used with synchronisation."/>
+
+      <request-param name="class"
+                     description="An e-learning class. Used with synchronisation."/>
+
+      <request-param name="classes"
+                     description="A list of e-learning classes. Used with synchronisation."/>
+
+      <request-param name="user"
+                     description="A user"/>
+
+      <request-param name="tutorial"
+                     description="An e-learning tutorial. Used with synchronisation."/>
+
+      <request-param name="tutorials"
+                     description="A list of tutorials. Used with synchronisation."/>
+
+      <request-param name="old-tutorial"
+                     description="The old tutorial when a user changes her or his tutorial."/>
+
+      <request-param name="new-tutorial"
+                     description="The new tutorial when a user changes her or his tutorial."/>
+
+      <request-param name="section-pure-name"
+                     description="The pure name of a section"/>
+
+      <request-param name="courses"
+                     description="List of courses"/>
+
+      <request-param name="course-vc-thread"
+                     description="Id of the vc thread of a course"/>
+
+      <request-param name="groups"
+                     description="List of user groups"/>
+
+      <request-param name="email"
+                     description="Email"/>
+
+      <request-param name="if-exists"
+                     description="Flag indicating what to do if a datum already exists"/>
+
+      <request-param name="old-sync-id"
+                     description="Old sync id"/>
+
+      <request-param name="new-sync-id"
+                     description="New sync id"/>
+      
+      <request-param name="lang"
+		     description="prefered language"/>
+
+  </request-params>
+
+  <!--
+     ==========================================================================================
+     Response heades
+     ==========================================================================================
+  -->
+
+  <response-headers>
+
+    <response-header name="Content-Length"
+                     description="Length of the content in the entity body, in bytes"/>
+
+    <response-header name="X-Mumie-Status"
+                     constant="STATUS"
+                     description="A status message. This is a non-standard header"/>
+
+    <response-header name="X-Mumie-Error"
+                     constant="ERROR"
+                     description="Description of an error. This is a non-standard header"/>
+
+  </response-headers>
+
+  <!--
+     ==========================================================================================
+     Session attributes
+     ==========================================================================================
+  -->
+
+  <session-attributes>
+
+    <session-attribute name="user"
+                       description="Id of the user owning the session"/>
+
+    <session-attribute name="language"
+                       description="Id of the language of the user owning the session"/>
+
+    <session-attribute name="theme"
+                       description="Id of the theme of the user owning the session"/>
+
+    <session-attribute name="student"
+                       description="Id of the student selected by a staff member"/>
+    
+    <session-attribute name="class"
+                       description="Id of the class"/>
+
+  </session-attributes>
+
+  <!--
+     ==========================================================================================
+     Data formats
+     ==========================================================================================
+  -->
+
+  <data-formats>
+
+    <data-format name="text"
+                 description="Text data"/>
+
+    <data-format name="binary"
+                 description="Binary data"/>
+
+    <data-formats-of-documents/>
+
+  </data-formats>
+
+  <!--
+     ==========================================================================================
+     Reference types
+     ==========================================================================================
+  -->
+
+  <reference-types>
+
+    <reference-type name="component"
+                    description="Used as a component"/>
+
+    <reference-type name="link"
+                    description="Referenced as a link"/>
+
+    <reference-type name="info_page"
+                    description="Referenced as an info page "/>
+
+    <reference-type name="source"
+                    description="Referenced as the source of a document"/>
+
+    <reference-type name="attachable"
+                    description="The 'from' document to be displayed as child of the 'to' document in a document tree.
+                    (fna: subelement contained in an element)"/>
+
+    <reference-type name="container"
+                    description="Provisional, will be removed soon"/>
+
+  </reference-types>
+
+  <!--
+     ==========================================================================================
+     Annotation types
+     ==========================================================================================
+  -->
+
+  <annotation-types>
+
+    <annotation-type name="personalized_problem_data">
+      <description>
+        <l>The data sheet containing the user specific data to a problem.</l>
+      </description>
+    </annotation-type>
+
+    <annotation-type name="problem_answers">
+      <description>
+        <l>The data sheet containing the student's answers to a problem.</l>
+      </description>
+    </annotation-type>
+
+    <annotation-type name="problem_correction">
+      <description>
+        <l>The data sheet containing the correction and marking </l>
+        <l>of the student's answer to a problem.</l>
+      </description>
+    </annotation-type>
+ 
+  </annotation-types>
+
+  <!--
+     ==========================================================================================
+     Worksheet states
+     ==========================================================================================
+  -->
+
+  <worksheet-states>
+
+    <worksheet-state name="work"
+                     description="User can work on the problems"/>
+
+    <worksheet-state name="feedback"
+                     description="User sees the corrections of his or her solutions"/>
+
+  </worksheet-states>
+
+  <!--
+     ==========================================================================================
+     Time formats
+     ==========================================================================================
+  -->
+
+  <time-formats>
+
+    <time-format name="long"
+                 format="EE dd-MM-yyyy G hh:mm:ss z"
+                 description="slightly lengthy time format"/>
+    
+    <time-format name="default"
+                 format="yyyy-MM-dd HH:mm:ss"
+                 description="Default time format"/>
+
+    <time-format name="precise"
+                 format="yyyy-MM-dd HH:mm:ss SSS"
+                 description="Time format with millisecond precision"/>
+
+    <time-format name="filename"
+                 format="yyyy-MM-dd_HH-mm-ss"
+                 description="Time format suitable for use in filenames"/>
+
+  </time-formats>
+
+  <!--
+     ==========================================================================================
+     User roles
+     ==========================================================================================
+  -->
+
+  <user-roles>
+
+    <user-role name="developer"
+               description="A developer of a document"/>
+
+    <user-role name="content_checker"
+               description="A person who checks a document with respect to its content."/>
+
+    <user-role name="tech_checker"
+               description="A person who checks if a document is technologically functioning"/>
+
+    <!-- DEPRECATED: -->
+    <user-role name="attendee"
+               description="An attendee of, e.g., a course"/>
+
+    <user-role name="student"
+               description="A student."/>
+
+    <user-role name="tutor"
+               description="A tutor."/>
+
+    <user-role name="lecturer"
+               description="A lecturer."/>
+
+  </user-roles>
+
+  <!--
+     ==========================================================================================
+     Default user groups
+     ==========================================================================================
+  -->
+
+  <default-user-groups default-path="org/user_groups">
+    <!-- TODO: 
+    declare attribute "default-path" to <default-user-groups> in specifications
+    -->
+
+    <default-user-group name="admins"
+                        description="Users with admistrator rights."/>
+
+    <default-user-group name="syncs"
+                        description="Users who are allowed to call the synchronization commands."/>
+
+    <default-user-group name="lecturers"
+                        description="Lecturers of e-learning classes."/>
+
+    <default-user-group name="authors"
+                        description="Authors of documents."/>
+
+    <default-user-group name="tutors"
+                        description="Tutors of e-learning tutorials."/>
+
+    <default-user-group name="students"
+                        description="Students"/>
+    <!-- TODO: 
+    declare attribute "pure-name" to any <default-user-group>; its value defaulting to that of "name"
+    -->
+
+  </default-user-groups>
+
+  <!--
+     ==========================================================================================
+     Languages
+     ==========================================================================================
+  -->
+
+  <languages default-path="system/languages">
+
+    <default-language name="Deutsch"
+                      description="German"
+                      code="de"
+                      db-id="0"/>
+
+    <neutral-language name="Neutral"
+                      description="For documents with non-linguistic content"
+                      code="zxx"
+                      db-id="1"/>
+
+  </languages>
+
+  <!--
+     ==========================================================================================
+     File roles
+     ==========================================================================================
+  -->
+
+  <file-roles>
+
+    <file-role name="master"
+               suffix="meta"
+               description="Role as a master file"/>
+
+    <file-role name="content"
+               description="Role as a content file"/>
+
+    <file-role name="source"
+               suffix="src"
+               description="Role as a source file"/>
+
+    <file-role name="preview"
+               description="Role as a preview file"/>
+
+  </file-roles>
+
+  <!--
+     ==========================================================================================
+     Reference Constraits
+     ==========================================================================================
+  -->
+
+  <reference-constraints>
+
+    <reference-constraint direction="from"
+                          modulo-vc-thread="yes"
+                          per-ref-type="yes"
+                          from-doctype="course"
+                          to-doctype="worksheet"
+                          reference-type="component"/>
+
+    <reference-constraint direction="from"
+                          modulo-vc-thread="yes"
+                          per-ref-type="yes"
+                          from-doctype="course"
+                          to-doctype="course_section"
+                          reference-type="component"/>
+
+  </reference-constraints>
+
+  <!--
+     ==========================================================================================
+     Single-Document Annotationens
+     ==========================================================================================
+  -->
+
+  <singledoc-annotations>
+
+    <singledoc-annotation originator="user" with-content="true">
+      <document-type name="worksheet"/>
+      <ann-attributes>
+        <ann-attribute name="state"
+                       db-column-name="state"
+                       sql-datatype="int"
+                       sql-default="NULL"
+                       description="Whether the user has acted on this worksheet so far">
+        </ann-attribute>
+      </ann-attributes>
+    </singledoc-annotation>
+
+    <singledoc-annotation originator="user" with-content="true">
+      <document-type name="subelement"/>
+      <ann-attributes>
+        <ann-attribute name="state"
+                       db-column-name="state"
+                       sql-datatype="int"
+                       sql-default="NULL"
+                       description="Whether the user has acted on this subelement so far">
+        </ann-attribute>
+      </ann-attributes>
+    </singledoc-annotation>
+
+  </singledoc-annotations>
+
+  <!--
+     ==========================================================================================
+     Multi-Document Annotationens
+     ==========================================================================================
+  -->
+
+  <multidoc-annotations>
+ 
+    <multidoc-annotation originator="user">
+      <document-types>
+        <document-type name="worksheet" order="1"/>
+        <document-type name="problem" order="2"/>
+      </document-types>
+      <ann-attributes>
+        <ann-attribute name="score"
+                       db-column-name="score"
+                       sql-datatype="real"
+                       sql-default="NULL"
+                       description="result of a correction">
+          <allowed-ann-types>
+            <ann-type name="problem_correction"/>
+          </allowed-ann-types>
+        </ann-attribute>
+      </ann-attributes>
+    </multidoc-annotation>
+
+    <multidoc-annotation originator="user">
+      <document-types>
+        <document-type name="worksheet" order="1"/>
+        <document-type name="generic_problem" order="2"/>
+      </document-types>
+      <ann-attributes>
+        <ann-attribute name="score"
+                       db-column-name="score"
+                       sql-datatype="real"
+                       sql-default="NULL"
+                       description="result of a correction">
+          <allowed-ann-types>
+            <ann-type name="problem_correction"/>
+          </allowed-ann-types>
+        </ann-attribute>
+      </ann-attributes>
+    </multidoc-annotation>
+
+  </multidoc-annotations>
+
+  <!--
+     ==========================================================================================
+     Reference attributes
+     ==========================================================================================
+  -->
+
+  <ref-attributes>
+    <ref-attribute name="points"
+                   db-column-name="points"
+                   sql-datatype="real"
+                   description="Maximum number of points for a homework problem">
+      <doctype-pairs>
+        <doctype-pair from-doctype="worksheet"
+                      to-doctype="problem"/>
+        <doctype-pair from-doctype="worksheet"
+                      to-doctype="generic_problem"/>
+      </doctype-pairs>
+      <allowed-ref-types>
+        <ref-type name="component"/>
+      </allowed-ref-types>
+    </ref-attribute>
+
+    <ref-attribute name="label"
+                   db-column-name="label"
+                   sql-datatype="text"
+                   description="Label of an element or subelement as component in a course_section, problem in a worksheet, course_section or worksheet in a course">
+      <doctype-pairs>
+        <doctype-pair from-doctype="course" to-doctype="course_section"/>
+        <doctype-pair from-doctype="course" to-doctype="worksheet"/>
+        <doctype-pair from-doctype="course_section" to-doctype="element"/>
+        <doctype-pair from-doctype="course_section" to-doctype="generic_element"/>
+        <doctype-pair from-doctype="course_section"
+                      to-doctype="subelement"/>
+        <doctype-pair from-doctype="course_section"
+                      to-doctype="generic_subelement"/>
+        <doctype-pair from-doctype="worksheet"
+                      to-doctype="problem"/>
+        <doctype-pair from-doctype="worksheet"
+                      to-doctype="generic_problem"/>
+      </doctype-pairs>
+      <allowed-ref-types>
+        <ref-type name="component"/>
+      </allowed-ref-types>
+    </ref-attribute>
+  </ref-attributes>
+
+  <!--
+     ==========================================================================================
+     Synchronization commands
+     ==========================================================================================
+  -->
+
+  <sync-commands>
+
+    <!-- DEPRECATED, use add-student-to-tutorial now -->
+    <sync-command name="add-user-to-tutorial"
+                  description="Adds a user to a tutorial"/>
+
+    <sync-command name="add-student-to-tutorial"
+                  description="Adds a student to a tutorial"/>
+
+    <sync-command name="change-class-data"
+                  description="Changes the data of an e-learning class"/>
+
+    <sync-command name="change-semester-data"
+                  description="Changes the data of a semester"/>
+
+    <sync-command name="change-tutorial-data"
+                  description="Changes the data of a tutorial"/>
+
+    <sync-command name="change-user-data"
+                  description="Changes the data of a user"/>
+
+    <sync-command name="change-user-sync-id"
+                  description="Changes the sync id of a user"/>
+
+    <!-- DEPRECATED, use change-student-tutorial now -->
+    <sync-command name="change-user-tutorial"
+                  description="Changes the tutorial of a user"/>
+
+    <sync-command name="change-student-tutorial"
+                  description="Changes the tutorial of a student"/>
+
+    <!-- DEPRECATED, use create-class now -->
+    <sync-command name="new-class"
+                  description="Creates a new e-learning class"/>
+
+    <sync-command name="create-class"
+                  description="Creates a new e-learning class"/>
+
+    <!-- DEPRECATED, use create-semester now -->
+    <sync-command name="new-semester"
+                  description="Creates a new semester"/>
+
+    <sync-command name="create-semester"
+                  description="Creates a new semester"/>
+
+    <!-- DEPRECATED, use create-tutorial now -->
+    <sync-command name="new-tutorial"
+                  description="Creates a new tutorial"/>
+
+    <sync-command name="create-tutorial"
+                  description="Creates a new tutorial"/>
+
+    <!-- DEPRECATED, use create-user now -->
+    <sync-command name="new-user"
+                  description="Creates a new user"/>
+
+    <sync-command name="create-user"
+                  description="Creates a new user"/>
+
+    <sync-command name="create-student"
+                  description="Creates a new student"/>
+
+    <sync-command name="create-tutor"
+                  description="Creates a new tutor"/>
+
+    <sync-command name="create-lecturer"
+                  description="Creates a new lecturer"/>
+
+    <!-- DEPRECATED, use remove-student-from-tutorial now -->
+    <sync-command name="remove-user-from-tutorial"
+                  description="Removes a user from a tutorial"/>
+
+    <sync-command name="remove-student-from-tutorial"
+                  description="Removes a student from a tutorial"/>
+
+    <sync-command name="remove-user-from-groups"
+                  description="Removes a user from certain user groups"/>
+
+    <sync-command name="set-course-class"
+                  description="Assignes a teaching class to a course"/>
+
+    <sync-command name="add-user-to-groups"
+                  description="Adds a user to one or more groups"/>
+
+    <sync-command name="set-lecturer-for-class"
+		  description="Sets the lecturer for a class"/>
+
+    <sync-command name="set-tutor-for-tutorial"
+		  description="Sets the tutor for a tutorial"/>
+    
+    <sync-command name="unset-lecturer-for-class"
+		  description="Removes the lecturer of a class"/>
+    
+    <sync-command name="update-class"
+		  description="Updates a class in the mumie. Overwrites the old informations of the class"/>
+    
+    <sync-command name="update-semester"
+		  description="Updates a semester in the mumie. Overwrites the old informations of the semester"/>
+    
+    <sync-command name="update-tutorial"
+		  description="Updates a tutorial in the mumie. Overwrites the old informations of the tutorial"/>
+    
+    <sync-command name="update-user"
+		  description="Updates a user in the mumie. Overwrites the existing informations"/>
+
+  </sync-commands>
+
+  <!--
+     ==========================================================================================
+     Events
+     ==========================================================================================
+  -->
+
+  <events>
+
+    <event name="worksheet-user-bulk-correction"
+           description="A bulk correction for a certain worksheet and user was made"/>
+
+    <event name="correction"
+           description="A problem has been corrected"/>
+
+    <event name="checkin"
+           description="A checkin was made"/>
+
+  </events>
+
+</config>

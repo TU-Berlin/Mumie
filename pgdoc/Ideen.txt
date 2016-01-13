@@ -1,0 +1,80 @@
+
+	 Vorueberlegungen zum Projekt 
+"DokumentationsStandard von Postgres Datenbanken"
+
+Fritz Lehmann-Grube 
+fuer Mumie TU-Berlin 
+im Juni 2002
+---------------------------------------------------------------------------
+
+0. Ziel ist es, einem Administrator der DB, der Standard-SQL beherrscht, uebersichtlich aber vollstaendig das Datenmodell einer gesamten Postgres-Datenbank in Form eines html/xml Paketes zu dokumentieren. Er soll dann, ohne sich mit den SQL-sourcen oder psql-Kommandos (wie /dt ...) herumschlagen zu muessen, praktisch alle "SELECT"-, "INSERT"- "UPDATE"- und "DELETE"-Befehle formulieren koennen.
+
+---------------------------------------------------------------------------
+
+1. PostgreSQL (als Sprache) hat den Befehl "COMMENT ON <object> IS '<text>';".
+   Dieser Befehl bewirkt, dass <text> verknuepft mit der OID von <object> in einer Systemtabelle gespeichert wird, und mit der vordefinierten Funktion "obj_description(<object>.oid)" wieder ausgelesen werden kann. 
+   So habe ich bisher die MumieDB dokumentiert, aber <text> ganz unstrukturiert geschrieben.
+2. Meine Versuche, Kommentare ein bisschen standardisiert zu schreiben, hatten zunehmend Aehnlichkeiten mit den standardisierten Dokumentationen von Java-sourcen (z.B. @references <tablename>xtable</tablename> through <key>ref</key>).
+3. "Programme" in Java - objektorientiert ! - haben ja tatsaechlich strukturelle Verwandtschaft mit Datenbanken: 
+   Klassen		  <---> Tabellen
+   einfache Variablen  <---> Spalten
+   ???			  <---> Datentypen
+   Objektvariablen	  <---> Referenzen
+4. Ich werde also versuchen, einen Vorschlag zu machen, eine Spezifikation fuer eine SQL-Dokumentation zu erstellen. Das Ziel ist (wie mit javadoc !) eine dynamische standardisierte Dokumentation von Datenbanken aus den sie erzeugenden SQL-Skripten zu machen, oder aus konkreten Instanzen von Datenbanken (s.u.).
+5. Was brauchen wir: 
+   (a) Eine Tabellenuebersicht
+   (b)	Eine standardisierte Beschreibung von Tabellen ausgenommen "junctions" (s.u.)
+	(1) Name
+	(2) Liste von Spalten
+	    - welche	
+	    - Spaltennamen
+	    - Datentypen
+	    - (NULL/NOT NULL)-constraints
+	    - Defaultwerte
+	(3) Liste von Referenzen (1:n)
+	    - von dieser auf andere Tabellen
+	    - von anderen auf diese Tabelle (hat APIDOC nicht !)
+	(4) Liste von Tabellenconstraints/Triggern/Rules
+   (c) Eine standardisierte Beschreibung von "junctions", also n:n-Relationen 
+	(inklusive "usage: <select mit join> ?) (hat APIDOC nicht !)
+   (d) Eine standardisierte Beschreibung von Views (wie Interfaces ?)
+.
+.
+tbc.
+
+----------------------------------------------------------------------------
+
+In der Tat waere es Unsinn, die Dok. der DB aus den sqlSkripten zu erstellen, denn:
+es gibt z.B. den (Postgre)SQL-Befehl "ALTER TABLE ... ADD COLUMN ...;"
+Nimm also an, eine DB wird erzeugt mit dem Skript erzdb.sql, und aus diesem Skript wird mid dem Kommandozeilenbefehl "pgdoc erzdb1.sql" die Dokumentation db1doc.html erstellt.
+Nimm weiter an, es geschieht dann, nachdem erzdb1.sql ausgefuehrt wurde (etwa: psql erdb1.sql), waehrend also eine Instanz von db1 existiert, ein (administrativer) Eingriff wie "ALTER TABLE t1 ADD COLUMN key57;" in einem anderen Skript erweiterdb1.sql (oder schlimmer noch: von der Konsole). 
+Dann besteht kaum eine Chance, mit sowas wie "pgdoc erweiterdb1.sql" die Doku. db1doc.html zu korrigieren. D.h. pgdoc zeigt ein wirklich *falsches* Bild der DB.
+In Java macht es Sinn, die Doku. aus der source zu erstellen, da dort eine Klasse nie veraendert werden kann, solange eine Instanz von Ihr existiert. Aber SQL ist nun mal - bei aller Verwandtschaft - prozedural !
+
+ALSO:
+Die pgdoc muss aus einer Instanz, nicht der source, dynamisch erstellt werden.
+BEACHTE, dass es trotzdem keine Doku der Instanz der DB sein soll (sowas koennte Teil eines GUI sein), sondern eine Doku ihres ...(Datenmodells ?)
+
+----------------------------------------------------------------------------
+
+Das Skriptprogramm "pgdoc" koennte dann - wenigstens in einer ersten Version - auf meinem "select_mdb01.sql" siehe MumieCVS Modul MumieDB /MumieDB01/  aufbauen.
+
+----------------------------------------------------------------------------
+
+select relname, relfilenode, attname, attrelid 
+  from pg_class, pg_attribute
+  where attrelid=relfilenode and relname !~ '^pg_' and relname !~ 'seq';
+
+select *  
+   from pg_class, pg_attribute
+   where attrelid=relfilenode and relname !~ '^pg_' and relname !~ 'seq';
+
+----------------------------------------------------------------------------
+
+Has sombody ever designed a database containing 126 tables being a connected graph ?
+Have you done a documentation of it containing an UML-diagram ?
+Is there a tool, that can generate this UML-diagram (more or less completely !) by machine rather than by hand ?
+
+Greetings, Fritz
+
+----------------------------------------------------------------------------

@@ -1,0 +1,418 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Referenzen mit Attributen}
+\subtitle{beim Online-Checkin}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+  \author[sinha@math.tu-berlin.de]{Uwe Sinha}
+\end{authors}
+
+\version{$Id: ref_attr.tex,v 1.4 2006/08/11 16:18:23 rassy Exp $}
+
+Dies ist das Konzept, nach dem künftig Punkte, mit denen
+Aufgaben(-lösungen) bewertet werden, als Meta-Informationen verwaltet
+werden sollen. Dazu sind Änderungen und Ergänzungen an der
+Metainfo-XML-Spezifikation, der Konfiguration des Build-Prozesses, der
+Datenbank, sowie v.a. am Code des Online-Checkin notwendig. Die
+Änderungen sollen auf zwei Schritte aufgeteilt werden: im ersten Schritt
+wird eine schnell zu realisierende Lösung konzipiert, die nur die
+Verwaltung der Punkte umfaßt. In einem zweiten Schritt soll diese Lösung
+dann verallgemeinert werden.   
+
+\tableofcontents
+
+\section{Problem}
+%
+Bisher waren Punkte, die Studenten für das Lösen von Aufgaben erreichen
+können, Bestandteil des \emph{Inhaltes} von Kursen (genauer: von Course
+Subsections, i.e. Aufgabenblättern). Damit die automatische Korrektur
+aber auch die Punktevergabe übernehmen kann, muß die maximal erreichbare
+Punktzahl (im folgenden nur noch: "Punktzahl") auf irgendeine sinnvolle
+Weise in den Meta-Informationen kodiert sein.
+
+Eine Aufgabe kann im Kontext verschiedener Aufgabenblätter mit
+verschieden vielen Punkten bewertet sein. Somit ist die Punktzahl einer
+Aufgabe immer \emph{in Abhängigkeit von der Referenz vom Aufgabenblatt
+  zur Aufgabe} zu sehen. D.h., die Punktzahl ist ein \emph{Attribut der
+  Referenz} vom Aufgabenblatt zur Aufgabe. 
+
+Dieses Problem läßt sich verallgemeinern: alle Referenzen sollen künftig
+Attribute haben können. Beim Online-Checkin von Aufgabenblättern ist
+dies zu berücksichtigen, ebenso natürlich bei der Definition der
+Datenbank.
+%
+%% \subsection{Kleiner Exkurs: was ist eigentlich eine Referenz?}
+%% %
+%% Der Begriff "Referenz" wird bei uns in verschiedenen Kontexten jeweils
+%% etwas anders benutzt. Grundsätzlich ist eine Referenz eine Beziehung
+%% zwischen zwei Dokumenten, die sich in irgendeiner Weise in der Datenbank
+%% wiederfindet. Referenzen sind -- vgl. auch \file{unique_references.txt}
+%% -- bis auf wenige Ausnahmen immer \code{n}-zu-\code{n}-Beziehungen, die
+%% durch jeweils eine eigene Datenbanktabelle modelliert werden. 
+%
+\section{Änderungen außerhalb des Java-Codes}
+%
+In diesem Abschnitt sind die Änderungen zusammengefaßt, die außerhalb
+der JAPS-Klassen vorzunehmen sind. Diese Änderungen können schon
+innerhalb des ersten Schrittes vorgenommen werden, auch wenn sie
+vielleicht erst für den zweiten Schritt relevant werden.
+%
+\subsection{Metainfo-XML}
+%
+Die Meta-Info-Elemente \element{mumie:components} und
+\element{mumie:link} können in Dokumenten, die eingecheckt werden,
+bisher nur Kind-Elemente haben. Diese Kind-Elemente sind Wurzelknoten
+der Meta-Informationen der referenzierten Dokumente, implizit im
+Use-Mode \val{component}. Genaueres dazu in Abschnitt 8 der
+Metainfo-XML-Spezifikation. Durch diese Kind-Elemente werden Referenzen
+zwischen Dokumenten in Metainfo-XML kodiert.
+
+Diese Kind-Elemente können nun künftig ihrerseits Kind-Elemente haben: 
+
+\begin{description}
+
+\item[Knoten-Name:] \element{<mumie:ref_attribute>}
+
+\item[XML-Attribute:] %
+%
+\begin{table}
+  \head
+    Name & Wertebereich & Bemerkung \\
+  \body
+    \attrib{name} & \code{string} & Zulässige Namen sind in \file{config/config.xml}
+      zu definieren\\
+    \attrib{value} & \code{integer} & 
+      Evtl. auch \code{real}, falls wir halbe/viertel/etc. Punkte
+      zulassen wollen\\
+\end{table}
+
+\item[Beschreibung:] Attribute der Referenz, die vom umschließenden
+  MUMIE-Dokument zu dem MUMIE-Dokument, das vom Elternknoten durch
+  Dokumenttyp und Id eindeutig identifiziert wird, zeigt. Eine Referenz
+  kann auch mehrere Attribute haben.
+ 
+\item[Kinder:] keine
+
+\item[Eltern:] Wurzelknoten des referenzierten Dokuments im (impliziten)
+  Use-Mode \val{component} bzw. \val{link}
+
+\item[Beispiel:]
+%
+\begin{preformatted}[code]%
+<mumie:course_subsection 
+       xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo" 
+       use-mode="checkin">
+    <mumie:status name="pre"/>
+    <mumie:category id="15"/>
+    [...]  
+    <mumie:components>
+        <mumie:problem id="211" lid="3">
+            <mumie:ref_attribute name="points" value="5">
+        </mumie:problem>
+        <mumie:problem id="208" lid="1"/>
+            <mumie:ref_attribute name="points" value="8">
+        </mumie:problem>
+    </mumie:components>
+    [...]  
+</mumie:course_subsection>
+\end{preformatted}
+%
+\end{description}
+%
+\subsection{Konfiguration des Build-Prozesses (\file{config.xml})}
+%
+Folgende XML-Elemente, die Referenzattribute beschreiben, sind künftig
+ebenfalls in \file{config.xml} zulässig:
+
+\subsubsection{Umschließendes Element}
+%
+\begin{description}
+\item[Knoten-Name:] \element{<ref-attributes>}
+
+\item[XML-Attribute:] keine.
+  
+\item[Beschreibung:] Dieses Element leitet den Abschnitt, in dem
+  zulässige Referenzattibute definiert werden, ein. Es darf im gesamten
+  durch \code{config.xml} beschriebenen Dokument nur höchstens einmal
+  vorkommen.
+ 
+\item[Kinder:] beliebig viele \element{<ref-attribute>}-Elemente
+  
+\item[Eltern:] \element{<config>}, der Wurzelknoten der Konfiguration
+  des JAPS-Build-Prozesses, wie sie in \file{config.xml} beschrieben
+  ist.
+
+\end{description}
+
+\subsubsection{Einzelnes Referenzattribut}
+\begin{description}
+\item[Knoten-Name:] \element{<ref-attribute>}
+
+\item[XML-Attribute:] %
+%
+\begin{table}
+  \head
+    Name & Wertebereich & Bemerkung \\
+  \body
+    \attrib{name} & \code{string} &  Eindeutiger Name des Referenzattributes\\
+    \attrib{sql-datatype} & SQL-Datentyp &  Der Datentyp, den dieses
+    Referenzattribut auf Datenbankseite hat\\
+    \attrib{db-column-name} & \code{string} &  Name der Spalte in der
+    Referenzentabelle, in der dieses Referenzattribut in der Datenbank
+    abgelegt wird\\
+    \attrib{name} & \code{string} &  Eindeutiger Name des Referenzattributes\\
+    \attrib{value} & \code{integer} & 
+      Evtl. auch \code{real}, falls wir halbe/viertel/etc. Punkte
+      zulassen wollen\\
+\end{table}
+
+\item[Beschreibung:] Beschreibt ein zulässiges Referenzattribut.
+ 
+\item[Kinder:] Jeweils \emph{genau ein} \element{<doctype-pairs>}- und
+  \element{<allowed-ref_types>}-Element. 
+
+\item[Eltern:] Das \element{<ref-attributes>}-Element.
+
+\end{description}
+
+
+\subsubsection{Dokumentenpaare}
+\begin{description}
+\item[Knoten-Name:] \element{<doctype-pairs>}
+
+\item[XML-Attribute:] keine
+  
+\item[Beschreibung:] Umschließendes Element für
+  \element{<doctype-pair>}-Elemente; hierunter werden alle Paare von
+  Dokumenten deklariert, zwischen denen es nur eine Referenz mit dem
+  beschriebenen Attribut geben darf. D.h., eine Referenz zwischen
+  Dokumenttypen, die in diesem Abschnitt \emph{nicht} erwähnt sind, darf
+  das hier beschriebene Referenzattribut nicht haben.
+ 
+\item[Kinder:] Ein oder mehrere \element{<doctype-pair>}-Elemente
+
+\item[Eltern:] \element{<ref-attribute>}
+
+\end{description}
+
+\subsubsection{Einzelnes Dokumentenpaar}
+\begin{description}
+\item[Knoten-Name:]  \element{<doctype-pair>}
+
+\item[XML-Attribute:] %
+%
+\begin{table}
+  \head
+    Name & Wertebereich & Bemerkung \\
+  \body
+    \attrib{from-doctype} & Dokumenttyp & Zulässige Dokumenttypen sind
+    in \file{config.xml} in den Kindelementen von
+    \element{<document-types>} definiert.\\ 
+    \attrib{to-doctype} & Dokumenttyp &  \\
+\end{table}
+
+\item[Beschreibung:] Das hier beschriebene Referenzattribut ist bei
+  einer Referenz \emph{von} dem in \attrib{from-doctype} genannten
+  Dokumenttyp \emph{zu} dem in \attrib{to-doctype} genannten Dokumenttyp
+  erlaubt. 
+ 
+\item[Kinder:] keine
+
+\item[Eltern:] \element{<doctype-pairs>}
+
+\end{description}
+%
+Als Werte für \attrib{from-doctype} und \attrib{to-doctype} kommen nur
+solche Namen von Dokumenttypen in Frage, die auch als Werte des
+\attrib{name}-Attributs eines \element{<document-type>}-Elements
+deklariert worden sind. 
+
+\subsubsection{Zulässige Referenztypen}
+\begin{description}
+\item[Knoten-Name:] \element{<allowed-ref_types>}
+
+\item[XML-Attribute:] keine
+  
+\item[Beschreibung:] Eine Referenz, die das hier beschriebene
+  Referenzattribut trägt, muß einen der in den Kindelementen
+  aufgelisteten Referenztypen haben.
+ 
+\item[Kinder:] Mindestens ein \element{<ref-type>}-Element
+
+\item[Eltern:] \element{<ref-attribute>}
+
+\end{description}
+
+\subsubsection{Einzelner zulässiger Referenztyp}
+\begin{description}
+\item[Knoten-Name:] \element{<ref-type>}
+
+\item[XML-Attribute:] %
+%
+\begin{table}
+  \head
+    Name & Wertebereich & Bemerkung \\
+  \body
+    \attrib{name} & Referenztyp & Zulässige Referenztypen sind
+    in \file{config.xml} in den Kindelementen von
+    \element{<reference-types>} definiert.
+\end{table}
+
+\item[Beschreibung:] 
+ 
+\item[Kinder:] keine
+
+\item[Eltern:]  \element{<allowed-ref_types>}
+
+\end{description}
+%
+Als Werte für \attrib{name} kommen nur solche Namen von Referenztypen in
+Frage, die auch als Werte des \attrib{name}-Attributs eines
+\element{<reference-type>}-Elements deklariert worden sind.
+
+%
+\subsubsection{Beispiel}
+%
+\begin{preformatted}[code]%
+  <ref-attributes>
+    <ref-attribute name="points"
+                   sql-datatype="real"
+                   db-column-name="points"
+                   description="Maximum number of points for a homework problem">
+      <doctype-pairs>
+        <doctype-pair from-doctype="course_subsection"
+                      to-doctype="problem"/>
+      </doctype-pairs>
+      <allowed-ref-types>
+        <ref-type name="component"/>
+      </allowed-ref-types>
+    </ref-attribute>
+  </ref-attributes>
+\end{preformatted}
+
+Für die erste Stufe ist dieser Teil noch nicht so wichtig. 
+%
+\subsection{Datenbank}
+%
+Die Referenzentabellen, die die Referenzen modellieren, die ein Attribut
+haben (können), erhalten für jedes zulässige Attribut eine entsprechende
+Tabellenspalte. Diese Spalten müssen nachträglich angefügt werden, da die
+Referenzentabellen beim Build-Prozeß in einer großen Schleife erzeugt
+werden, deren Code durch eine Abfrage, ob die Tabelle noch zusätzliche
+Spalten bekommen soll, nicht unnötig aufgebläht werden soll.
+
+Das folgende Beispiel zeigt, wie zur Tabelle
+\dbtable{refs_course_subsection_problem} das Attribut \dbcol{problem}
+als zusätzliche Spalte hinzugefügt wird:
+%
+\begin{preformatted}[code]%
+{\backslash}q echo Creating column points in table refs_course_subsection_problem
+ALTER TABLE refs_course_subsection_problem
+  ADD points real;
+ALTER TABLE refs_course_subsection_problem 
+  ADD CHECK (points IS NULL OR ref_type IN (0));
+\end{preformatted}
+%
+Die Tabellendefinition erhält eine zusätzliche Konsistenzprüfung
+(\dbcol{ADD CHECK}). Diese sorgt dafür, daß das zusätzliche Attribut
+\dbcol{points} nur genau dann einen Wert hat, wenn die Referenz vom Typ
+\val{component} (entspricht dem Typ-Code \val{0}) ist.
+%
+\section{Implementierung}
+%
+Die Zeit reicht leider momentan (Stand: Mitte September 2005) nicht aus,
+um für die TuMult-Runde im WS 2005/06 eine "schöne" generische Lösung zu
+implementieren. Daher wird in einer ersten Stufe nur das implementiert,
+was nötig ist, um den Online-Checkin von Aufgaben mit Punkten zu
+ermöglichen, ohne dabei die generische Variante zu verbauen. Diese wird
+anschließend in einer zweiten Stufe implementiert.
+
+\subsection{Erste Stufe}
+t.b.c.
+\subsubsection{Neue Checkin-Klassen}
+t.b.c.
+\subsubsection{Geänderte Checkin-Klassen}
+
+Das Interface \code{Reference} und alle Klassen, die es implementieren,
+müssen den Zugriff auf Attribute der Referenz, soweit vorhanden,
+ermöglichen. Da die Anzahl der Referenzattribute nicht festgelegt ist,
+müssen die Attribute in einer dynamischen Struktur gehalten werden,
+z.B. einer \code{HashMap}.
+
+\subsubsection{Neue \code{notions}-Klassen}
+%
+Um die Wertebereiche der Felder der \code{RefAttribute}-Klassen
+einschränken zu können, werden zwei neue Klassen unter
+\code{net.mumie.cocoon.notions} benötigt. In ihnen werden die zulässigen
+Feldwerte als symbolische Konstanten definiert. 
+
+Die beiden Klassen sind: 
+%
+\begin{description}[code-doc]
+%
+\item[RefAttribute]%
+  Hier werden die zulässigen Namen von Referenzattributen definiert. Für
+  die erste Stufe wird mindestens das Attribut \attrib{points} benötigt.
+  
+\item[SQLDataType]%
+  Hier werden die datenbankseitigen Datentypen definiert, die ein
+  Referenzattribut annehmen darf. Es werden mindestens die drei
+  Datentypen \dbtable{number}, \dbtable{varchar} und \dbtable{text}
+  benötigt. 
+%
+\end{description} 
+
+In beiden Klassen sind sowohl numerische, als auch String-Konstanten zu
+definieren. Die aus anderen \code{notions}-Klassen bekannten
+\code{nameFor}- und \code{codeFor}-Mechanismen müssen auch in den beiden
+genannten neuen Klassen implementiert sein.
+
+In der ersten Stufe ist es nicht erforderlich, daß die beiden genannten
+\code{notions}-Klassen automatisch im Rahmen des Build-Prozesses erzeugt
+werden. 
+%
+\subsubsection{Geänderte \code{notions}-Klassen}
+%
+Änderungen sind in allererster Linie an der Klasse \code{DbTable}
+vorzunehmen: die Information, ob ein Attribut zulässig ist, gehört zu
+der jeweiligen Referenzentabelle. 
+
+Als Datenstruktur bietet sich wegen der statischen Natur der
+vorzuhaltenden Information ein \code{boolean}-Array an. Es hat drei
+Dimensionen: zwei werden von Kreuzprodukt der Dokumenttypen gebildet --
+wobei ein Paar von Dokumenttypen für eine Referenz steht --, die dritte
+Dimension bilden die Attribute. Dieses dreidimensionale Array sollte aus
+Gründen der Übersichtlichkeit (derzeit gibt es 22 Dokumenttypen!) nicht
+direkt als Konstante definiert werden, sondern mithilfe eines
+\emph{static initializer}, der zunächst alle Array-Elemente auf
+\code{false} setzt und dann die Elemente, die für ein zulässiges
+Attribut für eine Referenz stehen, auf \code{true} setzt.
+
+Weiterhin müssen natürlich die Namen der Tabellenspalten, in denen
+Referenzattribute abgelegt werden, in der Klasse \code{DbColumn}
+definiert sein. 
+
+\subsubsection{Zusammenfassung}
+
+\subsection{Zweite Stufe}
+t.b.c.
+\subsubsection{Generischerer Ansatz}
+t.b.c.
+\subsubsection{\code{RefAttributeFactory}}
+
+...sollte \code{Configurable} implementieren.
+
+...ist letztendlich nur ein etwas schlauerer Wrapper um einen
+\code{RefAttributeSelector}
+
+t.b.c.
+\subsubsection{t.b.c.}
+
+-- ENDE DER DATEI --
+
+\end{document}

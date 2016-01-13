@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmckxml" default="all" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property name="mmckxml.src.dir" value="src"/>
+  <property name="mmckxml.src.java.dir" value="${mmckxml.src.dir}/java"/>
+  <property name="mmckxml.lib.dir" value="lib"/>
+  <property name="mmckxml.lib.java.dir" value="${mmckxml.lib.dir}/java"/>
+  <property name="mmckxml.lib.java.classes.dir" value="${mmckxml.lib.java.dir}/classes"/>
+  <property name="mmckxml.doc.dir" value="doc"/>
+  <property name="mmckxml.doc.apidocs.dir" value="${mmckxml.doc.dir}/apidocs"/>
+  <property name="mmckxml.resources.dir" value="resources"/>
+  <property name="mmckxml.resources.apidocs.css.file"
+            value="${mmckxml.resources.dir}/apidocs.css"/>
+  <property name="mmckxml.install.lib.java.dir" value=""/>
+  <property name="mmckxml.verbose" value="no"/>
+  <property name="mmckxml.force" value="no"/>
+  <property name="mmckxml.javac.verbose" value="no"/>
+  <property name="mmckxml.javac.deprecation" value="no"/>
+  <property name="mmckxml.javac.debug" value="yes"/>
+  <property name="mmckxml.jar.file" value="mumie-ckxml.jar"/>
+  <property name="mmckxml.jdk.apidocs.url" value=""/>
+  <property name="mmckxml.vendor" value="Berlin University of Technology"/>
+  <property name="mmckxml.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="mmckxml.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmckxml.internal.force">
+    <istrue value="${mmckxml.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmckxml.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+      </fileset>
+    </path>
+    <property name="mmckxml.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmckxml."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmckxml.verbose}">
+      <fileset dir="${mmckxml.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) mmckxml.internal.force is set, which is
+     equivalent to mmckxml.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="mmckxml.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     mmckxml.internal.force is set, which is equivalent to mmckxml.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${mmckxml.src.java.dir}"
+           destdir="${mmckxml.lib.java.classes.dir}"
+           listfiles="${mmckxml.verbose}"
+           classpathref="classpath"
+           deprecation="${mmckxml.javac.deprecation}"
+           verbose="${mmckxml.javac.verbose}"
+           debug="${mmckxml.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${mmckxml.lib.java.dir}/${mmckxml.jar.file}"
+         basedir="${mmckxml.lib.java.classes.dir}"
+         excludes=".KEEP_ME">
+      <manifest>
+        <attribute name="Created" value="${mmckxml.timestamp}"/>
+        <section name="net/mumie/ckxml">
+          <attribute name="Specification-Title" value="XML Checking"/>
+          <attribute name="Specification-Version" value="${mmckxml.version}"/>
+          <attribute name="Specification-Vendor" value="${mmckxml.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.ckxml"/>
+          <attribute name="Implementation-Version" value="${mmckxml.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmckxml.vendor}"/>
+        </section>
+      </manifest>  
+    </jar>
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if mmckxml.internal.force is set, which is equivalent to mmckxml.force being 
+     true.
+  -->
+
+  <target name="all"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs"
+          depends="clear-apidocs, classpath"
+          description="Creates the API docs">
+    <mkdir dir="${mmckxml.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie XML Checker"
+             packagenames="net.mumie.ckxml.*"
+             sourcepath="${mmckxml.src.java.dir}"
+             destdir="${mmckxml.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmckxml.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmckxml.verbose}">
+      <link href="${mmckxml.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="clear-apidocs">
+    <delete verbose="${mmckxml.verbose}"
+            dir="${mmckxml.doc.apidocs.dir}"/>
+  </target>
+
+  <!--
+    Installs the Jar archive
+  -->
+
+  <target name="install-jar"
+          description="Copies the Jar archive to its installation location">
+    <mkdir dir="${mmckxml.install.lib.java.dir}"/>
+    <copy file="${mmckxml.lib.java.dir}/${mmckxml.jar.file}"
+          todir="${mmckxml.install.lib.java.dir}"
+          overwrite="${mmckxml.force}"
+          verbose="${mmckxml.verbose}"/>
+  </target>
+
+  <!--
+    Uninstalls the Jar archive
+  -->
+
+  <target name="uninstall-jar"
+          description="Deletes the Jar archive from its installation location">
+    <delete file="${mmckxml.install.lib.java.dir}/${mmckxml.jar.file}"
+            quiet="true"
+            verbose="${mmckxml.verbose}"/>
+  </target>
+
+  <!--
+    Installs the API documentation
+  -->
+
+  <target name="install-apidocs"
+          description="Copies the API documentation to its installation location">
+    <mkdir dir="${mmckxml.install.doc.mmckxml.apidocs.dir}"/>
+    <copy todir="${mmckxml.install.doc.mmckxml.apidocs.dir}"
+          overwrite="${mmckxml.force}"
+          verbose="${mmckxml.verbose}">
+      <fileset dir="${mmckxml.doc.apidocs.dir}"/>
+    </copy>
+  </target>
+
+  <!--
+    Uninstalls the API documentation
+  -->
+
+  <target name="uninstall-apidocs"
+          description="Deletes the API documentation from its installation location">
+    <delete dir="${mmckxml.install.doc.mmckxml.apidocs.dir}"
+            quiet="true"
+            verbose="${mmckxml.verbose}"/>
+  </target>
+
+  <!--
+    Installs all
+  -->
+
+  <target name="install"
+          description="Installs all"
+          depends="install-jar"/>
+
+  <!--
+    Unnstalls all
+  -->
+
+  <target name="uninstall"
+          description="Uninstalls all"
+          depends="uninstall-jar"/>
+
+</project>

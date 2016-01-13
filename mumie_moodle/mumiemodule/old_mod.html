@@ -1,0 +1,68 @@
+<?php // $Id: old_mod.html,v 1.1 2007/12/21 12:05:42 ritter Exp $
+/**
+ * This page defines the form to create or edit an instance of this module
+ * It is used from /course/mod.php.  The whole instance is available as $form.
+ *
+ * @author 
+ * @version $Id: old_mod.html,v 1.1 2007/12/21 12:05:42 ritter Exp $
+ * @package newmodule
+ **/
+ 
+ //includieren, damit MUMIE-Adresse und Sync-Nutzer bekannt sind...
+ require_once("$CFG->dirroot/config.php");
+
+/// First we check that form variables have been initialised
+if (!isset($form->name)) {
+    $form->name = $form->course;
+    //ACHTUNG: hier muss ueberlegt werden, ob wir die namen des kurses oder der gruppen nehmen
+}
+//falls die Adresse nicht in der config.php steht:
+if (!isset($form->mumie_url)) {
+    $form->mumie_url = 'http://falbala.math.tu-berlin.de:8080/cocoon/protected/shortcut/desktop';
+}
+//description fuer Tutorium bereitstellen:
+if (!isset($form->description)) {
+    $form->description = '';
+}
+
+// More similar blocks go here...
+?>
+
+<form name="form" method="post" action="mod.php">
+<center>
+<table cellpadding="5">
+<tr valign="top">
+    <td align="right"><b><?php  print_string("name") ?>:</b></td>
+    <td>
+        <input type="text" name="name" size="30" value="<?php  p($form->name) ?>" />
+    </td>
+    <td align="right"><b><?php  print_string("mumie_url") ?>:</b></td>
+    <td>
+        <input type="text" name="name" size="40" value="<?php  p($form->mumie_url) ?>" />
+    </td>
+    <td align="right"><b><?php  print_string("description") ?>:</b></td>
+    <td>
+        <input type="text" name="name" size="30" value="<?php  p($form->description) ?>" />
+    </td>
+</tr>
+<!-- More rows go in here... -->
+
+<!-- The following line for Moodle 1.5 prints the visibility setting form element -->
+<?php print_visible_setting($form); ?>
+<!-- and if your module uses groups you would also have -->
+<?php print_groupmode_setting($form); ?>
+
+</table>
+<!-- These hidden variables are always the same -->
+<input type="hidden" name=course        value="<?php  p($form->course) ?>" />
+<input type="hidden" name="sesskey"     value="<?php  p($form->sesskey) ?>" />
+<input type="hidden" name=coursemodule  value="<?php  p($form->coursemodule) ?>" />
+<input type="hidden" name=section       value="<?php  p($form->section) ?>" />
+<input type="hidden" name=module        value="<?php  p($form->module) ?>" />
+<input type="hidden" name=modulename    value="<?php  p($form->modulename) ?>" />
+<input type="hidden" name=instance      value="<?php  p($form->instance) ?>" />
+<input type="hidden" name=mode          value="<?php  p($form->mode) ?>" />
+<input type="submit" value="<?php  print_string("savechanges") ?>" />
+</center>
+
+</form>

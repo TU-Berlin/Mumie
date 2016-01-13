@@ -1,0 +1,349 @@
+% Author: Tilman Rassy <rassy@math.tu-berlin.de>
+% $Id: test.tex,v 1.9 2007/06/15 11:34:17 rassy Exp $
+% Copyright (C) 2003, Berlin University of Technology
+
+\documentclass[lang=de]{generic}
+
+%\newcommand{\mycssloc}{file:///home/foo/bar/css}
+
+%\rmstyles{*}
+%\setstyles{\mycssloc/mystyle1.css, \mycssloc/mystyle2.css}
+%\setstyles{foo/mystyle1.css, foo/bar/mystyle2.css}
+
+\newcommand{\mycmd}[2][1][{Hello}]{#1 \emph{#2}}
+\newcommand{\mumie}{MUMIE}
+\newcommand{\helloworld}{\mycmd{world}}
+
+
+\begin{document}
+
+  \title{Test}
+  \subtitle{Eine Testseite}
+
+  Hier etwas einleitender Text
+
+  \tableofcontents
+
+  \section[foo]{\"{U}berschrift}
+
+    Dies ist ein Test-Text. Er dient nur zum Testen, sein Inhalt ist egal. Der Text braucht
+    auch gar keinen Sinn zu machen, denn er dient ja nur zum Ausprobieren. M\"ussen noch
+    nicht einmal ganze S\"atze drinstehen, ja, noch nicht einmal richtige W\"orter.
+    Dies ist ein Test-Text. Er dient nur zum Testen, sein Inhalt ist egal. Der Text braucht
+    auch gar keinen Sinn zu machen, denn er dient ja nur zum Ausprobieren. M\"ussen noch
+    nicht einmal ganze S\"atze drinstehen, ja, noch nicht einmal richtige W\"orter.
+    Dies ist ein Test-Text. Er dient nur zum Testen, sein Inhalt ist egal. Der Text braucht
+    auch gar keinen Sinn zu machen, denn er dient ja nur zum Ausprobieren. M\"ussen noch
+    nicht einmal ganze S\"atze drinstehen, ja, noch nicht einmal richtige W\"orter.
+
+    Etwas \emph{hervorgehobener} Text.
+
+    Hier ein benutzerdefinierter Befehl: \mycmd{Welt!}
+
+    % Auskommentiert
+
+     
+     Hier nochmal \emph{hervorgehobener % Auskommentiertes mit }-Klammer
+     Text.} Hier ein paar Sonderzeichen, direkt eingegeben: ä ö ü Ü Ä Ö Ü ÅÆÇÈ. Ein @.
+     Normale "Anf\"{u}hrungszeichen". Ein paar andere 
+     Soderzeichen: \$\&\%\#\_. In \{geschweiften Klammern\}. {\AA}ngstr{\o}m.
+     Test: \"A, \"u. Im Wort: xx\"oyy.
+
+     Und hier ein Bild: \image[][c][Mumie-Bild]{resources/mumie.png\balloon{Ein Bild!}\id{bild-id}}
+
+     Noch etwas Text, mit < und > Zeichen. Interaktivit\"at:
+     \emph{Action\onclick{alert('Geklickt!')}}.
+     In Anf\"uhrungszeichen: \quoted{Hallo}.
+
+     Ein \balloon{Balloon help} balloon help. Noch ein \emph{Test daf\"{u}r\balloon{Help 2}}.
+
+     Eine Liste:
+
+     \begin{itemize}[circle]
+     \item Eins
+
+       Neuer Absatz
+
+     \item Zwei
+     \item drei
+     \end{itemize}
+
+     Eine nummerierte Liste:
+
+     \begin{enumerate}
+       \item Eins
+         \begin{enumerate}[alph]
+           \item Eins A
+           \item Eins B
+         \end{enumerate}
+       \item Zwei
+       \item Drei
+     \end{enumerate}
+
+     Eine griechisch numerierte Liste:
+
+     \begin{enumerate}[greek]
+       \item Eins
+       \item Zwei
+       \item Drei
+     \end{enumerate}
+
+     Eine "description"-Liste:
+
+     \begin{description}
+       \item[Erstens] Die ist der erste Punkt der Liste
+       \item[Zweitens] Die ist der zweite Punkt der Liste
+       \item[Drittens] Die ist der erste Punkt der Liste
+     \end{description}
+
+     Etwas Mathematik: $-3xy+5a^{x^2+1}_z+9(u+w)$.
+
+   \section*{Gesternter Abschnitt}
+
+     Eine gesternte Section. 
+
+   \section{N\"{a}chster Abschnitt}
+
+     Und jetzt Tests mit \emph{counters}.
+
+    \newcounter{mycounter}\setcounter{mycounter}{7}
+
+    Wert: \value{mycounter}. Als Buchstabe: \alph{mycounter}. Als kleine r\"{o}mische Zahl:
+    \roman{mycounter}. Als Fu\"{s}notensymbol: \fnsymbol{mycounter}.
+
+    \newcounter{mycounterii}[mycounter]Noch ein counter. \setcounter{mycounterii}{4} Er hat
+    jetzt den Wert \value{mycounterii}.
+    \stepcounter{mycounter}
+    Neue Werte: Erster Z\"{a}hler: \value{mycounter}, zweiter Z\"{a}hler: \value{mycounterii}.
+    \setcounter{mycounterii}{\value{mycounter}}
+    Wieder neue Werte: Erster Z\"{a}hler: \value{mycounter}, zweiter Z\"{a}hler: \value{mycounterii}.
+
+    \subsection{Unterabschnitt}
+
+    Innerhalb Unterabschnitt 1.1.
+
+    Dies ist ein Test-Text. Er dient nur zum Testen, sein Inhalt ist egal. Der Text braucht
+    auch gar keinen Sinn zu machen, denn er dient ja nur zum Ausprobieren. M\"ussen noch
+    nicht einmal ganze S\"atze drinstehen, ja, noch nicht einmal richtige W\"orter.
+    Dies ist ein Test-Text. Er dient nur zum Testen, sein Inhalt ist egal. Der Text braucht
+    auch gar keinen Sinn zu machen, denn er dient ja nur zum Ausprobieren. M\"ussen noch
+    nicht einmal ganze S\"atze drinstehen, ja, noch nicht einmal richtige W\"orter.
+    Dies ist ein Test-Text. Er dient nur zum Testen, sein Inhalt ist egal. Der Text braucht
+    auch gar keinen Sinn zu machen, denn er dient ja nur zum Ausprobieren. M\"ussen noch
+    nicht einmal ganze S\"atze drinstehen, ja, noch nicht einmal richtige W\"orter.
+
+    \begin{equation}
+      a^2 + b^2 = c^2
+    \end{equation}
+
+    Etwas \code{Quelltext}. Eine \var{Variable}. Ein \plhld{Platzhalter}. Eingabe von der 
+    \keyb{Tastatur}. - Noch mehr Mathe:
+
+    \begin{equation}
+      \frac{1}{1+x}
+    \end{equation}
+
+    Noch eine Formel:
+    
+    \begin{equation}
+      \sqrt{\frac{3x - 8}{x^2 + y^2}}
+    \end{equation}
+    
+    Eine Formel mit griechischen Buchstaben: $\alpha \beta \Gamma$. Und noch eine Formel,
+    diesmal mit Integral:
+    \begin{equation}
+      \int_0^1\frac{x}{1+x^2}dx
+    \end{equation}
+    Ein Integral $\int_a^{y^2} f(x) dx$ im Fliesstext. Eine Summe:
+    
+    \begin{equation}
+      \sum_{n=0}^\infty\frac{a_n}{n^2}
+    \end{equation}
+    
+    Weitere Mathe-Tests:
+    
+    \begin{equation}
+      \nolimits\int_0^1\frac{x}{1+x^2}\,d\!x
+    \end{equation}
+    
+    Noch einer
+    
+    \begin{equation}
+      \nolimits\int_{-\pi}^\pi f(x) \, \sin(x) d\!x
+    \end{equation}
+
+    Und noch einer
+    
+    \begin{equation}
+      \lim_{N\to\infty}\sum_{n=0}^N\frac{x^n}{n!} \; = \; e^x
+    \end{equation}
+    
+    Noch eine Formel:
+    
+    \begin{equation}
+      \{1+\frac{1}{x}\}^4
+    \end{equation}
+    
+    und noch eine:
+
+    \begin{equation}
+      \left.1+\frac{1}{x}\right|_{-1}^{X^2} \qquad \left.1+\frac{1}{x}\right|_1^2
+    \end{equation}
+
+    Abst\"{a}nde: 
+
+    $xxx$ 
+
+    $x\,xx$
+
+    $x\:xx$
+        
+    $x\;xx$
+    
+    $x\!xx$
+
+    $x\quad xx$ 
+
+    $x\qquad xx$ 
+
+    Eine Matrix:
+    
+    \begin{equation}
+      A \; = \;
+      \left(
+        \begin{mtable}
+          a_{11} & a_{12} \\
+          a_{21} & a_{22}
+        \end{mtable}
+      \right)
+    \end{equation}
+    
+    Vektoren:
+    \begin{equation}
+      \vec{a} \; = \;
+      \left(
+        \begin{mtable}
+          -4 \\ 5 \\ 0
+        \end{mtable}
+      \right)
+      \; , \qquad
+      \vec{b} \; = \;
+      \left(
+        \begin{mtable}
+          4x \\ 3y \\ x+y
+        \end{mtable}
+      \right)
+    \end{equation}
+    
+    Vektoren mit Indizes:
+    \begin{equation}
+      \vec{F_{1+}}(x, y, z) \; = \;
+      \left(
+        \begin{mtable}
+          3y \\ 2x \\ 5z
+        \end{mtable}
+      \right)
+    \end{equation}
+    
+    Ein
+    
+    \subsubsection{Unter-Unterabschnitt}
+    
+    Innerhalb des Unter-Unterabschnitts.
+
+    
+  \section{Zwei}
+
+  Hier innerhalb des zweiten Abschnitts.
+  Innerhalb Unterabschnitt 1.1.
+
+  \begin{table}
+    \head
+    eins & zwei & drei
+    \body
+    \rowspan[plhld]{2} 11 & 12 & 13 \\
+    22 & \anchor{test} \\
+    31 & 32 & 33\anchor[verankert]{foo} \\
+    41 & \colspan{2} 42 43 \\
+    \colspan{2}
+    \begin{table}
+      a & b \\
+      c & d 
+    \end{table} & 0
+  \end{table}
+  
+  \begin{table}
+    aa & ab & ac \\
+    ba & bb & bc \\
+    ca & cb & cc
+  \end{table}
+  
+  Jetzt soll etwas praeformatierter Text ausgegeben werden:
+  
+  \begin{preformatted}[code]%
+Ganz links            grosser Zwischenraum
+
+         \emph{hervorgehoben}
+ \alt{{eins}{zwei}{\var{drei}}}
+         untereinander
+         untereinander%
+    \end{preformatted}
+
+    Und jetzt ein Link zum \link{http://www.xemacs.org}{XEmacs}, dem besten Editor der Welt.
+    
+    Und jetzt verbatim Text:
+
+    \verbatim[code]
+ Dies ist verbatim Text. Befehle, 
+ 
+   \section{Name}
+     \foo[bar]{ein Argment}
+
+ sollten nicht
+             interpretiert werden
+    \endverbatim
+
+    Dasselbe nochmal, jetzt mit anderer Endmarke.
+
+    \verbatim[code][stop]
+ Dies ist verbatim Text. Befehle, 
+ 
+   \section{Name}
+     \foo[bar]{ein Argment}
+
+ sollten nicht
+             interpretiert werden
+\endverbatim
+\stop
+
+    Verbatim im Fliesstext \verb$\foo{bar}$. Der Code einer Tabelle:
+
+\verbatim[code]
+ \begin{table}
+   aa & ab & ac \\
+   ba & bb & bc \\
+   ca & cb & cc
+ \end{table}
+\endverbatim
+
+    Test \emph[foo]{Geht das?}.
+
+    Benutzerdefinierte L\"angen.
+    Definition einer L\"ange \verb'\mylength'. \newlength{\mylength}[12em]
+    Ausgabe: \writelength{\mylength}.
+    Ausgabe in mm: \writelength[mm]{\mylength}.
+    Formatiert: \writelength[mm][.2]{\mylength}.
+    
+    \mylength{10em}
+    Ausgabe: \writelength{\mylength}.
+    Ausgabe in mm: \writelength[mm]{\mylength}.
+    
+    Definition einer weiteren L\"ange \verb'\mylengthii'. \newlength{\mylengthii}[0.5\mylength]
+    Ausgabe: \writelength{\mylengthii}.
+    Ausgabe in mm: \writelength[mm]{\mylengthii}.
+    
+    Setzen auf einen neuen Wert mit \verb'\setlength': \setlength{\mylengthii}{8ex}
+    Ausgabe: \writelength{\mylengthii}.
+    
+    Ende des Tests.
+\end{document}

@@ -1,0 +1,195 @@
+#!/usr/bin/perl -w
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+use Env qw(MMTEX_HOME);
+use Getopt::Long;
+
+$tex_sources        = "$MMTEX_HOME/samples/tex";
+$xml_sources        = "$MMTEX_HOME/samples/xml";
+$html_results       = "$MMTEX_HOME/samples/xhtml";
+
+
+#------------------------------------------------------------------------#
+#   Information for the sample_index.html creation..
+#------------------------------------------------------------------------#
+$directory_to_parse  = "$MMTEX_HOME";
+$xml_dir_info        = "$MMTEX_HOME/samples/dir_index.xml";
+$sample_index        = "$MMTEX_HOME/samples/index.xhtml";
+$sample_stylesheet   = "$MMTEX_HOME/styles/xsl/sample_index.2html.xsl";
+
+
+
+#------------------------------------------------------------------------#
+#   Make sure there is the XML:Directoy modul in the path entered below
+#------------------------------------------------------------------------#
+use lib "/net/multimedia/Perl/";
+use XML::Directory::String;
+
+
+
+GetOptions
+  (
+   'index' => sub  { create_index(); exit},
+   'xml' =>   sub  { create_xml();     exit},
+   'xhtml' => sub  { create_xhtml(); exit},
+   'remove' => sub { remove_all(); exit},
+  );
+
+
+
+
+
+
+#------------------------------------------------------------------------#
+#   Normal run
+#------------------------------------------------------------------------#
+
+create_xml();
+create_xhtml();
+create_index();
+
+
+
+
+#------------------------------------------------------------------------#
+#   Create XML
+#------------------------------------------------------------------------#
+sub create_xml
+  {
+    if (-e "$xml_sources/.")
+      {
+	system("rm $xml_sources -r");
+      }
+    system("mkdir $xml_sources");
+
+    print "\n1) Opening tex_sources directory: $tex_sources ";
+    print "\n" . "-" x 78;
+    opendir(DIR, $tex_sources) || die("Path Error, could not open: $tex_sources");
+    while($i = readdir(DIR))
+      {
+	
+	if ($i =~ /\.tex$/)
+	  {
+	    $plain_name = $i;
+	    $plain_name =~ s/\.tex$//;
+	    print "\nProcessing $i";
+	    system("$MMTEX_HOME/bin/mmtex $tex_sources/$i --output=$xml_sources/$plain_name.xml");
+	    print " " x (40 - length("Processing $i")) . ".... done ";
+	  }
+      }
+    closedir(DIR);
+}
+
+
+
+
+
+#------------------------------------------------------------------------#
+#   Create XHTML
+#------------------------------------------------------------------------#
+sub create_xhtml
+  {
+    if (-e "$html_results/.")
+      {
+	system("rm $html_results -r");
+      }
+    system("mkdir $html_results");
+
+    print "\n\n2) Ready with the XML creating, now the XML -> XHTML will start";
+    print "\n" . "-" x 78 . "\n";
+
+    opendir(DIR, $xml_sources) || die("Path Error, could not open: $xml_sources");
+    while($i = readdir(DIR))
+      {
+
+	if ($i =~ /\.xml$/)
+	  {
+	    $plain_name = $i;
+	    $plain_name =~ s/\.xml$//;
+	    print "Processing $i ";
+	    print " " x (40 - length("Processing $i")) . ".... working .. ";
+
+	    system("$MMTEX_HOME/bin/mmxalan $xml_sources/$i ".
+		   "--output=$html_results/$plain_name.xhtml");
+	  }
+      }
+    closedir(DIR);
+  }
+
+
+
+
+
+#------------------------------------------------------------------------#
+#   Parse the directory and create the sample_index.html
+#------------------------------------------------------------------------#
+sub create_index
+  {
+    print "\n\n3) Creating XML Index of $directory_to_parse, please be patient...";
+    print "\n" . "-" x 78;
+
+    $dir = XML::Directory::String->new("$directory_to_parse",2,99);
+    $dir->parse_dir;
+    @res = $dir->get_array;
+
+    open OUT, ">$xml_dir_info";
+    foreach (@res)
+      {
+	print OUT $_ . "\n";
+      }
+    close OUT;
+    print "\nReady, file stored in $xml_dir_info";
+
+    print "\nConverting the XML to $sample_index using mmxalan";
+    system("$MMTEX_HOME/bin/mmxalan $xml_dir_info --xsl-stylesheet=$sample_stylesheet --output=$sample_index");
+    print ".....done.....";
+
+    print "\nRemoving $xml_dir_info   ...";
+    system("rm $xml_dir_info");
+    print "    done. \n\n";
+  }
+
+
+
+
+sub remove_all
+  {
+    print "\n\n1) Removing XML-sources\n";
+    if (-r $xml_sources)
+      {
+	system("rm $xml_sources -r");
+      }
+
+    print "2) Removing XHTML-sources\n";
+    if (-r $html_results)
+      {
+	system("rm $html_results -r");
+      }
+
+    print "3) Removing Sample-Index\n\n\n";
+    if (-r $sample_index)
+      {
+	system("rm $sample_index -r");
+      }
+}

@@ -1,0 +1,564 @@
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+
+  <head profile="">
+    <title>Layout Testseite</title>
+    <link type="text/css" rel="stylesheet" href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/view/document/type-name/generic_css_stylesheet/id/1" />
+  </head>
+    <style type="text/css" xml:space="preserve">
+
+	#tree {
+		border: 1px solid;
+		float: left;
+		width: 30em;
+		height: 40em;
+		overflow: auto;
+		margin-left: 1em;
+		padding:1em;
+	}
+
+	#tree ul {
+		margin: 0;
+		padding: 0;
+		width: 30em;
+	}
+	#tree li {
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+	}
+	#tree li li {
+		margin: .2em 0;
+		padding: 0 0 0 1.0em;
+	}
+
+
+
+	#treeContent {	
+		border-right: 1px solid;
+		border-top: 1px solid;
+		border-bottom: 1px solid;
+		height: 40em;
+		width: 60em;
+		overflow: auto;
+		
+		padding:1em;
+	}
+
+	#treeContent li {
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+	}
+
+	#dateiname {
+		float:left;	
+		border: 1px solid;
+
+		height: 0.5em;
+		width: 24em;
+		
+		padding:1em;
+		background-color:#4d619f;
+		margin:0;
+	}
+
+	#tmpUl{
+		margin: 0;
+		padding: 0;
+		list-style-type: none;
+	}
+
+	#typ{
+		float:left;	
+		border-top: 1px solid;
+		border-bottom: 1px solid;
+		height: 0.5em;
+		width: 18em;
+		
+		background-color:#4d619f;	
+		padding:1em;
+		margin:0;
+	}
+	#kategorie{
+		float:left;	
+		border-top: 1px solid;
+		border-bottom: 1px solid;
+		border-left: 1px solid;
+		height: 0.5em;
+		width: 5em;
+		
+		background-color:#4d619f;	
+		padding:1em;
+		margin:0;
+	}
+	#idTable{
+		float:left;	
+		border: 1px solid;
+		height: 0.5em;
+		width: 2em;
+		
+		background-color:#4d619f;	
+		padding:1em;
+		margin:0;
+	}
+
+	#idTableContent, #kategorieContent, #typContent, #dateinameContent {
+
+		background-color:#ffffff;
+		float:left;
+		padding:1em;
+		margin:0;	
+	}
+
+	#dateinameContent {
+
+		border-left: 1px solid;
+		border-right: 1px solid;
+		border-bottom: 1px solid;
+		height: 0.5em;
+		width: 24em;
+
+	}
+
+	#typContent {
+
+		
+		border-bottom: 1px solid;
+		height: 0.5em;
+		width: 18em;
+		
+		
+		
+	}
+	#kategorieContent {
+		
+
+		border-bottom: 1px solid;
+		border-left: 1px solid;
+		height: 0.5em;
+		width: 5em;
+			
+		
+	}
+	#idTableContent {
+		
+		border-left: 1px solid;
+		border-right: 1px solid;
+		border-bottom: 1px solid;
+		height: 0.5em;
+		width: 2em;
+
+
+	}
+
+
+	#tree img {
+	border:0;
+	float:left;
+	}
+	/*Anfang Allgemeine Links*/
+	#tree a:link {
+	text-decoration:none;
+	background-color:white;
+	color:black;
+	text-align:center;
+	font-family:Verdana, Arial, sans-serif;
+	font-size:10pt;
+	}    /* noch nicht besuchte Ziele */
+
+	#tree a:visited {
+	text-decoration:none;
+	background-color:white;
+	color:black;
+	text-align:center;
+	font-family:Verdana, Arial, sans-serif;
+	font-size:10pt;
+	} /* besuchte Ziele */
+
+	#tree a:hover {
+	text-decoration:none;
+	background-color:white;
+	color:blue;
+	text-align:center;
+	font-family:Verdana, Arial, sans-serif;
+	font-size:10.5pt;
+	}   /* Verweise bei "MouseOver" */
+
+	#tree a:active {
+	text-decoration:none;
+	background-color:white;
+	color:black;
+	text-align:center;
+	font-family:Verdana, Arial, sans-serif;
+	font-size:10pt;
+	}  /* Angeklickte Verweise */
+
+	#tree a:focus {
+	text-decoration:none;
+	background-color:white;
+	color:blue;
+	text-align:center;
+	font-family:Verdana, Arial, sans-serif;
+	font-size:10pt;
+	} 
+    </style>
+    	
+    <script type="text/javascript" mmx:src="lid=japs_client" />
+
+    <script type="text/javascript" xml:space="preserve">
+
+		var client = new JapsClient();
+		var pic2 = "http://gutemine.math.tu-berlin.de:8080/minus_end.gif";  //Bild f?r Minuszeichen - Einklappen
+		var pic1= "http://gutemine.math.tu-berlin.de:8080/plus_end.gif"; //Bild f?r Pluszeichen - Ausklappen
+
+
+
+		var status = true; //pr?ft, ob Baum bereits ausgeklappt ist
+		var statusTable=true; //pr?ft, ob bereits Tabelleneintr?ge gemacht wurden sind
+		
+		var tmpI; //Laufvariable f?r Schleifen, kann von XMLDokument varieren				
+
+	 
+		function inhaltAusgeben(xmlHttp) 
+		{
+
+				if(status == true)
+				{
+					parseXML(xmlHttp.responseXML);
+				}						
+				else
+				{
+					parseXMLTable(xmlHttp.responseXML);
+				}						
+			
+		 }
+
+		function loadXMLDoc(url)
+		{
+			
+			client.get(url, null, inhaltAusgeben, 0);
+
+		 }
+	
+
+
+		function checkTree(id)
+		//setzt den Status je nachdem, ob Baum offen oder zugeklappt
+		//Attribut von Id wird gepr?ft
+		//entweder ist der Baum ausgeklappt und alle Kindelemente werden entfernt oder der XMLHttp-Request wird fortgesetzt
+		{
+			var node = document.getElementById(id);
+			status = true;
+			
+			if(node.getAttribute("check") == "open")
+			{
+					var childNode = node.lastChild;
+					node.removeChild(childNode);
+					node.setAttribute("check", "close");
+					
+					node.firstChild.firstChild.setAttribute("src",pic1);//Bild ?ndern Pluszeichen
+
+			}
+			else
+			{
+				var xmlLink = "http://gutemine.math.tu-berlin.de:8080/cocoon/protected/data/pseudo-document/type-name/section/id/"+id;		
+				
+				loadXMLDoc(xmlLink);
+				
+			}
+
+
+		}
+
+		function parseXMLTable(xml)
+		//f?llt die Tabelle mit den ausgelesenen Werten
+		{
+			var pure_name = xml.getElementsByTagNameNS("http://www.mumie.net/xml-namespace/document/metainfo","pure_name");
+			var id = xml.getElementsByTagNameNS("http://www.mumie.net/xml-namespace/document/metainfo","section");
+			var anzahlNames = pure_name.length;
+			var tableBodyContent = document.getElementById("tableBody");//Element ermitteln
+
+			if(statusTable == false)//bedeutet Tabelle ist nicht leer und ausgef?llt
+			{
+				
+				var tmpUl= document.getElementById("tmpUl"); //Ul-Element wir gesucht
+				tableBodyContent.removeChild(tmpUl); //Ul-Element, dass die Textnodes enth?lt wird gel?scht, dadurch bleibt nur der Tabellenkopf stehen
+				statusTable=true;
+				
+			}
+
+
+			statusTable=false;
+			var newTmpUl = document.createElementNS("http://www.w3.org/1999/xhtml","ul"); //Ul-Element erzeugt
+			newTmpUl.setAttribute("id", "tmpUl");
+
+
+			var checkRoot = xml.getElementsByTagNameNS("http://www.mumie.net/xml-namespace/document/metainfo","name");
+			//Ausnahmebehandlung, denn das erste XML-Dokument ist im Vergleich zu allen anderen etwas anders aufgebaut
+			if(checkRoot[0].firstChild.nodeValue == "ROOT")
+			{
+				tmpI=2;//es handelt sich um das Root-XML-Dokument, deshalb muss bei 2 mit der Schleife siehe unten begonnen werden	
+			}
+			else
+			{
+				tmpI = 1;//alle anderen XML-Dokumente au?er das Root-XML-Dokument, deshalb bei1 begonnen
+			}
+
+
+			for (var i=tmpI;i &lt; anzahlNames;i++)//Auslesen der Informationen, sowie das Hinzuf?gen der Textnodes in Div-Container
+			{
+				
+			var nameBlatt= pure_name[i].parentNode.nodeName; //Elternelemenz von Knoten pure_name, Typ-Name mit Namespace z. Bsp.  mumie:user_group
+			idBlatt = pure_name[i].parentNode.getAttribute("id");
+			var doppelpunkt = nameBlatt.indexOf(":"); //Stelle wo der Doppelpunkt ist
+			nameBlatt = nameBlatt.substring(doppelpunkt+1); //Typ-Name
+
+			var nameValue = document.createTextNode(pure_name[i].childNodes[0].nodeValue);
+			var idValue = document.createTextNode(idBlatt);
+			var typValue = document.createTextNode(nameBlatt);
+			var kategorieValue = document.createTextNode(""); //bleibt noch leer, da noch nicht aufgef?hrt in den XML-Dokumenten
+
+			var newDiv1 = document.createElementNS("http://www.w3.org/1999/xhtml","div");
+			var newDiv2 = document.createElementNS("http://www.w3.org/1999/xhtml","div");
+			var newDiv3 = document.createElementNS("http://www.w3.org/1999/xhtml","div");
+			var newDiv4 = document.createElementNS("http://www.w3.org/1999/xhtml","div");
+
+			newDiv1.setAttribute("id", "dateinameContent"); //alle neuen Elemente werden der UL hinzugef?gt, denn beim Leeren muss dann nur das Ul-Element gel?scht werden
+			newDiv2.setAttribute("id", "typContent");
+			newDiv3.setAttribute("id", "kategorieContent");
+			newDiv4.setAttribute("id", "idTableContent");
+
+			newDiv1.appendChild(nameValue);
+			newDiv2.appendChild(typValue);
+			newDiv3.appendChild(kategorieValue);
+			newDiv4.appendChild(idValue);
+
+			newTmpUl.appendChild(newDiv1);
+			newTmpUl.appendChild(newDiv2);
+			newTmpUl.appendChild(newDiv3);
+			newTmpUl.appendChild(newDiv4);
+
+
+			}
+			tableBodyContent.appendChild(newTmpUl); //UL wird hinzugef?gt
+
+
+		}
+
+
+		function parseXML(xml) //parst die Elemente, um den Baum zu f?llen
+			{	
+			
+				var pure_name = xml.getElementsByTagNameNS("http://www.mumie.net/xml-namespace/document/metainfo","pure_name");
+				var id = xml.getElementsByTagNameNS("http://www.mumie.net/xml-namespace/document/metainfo","section");
+				var anzahlNames = pure_name.length;
+				var anzahlId = id.length;
+				var newId = new Array(anzahlId-1); //erstes Element ist immer der Elternknoten, deshalb wird dieser nicht ben?tigt
+				var parentId= id[0].getAttribute("id");
+				//alert(anzahlId);
+				
+				var checkRoot = xml.getElementsByTagNameNS("http://www.mumie.net/xml-namespace/document/metainfo","name");
+				if(checkRoot[0].firstChild.nodeValue == "ROOT")
+				{
+					tmpI=2;				
+				}
+				else
+				{
+					tmpI = 1;
+				}
+				for (var i=tmpI; i &lt; anzahlId; i++)
+				{ 	
+					
+					newId[i] = id[i].getAttribute("id");
+				}
+				
+				var liElement = document.getElementById(parentId);			
+				liElement.firstChild.firstChild.setAttribute("src",pic2);
+				
+				var newUlList = document.createElementNS("http://www.w3.org/1999/xhtml","ul");
+				
+		
+				for (var i=tmpI;i &lt; anzahlNames;i++)
+				{ 					
+					
+					var newLink = document.createElementNS("http://www.w3.org/1999/xhtml","a")
+					var newLink2 = document.createElementNS("http://www.w3.org/1999/xhtml","a")
+					
+					var newLiElement = document.createElementNS("http://www.w3.org/1999/xhtml","li");
+					
+					var nameValue = document.createTextNode(pure_name[i].childNodes[0].nodeValue);
+				
+						var idIcons=19;				
+					
+						if(pure_name[i].childNodes[0].nodeValue == "icons")
+							{newLiElement.setAttribute("id", idIcons);}
+						else{
+						newLiElement.setAttribute("id", newId[i]);}
+				
+					
+					newLink.setAttribute("href", "#");
+					newLink2.setAttribute("href", "#");
+					liElement.setAttribute("check", "open");
+
+
+						var nameBlatt= pure_name[i].parentNode.nodeName;
+
+						var idBlatt = pure_name[i].parentNode.getAttribute("id");
+						var doppelpunkt = nameBlatt.indexOf(":");
+						nameBlatt = nameBlatt.substring(doppelpunkt+1);
+					if(nameBlatt == "section") //Zweige
+					{								
+
+						
+						if(pure_name[i].childNodes[0].nodeValue == "icons")	{	
+						newLink.setAttribute("onclick", "checkTree("+idIcons+")");
+						newLink2.setAttribute("onclick", "makeTable("+idIcons+")");}
+						
+						else{
+						newLink.setAttribute("onclick", "checkTree("+newId[i]+")");
+						newLink2.setAttribute("onclick", "makeTable("+newId[i]+")");}
+						
+						var newImg = document.createElementNS("http://www.w3.org/1999/xhtml","img");
+						newImg.setAttribute("src",pic1);
+						newLink.appendChild(newImg);
+
+
+						newLink2.appendChild(nameValue);
+						newLiElement.appendChild(newLink);
+						newLiElement.appendChild(newLink2);
+											
+						newUlList.appendChild(newLiElement);
+
+					}
+					
+					else
+					{			//Bl?tter
+			
+
+						if(nameBlatt=="user" || nameBlatt=="user_group" || nameBlatt=="theme" || nameBlatt=="language" || nameBlatt=="class" || nameBlatt=="tutorial" || nameBlatt=="semester" || nameBlatt=="applet" || nameBlatt=="jar")
+						{
+					
+							if(nameBlatt=="applet" || nameBlatt=="jar")
+							{			
+								if(nameBlatt=="applet")
+								{						
+									newLink.setAttribute("href", "http://gutemine.math.tu-berlin.de:8080/cocoon/protected/wrap/document/type-name/"+nameBlatt+"/id/"+idBlatt+".jar");	}			
+								else			
+								{			
+									newLink.setAttribute("href", "http://gutemine.math.tu-berlin.de:8080/cocoon/protected/view/document/type-name/"+nameBlatt+"/id/"+idBlatt+".jar");					
+								}						
+							}
+							else
+							{
+								newLink.setAttribute("href", "http://gutemine.math.tu-berlin.de:8080/cocoon/protected/info/pseudo-document/type-name/"+nameBlatt+"/id/"+idBlatt);
+							}				
+						}
+
+					
+						else
+						{
+							newLink.setAttribute("href", "http://gutemine.math.tu-berlin.de:8080/cocoon/protected/view/document/type-name/"+nameBlatt+"/id/"+idBlatt);
+						}	
+						newLink.appendChild(nameValue);
+						newLiElement.appendChild(newLink);					
+						newUlList.appendChild(newLiElement);
+					}
+					
+				}
+				liElement.appendChild(newUlList);
+
+			} 
+function makeTable(id)
+{
+	status = false;
+	var xmlLink = "http://gutemine.math.tu-berlin.de:8080/cocoon/protected/data/pseudo-document/type-name/section/id/"+id;		
+		
+	loadXMLDoc(xmlLink,status)
+}
+
+
+    </script>
+
+  <body>
+
+    <div class="top"><table class="layout"><tr><td rowspan="2" class="left" colspan="1"><img alt="Mumie-Logo" lid="mumie-logo" height="75" width="91" src="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/view/document/type-name/generic_image/id/2" /></td><td colspan="2" class="middle" rowspan="1"><span class="mumie">MUMIE - Multimediale Mathematikausbildung</span><br clear="none" />TU Berlin &#183; Institut f&#252;r Mathematik</td><td rowspan="2" class="right" colspan="1"><img alt="Logo" lid="logo" height="65" width="90" src="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/view/document/type-name/generic_image/id/1" /></td></tr><tr><td rowspan="1" colspan="1"><div class="top-links"><a href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/alias/start" target="_top" title="Zur Startseite" shape="rect">Startseite</a>
+
+					    &#183;
+					    
+					    <a href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/alias/courses" target="_top" title="Zur Kursauswahl" shape="rect">Kurse</a>
+
+					    &#183;
+					    
+					    <a href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/alias/db-browser" target="_top" title="Zum DB-Browser" shape="rect">DB-Browser</a>
+					    
+					    &#183;
+					    <a href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/alias/admin" target="_top" title="Zur Administrator-Seite" shape="rect">Admin</a>
+					    &#183;
+
+					    <a href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/alias/account" target="_top" title="&#196;nderung der Konto-Daten" shape="rect">Konto</a></div></td><td rowspan="1" colspan="1"><div class="top-user">Angemeldet&#160;als: admin
+					    &#183;
+
+					    
+    <a href="http://gutemine.math.tu-berlin.de:8080/cocoon/protected/auth/logout" target="_top" title="Gesch&#252;tzten Bereich verlassen" shape="rect">Abmelden</a></div></td></tr></table></div>
+
+	<div class="main-bounded-width">
+		<h1>DB-Browser</h1>
+				
+	</div>
+	
+
+
+
+	<div id="tree">
+		<ul> 
+		<li id="0"><a href="#" onclick="checkTree(0)" shape="rect"><img src="http://gutemine.math.tu-berlin.de:8080/plus_end.gif" /></a> <a href="#" onclick="makeTable(0)" shape="rect">root</a></li>
+
+		</ul>
+	</div>
+
+	<div id="treeContent">	
+	<div id="tableHead">
+		<div id="dateiname">Dateiname
+		</div>
+
+		<div id="typ">Typ</div>
+		<div id="kategorie">Kategorie</div>
+
+		<div id="idTable">Id</div>	
+	</div>
+	<div id="tableBody">
+				
+	
+	</div>
+
+
+	</div>
+
+  </body>
+</html>

@@ -1,0 +1,60 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.1 2007/03/07 16:08:21 rassy Exp $
+Copyright (C) 2007, Berlin University of Technology
+
+
+
+                                 JAPS_CHECKIN
+
+
+This package contains Mumie documents and pseudo-documents the platform needs
+to operate.
+
+
+1. Setting the checkin root
+   ========================
+
+The files in 'checkin' and descendant folders should be added to the global
+checkin tree (a directory tree on your local computer which mirrors the
+contents of the Mumie server). This is called "mounting" the files to the
+checkin tree. The root of the checkin tree defaults to $HOME/mumie/checkin,
+where $HOME is your home directory. If you want to change this, you have two
+options:
+
+  1.1. Set the environment variable MM_CHECKIN_ROOT, and give it the value
+       <my-checkin-root>, where the latter is the checkin root directory.
+       This option has the advantage that MM_CHECKIN_ROOT is recognized by
+       other build scripts of the MUMIE project, too.
+
+  1.2  Change to the root directory of this package (the directory this file is
+       in), create a file named build.conf and add  the following line to it: 
+
+         checkin_root=<my-checkin-root>
+
+       Remark: The "mounting" of the chekin files is done by a Bash script
+       which reads the file build.conf by means of the 'source' command. Thus,
+       you can use shell substitution in build.conf, e.g.,
+
+         checkin_root=$HOME/foo/checkin
+
+If <checkin-root> is set both in build.conf and by the environment variable
+MM_CHECKIN_ROOT, the setting in build.conf takes precedence.
+
+
+2. Mounting the files to the checkin tree
+   ======================================
+
+Type
+
+  $ ./build.sh mount-checkin
+
+at the shell prompt.
+
+Remark: build.sh is the build script of thisn package. To get more information
+about it, type
+
+  $ ./build.sh -h
+
+
+
+-- END OF FILE --

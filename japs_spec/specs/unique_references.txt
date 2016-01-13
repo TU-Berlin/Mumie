@@ -1,0 +1,175 @@
+Autoren: Fritz Lehmann-Grube, Tilman Rassy
+$Id: unique_references.txt,v 1.1 2005/05/19 09:04:54 rassy Exp $
+
+        Eindeutigkeit (1:n) von gewissen Dokument-Dokument-Referenzen
+        =============================================================
+
+0. Motivation
+   ==========
+
+   0.0 Allgemeines zu Referenzen
+       (Komponenten, Links, .. siehe auch../styles/metainfo-xml/main.dvi(.tex))
+
+       Grundsätzlich gibt es zu jedem geordneten Paar von Dokumenttypen 
+       wie z.B. (element, image) eine Tabelle "refs_element_image", deren
+       Einträge bestehen aus 
+       - "from_doc", einer (erzwungenermassen dort existierenden !) Id in
+	 der zum ersten DokumentTyp gehörenden Tabelle - hier: "elements".
+       - "to_doc", einer (erzwungenermassen dort existierenden !) Id in
+	 der zum zweiten DokumentTyp gehörenden Tabelle - hier: "images".
+       - "lid", Local Id.
+       - "ref_type", einer Id in der statischen Tabelle "ref_types" zur 
+	 Klassifizierung der Referenz als z.B. "ist Komponente von" oder 
+	 "enthält einen Link auf" etc.
+       - "parameter"
+       Damit sind solche Referenzen prinzipiell n:n, das heisst: Jedes Dokument
+       des ersten Typs kann keine, eine oder mehrere Referenzen beliebigen Typs
+       auf beliebige Dokumente des zweiten Typs haben und jedes Dokument des
+       zweiten Typs kann von keinem, einem oder mehreren Dokumenten des ersten
+       Typs referenziert werden. 
+       Beachte, dass hier verschiedene Versionen eines Dokuments als verschie-
+       dene Dokumente aufgefasst werden, also verschiedene Ids haben.
+
+   0.1 Eindeutige Referenzen
+       Die Umgestaltungen der Strukturen im Zusammenhang mit dem Trainingstool
+       erfordern eine feinere Konfigurierbarkeit der Referenzen zwischen
+       Dokumenten. Insbesondere sollen Aufgabenblätter, also Dokumente vom
+       Typ "course_subsection", nur in Kursen jeweils eines Versionskontroll-
+       threads als Komponenten vorkommen dürfen.
+       Siehe dazu docs/notes/training/training_spezifikation.txt Punkt 4.1.
+
+   0.2 Referenzen als Entitäten
+       Ausserdem sollen Antworten von Studenten auf Übungsaufgaben, sogenannte
+       "annotations" sich jeweils auf ein Problem *in* einem gewissen Übungs-
+       blatt beziehen. Um eine solche Komponentenreferenz "Übungsblatt x
+       enthält Problem y" adressieren zu können, sollte der entsprechende
+       Eintrag in der Tabelle "refs_course_subsection_element" als Entität
+       betrachtet werden also eine Id erhalten.
+
+1. Anforderung
+   ===========
+
+   1.1 Eindeutige Referenzen
+       Für jedes Tripel (DokumentTyp A, DokumentTyp B, ReferenzTyp C) soll
+       per Konfigurationsdatei einstellbar sein, wie die entsprechende Referenz
+       sich verhält.
+       Folgende Varianten sind zu ermöglichen:
+       
+       (a) Keine Referenzen dieses Typs
+	   Als Spezialfall: Überhaupt keine Referenzen irgendeines Typs. Wie
+	   bisher schon kann dann die Referenzentabelle ganz fehlen. Dieser
+	   Fall wird deklariert durch Angabe des Dokumenttyps B in der Liste
+	   des Attributs "no-refs-to" der Deklaration von Dokumenttyp A.
+       (b) Keine Einschränkungen.
+	   So wie bisher, also wie in 0.0 beschrieben. Das sollte der default
+	   bleiben.
+       (c) Eindeutigkeit modulo VcThread des referenzierenden Dokuments
+	   ("from_doc") unter ausgewählten Referenztypen
+	   Ein referenziertes Dokument vom Typ B wird mit dem Typ C nur von
+	   solchen Dokumenten des Typs A referenziert, die Versionen höchstens
+	   *eines* Threads sind.
+	   Beispiel
+	   Betrachte folgenden Kontext:
+
+--------+   (DokumentTyp A "from_doc")
+courses |  
+----+-------------+-----------+---------+-
+ id |    name     | vc_thread | version | ... andere Attribute
+----+-------------+-----------+---------+-
+ 17 | testkurs1   |       759 |       1 |
+ 18 | testkurs1_2 |       759 |       2 | 
+ 19 | testkurs2   |       760 |       1 |
+
+-------------------+   (DokumentTyp B "to_doc")
+course_subsections |
+----+-------------------+-
+ id |       name        | ... andere Attribute
+----+-------------------+-
+  6 | testkurs_section1 | 
+	   
+	   Insbesondere VERBOTEN ist nun:
+
+refs_course_course_subsection
+----------+--------+-----+-------+----------
+ from_doc | to_doc | lid | param | ref_type
+----------+--------+-----+-------+----------
+       17 |      6 | bla |       |        0
+       19 |      6 | foo |       |        0
+
+	   Erlaubt bleiben:
+
+refs_course_course_subsection
+----------+--------+-----+-------+----------
+ from_doc | to_doc | lid | param | ref_type
+----------+--------+-----+-------+----------
+       17 |      6 | bla |       |        0
+       18 |      6 | foo |       |        0    (selber vc_thread)
+       19 |      6 | hey |       |        1    (anderer ref_type)
+
+
+       (d) Das gleiche wie (c), nur anders herum: Dokumente vom Typ A dürfen
+	   nur ein (modulo vc_thread) Dokument vom Typ B unter C referenzieren.
+
+       (e)       evtl. andere Varianten von Eindeutigkeiten
+
+
+   1.2 Referenzen als Entitäten
+
+       Die gerichteten (bzw. geordneten) Referenzen zwischen zwei
+       (bzw. mehreren, siehe u.) Dokumenten der Typen A ("from_doc"), B
+       ("to_doc") (,C "foo" ...) können sogenannte Multidoc-Annotationen
+       haben. Siehe dazu docs/notes/training/annotations.txt
+
+tbc.
+
+2. Umsetzung
+   =========
+
+   2.1 Eindeutige Referenzen
+       In der Konfigurationsdatei config/config.xml wird dafür das xml-Element
+       <reference-constraint/> eingeführt mit den Attributen:
+       - direction           ("from" für Fall (c), bzw. "to" für Fall (d))
+       - modulo-vc-thread    (bisher nur "yes" für beide Fälle (c) und (d))
+       - per-ref-type        (bisher nur "yes" für beide Fälle (c) und (d))
+       - from-doctype        (Name des Dokumenttyps A, hier: "course") 
+       - to-doctype	     (Name des Dokumenttyps B, hier: "course_subsection") 
+       - reference-type	     (Name des Referenztyps C, hier: "component")
+
+       Bei jedem "INSERT"-Befehl auf eine Referenzentabelle, für die eine
+       Einschränkung der Art 1.1.(c) oder (d) in der config.xml deklariert
+       ist, wird per "TRIGGER" vom Datenbankserver eine serverseitige (!)
+       Funktion "unique_ref_func()" aufgerufen, welche den neuen Eintrag auf
+       seine Korrektheit im gegebenen Kontext prüft und gegebenenfalls den
+       "INSERT" mit entsprechender Fehlermeldung abbricht.
+       Dabei kann der Referenztyp C vom TRIGGER an die Funktion als Argument
+       übergeben werden.
+
+
+   2.2 Referenzen als Entitäten
+       Jede Referenzentabelle erhält (wie die Dokumententabellen) einen
+       Primärschlüssel "id".
+       Diese id wird als Referenzziel in einer zugehörigen
+       Multidoc-Annotationstabelle verwendet. D.h.:
+       Jede Multidoc-Annotationstabelle bezieht sich genau auf eine
+       Referenzentabelle und enthält eine Spalte
+       
+       ref int references <Name der Referenzentabelle>.id
+
+       Beachte, dass beim einchecken einer neuen Version eines Dokuments vom
+       Typ B alle Einträge <B.id der alten Version> in den Spalten
+       refs_A_B.to_doc in <B.id der neuen Version> umgewandelt werden,
+       insbesondere OHNE dass die id dieser Referenz berührt wird. Das ist
+       eine universelle Eigenschaft der Spalte "to_doc", mit
+       "from_doc"-Einträgen wird nicht so verfahren. 
+       Existiert eine Annotation zu dieser Referenz, so bezieht sie sich dann
+       implizit auf die neue Version von B. 
+       Trotzdem muss zu dieser Annotation die Information erhalten bleiben, zu
+       welchem B sie ursprünglich erstellt wurde, nämlich zu <B.id der alten
+       Version>. Dafür gibt es in der Annotationstabelle noch (mindestens)
+       einen Fremdschlüssel "<document-name>" auf die (alte) B.id.
+
+
+
+tbc.
+
+-- ENDE DER DATEI --

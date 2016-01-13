@@ -1,0 +1,56 @@
+#!/bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Marek Grudzinski <grudzin@math.tu-berlin.de>
+# $Id: mmcc,v 1.8 2008/01/29 15:50:23 vrichter Exp $
+
+# this is the start script for the CourseCreator
+# just type mmcc
+
+# the serverlist which is used for the list of servers to choose
+file=$1
+prefix=${prefix:-${MM_BUILD_PREFIX:-/usr/local}}
+pics_dir=$prefix/share/coursecreator/pics
+lib_dir=$prefix/lib
+java_lib_dir=$lib_dir/java
+classpath=\
+$java_lib_dir/mumie-cc.jar\
+:$java_lib_dir/jgraph.jar\
+:$java_lib_dir/mumie-japs-client.jar\
+:$java_lib_dir/commons-lang-2.1.jar\
+:$java_lib_dir/jcookie-0.8c.jar\
+:$java_lib_dir/jaxen-1.1-beta-12.jar
+
+# the path to the https-certifications
+# replace trusted_certs by absolute path and filename, 
+# so say your file is in directory /homes/me/.foo then it must be
+# options=javax.net.ssl.trustStore=/homes/me/.foo/trusted_certs
+
+#options=javax.net.ssl.trustStore=trusted_certs
+
+# Classpath:
+export CLASSPATH=$classpath
+
+# the start-expression using all the options above
+java -splash:$pics_dir/splash.png -D$options net.mumie.coursecreator.CourseCreator $prefix $file &

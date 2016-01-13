@@ -1,0 +1,359 @@
+#!/usr/bin/perl -w
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+use Env qw(MMTEX_HOME);
+use Getopt::Long;
+use Cwd qw(abs_path);
+my $CMD_line_HOME = '';
+
+
+if ( ! $MMTEX_HOME )
+  {
+    die("WARNING: \$MMTEX_HOME not set\nPlease set or use command line option --HOME=foo \n");
+  }
+
+
+
+
+
+GetOptions
+  (
+   'all'              => sub {$all = 'true';},
+   'remove-all'       => sub {remove_all(); exit},
+   'remove-sources'   => sub {$remove_sources = 'yes';},
+   'target=s' =>      => sub {$xdoc_path      = set_option(@_);},
+   'xsl=s'            => sub {$xsl_stylesheet = set_option(@_);},
+   'xsl-index=s'      => sub {$xsl_dirtree    = set_option(@_);},
+   'help'             => sub {show_help(); exit},
+   'HOME=s' => \&check_home,
+  )
+  or exit($!);
+
+
+
+
+$include_path         = "$MMTEX_HOME/lib/include";
+$dcl_path             = "$MMTEX_HOME/lib/dcl";
+
+$xdoc_path            ||= "$MMTEX_HOME".'_srcout'."/docs/xdocs";
+$xdoc_sources_path    ||= "$xdoc_path/xml_sources";
+
+$xsl_stylesheet       ||= "$MMTEX_HOME/styles/xsl/xdoc.listview.xsl";
+$xsl_dirtree          ||= "$MMTEX_HOME/styles/xsl/xdoc-navi.xsl";
+
+if ($all)
+  {
+
+    empty_folder();
+    do_include_path();
+    do_dcl_path();
+    convert_to_html();
+    remove_sources() if $remove_sources;
+    create_index();
+  }
+else
+  {
+    show_help()
+  }
+
+
+exit();
+
+
+#-----------------------------------------------------------#
+#                   Possible tasks :                        #
+#-----------------------------------------------------------#
+#
+#  remove_all();
+#  empty_folder();
+#
+#  do_include_path();
+#  do_dcl_path();
+#
+#  remove_sources();
+#  create_index();
+#
+#  convert_to_html()
+#-----------------------------------------------------------#
+
+
+
+
+
+
+
+
+sub show_help
+  {
+
+   print "
+
+Usage: xdoc-create
+
+   --all               Do all tasks which are:
+
+                         empty_folder
+                         do_include_path   - XDOC for every lib  [ mmtex/lib/include ]
+                         do_dcl_path       - XDOC for every dcl  [ mmtex/lib/dcl ]
+                         convert_to_html   - store HTML in       [ target/html ]
+                         create_index      - store INDEX in      [ target ]
+
+   --target=s         Target folder                              [ mmtex_srcout/docs/xdocs ]
+   --remove-all       Remove all files in target folder
+   --remove-sources'  Remove sources after conversion from       [ target/xml_sources ]
+
+   --xsl=s            XSL-Stylesheet used for conversion to html
+   --xsl-index=s      XSL-Stylesheet used for index creation     [ mmtex/styles/xsl/xdoc-navi.xsl]
+
+   --help             Display this help text
+   --HOME=s           Set MMTEX_HOME if not set
+
+";
+
+  }
+
+sub set_option
+  {
+    $target = replace_tilde($_[1]);
+    if (-d $target)
+      {
+	$target = abs_path($target);
+      }
+    else
+      {
+	$target =~ s/([^\/]+)$//g;
+	$file = $1;
+	$target = abs_path($target);
+	$target .= "/$file";
+      }
+	
+    return $target    if (-r "$target");
+    die("\nCan't read $target\n");
+  }
+
+
+
+sub empty_folder
+  {
+    #------------------------------------------------------------------------#
+    print "\n1) Empty the xdoc folder to get rid of old html versions...\n"
+         .  "   [ $xdoc_path ]";
+    #------------------------------------------------------------------------#
+    if (-r "$xdoc_path")
+      {
+	system("rm $xdoc_path -r");
+      }
+
+    system("mkdir $xdoc_path");
+    system("mkdir $xdoc_path/html");
+    system("mkdir $xdoc_sources_path");
+  }
+
+
+
+sub do_include_path
+  {
+    #------------------------------------------------------------------------#
+    print "\n\n2.1) Opening include_path: $include_path \n" . "-" x 68;
+    #------------------------------------------------------------------------#
+    parse_dir($include_path,
+	      sub
+	      {
+		my $i = shift;
+		if ($i =~ /\.pl$/)
+		  {
+		    print "\nProcessing  $i";
+		    $i =~ s/\.[\w]*//g;
+		    system("cd $xdoc_sources_path; mmtex --xdoc --lib=$i;");
+		  }
+	      });
+    #------------------------------------------------------------------------#
+    print "\n" . "-" x 68 . "\n2.2) Creation of all xdocs for libs complete ....\n"
+      . "     Files stored in [ $xdoc_sources_path ] \n\n\n";
+    #------------------------------------------------------------------------#
+  }
+
+
+
+
+
+
+sub do_dcl_path
+  {
+    #------------------------------------------------------------------------#
+    print "3.1) Opening dcl_path: $dcl_path \n" . "-" x 68;
+    #------------------------------------------------------------------------#
+    parse_dir($dcl_path,
+	      sub
+	      {
+		my $i = shift;
+		if ($i =~ /\.pl$/)
+		  {
+		    print "\nProcessing  $i";
+		    $i =~ s/\.[\w]*//g;
+		    system("cd $xdoc_sources_path; mmtex --xdoc-lib --dcl=$i");
+		  }
+	      });
+    #------------------------------------------------------------------------#
+    print "\n" . "-" x 68 . "\n3.2) Creation of all xdocs for DCLs complete ....\n"
+      . "     Files stored in [ $xdoc_sources_path ] \n\n\n";
+    #------------------------------------------------------------------------#
+  }
+
+
+
+
+
+
+
+sub convert_to_html
+  {
+    #------------------------------------------------------------------------#
+    print "4) Converting XML Files to html using mmxsl \n\n";
+    #------------------------------------------------------------------------#
+    parse_dir($xdoc_sources_path,
+	      sub
+	      {
+		my $i = shift;
+		if ($i =~ /\.xml$/)
+		  {
+		    $plain_name = $i;
+		    $plain_name =~ s/\.xml$//;
+		    print "Converting $i ";
+		    system("
+cd $xdoc_sources_path;
+mmxsl $i --output=$xdoc_path/html/$plain_name.html --stylesheet=$xsl_stylesheet");
+		  }
+	      });
+    #------------------------------------------------------------------------#
+    print "\n4) Done, files stored in [ $xdoc_path/html ]\n\n";
+    #------------------------------------------------------------------------#
+  }
+
+
+
+
+
+
+
+
+
+
+
+sub create_index
+  {
+    #------------------------------------------------------------------------#
+    print "\n5) Using 'xml_tree_dir' to create a directory index in the docs/xdoc folder\n";
+    #------------------------------------------------------------------------#
+    system("$MMTEX_HOME".'_srcout'."/utils/dirtree --output=$xdoc_path/xml_dirtree.xml    ".
+	                                               "--folder=$xdoc_path");
+
+    system("cd $xdoc_path; mmxsl xml_dirtree.xml --output=$xdoc_path/index.html");
+    system("rm $xdoc_path/xml_dirtree.xml");
+
+    print "Converted [ xml_dirtree.xml ] to [ index.html ] and removed source.\n\n";
+
+  }
+
+
+
+
+
+
+
+
+
+sub parse_dir
+  {
+    ($dir, $handler) = @_;
+    opendir(DIR, $dir) || 
+      die("Path Error, could not open: $dir");
+
+    while($i = readdir(DIR))
+      {
+	&{$handler}($i);
+      }
+    closedir(DIR);
+  }
+
+
+
+
+
+sub check_home
+  {
+    shift;
+    $CMD_line_HOME = replace_tilde(shift);
+
+    if (-r $CMD_line_HOME)
+      {
+	$MMTEX_HOME = $CMD_line_HOME;
+      }
+    else
+      {
+	die("\nGiven name is not a directory: $CMD_line_HOME \n Please use option this way --HOME=foo/bar..\n");
+      }
+  }
+
+
+sub replace_tilde
+  {
+    $dir = shift;
+    $dir =~ s{
+			^ ~             # find a leading tilde
+			(               # save this in $1
+			[^/]        # a non-slash character
+			*     # repeated 0 or more times (0 means me)
+		       )
+		      }{
+			$1
+			  ? (getpwnam($1))[7]
+			    : ( $ENV{HOME} || $ENV{LOGDIR} )
+			  }ex;
+    return $dir;
+  }
+
+sub remove_all
+  {
+
+    print "\n\n1) Removing all in [ $xdoc_path ] \n\n";
+    if (-r $xdoc_path)
+      {
+	system("rm $xdoc_path -r");
+	system("mkdir $xdoc_path");
+      }
+
+  }
+
+
+sub remove_sources
+  {
+
+    print "\n\n 1) Removing sources [ $xdoc_sources_path ] \n\n";
+    if (-r $xdoc_path)
+      {
+	system("rm $xdoc_sources_path -r");
+      }
+  }
+

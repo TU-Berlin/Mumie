@@ -1,0 +1,71 @@
+ Author: Tilman Rassy <rassy@math.tu-berlin.de>
+# $Id: test_deps,v 1.28 2009/11/07 21:41:57 rassy Exp $
+
+# This file declares the possible tests and their dependencies. Each line has
+# the form
+#
+#  TEST DEP1 DEP2 ...
+#
+# where TEST is the name of the test and DEP1 DEP2 ... are its dependencies (tests
+# that must have been succesfully executed before TEST can be run).
+#
+# Note that a test must be declared here even if it has no dependencies.
+
+content_tub_analysis mmtex_mumie mathletfactory_lib mmcdk
+content_tub_analysis_imgproc mmtex_mumie mathletfactory_lib mmcdk
+applets_java4 content_tub_analysis content_tub_analysis_imgproc content_tub_applied_math content_tub_elementary_math content_tub_linear_algebra
+applets_java5 content_tub_analysis content_tub_analysis_imgproc content_tub_applied_math content_tub_elementary_math content_tub_linear_algebra
+content_tub_applied_math mmtex_mumie mathletfactory_lib mmcdk
+checkin references japs
+checkin_tub_analysis references japs content_tub_analysis
+checkin_tub_analysis_imgproc references japs content_tub_analysis_imgproc
+checkin_tub_applied_math references japs content_tub_applied_math
+checkin_tub_coma content_tub_coma references japs 
+checkin_tub_linear_algebra references japs content_tub_linear_algebra
+checkin_tub_elementary_math references japs content_tub_elementary_math
+checkin_tum_elementary_math references japs content_tum_elementary_math
+checkin_teaching_tub references japs teaching_tub checkin_tub_linear_algebra
+content_tub_linear_algebra mmtex_mumie mathletfactory_lib mmcdk
+content_tud_linear_algebra mmtex_mumie mathletfactory_lib mmcdk
+content_tum_elementary_math mmtex_mumie mathletfactory_lib mmcdk
+content_tub_elementary_math mmtex_mumie mathletfactory_lib mmcdk
+content_tub_coma mmtex_mumie mathletfactory_lib mmcdk
+elementary_math_content mmtex_mumie mathletfactory_lib mmcdk
+gen_doc_impl mmcdk content_tub_linear_algebra content_tub_elementary_math teaching_tub
+japs japs_env mmjutil mmjsql japs_client japs_datasheet japs_checkin mathletfactory_lib
+japs_checkin
+japs_client
+japs_client_java4 japs_client
+japs_client_java5 japs_client
+japs_datasheet
+japs_datasheet_java4 japs_datasheet
+japs_datasheet_java5 japs_datasheet
+japs_env
+mathletfactory_lib
+mathletfactory_lib_java4 mathletfactory_lib
+mathletfactory_lib_java5 mathletfactory_lib
+mf_japslib_java4 japs
+mf_japslib_java5 japs
+mmcdk mmjvmd japs_client japs_datasheet
+mmjipc
+mmjsql
+mmjutil
+mmjvmd mmjutil mmjipc
+mmplutil
+mmtex mmplutil
+mmtex_mumie mmtex
+recheckin checkin_tub_linear_algebra checkin_teaching_tub
+references mmcdk content_tub_linear_algebra content_tub_elementary_math teaching_tub
+sample_documents mmtex_mumie stylesheet_previews japs
+selftest_documents mmtex_mumie checkin_tub_linear_algebra checkin_teaching_tub content_tub_elementary_math
+selftest_user_problem_data selftest_documents sync
+stylesheet_previews mmcdk japs_checkin mathletfactory_lib
+sync checkin_tub_linear_algebra checkin_teaching_tub content_tub_elementary_math
+teaching_tub mmtex_mumie 
+theme japs japs_env checkin_tub_linear_algebra checkin_teaching_tub content_tub_linear_algebra references teaching_tub
+update_japs_checkin_compl japs_checkin mathletfactory_lib japs_client japs_datasheet
+update_japs_mflib japs mathletfactory_lib
+update_mf_japslib japs mathletfactory_lib
+update_mmcdk_japslib mmcdk japs
+user_problem_data sync
+training_documents japs japs_env checkin_tub_linear_algebra checkin_teaching_tub 

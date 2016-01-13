@@ -1,0 +1,108 @@
+<?xml version="1.0"  encoding = "ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!-- $d$ -->
+
+<xsl:stylesheet version="1.0"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:status="http://www.mumie.net/xml-namespace/status"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                exclude-result-prefixes="xsl-ext status">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>Service Status &#220;bersicht</title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-indented">
+        <div class="h1-container">
+          <div class="breadcrumb">
+            <a>
+              <xsl:attribute name="href"><xsl-ext:url lid="pge-admin-home"/></xsl:attribute>Admin
+            </a>&gt; 
+          </div>
+          <h1>Service Status &#220;bersicht</h1>
+        </div>
+        <table class="genuine" style="margin-left:0em">
+          <thead>
+            <tr>
+              <td>Klasse</td>
+              <td title="Anzahl der erzeugten Instanzen">Erzeugt</td>
+              <td title="Anzahl der Instanzen, f&#252;r die start(), aber noch nicht stop() aufgerufen wurde">Laufend</td>
+              <td title="Anzahl der Instanzen, f&#252;r die noch nicht dispose() aufgerufen wurde">Aktiv</td>
+              <td title="Gesamtanzahl der Lookups und Selects aller Instanzen">Lookups</td>
+              <td title="Gesamtanzahl der momentan benutzten Instanzen">Benutzt</td>
+              <td title="Gesamtanzahl der Recycles aller Instanzen">Recycles</td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <xsl:for-each select="/*/status:service_status">
+              <xsl:sort select="status:service_class/@name" data-type="text"/>
+              <tr>
+                <td><xsl:value-of select="status:service_class/@name"/></td>
+                <td class="number"><xsl:value-of select="status:number_of_created_instances/@value"/></td>
+                <td class="number"><xsl:value-of select="status:number_of_running_instances/@value"/></td>
+                <td class="number"><xsl:value-of select="status:number_of_active_instances/@value"/></td>
+                <td class="number"><xsl:value-of select="status:number_of_lookedup_instances/@value"/></td>
+                <td class="number"><xsl:value-of select="status:number_of_used_instances/@value"/></td>
+                <td class="number"><xsl:value-of select="status:number_of_recycled_instances/@value"/></td>
+                <td>
+                  <a class="button-inline">
+                    <xsl:attribute name="href">
+                      <xsl:value-of select="$xsl.url-prefix"/>
+                      <xsl:text>/protected/admin/status/service/class-name/</xsl:text>
+                      <xsl:value-of select="status:service_class/@name"/>
+                    </xsl:attribute>
+                    Details
+                  </a>
+                </td>
+              </tr>
+            </xsl:for-each>
+          </tbody>
+        </table>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+    
+</xsl:stylesheet>

@@ -1,0 +1,37 @@
+Autor: Markus Gronau
+$Id: applet_debug_logging.txt,v 1.1 2007/03/01 12:43:53 rassy Exp $
+
+Motivation
+----------
+Es gibt 2 Möglichkeiten, ein Applet auf einem Server zu debuggen:
+1. Das Applet bzw. dessen Bibliothek mit Debug-Informationen auszustatten und neu auf den Server einzuspielen.
+2. Das Plugin, in dem das Applet ausgeführt wird, mit dem Java Debugger zu verbinden.
+Leider hat die Art des Debuggens Einschränkungen und kann nicht für jeden Testfall herangezogen werden (z.B. GUI-Testing), so dass auf die erstgenannte Möglichkeit nicht gänzlich verzichtet werden kann.
+Um die Handhabe dieser Testweise zu vereinfachen und die Anzahl der Checkins zu reduzieren, ist dieser Logging-Mechanismus angedacht.
+
+
+Konzept
+-------
+Der Mechanismus ist angedacht für Entwickler von Applets, d.h. es darf weder Einschränkungen (wie z.B. Fehlermeldungen) bei der Benutzung, noch Dokumentation für den Applet-Benutzer geben.
+Er ist standardmäßig deaktiviert, d.h. im normalen Betrieb darf er sich nicht bemerkbar machen.
+Die Aktivierung wird durch Einträge in einer "Logging-Datei"
+  <USER_HOME>/.mathlet-logging.ini"
+erreicht. Es können dabei sowohl einzelne Klassen als auch Sätze von Klassen angegeben werden.
+Diese Datei darf nicht als "Log-File" aufgefasst werden, da die eigentlichen Log-Infos auf der Konsole ausgegeben werden.
+Die Einträge haben folgendes Format:
+ - ein Eintrag pro Zeile
+ - "Property-File"-Schreibweise, d.h. "<KEY>=<VALUE>" wobei:
+    - <KEY>:   vollständige Klassenbeschreibung (Package-Name und Klassenname, getrennt durch Punkte)
+               ODER
+               vordefinierte Eigenschaft zum Debuggen von ganzen Sätzen von Klassen
+    - <VALUE>: Logger-Level (vordefinierte Konstanten)
+Es können allgemeine Level wie "NONE" oder "FINE" oder aber spezialisierte Level wie "XML" angegeben werden.
+[TODO: Level definieren]
+
+Es sollen beim Lesen keine Fehler auftreten wenn:
+ - das Applet nicht signiert ist, d.h. wenn es nicht genügend Rechte besitzt
+ - die System-Eigenschaft "user.home" nicht gelesen werden kann
+ - die Logging-Datei nicht vorhanden ist bzw. sie nicht gelesen werden kann
+In diesen Fällen soll das Logging deaktiviert bleiben und keine Meldung ausgegeben werden.
+
+Ungültige Einträge sollen durch Warnungen auf der Java-Konsole für die Entwickler gemeldet werden.

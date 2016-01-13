@@ -1,0 +1,70 @@
+<html>
+  <head>
+    <title>Spezifikation der JAPS-Suchmaschine</title>
+  </head>
+  <body>
+    <h1>Spezifikation der JAPS-Suchmaschine JAPS-<code>search</code></h1>
+
+    <h2>Allgemeines</h2>
+    <p>JAPS-<code>search</code> bietet die Funktionalit&auml;t einer textbasierten Suchmaschine. Dabei
+    werden sowohl Metainformationen als auch natursprachlicher textbasierter Inhalt mit in
+    die Suche einbezogen. Mathematische Formeln sind vorerst von der Suche
+    ausgeschlossen.</p>
+
+    <p>Die Funktionalit&auml;ten unterteilen sich in Indizierung und Suche. Bei der
+    Indizierung werden die JAPS-Dokumente analysiert und der Index erzeugt, auf dem dann
+    eine Suche erfolgen kann.</p>
+
+    <p>Da die Suchmaschine vor allem auch Metainformationen aller Dokumente verarbeitet,
+    soll sie ebenso in der Lage sein, diese Metainformationen anderen Komponenten &uuml;ber
+    offene Schnittstellen zur Verf&uuml;gung zu stellen. Dazu wird RDF verwendet, da es das
+    vom W3C f&uuml;r Metainformationen empfohlene Format ist. So wird sichergestellt, das
+    sp&auml;tere Erweiterungen wie z.B. ein JAPS-basierter <code>mmview</code> oder semantikbasierte
+    Komponenten darauf aufsetzen k&ouml;nnen. Die zur Verf&uuml;gung stehenden RDF-Elemente
+    entsprechen dem Dublin-Core-Standard 1.1.</p>
+
+    <h2>Allgemeine Teilaufgaben</h2>
+    <ul>
+      <li>Einbindung von JAPS-<code>search</code> in die <code>mumie</code>-Plattform.</li>
+    </ul>
+
+    <h2>Arbeitspakete zur Indizierung</h2>
+    <ul>
+      <li>Webformular (nur f&uuml;r den JAPS-Administrator zug&auml;nglich), mit dem die
+      Indizierung parametrisiert und durchgef&uuml;rt werden kann. Parameter sind:
+      <ul>
+        <li>Die verwendete Sprache f&uuml;r die Indizierung. Anfangs englisch und
+        deutsch. Der Index stellt genau eine Sprache zur Verf&uuml;gung.</li>
+        <li>Das Directory f&uuml;r die Index-Dateien. Die Index-Speicherung erfolgt als Datei.</li>
+        <li>Die Dokumenttypen des Index. Standard sind Bilder, Elemente und
+        Subelemente. M&ouml;glich sind alle Dokumenttypen, die als Webseite dargestellt
+        werden k&ouml;nnen.</li>
+        <li>Einschr&auml;kung der Indizierung auf das aktuelle Dokument (das ist auch der Default-Wert)</li>
+      </ul>
+      </li>
+      <li>JAPS-Index-Generator - verarbeitet die Indizierung und wertet sie aus.</li>
+      <li>XSL-Stylesheet dazu</li>
+      <li>Indexer-Klasse - zust&auml;ndig f&uuml;r die Indizierung (Package:
+      net.mumie.cocoon.search). Die Indizierung nutzt die Lucene-API von apache.org. Die
+      Indexer-Klasse stellt ihre verarbeiteten Metainformationen RDF-kodiert anderen
+      Komponenten zur Verf&uuml;gung. Dazu wird die JENA-Api integriert.</li>
+      <li>Die Indexerklasse stellt Methoden bereit, mit denen andere JAPS-Komponenten
+      (z.B. Checkin-Generator) den Index aktualisieren k&ouml;nnen. Dazu z&auml;hlen ein
+      Update, Hinzuf&uuml;gen oder L&ouml;schen einzelner Elemente.</li>
+    </ul>
+
+    <h2>Arbeitspakete zur Suche</h2>
+    <ul>
+      <li>Webformular unterst&uuml;tzt einfache und Expertensuche. Die einfache Suche
+      bezieht den Inhalt der Metainformation <code>description</code> mit ein. Alternativ
+      ist auch zus&auml;lich die Suche im textbasierten Inhalt m&ouml;glich. Durch die
+      Expertenoptionen kann die Suche auf bestimmte Felder eingeschr&auml;kt werden. Strings
+      k&oml;nnen dann logisch kombiniert (und, oder und Negation) werden. Hilfetexte
+      erl&auml;tern am gleichen Ort den Gebrauch der Optionen. Die logischen
+      Kombinationsm&oml;glichkeiten entsprechen der Abfragesyntax der Lucene-API.</li>
+      <li>JAPS-Search-Generator - verarbeitet die Suche.</li>
+      <li>XSL-Stylesheet dazu (nach M&oml;glichkeit das selbe, wie f&uuml;r den Index-Generator)</li>
+    </ul>
+  </body>
+
+</html>

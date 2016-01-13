@@ -1,0 +1,105 @@
+Grob-Spezifikation zur Kurs-Komposition
+=======================================
+
+10.9.02: DE, SJ
+20.9.02: DE, TD
+23.11/27.11.02: SJ, DE, TD
+29.11.02: TR, DE, TD
+
+CVS-Angaben:
+============
+$Date: 2004/01/28 19:36:53 $ // Wird vom cvs eingetragen
+$Revision: 1.6 $ // Wird vom cvs eingetragen
+$Source: /net/mumie/cvs/styles/kurskomposition/grob-spez.txt,v $ // Wird vom cvs eingetragen
+
+A) Erzeugung von Sections
+-------------------------
+
+Ziele: o Erstellung von Sections (das sind
+	 Hierachiestufen zum Zusammenfassen von Elementen)
+
+         - Zuweisen der (Sub-)Elemente aus der DB und
+	   Anordnung auf einem Canvas
+
+         - Erstellen von Verbindungen zwischen den
+	   Elementen untereinander inklusive "und/oder"-
+	   Verknüpfungen
+         - Erstellen der "Roten Linie"
+
+       o Konvertierung der graphischen Darstellung nach
+	 structXML und Abspeichern in der DB
+
+Aufteilung (vgl. S.1) :
+	o Toolbar
+	o Zeichen-Canvas
+	o Zwischenablage
+	o Parent-Canvas
+
+Toolbar-Buttons:
+	o Dummy Element erzeugen (für jeden Typ ein Button).
+	o Dummy Subelement (für jeden Typ ein Button)
+	o Neue Section anlegen
+	o "oder"-Verknüpfung
+	o "und"-Verknüpfung
+	o Linien-Verbindungen zwischen Element-Element
+	  oder Element-"und/oder" oder "und/oder"-"und/oder"
+          - Anklicken der beiden Elemente
+          - Darstellung der Verbindungslinie
+	o Rote Linie
+          - Markierung bestehender Linien
+	o Zoom
+	o Ausgewählte Sections löschen
+	o Ausgewählte Sections vom Zeichen-Canvas
+	    nach Zwischenablage verschieben
+	o Ausgewählte Sections von der Zwischenablage nach
+	    Zeichen-Canvas  verschieben
+        o Laden einer Section
+          - aus DB
+        o Speichern einer Section (inkl. aller referenzierten Sections)
+          - in DB in entsprechenden Kurs
+        o Anzeigemöglichkeit der Metainformationen
+          - Typ, Titel(evtl Statuszeile)
+        o Metainformationen für Sections eingeben und anzeigen
+          - Autor, Name, Erstellungsdatum
+
+Zeichen-Canvas:
+	o Durch die Buttons angelegt neue Sections und Elemente
+	  werden dort angezeigt und der Autor kann sie mittels
+	  der Toolbar-Buttons verbinden etc.
+	o Sections/Elemente/Sub-Elemente:
+	  Kontextmenü:
+	  - Löschen
+	  - Nach Zwischenablage verschieben
+	  - Elementtyp ändern (wenn noch keine DB-ID zugewiesen, 
+	  	nachgeordnet)
+	  - Subelemente: Reihenfolge ändern (nachgeordnet)
+	  	
+
+Zwischenablage:
+	o Dient dem zwischenzeitlichen Ablegen von Sections (Einzelzellen)
+		(aller Hierachiestufen). Das ist z.B. nötig,
+		wenn Section S20 von S10 nach S11 verschoben werden soll:
+		      / S10 - S20
+		  S0 -
+ 		      \ S11 - ...
+
+	o Die Zwischenablage wird nicht gespeichert.
+	  (Wir bräuchten sonst noch ein weiteres XML oder müßten
+	   das Kurs-XML dafür missbrauchen.)
+
+Parent-Canvas:
+	o Sofern vorhanden wird hier die Eltern-Section (mit ihren
+	  Kindern) der aktuell
+	  auf der Zeichenfläche vorhandenen Section angezeigt.
+	o Durch Anklicken einer Section wird diese in den Zeichen-
+	  Canvas geladen.
+
+Design:
+        o nicht zu breit
+	0 Vgl. Seite 1, Gesamt-Creator, SJ 23.11.02
+
+Auswahl aus der DB:
+        o Erzeuge zuerst Dummy Element, wobei der Typ bereits
+	  angegeben wird.
+        o Weise danach Element aus DB mit einem
+          externem Java-TreeView-Applet zu.

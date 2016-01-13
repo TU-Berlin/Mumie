@@ -1,0 +1,276 @@
+Autor: Markus Gronau &lt;gronau@math.tu-berlin.de&gt;<br>
+$Id: Old_Exercise_Framework.html,v 1.1 2005/08/17 09:41:02 gronau Exp $
+
+<html>
+<head>
+  <title>Beschreibung des alten Exercise Frameworks</title>
+</head>
+<body>
+<h1 style="text-align: center;">Hausaufgaben-Mathlets f&uuml;r die Mumie erstellen</h1>
+
+<pre>
+
+<b>Begriffe:</b>
+Subtask         eine Unteraufgabe (gekennzeichnet durch a), b), etc.) einer Aufgabe
+Datasheet       ein XML-Dokument, das u.a. zur Kommunikation zw. dem Applet und dem Server dient
+Question-Sheet  das Datasheet, das vom Server ins Applet geladen wird
+Answer-Sheet    das Datasheet, das vom Applet zum Server geschickt wird
+
+
+1. Mögliche Interaktion des Applets
+   ================================
+
+  1.1 Keine Interaktion mit der Website; alle Daten werden direkt im Applet
+      eingegeben und weiterverarbeitet.
+
+  1.2 In der Website kann die Unteraufgabe gewechselt werden
+      Dazu wird im Applet die Methode <i>selectSubtask(int)</i> aufgerufen.
+      Diese gibt die Nummer der neuen Unteraufgabe an, beginnend mit 1
+      (1 entspricht a) usw.).
+
+  1.3 In der Website kann ein Element ausgewählt und dem Applet hinzugefügt werden
+      Dazu wird im Applet die Methode <i>selectData(String)</i> aufgerufen.
+      Diese gibt den Pfad zu einem Element im gelesenen Datasheet an.
+
+  1.4 Kombinationen aus 1.1-1.3
+
+
+2. Applet-Parameter
+   ================
+
+   Zum erfolgreichen Initialisieren der Mathlet-Umgebung sind folgende
+   Parameter von Nöten:
+
+   - homeworkMode (1)  muss den Wert <i>true </i>haben
+   - datasheetURL (1)  beinhaltet die URL für das Input-Datasheet ("Question-Sheet")
+   - ref (1)           beinhaltet eine Referenzierungs-ID für den JAPS
+   - lang (2)          die Sprache (Werte: <i>de, en</i>)
+   - appletWidth (2,3) Breite des Applet-Fensters
+   - appletHeight(2,3) Höhe des Applet-Fensters
+
+   (1): wird vom JAPS eingetragen
+   (2): regulärer Mathlet-Parameter;
+   (3): da Hausaufgaben-Applets immer als Button eingebunden
+        werden, muss dieser Parameter angegeben werden
+
+   Zum Testen und Debuggen von Mathlets sind folgende Parameter möglich:
+
+   - debugSheetURL   enthält eine URL zu einem Datasheet;
+                     setzt die Parameter <i>datasheetURL </i>und <i>ref</i>
+                     ausser Kraft
+   - debug           bei <i>true </i>wird der Debug-Modus aktiviert
+
+
+3. Implementationen im Code
+   ========================
+
+  Es gibt  2 Möglichkeiten, ein Mumie-Applet zu erstellen:
+  ein Interface benutzen und die benötigten Methoden im Applet-Code implementieren
+  oder ein Klasse "extenden" (erweitern), die bereits einige Funktionalitäten
+  besitzt.
+
+  3.1 <u>Benutzen des Interfaces JapsScriptable (V1)</u>
+<p style="border-color:#888888; border-width:1px; border-style:solid; ">
+      <b>Beachte:</b>
+      Bei der Implemetierung dieses Interfaces muss beachtet
+      werden, dass erst in dessen Methoden alles Nötige veranlasst werden
+      kann, um auf die "Aufforderung zur Interaktion" der Website zu reagieren.
+      Dies heißt insbesondere, dass in diesen Methoden z.B. Panels sichtbar bzw.
+      unsichtbar gemacht werden und MMObjekte mit neuen Werten besetzt werden müssen.
+
+      <b>Beachte:</b>
+      Wenn das Applet nicht alle Funktionalitäten unterstützen soll, so können
+      die entsprechenden Methoden einen leeren Rumpf haben.
+
+      <b>Beachte:</b>
+      Bedingt durch den Security Manager des Java Plugins kann es in diesen Methoden
+      zu Ausnahmen kommen, falls der Code zu "komplex" ist (insbesondere wenn aus dem
+      Question-Sheet Werte in MMObjekte gespeichert werden). Aus diesem Grund wird
+      für die Interaktion mit der Website die Benutzung der <i>MumieExerciseApplet</i>-Klasse
+      empfohlen, da sie den notwendigen Workaround hierfür enthält.
+
+</p>
+      Das Interface <i>net.mumie.mathletfactory.util.xml.JapsScriptable</i> besitzt folgende Methoden:
+
+      3.1.1 selectData (String path)
+            gibt den Pfad zu einem Element im Question-Sheet an
+
+      3.1.2 selectSubtask (int subtaskNr)
+            gibt die Nummer des neuen Subtasks an
+
+      3.1.3 clearSubtask()
+            löscht die Antworten des aktuellen Subtasks und
+            stellt seinen Anfangszustand wieder her
+
+      3.1.4 checkResult()
+            liest die Antworten aus und korrigiert sie
+
+  3.2 <u>Benutzen der Basisklasse <i>MumieExerciseApplet</i> (V1)</u>
+
+      Die Klasse <i>net.mumie.mathletfactory.appletskeleton.MumieExerciseApplet</i> ist
+      eine Appletskeleton-Instanz, d.h. sie kann direkt als Super-Klasse für das jeweilige Applet dienen.
+      Sie implementiert das Interface <i>JapsScriptable</i> und dessen Methoden und besitzt
+      außerdem einen Workaround für die Sicherheitsprobleme beim Plugin.
+<p style="border-color:#888888; border-width:1px; border-style:solid; ">
+      <b>Beachte:</b>
+      Da sie direkt von <i>BaseApplet</i> erbt existieren noch keine Informationen über
+      das Aussehen der GUI im Applet (d.h. es ist nicht bekannt, ob es sich um ein
+      Single-, SideBySide- oder NoCanvasApplet handelt). Aus diesem Grund müssen diese
+      Informationen angegeben werden.
+      Für ein NoCanvasApplet:
+        <i>getCenterPane().add(getControlTabbedPanel());</i>
+
+      Für ein SingleG2DCanvasApplet:
+        <i>JPanel p = new JPanel(new BorderLayout());
+        p.add(getCanvasPane(), BorderLayout.CENTER);
+        getCanvasPane().add(new MMG2DCanvas());
+        p.add(getControlTabbedPanel(), BorderLayout.SOUTH);
+        getCenterTabbedPanel().add(p);</i>
+
+</p>
+      Folgende Methoden müssen im Applet implementiert werden, da sie als abstrakt in der
+      Basisklasse <i>MumieExerciseApplet</i> definiert sind:
+
+      3.2.1 selectElement(String path)
+            siehe 3.1.1
+
+      3.2.2 selectTask(int taskNr)
+            siehe 3.1.2
+
+      Folgende Methoden müssen überschrieben werden, falls sie gebraucht werden:
+
+      3.2.3 clearSubtask()
+            siehe 3.1.3
+
+      3.2.4 checkResult()
+            siehe 3.1.4
+
+
+4. Auslesen des Question-Sheets
+   ============================
+
+  Ein leichtes Auslesen der Informationen des Input-Datasheets ermöglicht die Klasse
+  <i>net.mumie.mathletfactory.util.xml.DatasheetExercise</i>.
+  Sie wird mit der Mathlet-Instanz initialisiert. Ihr Konstruktor lautet:
+    <i>public DataSheetExercise(JapsScriptable applet)</i>
+
+  Die Daten des Sheets werden ihrer Bestimmung gemäß den Kategorien Fragestellung (engl. <b>"Problem"</b>)
+  und Benutzerdaten (<b>"User"</b>) zugewiesen (welche den Pfaden <u>common/problem</u> bzw.
+  <u>user/answer/subtask_[<i>int</i>]</u> entsprechen) und sind unter einem vereinfachten Pfad zu erreichen.
+  F&uuml;r Problem-Daten sind also nur diejenigen Pfad-Informationen notwendig, die unterhalb <u>common/problem</u> liegen.
+  F&uuml;r User-Daten ist zus&auml;tzlich ein Index f&uuml;r den zu w&auml;hlenden Subtask notwendig (beginnend ab 1 ).
+  Pfadinformationen sind ab <u>user/answer/subtask_[<i>int</i>]</u> notwendig, wobei <u>[<i>int</i>]</u>dem &uuml;bergebenen
+  Index entspricht. Nat&uuml;rlich gibt es auch die M&ouml;glichkeit, Daten &uuml;ber den gesamten Pfad anzusprechen.
+
+  F&uuml;r das Laden von MathML-Daten-<i>Elementen</i> in MM-Objekte stellt diese Klasse folgende Methoden zur Verf&uuml;gung:
+
+  - void loadElement (String path, MathmlSerializable mmobject)
+  - void loadProblemElement (String subpath, MathmlSerializable mmobject)
+  - void loadUserElement (int subtaskNr, String subpath, MathmlSerializable mmobject)
+
+  Lesen von MathML-Daten-<i>Elementen </i>:
+
+  - Element getElement (String path)
+  - Element getProblemElement (String subpath)
+  - Element getUserElement (int subtaskNr, String subpath)
+
+  Lesen von MathML-Daten-<i>Strings</i> (entsprechen einem TextNode in XML und sind kein spezieller MathML-Knoten):
+
+  - String getString (String path)
+  - String getProblemString (String subpath)
+  - String getUserString (int subtaskNr, String subpath)
+
+  Zum &Uuml;berpr&uuml;fen, ob ein bestimmtes Element im Question-Sheet enthalten ist gibt es folgende Methoden:
+
+  - boolean elementExists (String path)
+  - boolean problemElementExists (String subpath)
+  - boolean userElementExists (int subtaskNr, String subpath)
+
+  Zum direkten Zugriff auf das Question-Sheet steht die Methode
+    <i>public DataSheet getQuestionSheet()</i>
+  zur Verf&uuml;gung.
+
+5. Anfertigen des Answer-Sheets
+   ============================
+
+   5.1 Punkte verteilen (Score)
+       Der Punktestand (Score) des Benutzers wird ab 0 gez&auml;hlt und kann maximal den Wert 1 betragen.
+       Mit folgenden Methoden kann der Score bearbeitet bzw. eingesehen werden:
+
+       - void setScore(double score)
+       - void addToScore(double scoreToAdd)
+       - double getScore()
+
+   5.2 Ergebnisse als korrekt markieren
+       Eine Unteraufgabe (Subtask) als richtig oder falsch kennzeichnen:
+         <i>void setAnswerCorrect (int subtaskNr, boolean correct)</i>
+
+   5.3 Benutzerantworten speichern
+       Benutzerantworten können aus Strings oder MathML-Elementen bestehen und liegen
+       unterhalb eines <u>user/anser/subtask_[<i>int</i>]</u>-Knotens.
+       Mit folgenden Methoden können die Antworten im Answer-Sheet gespeichert werden,
+       wobei der anzugebene Pfad realtiv unterhalb des <u>user/anser/subtask_[<i>int</i>]</u>-Knotens
+       anzugeben ist:
+       - void setAnswer(int subtaskNr, String subpath, String value)
+       - void setAnswer(int subtaskNr, String subpath, Node mathmlNode)
+
+       Mit folgenden Methoden werden die Information unter dem absoluten Pfad gespeichert:
+       - void setAnswer(String path, String value)
+       - void setAnswer(String path, Node mathmlNode)
+
+   5.4 XML-Lösung (Marking) anfertigen
+
+     5.4.1 <i>MarkingDocBuilder</i>
+       In der Klasse <i>DatasheetExercise</i> kann mittels der Methode
+         <i>public MarkingDocBuilder getMarkingDocBuilder()</i>
+       auf eine Instanz eines
+         <i>net.mumie.mathletfactory.util.xml.marking.MarkingDocBuilder</i>'s
+         zugegriffen werden.
+       Diese repräsentiert den <i>&lt;marking&gt;</i>-Teil innerhalb des Answer-Sheets.
+
+       Dieser besteht u.a. aus <i>&lt;subtask&gt;</i>-Knoten, die jeweils für einen Subtask
+       die Antwort auf die Lösung des Benutzers repräsentieren und auf Java-Seite durch die Klasse
+       <i>net.mumie.mathletfactory.util.xml.marking.SubtaskNode</i> gekapselt werden.
+       Ein <i>&lt;subtask&gt;</i>-Knoten besteht aus einem <i>&lt;answer&gt;</i>- und einem
+       <i>&lt;solution&gt;</i>-Knoten und werden durch <i>SubtaskAnswerNode</i> respektive
+       <i>SubtaskSolutionNode</i> gekapselt.
+
+    5.4.2 <i>SubtaskAnswerNode</i>
+       Die Klasse <i>net.mumie.mathletfactory.util.xml.marking.SubtaskAnswerNode</i> beinhaltet folgende Methoden:
+
+       5.4.2.1 setScore(double score)
+               returns: void
+               Setzt die Punktzahl für den jeweiligen Subtask
+
+       5.4.2.2 addMathNode()
+               returns: Node
+               Fügt einen <i>&lt;math&gt;</i>-Knoten ein, der MathML-Knoten aufnehmen kann.
+               Auf die zurückgegebene Instanz von <i>Node</i> kann die Methode <i>appendChild(Node)</i> angewendet werden.
+<p style="border-color:#888888; border-width:1px; border-style:solid; ">
+      <b>Beachte:</b>
+      MMObjekte, die das Interface <i>net.mumie.mathletfactory.util.xml.MathMLSerializable</i>
+      implementieren, können ihren Inhalt als MathML-Knoten ausgeben (und auch daraus lesen).
+
+</p>
+      5.4.2.3 addParagraphNode(String text)
+              returns: Node
+              Fügt einen <i>&lt;par&gt;</i>-Knoten ein, der Text aufnehmen kann.
+
+      5.4.2.4 addMarkNode(String text)
+              returns: Node
+              Fügt einen <i>&lt;mark&gt;</i>-Knoten ein, der Text aufnehmen kann, der hervorgehoben wird.(???)
+
+    5.4.3 <i>SubtaskSolutionNode</i>
+      Die Klasse <i>net.mumie.mathletfactory.util.xml.marking.SubtaskSolutionNode</i> beinhaltet folgende Methoden:
+
+      5.4.3.1 addMathNode()
+              siehe 5.4.2.2
+      5.4.3.2 addParagraphNode(String text)
+              siehe 5.4.2.3
+
+  Zum direkten Zugriff auf das Answer-Sheet steht die Methode
+    <i>public DataSheet getAnswerSheet()</i>
+  zur Verf&uuml;gung.
+</pre>
+</body>
+</html>

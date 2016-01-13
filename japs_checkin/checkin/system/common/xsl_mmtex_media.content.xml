@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_mmtex_media.content.xml,v 1.5 2008/07/23 14:50:10 rassy Exp $
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="mtx">
+
+<!--
+  ================================================================================
+  Global parameters
+  ================================================================================
+-->
+
+<!-- Whether the "applet" or "object" element is used to include applets: -->
+<xsl:param name="applet-element">applet</xsl:param>
+
+<!--
+  ================================================================================
+  Images
+  ================================================================================
+-->
+
+<xsl:template match="mtx:image">
+  <img>
+    <xsl:call-template name="xsl.set-image-src-attributes"/>
+  </img>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Applets
+  ================================================================================
+-->
+
+<xsl:template match="mtx:applet">
+  <xsl:choose>
+    <xsl:when test="applet-element='object'">
+      <object>
+        <xsl:attribute name="name"><xsl:value-of select="@lid"/></xsl:attribute>
+        <xsl:attribute name="id"><xsl:value-of select="@lid"/></xsl:attribute>
+        <xsl:call-template name="xsl.set-applet-object-src-attributes"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="applet-codebase-lookup-param"/>
+      </object>
+    </xsl:when>
+    <xsl:otherwise>
+      <applet>
+        <xsl:attribute name="name"><xsl:value-of select="@lid"/></xsl:attribute>
+        <xsl:attribute name="id"><xsl:value-of select="@lid"/></xsl:attribute>
+        <xsl:call-template name="xsl.set-applet-src-attributes"/>
+        <xsl:apply-templates/>
+        <xsl:call-template name="applet-codebase-lookup-param"/>
+      </applet>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template match="mtx:applet/mtx:param">
+  <param>
+    <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+    <xsl:attribute name="value"><xsl:value-of select="@value"/></xsl:attribute>
+  </param>
+</xsl:template>
+
+<xsl:template name="applet-codebase-lookup-param">
+  <xsl:if test="not(../mtx:param[@name='codebase_lookup'])">
+    <param name="codebase_lookup" value="false"/>
+  </xsl:if>
+</xsl:template>
+
+<!--
+  ================================================================================
+  Flash movies
+  ================================================================================
+-->
+
+<xsl:template match="mtx:flash">
+  <xsl:variable name="data">
+    <xsl:call-template name="xsl.resolve-lid">
+      <xsl:with-param name="lid" select="@lid"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <object>
+    <xsl:attribute name="name"><xsl:value-of select="@lid"/></xsl:attribute>
+    <xsl:attribute name="id"><xsl:value-of select="@lid"/></xsl:attribute>
+    <xsl:call-template name="xsl.set-flash-object-src-attributes">
+      <xsl:with-param name="data" select="$data"/>
+    </xsl:call-template>
+    <param>
+      <xsl:attribute name="name">movie</xsl:attribute>
+      <xsl:attribute name="value"><xsl:value-of select="$data"/></xsl:attribute>
+    </param>
+    <xsl:apply-templates/>
+  </object>
+</xsl:template>
+
+<xsl:template match="mtx:flash/mtx:param">
+  <param>
+    <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+    <xsl:attribute name="value"><xsl:value-of select="@value"/></xsl:attribute>
+  </param>
+</xsl:template>
+
+</xsl:stylesheet>

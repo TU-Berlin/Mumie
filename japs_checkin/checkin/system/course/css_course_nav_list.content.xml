@@ -1,0 +1,177 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<css:def id="no-space" value="0pt 0pt 0pt 0pt"/>
+
+<css:def id="normalsize" value="10pt"/>
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="scriptsize-rel" value="80%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<css:def id="text-color" value="#000000"/>
+<css:def id="fill-color" value="#EAEAEA"/>
+<css:def id="stroke-color" value="#949494"/>
+<css:def id="lighter-text-color" value="#303030"/>
+<css:def id="link-color" value="#415799"/>
+
+<css:def id="link-hover-bgr-color" value="#FFF5EE"/>  <!-- seashell1 -->
+<css:def id="link-hover-border-color" value="#CDC5BF"/>  <!-- seashell3 -->
+
+<css:rule selector='html, *.embedded-html'>
+  <css:property name='font-family' value='Albany AMT, Verdana, Helvetica, sans-serif'/>
+  <css:property name='font-size' ref='normalsize'/>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' ref="no-space"/>
+</css:rule>
+  
+<css:rule selector="table.crslist">
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="margin" value="0.5em 1em 1em 1em"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="td.main-icon, td.sub-icon">
+  <css:property name="text-align" value="left"/>
+  <css:property name="vertical-align" value="top"/>
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="td.main-icon">
+  <css:property name="width" value="37px"/>
+  <css:property name="height" value="37px"/>
+</css:rule>
+
+<css:rule selector="td.main-label">
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="td.sub-items">
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="table.sub-items">
+  <css:property name="border-collapse" value="collapse"/>
+  <css:property name="border-style" value="none"/>
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="td.sub-icon">
+  <css:property name="width" value="26px"/>
+  <css:property name="height" value="26px"/>
+</css:rule>
+
+<css:rule selector="td.sub-label">
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector="img.icon">
+  <css:property name="position" value="relative"/>
+  <css:property name="top" value="0px"/>
+  <css:property name="left" value="0px"/>
+  <css:property name="margin"  ref="no-space"/>
+  <css:property name="padding" ref="no-space"/>
+</css:rule>
+
+<css:rule selector='img.strut'>
+  <css:property name='width' value='0px'/>
+  <css:property name='height' value='2em'/>
+  <css:property name='margin' ref='no-space'/>
+  <css:property name='padding' ref='no-space'/>
+</css:rule>
+
+<css:rule selector='a'>
+  <css:property name='padding' value='0px 0.2em 0px 0.2em'/>
+  <css:property name="color" ref="link-color"/>
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" value="transparent"/>
+  <css:property name='text-decoration' value='underline'/>
+  <css:property name="cursor" value="pointer"/>
+</css:rule>
+
+<css:rule selector='td.main-label a, td.sub-label a'>
+  <css:property name='text-decoration' value='none'/>
+</css:rule>
+
+<css:rule selector='a:hover'>
+  <css:property name="color" ref="link-color"/>
+  <css:property name='text-decoration' value='none'/>
+  <css:property name="background-color" ref="link-hover-bgr-color"/> 
+  <css:property name="border-color" ref="link-hover-border-color"/>
+</css:rule>
+
+<css:rule selector="div.title">
+  <css:property name="margin" value="1em 1em 0.5em 1em"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<css:rule selector="span.title">
+  <css:property name="font-weight" value="bold"/>
+  <css:property name="font-size" ref="Large-rel"/>
+</css:rule>
+
+<css:rule selector="div.links">
+  <css:property name="margin" value="0.5em 0.8em 0.5em 0.8em"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="text-align" value="left"/>
+</css:rule>
+
+<css:rule selector="span.nolink">
+  <css:property name='padding' value='0px 0.2em 0px 0.2em'/>
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" value="transparent"/>
+</css:rule>
+
+<css:rule selector="h1">
+  <css:property name="margin" value="1em 1em 0.5em 1em"/>
+  <css:property name="padding" ref="no-space"/>
+  <css:property name="text-align" value="left"/>
+  <css:property name="font-size" ref="large-rel"/>
+</css:rule>
+
+<!-- <css:rule selector="td">
+  <css:property name="border-style" value="solid"/>
+  <css:property name="border-width" value="1px"/>
+  <css:property name="border-color" value="#f0f0f0"/>
+</css:rule> -->
+
+
+</css:style>

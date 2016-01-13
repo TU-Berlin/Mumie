@@ -1,0 +1,63 @@
+%$Id: prb_applet.src.tex,v 1.1 2009/10/27 16:00:13 linges Exp $
+
+\documentclass{japs.problem.applet}
+
+\begin{metainfo}
+  \name{Test}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \begin{components}
+    \component{applet}{samples/ProblemApplet.meta.xml}{work}
+  \end{components}
+  \creategeneric
+\end{metainfo}
+
+\begin{content}
+  \title{Der Titel}
+
+  Einleitender Text
+
+  $x = \ppdrandint{user/problem/value1}{-1}{1}$
+
+  \begin{hidden}
+    \begin{data}{user/problem/value2}
+      $\vector{1 \\ 2 \\ 3}$
+    \end{data}
+  \end{hidden}
+
+    \begin{displaymath}
+      \begin{data*}{user/problem/value3}
+        \vector{1 \\ 2 \\ 3}
+      \end{data*}
+      , \quad
+      \begin{data*}{user/problem/value4}
+        \vector{0 \\ 4 \\ 2}
+      \end{data*}
+      , \quad
+      \begin{data*}{user/problem/value5}
+        \vector{3 \\ 0 \\ 1}
+      \end{data*}
+    \end{displaymath}
+
+  \begin{subtasks*}
+    \subtask Erste Teilaufgabe
+    \subtask Zweite Teilaufgabe
+    \subtask Dritte Teilaufgabe
+  \end{subtasks*}
+
+  Zwischentext
+
+  \begin{subtasks*}
+    \subtask Vierte Teilaufgabe
+    \subtask Fünfte Teilaufgabe
+  \end{subtasks*}
+
+  \begin{execute}
+    \applet{work}
+  \end{execute}
+
+\end{content}

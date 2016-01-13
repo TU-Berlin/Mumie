@@ -1,0 +1,424 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{CourseCreator Spezifikation}
+
+\begin{authors}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+  \author[vrichter@math.tu-berlin.de]{Verena Richter}
+  \author[binder@math.tu-berlin.de]{Jens Binder}
+\end{authors}
+
+% cvs id: $Id: course_creator_new.tex,v 1.22 2006/11/03 15:11:44 vrichter Exp $
+
+\tableofcontents
+\section{Präambel}
+
+Der \emph{CourseCreator} (CC) ist ein Autorenwerkzeug für die multimediale
+Lernplattform ''Mumie''. \\
+Der Benutzer(Autor) ist mit dem CC in der
+Lage, die innerhalb der Mumie vorhandenen Inhalte miteinander zu verknüpfen um
+sie in einer für den Studenten logischen, nichtliniearen Reihenfolge
+darzustellen.\\
+Gerade bei mathematischen Inhalten ist es zumeist sehr hilfreich
+auf eine solche nichtlineare, parallele Darstellung von Inhalten zurückzugreifen
+um Gemeinsamkeiten, Unterschiede sowie Abhängikeiten von Elementen
+aufzuzeigen. Zu diesem Zweck benutzt der CC ungerichtete Graphen deren Knoten
+den jeweiligen Inhaltselementen und die Kanten logische Verknüpfungen zwischen
+diesen Elementen entsprechen. Diese Darstellungsform geht über 
+die pure Abbildung der Reihenfolge von Elementen hinaus und hat den Vorteil
+auch für Nichtinformatiker bearbeitbar zu bleiben.\\
+Vor diesem Hintergrund wurde der CC als ein grafisches Interface für
+die Erstellung und Verwaltung von Kursen entwickelt. Er setzt indirekt auf dem
+Appliaktion-Server der Mumie - dem \emph{Japs} auf
+
+\section{Das Grundkonzept}
+Der CC ist eine Java-Applikation mit grafischer Benutzeroberfläche die im
+wesentlichen dazu dient Kurse und Kursinhalte zu organisieren.
+Im folgenden werden die Hauptaufgaben des CC kurz erläutert um anschließend
+einen genaueren Überblick über die Anforderungen zu haben:
+
+\subsection{Der CourseCreator als xml-Editor f"ur Kursdokumente}
+Ein Kursdokument besteht aus XML Text. Diesen könnte man ebensogut mit einem
+geeigneten Texteditor wie emacs oder - nicht empfohlen - MSWord bearbeiten.\\
+Dieser Text kodiert in einem speziellen, MUMIE-spezifischen XML-Dialekt
+(KursXML) einen
+Kursgraphen. Wie weiter oben schon angedeutet, übersetzt der CC den Text in in
+eine interaktive graphische Darstellung des Kurses.\\
+Die Grundfunktionen, die jeder Benutzer verstehen muss, sind also die eines
+Texteditors:
+\begin{itemize}
+\item ein neues Dokument erstellen
+\item ein bestehendes Dokument öffnen
+\item ein Dokument schreiben (speichern)
+\item ein geöffnetes Dokument schließen (mit optionalem speichern)
+\item das Programm beenden
+\end{itemize}
+Dokumente können nicht vom CourseCreator sondern nur von der Systemebene
+gelöscht werden, d.h. das Dokument muss in der Datenbank oder lokal vom
+Benutzer gelöscht werden.
+% das Löschen von Kursen aus der Datenbank ist noch nicht möglich, soll aber
+% alsbald vom Japs unterstützt werden.
+
+\subsection{Laden von Kursen}
+Kurse können im lokalen Dateisystem vorliegen
+oder in der Japs-Datenbank gespeichert sein. In beiden Fällen soll der CC in der
+Lage sein Kurse zu laden - unabhängig vom Speicherort.\\
+Im Falle des Ladens aus der Datenbank soll die Japs-Komponente MMCDK benutzt
+werden um die XML codierten Kursdaten erst in den lokalen Verzeichnisbaum
+auszuchecken und anschliessend in den CC zu laden.\\
+Nach gleichem Muster - nur eben ohne worheriges Laden aus der Datenbank -
+funktioniert das lokale Laden von Kursdaten. Im CC werden die Daten aufbereitet
+und als Graph dargestellt.\\
+Die Aufgabe des MMCDK ist das Verwalten der Kurs-Inhalte einschliesslich deren
+Checkout aus dem Japs. Er soll in Zukunft vom CC ''fernsteuerbar'' sein. Somit
+lädt der CC die Daten nicht direkt aus der Datenbank sondern indirekt mittels
+des MMCDK. Es ist ausdrücklich erlaubt auch Kursabschnittsgraphen einzeln zu
+laden um diese zu bearbeiten.
+
+\subsection{Darstellung von Kursen}
+Der (nichtlinearen) Darstellung
+von Kursen kommt eine besondere Bedeutung zu. Der Benutzer arbeitet einzig
+auf einem bildlich dargestellten Graphen (derzeit wird \emph{JGraph} verwendet).
+Intern (innerhalb der Japs-Datenbank und CC) werden die Graphen und Inhalte
+(als Verknüpfunegn in die Datenbank) im XML-Format
+dargestellt. Für diese Darstellung existiert eine eigene Spezifikation
+(\emph{KursXML}).
+
+\subsection{Erstellen / Editieren von Kursen und zuweisen von Inhalten} 
+Kurse sollen natürlich auch neu erstellt werden können bzw. existierende Kurse
+erweiterbar sein, unabhängig ob man nun einen Kurs oder einen Kursabschnitt
+bearbeitet. Dies setzt eine http(s)-Verbindung zu einer Japs-Instanz vorraus,
+um konsistente
+Inhaltsverknüpfungen zu garantieren. Das
+bedeutet das die Kurselemente die im CC zugeordnet werden und die
+später vom Studenten verwendet werden sollen auch wirklich in der Datenbank
+vorhanden sein müssen. Dies wird mit eben jener http(s)-Verbindug
+sichergestellt.\\
+Die Zuweisung selbst geschieht über ein eigenes Elementzuweisungsfenster
+in welchem die aktuelle Pfadstruktur innerhalb der Japs-Datenbank abgebildet
+ist. In dieser Struktur kann sich der Benutzer die gewünschten Elemente
+auswählen und in seiner Kurstruktur zuweisen. Dabei passt sich die Anzeige im
+CC automatisch dem jeweils zugeteilten Element an.
+% (für spätere Erweiterung) Der Benutzer kann auch Elemente auswählen,
+% die noch nicht in der Datenbank vorliegen sondern nur lokal im
+% Verzeichnisbaum. Diese werden beim einchecken des Kurses mit dem Kurs selbst
+% eingecheckt
+
+\subsection{Speichern von Kursen}
+Beim Speichern der Kurse wird der erstellte Graph auf das interne KursXML
+abgebildet und anschließend lokal gespeichert. Dazu wird eine .zip Datei
+angelegt in welcher alle Elemente enthalten sind, die für das einchecken in die
+Japs-Datenbank notwendig sind. Dazu gehören alle Kurs Graphen, alle Kursabsch
+nittsgraphen sowie neu zugefügte, noch nicht in der Datenbank vorhandene
+inhalte. Wurde nur ein Kursabschnitt geladen und bearbeitet so wird auch nur
+dieser abgespeichert. Der Benutzer kann vorher auswählen, ob er den
+Kurs nur lokal speichern möchte - als vorläufiges Exemplar - oder direkt
+mittels des MMCDK in die Datenbank einchecken möchte. In diesem Fall übernimmt
+das Hochladen der MMCDK, gesteuert vom CourseCreator.
+% Für den Fall das Inhaltselemente noch nicht in der Datenbank vorhanden sind,
+% werden diese zusammen mit den Kursen in die .zip-Datei geschrieben und
+% zusammen eingecheckt.
+\\
+\\
+Folgendes Bild veranschaulicht die Verbindungen des CC zu den anderen
+Komponenten innerhalb der Mumie. Zur Darstellung der sich auf
+dem Japs-Server befindlichen Kurse hält der CC eine http-Verbindung zur
+Datenbank. Jede weitere Kommunikation mit dem Server läuft über den MMCDK.\\
+
+\image{cc\_kontext.png}
+
+\subsection{Kursdokumente als Komponenten}
+%Es ist eines der wichtigsten Features des neuen CourseCreators, dass er
+%Kursdokumente (Kurse oder Kursabschnitte) verändern kann, ohne dass relative
+%Dokumente (resp. "Kind"-Kursabschnitte oder "Eltern"-Kurse), berührt werden.
+
+Falls der Benutzer einen Kurs zum Editieren geladen hat, sollte dies in der
+Kursauswahl visualisiert werden. Dieser Kurs stzt sich zusammen aus
+Komponenten, wobei der geladene Kurs selbst eine solche Komponente - also ein
+Kursdokument - ist. Es sollte durch z.B. einen Benutzerdialog klar gemacht
+werden, daß ein im Netz ausgwählter Knoten mit einem ausgechecktem Kursdokument
+übereinstimmt, bevor er als Abschnitt oder Aufgabenblatt geöffnet werden kann.
+
+\section{Spezifikation der Funktionen}
+  \subsection{Benutzerdialoge (Der CourseCreator als interaktive GUI)}
+\subsubsection{Eingabe des Servers}
+Beim Start des CourseCreators  wird der Benutzer standardmäßig aufgefordert
+anzugeben, auf welchem Server er arbeiten möchte bzw. ob er auf dem lokalen
+Verzeichnissystem arebiten möchte. In diesem Fall kann der Benutzer allerdings
+auf keinerlei vorgegebene Elemente zugreifen
+\subsubsection{Bestätigungsdialoge für Laden/Speichern}
+Bei Dateioperationen wie Laden/Speichern öffnen sich Dialoge, die dem Benutzer
+die Wahl geben ob ein Kurs lokal, oder mittels MMCDK in die Datnebank
+gespeichert werden soll. Beim Laden ist zu fragen, ob das Kursdokument neu
+geladen werden soll oder zum aktuellen Graphen hinzugefügt werden soll.
+  \subsection{ (Der CourseCreator als xml-Editor für einzelne Kursdokumente)}
+  Der CourseCreator schreibt in ein vom Benutzer bzw. der CC-Installation
+  festgelegtes sogenanntes ''checkin'' oder ''ROOT'' Verzeichnis.
+
+  Der CourseCreator hat die wichtige Aufgabe grafische Schnittstelle zwischen
+Benutzer und Japs zu sein. Er soll es dem Benutzer erlauben Kurse zu erstellen,
+sie in den Japs einzuchecken , 
+  sie wieder auszuchecken und zu "andern. Das soll aus Gr"unden der
+"Ubersichtlichkeit grafisch geschehen, da reine XML-Daten sich schlecht zum
+direkten editieren eignen.
+  
+  \subsection{Das Editieren von Komponenten}\label{edit_components}
+%   \subsubsection{"Zoom" Button}
+Die Aktion ''reinnavigieren'' muss, falls nötig, eine Interaktion aufrufen. Die
+im Canvas ausgewählte Komponente - im Elementzuweisungsfenster gehighlightet -
+muss mit einem zu ladendenden Dokument - im Kursauswahlfenster gehighlightet -
+identifiziert werden. Und zwar vom Editor selbst, gegebenenfalls mithilfe (einer
+zu spezifierenden Funktion von) MMCDK.
+
+\section{Die GUI}
+%TODO: \\
+%- abh"angigkeiten von Komponenten sollten auf Wunsch aufleuchten
+% das wollte Ruedi haben. Frage: da wir gerichtete Kanten haben, sollte
+% das eindeutig sein. Ich wuerde einen Kontextmen"upunkt "abhaengigkeiten
+% anzeigen" einf"ugen und eine Abhaegigkeitstiefe im Men"upunkt
+% Einstellungen einstellbar machen.
+%
+%- korrektheit des Netzwerkes pr"ufen? (sinnvoll erscheint mir nur das pr"ufen,
+%ob das Netzwerk gerichtete Kreise enth"alt)
+% Koennte man dann im Men"upunkt MetaInfos machen, wo jetzt auch der Rote faden
+% gepr'Uft werden kann und vor dem Speichern. W"are vor allem mit 1. sinnvoll..
+%
+%- muss man mehrere Subelemente markieren k"onnen? bisher kann man nur Elemente
+%glecihartigen types markieren (Sections, Kanten) zwie Elemente kann man dann
+%jeweils verbinden. Mehrere Elemente kann man loeschen. Bisher kann man nicht
+%''alles was sich in einem bestimmten rechteckigen Bereich befindet''
+%loeschen. das haette sich erledigt, wenn man verschiedenartige knoten
+%markieren kann.
+% 
+%- ich glaube, es sollte irgendwo noch eine Liste der ge"offneten (also aus der
+%Datenbank geladenen Graphen) geben --> vorschlag: als Liste in einem Men"upunkt
+%"geladene Graphen"\\
+
+Die Gui dient dazu, einen Graphen, der im Hauptfenster angezeigt wird, einfach
+und intuitiv zu manipulieren. Sie soll dem Benutzer es so einfach wie möglich machen 
+die Funktionen des CC zu nutzen!
+
+\subsection {Fenster}
+\subsubsection{Hauptfenster}
+Das Hauptfenster enthält den Graphen der bearbeitet werden soll. Die
+Darstellung des Graph besteht aus Dokumentknoten (vom Typ Element, Problem oder
+Section) und Verzweigungsknoten (vom Typ ''Und'' und ''Oder''), welche mittels
+orthogonalen Kanten miteinander verbunden werden können. Dieses Netzwerk stellt
+die logischen Abhängigkeiten der einzelnen Dokumente voneinander dar. Unabhängig
+von diesem Netzwerk kann ein ''roter Faden'' dargestellt werden, der eine
+lineare
+Reihenfolge der Knoten erzeugt. Ein Knoten der auf dem Roten Faden ist, ist
+durch einen roten Kreis gekennzeichnet. Es soll die Möglichkeit geben die
+Reihenfolge der Kurse auf dem roten Faden visuell (mittels einer Liste in einem
+neuen Fenster) darzustellen und diese Reihenfolge jederzeit anzupassen (wenn
+zum zum Beispiel neue Elemente in den Kurs eingefügt werden)
+
+Die Dokumentknoten vom Typ Element und Section können ''Subdokumentknoten''
+besitzen und Subdokumentknoten k"onnen nicht ohne Dokumentknoten existieren.
+Dabei ist zu beachten, das Subdokumente von Sections selber Graphen sein
+können (z.B. eine Übungsblatt) die aus Elementen bestehen, jedoch Subdokumente
+von Elementen selbst nur Elemente sind.
+
+Die Position der Dokumentknoten kann mittels drag and drop verändert werden. Da
+die Subdokumentknoten von ihrem Dokumentknoten abhängig ist, kann deren
+Position nicht unabhängig von ihrem Dokumentkonten verändert werden.
+
+Ein Knoten kann markiert werden, indem er mit der rechten oder linken Maustaste
+einfach angeklickt wird. Mehrere Knoten und/oder Kanten werden durch
+gleichzeitiges Dr"ucken der Shifttaste markiert.
+%Wieso? F. -
+%weiß auch nicht J.
+%jetzt kann der benutzer anklicken, was er will.. v.
+
+\subsubsection{Das Kontextmen"u}
+Beim Klicken mit der rechten Maustaste auf einen Knoten erscheint das
+Kontextmenü, welches abhängig von dem Typ des dann markierten Knoten ist. Das
+Kontexmen"u enth"alt nur Funktionen, die den markierten Knoten betreffen.
+
+Alle Knoten haben einen Kontextmenüpunkt ''Löschen'', welcher diese
+Knoten aus dem Graphen entfernt, und den Kontextmenüpunkt ''Label setzen'',
+welches zum späteren Sortieren verwendet wird und einen beliebigen nichtleeren
+String enthält. 
+%Zum Textformat dieses Strings siehe den Abschnitt über die
+%\href{\#encoding}{Eingabe von Texten}.
+
+Die Dokumentknoten haben den desweiteren die Menüpunkte ''Kante ziehen'' und
+''auf roten Faden setzen'' bzw ''von rotem Faden nehmen''. 
+
+Ein Dokumentknoten vom Typ Problem hat den Untermenüpunkt ''Punkte setzen'',
+womit die Punkte (positive ganze Zahlen) für diese Aufgabe gesetzt werden
+können.
+
+\subsubsection{Toolbar}
+Der Toolbar enth"alt die wichtigesten Funktionen wie ''auf Roten Faden setzen'',
+''Verbinden'', ''L"oschen'', ''L"oschen des Graphen'', als Buttons. Je nach
+gerade
+markierten Element(en) sind die Button an- oder ausgeschaltet. Die Funktionen
+auf dem
+Toolbar sind auch mit der Tastatur mittels HotKeys durchzuf"uhren (wobei die
+Belegung der einzelnen Buttons dem Programmierer überlassen bleibt - sie muß
+nur in einer Doku - z.B. hier festgehalten werden). Dafür sind Tastenbelegungen
+in einer konfigurierbaren Art definiert.
+
+\subsubsection{Menüleiste}
+Die Menüleiste beinhaltet Funktionen, die den ganzen Graphen betreffen.
+
+\begin{itemize}
+\item Datei:\\
+In diesem Menüpunkt finden sich alle Funktionen des CC zur Dateiverwaltung,
+das Laden/Speichern bzw. neu erstellen von Graphen.
+Im Menüpunkt zum Laden und Speichern des Graphen werden die
+XML content- und meta-Dateien des Graphen in einem zu w"ahlernden Verzeichnis
+erzeugt, bzw eine bestehende KursXML-Datei aus dem lokalen Dateisystem
+geladen. Verwendet wird dazu ein Dateiauswahlfenster.
+
+\item Bearbeiten:\\
+Dieses Menü dient u.a. zum Bearbeiten der Metainformationen. Hier kann
+der Name und die
+Beschreibung des Graphen und der Status festgelegt werden. Für einen
+Kursabschnitt wird hier die zugehörige Lehrveranstaltung zugewiesen, für ein
+Trainingsblatt wird hier die Kategorie und der Barbeitungszeitraum festgelegt.\\
+In diesem Menü k"onnen ausserdem Abstracts zum Graphen hinzugef"ugt werden. Das
+Menü enthält zudem Funktionalitäten rund um den roten Faden. So kann
+der komplette Rote Faden des Graphen gel"oscht werden und die Reihenfolge des
+roten Fadens in einem neuen Fenster geöffnet werden.
+\item Ansicht:\label{ansicht}\\
+Unter dem Ansichtmen"upunkt k"onnen einzelne Zusatzfenster, wie das
+Elementzuweisungsfenster (um den Inhalt des Japs zu sehen) sichtbar geschaltet
+werden.
+\item Einstellungen:\\
+Unter diesem Men"upunkt finden sich allgemeine Einstellungen, wie der
+verwendete Server, der während der CC-Laufzeit geändert werden kann. In diesem
+Fall muss allerdings sichergestellt werden, dass der aktuelle gesichert ist, da
+dieser aus Konsistenzgründen geschlossen wird.
+\item Buffers:\\
+In diesem Men"upunkt befinden sich die zuletzt ge"offneten Graphen in der
+Reihenfolge, wie sie zuletzt ge"offnet wurden.
+\end{itemize}
+
+\subsubsection{Komponentenleiste}
+Mittels der Komponentenleiste können Kursabschnitte, Trainingsblätter,
+Elemente, Subelemente, Aufgaben und Verzweigungsknoten als Knoten in den
+Graphen eingefügt werden. Dabei können die Komponenten nur in Abhängigkeit von
+bereits bestehenden Komponenten hinzugefügt werden. So kann ein Kursabschnitt
+nur hinzugefügt werden, wenn bereits weitere Kursabschnitte vorhanden sind,
+oder der Graph leer ist.\\
+Kursabschnitte, Elemente und Aufgaben sind Dokumentknoten, Trainingsbl"atter
+und Subelemente sind Subdokumentknoten.\\
+Allen Komponenten (ausser den Verbindungsknoten) kann ein Inhalt mittels des
+Elementzuweisungsfensters zugewiesen werden.
+
+\subsection{Extra Frames - Das Elementzuweisungsfenster}
+Das Elementzuweisungsfenster ist ein eigenst"andiges Fenster und dient dazu
+einem ausgew"ahltem Dokumentknoten oder Subdokumentknoten einen Inhalt aus dem
+Japs zuzuweisen. Das Fenster zeigt die Baumstruktur der mathematischen Elemente
+aus dem Japs und erscheint, wenn man dieses in Men"upunkt
+\href{\#ansicht}{Ansicht}
+anw"ahlt.\\
+
+Da sich das Elementzuweisungsfenster nur einmalig beim "Offnen des Fensters
+Daten
+von der Datenbank holt, gibt es einen ''reload''-Knopf, der die aktuellen Daten
+aus der Datenbank holt.
+
+\subsection{Der Rote Faden}
+Um eine lineare Struktur durch das Netzwerk zu erzeugen, wird der Rote Faden
+erzeugt. Knoten und Kanten k"onnen mittels des Kontextmenüs auf den Roten Faden
+gesetzt werden. Knoten auf dem Roten Faden werden durch einen roten Kreis und
+Kanten durch die Farbe gekennzeichnet.\\
+
+Der Rote Faden ist korrekt, wenn er linear ist, d.h es gibt keine
+Verzweigungen, jeder Knoten auf dem Roten Faden hat genau zwei -eine eingehende
+und eine ausgehende rote Kante (ausser der Start und der Endknoten)- und jeder
+Knoten, der eine rote eingehende bzw ausgehende Kante hat, liegt auf dem roten
+Faden (ggf ausser des Start bzw Endknotens). Zudem ist der rote Faden
+zusammenh"angend.\\
+
+Da die Kanten gerichtet sind, sind Start und Endknoten eindeutig.
+Verzweigungsknoten k"onnen nicht auf den Roten Faden.\\
+
+Der Rote Faden für Kanten ist unabhängig davon, ob sich eine Kante im Netzwerk
+befindet.\\
+
+W"ahrend der Bearbeitung des Graphen wird die Korrektheit des Roten Fadens
+nicht "uberpr"uft. Es ist aber m"oglich, den Roten Faden von Hand mittels des
+entsprechenden Men"upunktes im Metainfomen"u zu pr"ufen. Beim Speichern wird
+gepr"uft, ob der Graph korrekt ist, falls nicht, so wird zumindest eine
+Fehlermeldung erzeugt, und ggf nicht abgespeichert, da ein Graph mit nicht
+korrektem Roten Faden nicht in Browser dargestellt werden k"onnte.
+
+\subsection{Kanten}
+Kanten sind orthogonal und verbinden je zwei Knoten miteinander. Jede Kante
+besitzt Stützstellen, an den Ecken der Kante, sowie in der Mitte jedes -ausser
+dem ersten und dem letzten- geraden Stückes. Mittels dieser Stützstellen kann
+die Darstellung des Graphen verändert werden. Die Kanten sind gerichtet, haben
+also einen eindeutigen Anfangsknoten und einen eindeutigen Endknoten. Die
+Richtung der Kante wird durch einen Pfeil optisch dargestellt.
+
+\subsubsection{Erstellen von Kanten}
+Zwei Knoten können mittels einer ''Defaultlinie'' verbunden werden, indem beide
+Elemente ausgew"ahlt werden und der ''Verbindenknopf'' aus der Toolbar gedr"uckt
+wird. Die Defaultkante hat dann drei St"utzpunkte. Welcher der beiden Knoten
+dann Start bzw Endknoten ist, ist zufällig. Die Richtung kann aber beliebig
+ver"andert werden.
+
+Alternativ dazu kann eine Kante mittels "Klicken" stückweise erzeugt
+werden. Dazu wird im Kontextmen"u eines Dokumentknotens ''Kante ziehen''
+gew"ahlt. Dieser Knoten ist dann der Startknoten der Kante. Es erscheint dann
+eine Hilfslinie auf der die nächste Kantenecke gesetzt werden kann. Die
+Hilflinie f"ur die (2n+1)te Ecke ist senkrecht und die Kanteneckenposition ist,
+um Orthogonalit"at zu gew"ahrleisten, nur horizontal variabel. Analog ist die
+Hilflinie f"ur die (2n)te Ecke waagerecht und die Stützstellenposition ist nur
+vertikal variabel. Solange man sich im ''Kanten ziehen''-Modus befindet, kann
+man
+mittels der rechten Maustaste das zuletzt erzeugte Kantenst"uck l"oschen. Das
+Erstellen der Kante wird beendet durch Klicken auf einen anderen Knoten, die
+Kante wird gel"oscht durch Klicken auf den Ausgangsknoten.
+
+\subsubsection{bestehende Linie "andern}
+Linien k"onnen nur durch Ver"anderung der Position der Stützstellen, nicht aber
+in der Anzahl der St"utzstellen ver"andert werden. Die Kanten werden durch
+Verschieben von einzelnen Stützstellen ver"andert. Es gibt zwei Arten von
+St"utzstellen, Eckst"utzstellen und Kantenst"utzstellen, die unterschiedlichen
+Funktionen haben.
+
+\begin{itemize}
+  \item Eckstützstellen\\
+    Wird eine St"utzstelle an einer Ecke verschoben, so wird diese Position als
+    neue Eckposition verwendet. Die Vorg"anger- und Nachfolgereckst"utzstellen
+    werden so angepasst, dass die gesamte Kante wieder orthogonal ist.\\
+\image{cc\_edgeMoved1.png}
+  \item Kantenst"utzstellen\\
+    Kantenst"utzstellen sitzen in der Mitte eines Kantenst"uckes und dienen
+    dazu, einzelne gerade Kantenst"ucke orthogonal zu verschieben. Daf"ur werden
+    die x-Werte (f"ur senkrechte) bzw y-Werte (f"ur waagerechte Kanten) der
+    Vorgänger/Nachfolgerst"utzstellen auf den x- bzw y-Wert der verschobenen
+    Kantenstützstelle gesetzt und die Kantenst"utzstelle wird neu berechnet, so
+    dass sie genau in der Mitte des Kantenst"uckes ist.\\
+\image{cc\_edgeMoved2.png}
+\end{itemize}
+
+\subsubsection{Farbe der Kanten}
+Kanten des Netzwerkes sind schwarz. Liegt eine Kante ausserdem auf dem roten
+Faden, ist sie schwarz-rot. Eine Kante, die auf dem roten Faden
+liegt und nicht im Netzwerk ist, ist rot. Zwischen den einzelnen Zuständen kann
+einfach gewechselt werden.
+
+\subsubsection{Kantenkontextmen"u}
+Das Kantenkontextmen"u erscheint mit der rechten Maustaste zu der markierten
+Kante. es enth"alt den Men"upunkt l"oschen, ''auf roten Faden setzen'' bzw
+''von rotem Faden entfernen'' sowie ''aus Netzwerk nehmen'' bzw ''ins Netzwerk
+nehmen''. \\
+
+Mit den letzten beiden Men"upunkten kann zwischen den drei Zust"anden ''Kante
+ist im Netzwerk'', ''Kante ist im Netzwerk und ausserdem auf dem Roten Faden''
+und ''Kante ist nur auf dem Roten Faden'' gewechselt werden.\\
+Der Men"upunkt ''"Ubergangstexte'' "offnet einen externen Editor, mit einer
+eventuell schon existierenden "Ubergangstextdatei oder ggf leer. Der Text ist
+mmtex-konform und wird im lokalen Dateisystem abgespeichert. Zu einer Kante
+geh"ort maximal ein "Ubergangstext.
+\end{document}

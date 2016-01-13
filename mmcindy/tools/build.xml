@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmcindy" default="all" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="mmcindy.src.dir" value="src"/>
+  <property name="mmcindy.src.java.dir" value="${mmcindy.src.dir}/java"/>
+  <property name="mmcindy.lib.dir" value="lib"/>
+  <property name="mmcindy.lib.java.dir" value="${mmcindy.lib.dir}/java"/>
+  <property name="mmcindy.lib.java.classes.dir" value="${mmcindy.lib.java.dir}/classes"/>
+  <property name="mmcindy.install.lib.java.dir" value="/usr/local/lib/java"/>
+  <property name="mmcindy.test.dir" value="test"/>
+  <property name="mmcindy.doc.dir" value="doc"/>
+  <property name="mmcindy.doc.apidocs.dir" value="${mmcindy.doc.dir}/apidocs"/>
+  <property name="mmcindy.resources.dir" value="resources"/>
+  <property name="mmcindy.resources.apidocs.css.file"
+            value="${mmcindy.resources.dir}/apidocs.css"/>
+  <property name="mmcindy.verbose" value="no"/>
+  <property name="mmcindy.force" value="no"/>
+  <property name="mmcindy.javac.verbose" value="no"/>
+  <property name="mmcindy.javac.deprecation" value="no"/>
+  <property name="mmcindy.javac.debug" value="yes"/>
+  <property name="mmcindy.jar.file" value="mumie-cindy.jar"/>
+  <property name="mmcindy.jdk.apidocs.url" value=""/>
+  <property name="mmcindy.vendor" value="Berlin University of Technology"/>
+  <property name="mmcindy.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="mmcindy.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmcindy.internal.force">
+    <istrue value="${mmcindy.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmcindy.lib.java.dir}">
+        <include name="*.jar"/>
+      </fileset>
+      <fileset dir="${mmcindy.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+        <include name="mumie-jvmd.jar"/>
+        <include name="mumie-cdk.jar"/>
+        <include name="mumie-japs-for-mmcdk.jar"/>
+      </fileset>
+    </path>
+    <property name="mmcindy.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmcindy."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmcindy.verbose}">
+      <fileset dir="${mmcindy.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) mmcindy.internal.force is set, which is
+     equivalent to mmcindy.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="mmcindy.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     mmcindy.internal.force is set, which is equivalent to mmcindy.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${mmcindy.src.java.dir}"
+           destdir="${mmcindy.lib.java.classes.dir}"
+           listfiles="${mmcindy.verbose}"
+           classpathref="classpath"
+           deprecation="${mmcindy.javac.deprecation}"
+           verbose="${mmcindy.javac.verbose}"
+           debug="${mmcindy.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${mmcindy.lib.java.dir}/${mmcindy.jar.file}"
+         basedir="${mmcindy.lib.java.classes.dir}"
+         excludes=".KEEP_ME">
+      <manifest>
+        <attribute name="Created" value="${mmcindy.timestamp}"/>
+        <section name="net/mumie/cindy">
+          <attribute name="Specification-Title" value="Mumie Tools for Cinderella"/>
+          <attribute name="Specification-Version" value="${mmcindy.version}"/>
+          <attribute name="Specification-Vendor" value="${mmcindy.vendor}"/>
+          <attribute name="Implementation-Title" value="net/mumie/cindy"/>
+          <attribute name="Implementation-Version" value="${mmcindy.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmcindy.vendor}"/>
+        </section>
+      </manifest>  
+    </jar> 
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if mmcindy.internal.force is set, which is equivalent to mmcindy.force being 
+     true.
+  -->
+
+  <target name="all"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs"
+          depends="clear-apidocs, classpath"
+          description="Creates the API docs">
+    <mkdir dir="${mmcindy.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Tools for Cinderella"
+             packagenames="net.mumie.cindy.*"
+             sourcepath="${mmcindy.src.java.dir}"
+             destdir="${mmcindy.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmcindy.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmcindy.verbose}">
+      <link href="${mmcindy.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="clear-apidocs">
+    <delete verbose="${mmcindy.verbose}"
+            dir="${mmcindy.doc.apidocs.dir}"/>
+  </target>
+
+</project>

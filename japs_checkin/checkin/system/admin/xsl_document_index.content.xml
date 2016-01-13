@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Authors: Marek Grudzinski <grudzin@math.tu-berlin.de>
+   $Id: xsl_document_index.content.xml,v 1.3 2009/12/14 11:18:32 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- Children of the root element -->
+<xsl:variable name="documents" select="/mumie:documents/*"/>
+
+<!--
+  Javascript for various functions
+-->
+<xsl:template name="javascript">
+
+
+  var rowIds = new Array
+  (
+    <xsl:for-each select="$documents">
+      "<xsl:value-of select="mumie:vc_thread/@id"/>_<xsl:value-of select="mumie:version/@value"/>"<xsl:if test="position()!=last()">,</xsl:if>
+    </xsl:for-each>
+  );
+      
+  function showOddVersions(vc_thread, lid)
+  {
+    setDisplay("showOddVersions_" + vc_thread, "none");
+    setDisplay("hideOddVersions_" + vc_thread, "block");
+    for (var i = 0; i &lt; rowIds.length; i++)
+    {
+      var temp = rowIds[i].split("_");
+      if (temp[0] == vc_thread &amp;&amp; rowIds[i] != lid)
+      {
+        setDisplay(rowIds[i], "table-row");
+      }
+    }
+  }
+
+  function hideOddVersions(vc_thread, lid)
+  {
+    setDisplay("hideOddVersions_" + vc_thread, "none");
+    setDisplay("showOddVersions_" + vc_thread, "block");
+    for (var i = 0; i &lt; rowIds.length; i++)
+    {
+      var temp = rowIds[i].split("_");
+      if (temp[0] == vc_thread &amp;&amp; rowIds[i] != lid)
+      {
+        setDisplay(rowIds[i], "none");
+      }
+    }
+  }
+  
+  function setDisplay(id, display)
+  {
+    document.getElementById(id).style.display = display;
+  }
+  
+</xsl:template>
+
+
+<!--
+  Main template
+-->
+<xsl:template match="/">
+  <html>
+    <head>
+      <title><xsl:value-of select="$i18n-title"/></title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <style type="text/css">
+        .first
+        {
+          border-bottom-style: dotted;
+        }
+        table.genuine td.inner
+        {
+          border-top-style: dotted;
+          border-bottom-style: dotted;
+        }
+
+        table.genuine td.last
+        {
+          border-top-style: dotted;
+        }
+      </style>
+      <script type="text/javascript">
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-bounded-width">
+        <!-- Headline: -->
+        <div class="h1-container">
+          <div class="breadcrumb">
+            <a>
+              <xsl:attribute name="href"><xsl-ext:url lid="pge-admin-home"/></xsl:attribute><xsl:value-of select="$i18n-admin"/>
+            </a>&gt; 
+            <a>
+              <xsl:attribute name="href"><xsl-ext:url lid="pge-db-content"/></xsl:attribute><xsl:value-of select="$i18n-db-content"/>
+            </a>&gt; 
+          </div>
+          <h1><xsl:value-of select="$i18n-head"/></h1>
+          <h3><xsl:value-of select="$i18n-document-type"/>: <xsl:value-of select="/mumie:pseudo_documents/@type_name"/></h3>
+        </div>
+        <!-- Table of documents: -->
+        <table class="genuine">
+          <thead>
+            <tr>
+              <td></td>
+              <td><xsl:value-of select="$i18n-id"/></td>
+              <td><xsl:value-of select="$i18n-pure-name"/></td>
+              <td><xsl:value-of select="$i18n-vc-thread"/></td>
+              <td><xsl:value-of select="$i18n-version"/></td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Get only one document for each vc-thread  -->
+            <xsl:for-each select="/mumie:documents/*[(local-name(.) = /mumie:documents/@type_name) and not((mumie:pure_name = preceding::*/mumie:pure_name) and
+                          (mumie:vc_thread/@id = preceding::*/mumie:vc_thread/@id))]">
+              <xsl:sort select="mumie:pure_name"/>
+              <xsl:sort select="mumie:vc_thread/@id"/>
+              
+              
+              <xsl:variable name="name"><xsl:value-of select="mumie:pure_name"/></xsl:variable>
+              <xsl:variable name="vc_thread"><xsl:value-of select="mumie:vc_thread/@id"/></xsl:variable>
+
+              <xsl:choose>
+                <!-- More then one version of a document for this vc_thread exists -->
+                <xsl:when test="count(/mumie:documents/*[(mumie:pure_name = $name) and
+                                   (mumie:vc_thread/@id = $vc_thread)]) > 1">
+                  <xsl:for-each select="/mumie:documents/*[mumie:pure_name = $name and mumie:vc_thread/@id = $vc_thread]">
+                  <xsl:sort select="mumie:version/@value" order="descending" data-type = "number"/>
+                  <xsl:choose>
+                    <!-- The first one with the highest version number -->
+                    <xsl:when test="position() = 1">
+                      <tr>
+                        <td>
+                          <xsl:call-template name="button">
+                            <xsl:with-param name="id">showOddVersions_<xsl:value-of select="$vc_thread"/></xsl:with-param>
+                            <xsl:with-param name="href">javascript:showOddVersions('<xsl:value-of select="$vc_thread"/>', '<xsl:value-of select="$vc_thread"/>_<xsl:value-of select="mumie:version/@value"/>');</xsl:with-param>
+                            <xsl:with-param name="label" select="'+'"/>
+                          </xsl:call-template>
+                          <xsl:call-template name="button">
+                            <xsl:with-param name="id">hideOddVersions_<xsl:value-of select="$vc_thread"/></xsl:with-param>
+                            <xsl:with-param name="display" select="'none'"/>
+                            <xsl:with-param name="href">javascript:hideOddVersions('<xsl:value-of select="$vc_thread"/>', '<xsl:value-of select="$vc_thread"/>_<xsl:value-of select="mumie:version/@value"/>');</xsl:with-param>
+                            <xsl:with-param name="label" select="'-'"/>
+                          </xsl:call-template>
+                        </td>
+                        <td class="number">
+                          <xsl:value-of select="@id"/>
+                        </td>
+                        <td>
+                          <xsl:call-template name="pure-name"/>
+                        </td>
+                        <td>
+                          <xsl:value-of select="mumie:vc_thread/@id"/>
+                        </td>
+                        <td>
+                          <xsl:value-of select="mumie:version/@value"/>
+                        </td>
+                        <td>
+                          <xsl:call-template name="details"/>
+                        </td>
+                      </tr>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:variable name="class">
+                        <xsl:choose>
+                          <xsl:when test="position() != last()">inner</xsl:when>
+                          <xsl:otherwise>last</xsl:otherwise>
+                        </xsl:choose>
+                      </xsl:variable>
+                      <!-- all other version of this vc_thread -->
+                      <tr style="display:none;">
+                        <xsl:attribute name="id"><xsl:value-of select="$vc_thread"/>_<xsl:value-of select="mumie:version/@value"/></xsl:attribute>
+                        <td>
+                          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                        </td>
+                        <td class="number">
+                          <xsl:attribute name="class"><xsl:value-of select="concat('number', ' ',  $class)"/></xsl:attribute>
+                          <xsl:value-of select="@id"/>
+                        </td>
+                        <td>
+                          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                          <xsl:call-template name="pure-name"/>
+                        </td>
+                        <td>
+                          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                          <xsl:value-of select="mumie:vc_thread/@id"/>
+                        </td>
+                        <td>
+                          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                          <xsl:value-of select="mumie:version/@value"/>
+                        </td>
+                        <td>
+                          <xsl:attribute name="class"><xsl:value-of select="$class"/></xsl:attribute>
+                          <xsl:call-template name="details"/>
+                        </td>
+                      </tr>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                  </xsl:for-each>
+                </xsl:when>
+                <!-- there is only one version for this vc_thread -->
+                <xsl:otherwise>
+                  <tr>
+                    <td></td>
+                    <td class="number">
+                      <xsl:value-of select="@id"/>
+                    </td>
+                    <td>
+                      <xsl:call-template name="pure-name"/>
+                    </td>
+                    <td>
+                      <xsl:value-of select="mumie:vc_thread/@id"/>
+                    </td>
+                    <td>
+                      <xsl:value-of select="mumie:version/@value"/>
+                    </td>
+                    <td>
+                      <xsl:call-template name="details"/>
+                    </td>
+                  </tr>
+                </xsl:otherwise>
+              </xsl:choose>
+            </xsl:for-each>
+          </tbody>
+        </table>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+<!--
+  Create expand or collapse button
+-->
+<xsl:template name="button">
+  <xsl:param name="id"/>
+  <xsl:param name="display" select="'block'"/>
+  <xsl:param name="href"/>
+  <xsl:param name="label"/>
+  <a class="button-inline">
+    <xsl:attribute name="id"><xsl:value-of select="$id"/></xsl:attribute>
+    <xsl:attribute name="style">display:<xsl:value-of select="$display"/>;</xsl:attribute>
+    <xsl:attribute name="href"><xsl:value-of select="$href"/></xsl:attribute>
+    <xsl:value-of select="$label"/>
+  </a>
+</xsl:template>
+
+<!--
+  Outputs the pure name, as a link to the respective (pseudo-)document.
+-->
+
+<xsl:template name="pure-name">
+  <xsl:variable name="type" select="local-name()"/>
+  <a>
+    <xsl:attribute name="href">
+      <xsl:choose>
+        <xsl:when test="$type = 'applet'">
+          <xsl:call-template name="xsl.document-url">
+            <xsl:with-param name="context" select="'wrap'"/>
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="xsl.document-url"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+    <xsl:value-of select="mumie:pure_name"/>
+  </a>
+</xsl:template>
+
+<!--
+  Create a link for the info page of a document
+-->
+<xsl:template name="details">
+  <a class="button-inline">
+    <xsl:attribute name="href">
+      <xsl:call-template name="xsl.document-url">
+        <xsl:with-param name="context" select="'info'"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-details"/>
+  </a>
+</xsl:template>
+
+</xsl:stylesheet>

@@ -1,0 +1,1623 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  <dbh:method name="">
+    <dbh:params>
+      <dbh:param type="" name=""/>
+      <dbh:param type="" name=""/>
+      <dbh:param type="" name=""/>
+      <dbh:param type="" name=""/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+-->
+
+<dbh:DbHelper xmlns:dbh="http://www.mumie.net/xml-namespace/db-helper"
+              xmlns:h="http://www.mumie.net/xml-namespace/html-in-javadoc"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.mumie.net/xml-namespace/db-helper DbHelper.xsd">
+
+<!-- ================================================================================ -->
+<!-- h1: Executing custom SQL                                                         -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="query">
+    <dbh:params>
+      <dbh:param type="String" name="query"/>
+      <dbh:param type="boolean" name="scrollable"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Executes the specified query and returns the corresponding result set.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      int type = (scrollable ? ResultSet.TYPE_SCROLL_INSENSITIVE : ResultSet.TYPE_FORWARD_ONLY);
+      Statement statement = this.connection.createStatement(type, ResultSet.CONCUR_READ_ONLY);
+      ResultSet resultSet = statement.executeQuery(query);
+      <dbh:log>"Done"</dbh:log>
+      return resultSet;
+    </dbh:body>
+  </dbh:method>
+  
+<!-- ================================================================================ -->
+<!-- h1: Querying entity data                                                         -->
+<!-- ================================================================================ -->
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Non-binary data                                                              -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="queryEntity">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String..." name="columns" hint="array"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Queries the specified columns of the entity with the specified type and id.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(type))
+        WHERE
+        column(DbColumn.ID) = value(id)
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryEntityDatumAsTimestamp" returnType="Timestamp">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified column of the entity with the specified type and id
+      * as a {@link Timestamp Timestamp} object.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      ResultSet resultSet = this.queryEntity(type, id, column);
+      if ( ! resultSet.next() )
+        throw new SQLException
+          (METHOD_NAME + ": Cannot find entity with type " + type + " and id " + id);
+      Timestamp value = resultSet.getTimestamp(column);
+      <dbh:log>"Done. value = " + LogUtil.dateToString(value)</dbh:log>
+      return value;
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryEntityDatumAsString" returnType="String">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified column of the entity with the specified type and id
+      * as a string.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      ResultSet resultSet = this.queryEntity(type, id, column);
+      if ( ! resultSet.next() )
+        throw new SQLException
+          (METHOD_NAME + ": Cannot find entity with type " + type + " and id " + id);
+      String value = resultSet.getString(column);
+      <dbh:log>"Done. value = " + value</dbh:log>
+      return value;
+    </dbh:body>
+  </dbh:method>
+  
+  <dbh:method name="queryEntityDatumAsInt" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified column of the entity with the specified type and id
+      * as an <h:code>int</h:code> number.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      ResultSet resultSet = this.queryEntity(type, id, column);
+      if ( ! resultSet.next() )
+        throw new SQLException
+          (METHOD_NAME + ": Cannot find entity with type " + type + " and id " + id);
+      int value = resultSet.getInt(column);
+      <dbh:log>"Done. value = " + value</dbh:log>
+      return value;
+    </dbh:body>
+  </dbh:method>
+  
+  <dbh:method name="queryEntityDatumAsLong" returnType="long">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified column of the entity with the specified type and id
+      * as an <h:code>long</h:code> number.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      ResultSet resultSet = this.queryEntity(type, id, column);
+      if ( ! resultSet.next() )
+        throw new SQLException
+          (METHOD_NAME + ": Cannot find entity with type " + type + " and id " + id);
+      long value = resultSet.getLong(column);
+      <dbh:log>"Done. value = " + value</dbh:log>
+      return value;
+    </dbh:body>
+  </dbh:method>
+  
+  <dbh:method name="queryEntityDatumAsBoolean" returnType="boolean">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified column of the entity with the specified type and id
+      * as a boolean value.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      ResultSet resultSet = this.queryEntity(type, id, column);
+      if ( ! resultSet.next() )
+        throw new SQLException
+          (METHOD_NAME + ": Cannot find entity with type " + type + " and id " + id);
+      boolean value = resultSet.getBoolean(column);
+      <dbh:log>"Done. value = " + value</dbh:log>
+      return value;
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: By path                                                                  -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="queryEntityByPath" target="PostgreSQLDbHelper">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="String" name="path"/>
+      <dbh:param type="String[]" name="columns"/>
+      <dbh:param type="boolean" name="onlyLatest"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns for the entities with the specified type and path.
+      * If <h:code>onlyLatest</h:code> is <h:code>true</h:code>, only latest versions of
+      * the entities are consdidered.
+    </dbh:doc>
+    <dbh:body>
+      this.pathTokenizer.tokenize(path);
+      String sectionPath = this.pathTokenizer.getSectionPath();
+      String pureName = this.pathTokenizer.getPureName();
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(type, onlyLatest))
+        WHERE
+        column(DbColumn.CONTAINED_IN) = funcCall("section_id_for_path", 0, sectionPath)
+        AND
+        column(DbColumn.PURE_NAME) = value(pureName)
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryEntityByPath" target="PostgreSQLDbHelper">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="String" name="path"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns for the entities with the specified type and path.
+      * Same as
+      * {@link queryEntityByPath(int,String,String[],boolean) queryEntityByPath(type, path, columns, true)}.
+    </dbh:doc>
+    <dbh:body>
+      return this.queryEntityByPath(type, path, columns, true);
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="getEntityIdForPath" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="String" name="path"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the id for the entity with the specified type and path.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      ResultSet resultSet =
+        this.queryEntityByPath(type, path, new String[] {DbColumn.ID});
+      if ( !resultSet.next() )
+        throw new SQLException
+          ("Can not resolve path \"" + path + "\" for entity type " + type + "." +
+           " (Result set empty)");
+      int id = resultSet.getInt(DbColumn.ID);
+      <dbh:log>"Done. id = " + id</dbh:log>
+      return id;
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="getSectionIdForPath" returnType="int" target="PostgreSQLDbHelper">
+    <dbh:params>
+      <dbh:param type="String" name="path"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the id for the section with the specified path. If the section does not
+      * exist, returns -1.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      <dbh:sqlComposer>
+        SELECT funcCall("section_id_for_path", 0, path) AS column(DbColumn.ID)
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log>"query = " + query</dbh:log>
+      ResultSet resultSet = this.connection.createStatement().executeQuery(query);
+      if ( !resultSet.next() )
+        throw new SQLException("Failed to determione id for path: " + path);
+      int id = resultSet.getInt(DbColumn.ID);
+      <dbh:log>"Done. id = " + id</dbh:log>
+      return id;
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Binary data                                                                  -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="queryAndWriteEntityBLOB" returnType="void">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+      <dbh:param type="OutputStream" name="out" log="no"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong with the database."/>
+      <dbh:throwable name="IOException" doc="if something goes wrong with stream writing"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Writes the specified column of the entity with the specified type and id to
+      * the specified output stream. The content of the column is expected to be a BLOB.
+    </dbh:doc>
+    <dbh:body>
+      ResultSet resultSet = this.queryEntity(type, id, column);
+      if ( !resultSet.next() )
+        throw new SQLException
+          ("Failed to get column \"" + column + "\" for entity with type " +
+           type + " and id " + id + " (result set empty)");
+      InputStream in = resultSet.getBlob(column).getBinaryStream();
+      byte[] buffer = new byte[1024];
+      int len = 0;
+      while ( (len = in.read(buffer)) > 0 )
+        out.write(buffer, 0, len);
+      out.flush();
+      in.close();
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryAndWriteEntityBLOB"  returnType="void" target="PostgreSQLDbHelper"
+              toInterface="no">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+      <dbh:param type="OutputStream" name="out" log="no"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong with the database."/>
+      <dbh:throwable name="IOException" doc="if something goes wrong with stream writing"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Writes the specified column of the entity with the specified type and id to
+      * the specified output stream. The content of the column is expected to be a BLOB.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      <dbh:sqlComposer>
+        SELECT
+        column(column)
+        FROM
+        table(DbTable.ofEntityType(type))
+        WHERE
+        column(DbColumn.ID) = value(id)
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log>"query = " + query + ", autocommit = " + this.connection.getAutoCommit()</dbh:log>
+      Statement statement = this.connection.createStatement();
+      ResultSet resultSet = statement.executeQuery(query);
+      if ( !resultSet.next() )
+        throw new SQLException
+          ("Failed to get column \"" + column + "\" for entity with type " +
+           type + " and id " + id + " (result set empty)");
+      int oid = resultSet.getInt(1);
+      resultSet.close();
+      this.queryLargeObject(oid, out);
+      statement.close();
+      <dbh:log>"Done"</dbh:log>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: References                                                                   -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="queryRefTarget">
+    <dbh:params>
+      <dbh:param type="int" name="originType"/>
+      <dbh:param type="int" name="targetType"/>
+      <dbh:param type="int" name="refId"/>
+      <dbh:param type="String..." name="columns" hint="array"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * 
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log number="1/2" printParams="yes">"Started"</dbh:log>
+      String refTable = DbTable.ofRefs(originType, targetType);
+      if ( refTable == null )
+        {
+          <dbh:log number="2/2">"No reference table"</dbh:log>
+          return null;
+        }
+      final String REF = "ref";
+      final String DOC = "doc";
+      <dbh:sqlComposer>
+        column(DbColumn.ID, REF) AS column(DbColumn.REF)
+        column(DbColumn.LID, REF) AS column(DbColumn.LID)
+        column(DbColumn.REF_TYPE, REF) AS column(DbColumn.REF_TYPE)
+      </dbh:sqlComposer>
+      if ( EntityType.refsHaveLabels(originType, targetType) )
+        {
+          <dbh:sqlComposer>
+            column(DbColumn.LABEL, REF) AS column(DbColumn.LABEL)
+          </dbh:sqlComposer>
+        }
+      if ( EntityType.refsHavePoints(originType, targetType) )
+        {
+          <dbh:sqlComposer>
+            column(DbColumn.POINTS, REF) AS column(DbColumn.POINTS)
+          </dbh:sqlComposer>
+        }
+      <dbh:sqlComposer>
+        columns(columns, DOC)
+        FROM
+        table(refTable) AS table(REF)
+        table(DbTable.ofEntityTypeForRead(targetType)) AS table(DOC)
+        WHERE
+        column(DbColumn.ID, REF) = value(refId)
+        AND
+        column(DbColumn.TO_DOC, REF) = column(DbColumn.ID, DOC)
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log number="2/2">"query = " + query</dbh:log>
+      return this.connection.createStatement().executeQuery(query);
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryReferencedDocs">
+    <dbh:params>
+      <dbh:param type="int" name="originType"/>
+      <dbh:param type="int" name="originId"/>
+      <dbh:param type="int" name="targetType"/>
+      <dbh:param type="int" name="refType"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns columns for certain documents referenced from another document. The
+      * former documents comprise those which are of a certain type
+      * (<h:code>targetType</h:code>) and are referenced with a certain reference type
+      * (<h:code>refType</h:code>) from the latter document. The latter document is
+      * specified by <h:code>originType</h:code> and <h:code>originId</h:code>. The
+      * returned result set contains the specified columns plus the id, lid, type and
+      * attributes of the reference. To avoid  name conflicts, The id of the referernce
+      * is provided under the name {@link DbColumn#REF DbColumn.REF}.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log number="1/2" printParams="yes">"Started"</dbh:log>
+      String refTable = DbTable.ofRefs(originType, targetType);
+      if ( refTable == null )
+        {
+          <dbh:log number="2/2">"No reference table"</dbh:log>
+          return null;
+        }
+      final String REF = "ref";
+      final String DOC = "doc";
+      <dbh:sqlComposer>
+        SELECT
+        column(DbColumn.ID, REF) AS column(DbColumn.REF)
+        column(DbColumn.LID, REF) AS column(DbColumn.LID)
+        column(DbColumn.REF_TYPE, REF) AS column(DbColumn.REF_TYPE)
+      </dbh:sqlComposer>
+      if ( EntityType.refsHaveLabels(originType, targetType) )
+        {
+          <dbh:sqlComposer>
+            column(DbColumn.LABEL, REF) AS column(DbColumn.LABEL)
+          </dbh:sqlComposer>
+        }
+      if ( EntityType.refsHavePoints(originType, targetType) )
+        {
+          <dbh:sqlComposer>
+            column(DbColumn.POINTS, REF) AS column(DbColumn.POINTS)
+          </dbh:sqlComposer>
+        }
+      <dbh:sqlComposer>
+        columns(this.filterColumns(columns, DOC))
+        FROM
+        table(refTable) AS table(REF)
+        table(DbTable.ofEntityTypeForRead(targetType)) AS table(DOC)
+        WHERE
+        column(DbColumn.FROM_DOC, REF) = value(originId)
+        AND
+        column(DbColumn.TO_DOC, REF) = column(DbColumn.ID, DOC)
+        AND
+        column(DbColumn.REF_TYPE, REF) = value(refType)
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log number="2/2">"query = " + query</dbh:log>
+      return this.connection.createStatement().executeQuery(query);
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryReadPermissions">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns of the user groups which have read permission on the
+      * entity with the specified type and id.
+    </dbh:doc>
+    <dbh:body>
+      String permissionsTable = DbTable.ofReadPerms(type);
+      if ( permissionsTable == null )
+        throw new SQLException("No read permissions table for entity type: " + type);
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns, DbTable.USER_GROUPS))
+        FROM
+        table(DbTable.USER_GROUPS)
+        table(permissionsTable)
+        WHERE
+        column(DbColumn.USER_GROUP, permissionsTable) = column(DbColumn.ID, DbTable.USER_GROUPS)
+        AND
+        column(DbColumn.ENTITY, permissionsTable) = value(id)
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryWritePermissions">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns of the user groups which have write permission on the
+      * entity with the specified type and id.
+    </dbh:doc>
+    <dbh:body>
+      String permissionsTable = DbTable.ofWritePerms(type);
+      if ( permissionsTable == null )
+        throw new SQLException("No write permissions table for entity type: " + type);
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns, DbTable.USER_GROUPS))
+        FROM
+        table(DbTable.USER_GROUPS)
+        table(permissionsTable)
+        WHERE
+        column(DbColumn.USER_GROUP, permissionsTable) = column(DbColumn.ID, DbTable.USER_GROUPS)
+        AND
+        column(DbColumn.ENTITY, permissionsTable) = value(id)
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: Storing entities                                                             -->
+<!-- ================================================================================ -->
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Non-binary data                                                              -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="storeEntity" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="Map" name="data"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores the specified data in the table corresponding to the specified entity type.
+      * Returns the id of the newly created entity.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofEntityType(type))
+        insertData(data)
+      </dbh:sqlComposer>
+      <dbh:executeInsertAndReturnId/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="storeEntity" target="PostgreSQLDbHelper" returnType="int"
+              toInterface="no">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="Map" name="data"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores the specified data in the table corresponding to the specified entity type.
+      * Returns the id of the newly created entity.
+    </dbh:doc>
+    <dbh:body>
+      String table = DbTable.ofEntityType(type);
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(table)
+        insertData(data)
+      </dbh:sqlComposer>
+      <dbh:pgExecuteInsertAndReturnId table="table"/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: References                                                                   -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="storeReference" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="originType"/>
+      <dbh:param type="int" name="originId"/>
+      <dbh:param type="int" name="targetType"/>
+      <dbh:param type="int" name="targetId"/>
+      <dbh:param type="String" name="lid"/>
+      <dbh:param type="int" name="refType"/>
+      <dbh:param type="Map" name="attribs"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores a reference and returns the autogenerated id.
+    </dbh:doc>
+    <dbh:body>
+      Map data = new HashMap();
+      data.put(DbColumn.FROM_DOC, new Integer(originId));
+      data.put(DbColumn.TO_DOC, new Integer(targetId));
+      if ( lid != null ) data.put(DbColumn.LID, lid);
+      data.put(DbColumn.REF_TYPE, new Integer(refType));
+      if ( attribs != null )
+        {
+          Iterator i = attribs.entrySet().iterator();
+          while ( i.hasNext() )
+            {
+              Map.Entry entry = (Map.Entry)i.next();
+              String column = (String)entry.getKey();
+              Object value = entry.getValue();
+              data.put(column, value);
+            }
+        }
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofRefs(originType, targetType))
+        insertData(data)
+      </dbh:sqlComposer>
+      <dbh:executeInsertAndReturnId/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Authors                                                                      -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="storeAuthorship" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="docType"/>
+      <dbh:param type="int" name="docId"/>
+      <dbh:param type="int" name="userId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores the specified user as an author of the document with the specified type and id.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofAuthors(docType))
+        { column(DbColumn.DOCUMENT) column(DbColumn.AUTHOR)}
+        VALUES
+        { value(docId) value(userId)}
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: Updating entities                                                            -->
+<!-- ================================================================================ -->
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Non-binary data                                                              -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="updateEntity" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="Map" name="data"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Updates the specified data for the entity with the specified type and id.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        UPDATE
+        table(DbTable.ofEntityType(type))
+        updateData(data)
+        WHERE
+        column(DbColumn.ID) = value(id)
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="updateEntity" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="String" name="column"/>
+      <dbh:param type="int" name="value"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Updates a datum of the entity with the specified type and id in the specified
+      * column.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        UPDATE
+        table(DbTable.ofEntityType(type))
+        SET column(column) = value(value)
+        WHERE
+        column(DbColumn.ID) = value(id)
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: References                                                                   -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="updateRefTargets" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="fromDocType"/>
+      <dbh:param type="int" name="toDocType"/>
+      <dbh:param type="int" name="oldToDocId"/>
+      <dbh:param type="int" name="newToDocId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Updates all references pointing from a document of type <h:code>fromDocType</h:code>
+      * to the document specified by <h:code>toDocType</h:code> and
+      * <h:code>oldToDocId</h:code>. In all corresponding rows in the cooresponding reference
+      * table, <h:code>oldToDocId</h:code> is changed to <h:code>newToDocId</h:code>.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        UPDATE
+        table(DbTable.ofRefs(fromDocType, toDocType))
+        SET
+        column(DbColumn.TO_DOC) = value(newToDocId)
+        WHERE
+        column(DbColumn.TO_DOC) = value(oldToDocId)
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+<!-- h2: Other                                                                        -->
+<!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+  <dbh:method name="updateCorrector" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="docType"/>
+      <dbh:param type="int" name="oldCorrectorId"/>
+      <dbh:param type="int" name="newCorrectorId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Updates the corrector values of the documents with the specified type. In all
+      * rows of in the cooresponding document table, <h:code>oldCorrectorId</h:code> is
+      * changed to <h:code>newCorrectorId</h:code>.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        UPDATE
+        table(DbTable.ofEntityType(docType))
+        SET
+        column(DbColumn.CORRECTOR) = value(newCorrectorId)
+        WHERE
+        column(DbColumn.CORRECTOR) = value(oldCorrectorId)
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: VC threads                                                                   -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="storeVcThread" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="String" name="name"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Creates a new vc thread for the specified document type and with the specified name.
+      * Returns the id of the new vc thread.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofVCThread(type))
+        { column(DbColumn.NAME) }
+        VALUES
+        { value(name) }
+      </dbh:sqlComposer>
+      <dbh:executeInsertAndReturnId/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="storeVcThread" returnType="int" target="PostgreSQLDbHelper" toInterface="no">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="String" name="name"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Creates a new vc thread for the specified document type and with the specified name.
+      * Returns the id of the new vc thread.
+    </dbh:doc>
+    <dbh:body>
+      String table = DbTable.ofVCThread(type);
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(table)
+        { column(DbColumn.NAME) }
+        VALUES
+        { value(name) }
+      </dbh:sqlComposer>
+      <dbh:pgExecuteInsertAndReturnId table="table"/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: GDIM                                                                         -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="storeThemeMapEntry" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="docType"/>
+      <dbh:param type="int" name="themeId"/>
+      <dbh:param type="int" name="langId"/>
+      <dbh:param type="int" name="genericDocId"/>
+      <dbh:param type="int" name="docId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores an entry in the GDIM of the specified document type.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofGDIM(docType))
+        {
+          column(DbColumn.THEME)
+          column(DbColumn.LANGUAGE)
+          column(DbColumn.GENERIC_DOCUMENT)
+          column(DbColumn.DOCUMENT)
+        }
+        VALUES
+        {
+          value(themeId)
+          value(langId)
+          value(genericDocId)
+          value(docId)
+        }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="deleteGDIMEntries" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="typeOfReal"/>
+      <dbh:param type="int" name="idOfReal"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException" doc="if something goes wrong."/>
+    </dbh:throws>
+    <dbh:doc>
+      * Deletes all GDIM entries for the document with the specified type and id.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        DELETE
+        FROM
+        table(DbTable.ofGDIM(typeOfReal))
+        WHERE
+        column(DbColumn.DOCUMENT) = value(idOfReal)
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: Permissions                                                                  -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="checkCreatePermission" returnType="boolean">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="int" name="type"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns whether the specified user is allowed to create new (pseudo-)documents of the
+      * specified type.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      <dbh:sqlComposer>
+        SELECT
+        column(DbColumn.USER_GROUP)
+        FROM
+        table(DbTable.CREATE_PERMISSIONS)
+        WHERE
+        column(DbColumn.TYPE) = value(type)
+        AND
+        column(DbColumn.USER_GROUP) IN
+          {
+             SELECT
+             column(DbColumn.USER_GROUP)
+             FROM
+             table(DbTable.USER_GROUP_MEMBERS)
+             WHERE
+             column(DbColumn.MEMBER) = value(userId)
+          }
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log>"query = " + query</dbh:log>
+      ResultSet resultSet = this.connection.createStatement().executeQuery(query);
+      boolean hasPermission = resultSet.next();
+      <dbh:log>"hasPermission = " + hasPermission</dbh:log>
+      return hasPermission;
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="checkWritePermissionForVCThread" returnType="boolean">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="vcThreadId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns whether the user with the specified id has write permission on the
+      * vc thread with the specified document type and id.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      final String WRITE_PERMS = DbTable.ofWritePerms(type);
+      final String USER_GROUP_MEMBERS = DbTable.USER_GROUP_MEMBERS;
+      <dbh:sqlComposer>
+        SELECT
+        column(DbColumn.USER_GROUP, USER_GROUP_MEMBERS)
+        FROM
+        table(USER_GROUP_MEMBERS)
+        table(WRITE_PERMS)
+        WHERE
+        column(DbColumn.USER_GROUP, USER_GROUP_MEMBERS) = column(DbColumn.USER_GROUP, WRITE_PERMS)
+        AND
+        column(DbColumn.VC_THREAD, WRITE_PERMS) = value(vcThreadId)
+        AND
+        column(DbColumn.MEMBER, USER_GROUP_MEMBERS) = value(userId)
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log>"query = " + query</dbh:log>
+      ResultSet resultSet = this.connection.createStatement().executeQuery(query);
+      boolean hasPermission = resultSet.next();
+      <dbh:log>"hasPermission = " + hasPermission</dbh:log>
+      return hasPermission;
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="checkWritePermissionForEntity" returnType="boolean">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns whether the specified user is allowed to change the (pseudo-)document of the
+      * specified type and id
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      final String ENTITIES = DbTable.ofEntityType(type);
+      final String WRITE_PERMS = DbTable.ofWritePerms(type);
+      final String USER_GROUP_MEMBERS = DbTable.USER_GROUP_MEMBERS;
+      if ( EntityType.natureOf(type) == Nature.DOCUMENT &amp;&amp; !EntityType.isGeneric(type) )
+        {
+          <dbh:sqlComposer clear="yes">
+            SELECT
+            column(DbColumn.USER_GROUP, USER_GROUP_MEMBERS)
+            FROM
+            table(USER_GROUP_MEMBERS)
+            table(ENTITIES)
+            table(WRITE_PERMS)
+            WHERE
+            column(DbColumn.USER_GROUP, USER_GROUP_MEMBERS) = column(DbColumn.USER_GROUP, WRITE_PERMS) = 
+            AND
+            column(DbColumn.VC_THREAD, WRITE_PERMS) = column(DbColumn.VC_THREAD, ENTITIES)
+            AND
+            column(DbColumn.MEMBER, USER_GROUP_MEMBERS) = value(userId)
+            AND
+            column(DbColumn.ID, ENTITIES) = value(id)
+          </dbh:sqlComposer>
+        }
+      else
+        {
+          <dbh:sqlComposer clear="yes">
+            SELECT
+            column(DbColumn.USER_GROUP, USER_GROUP_MEMBERS)
+            FROM
+            table(USER_GROUP_MEMBERS)
+            table(WRITE_PERMS)
+            WHERE
+            column(DbColumn.USER_GROUP, WRITE_PERMS) = column(DbColumn.USER_GROUP, USER_GROUP_MEMBERS)
+            AND
+            column(DbColumn.MEMBER, USER_GROUP_MEMBERS) = value(userId)
+            AND
+            column(DbColumn.ENTITY, WRITE_PERMS) = value(id)
+          </dbh:sqlComposer>
+        }
+      String query = this.sqlComposer.getCode();
+      <dbh:log>"query = " + query</dbh:log>
+      ResultSet resultSet = this.connection.createStatement().executeQuery(query);
+      boolean hasPermission = resultSet.next();
+      <dbh:log>"hasPermission = " + hasPermission</dbh:log>
+      return hasPermission;
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="storeEntityReadPermission" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="int" name="userGroupId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores a new entry in the write permission table for the entity with the specified
+      * type and id and the specified user group.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofReadPerms(type))
+        { column(DbColumn.USER_GROUP) column(DbColumn.ENTITY) }
+        VALUES
+        { value(userGroupId) value(id) }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate expectedRowCount="1"/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="storeDocumentWritePermission" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="vcThreadId"/>
+      <dbh:param type="int" name="userGroupId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores a new entry in the write permission table for the specified document type,
+      * vc thread, and user group
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofWritePerms(type))
+        { column(DbColumn.USER_GROUP) column(DbColumn.VC_THREAD) }
+        VALUES
+        { value(userGroupId), value(vcThreadId) }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="storePseudoDocWritePermission" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="type"/>
+      <dbh:param type="int" name="id"/>
+      <dbh:param type="int" name="userGroupId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Stores a new entry in the write permission table for the specified pseudo-document type,
+      * pseudo-document id, and user group
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.ofWritePerms(type))
+        { column(DbColumn.USER_GROUP) column(DbColumn.ENTITY) }
+        VALUES
+        { value(userGroupId), value(id) }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="storeCreatePermission" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="userGroupId"/>
+      <dbh:param type="int" name="type"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.CREATE_PERMISSIONS)
+        { column(DbColumn.USER_GROUP) column(DbColumn.TYPE) }
+        VALUES
+        { value(userGroupId), value(type) }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: Users                                                                        -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="storeUser" returnType="int" target="PostgreSQLDbHelper">
+    <dbh:params>
+      <dbh:param type="String" name="loginName"/>
+      <dbh:param type="String" name="passwordEncrypted"/>
+      <dbh:param type="String" name="syncId"/>
+      <dbh:param type="String" name="firstName"/>
+      <dbh:param type="String" name="surname"/>
+      <dbh:param type="String" name="matrNumber"/>
+      <dbh:param type="String" name="email"/>
+      <dbh:param type="String" name="pureName"/>
+      <dbh:param type="String" name="path"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Creates a new user with the specified data and returns the id of the user.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:log printParams="yes">"Started"</dbh:log>
+      <!-- Check if sync id or both login name and password are set: -->
+      if ( syncId == null &amp;&amp; ( loginName == null || passwordEncrypted == null ) )
+        throw new IllegalArgumentException
+          (METHOD_NAME +
+           ": If sync id is not specified, both login name and password must be specified");
+      <!-- Set pure name if necessary: -->
+      if ( pureName == null ) pureName =  "usr_" + (syncId != null ? syncId : loginName);
+      <!-- Set path if necessary: -->
+      if ( path == null ) path = "org/users";
+      <!-- Compose data: -->
+      Map&lt;String,Object&gt; data = new HashMap&lt;String,Object&gt;();
+      data.put(DbColumn.LOGIN_NAME, loginName);
+      data.put(DbColumn.PASSWORD, passwordEncrypted);
+      data.put(DbColumn.SYNC_ID, syncId);
+      data.put(DbColumn.FIRST_NAME, firstName);
+      data.put(DbColumn.SURNAME, surname);
+      <!-- data.put(DbColumn.MATR_NUMBER, matrNumber); matriculation numbers not supported yet -->
+      data.put(DbColumn.EMAIL, email);
+      data.put(DbColumn.PURE_NAME, pureName);
+      data.put(DbColumn.CONTAINED_IN, new SectionIdForPathExpr(path));
+      <!-- Store data: -->
+      int userId = this.storeEntity(EntityType.USER, data);
+      <dbh:log>"Done. userId = " + userId</dbh:log>
+      return userId;
+    </dbh:body>
+  </dbh:method>
+  
+  <dbh:method name="queryTutorialsOfUser">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns from the tutorial table for those tutorials
+      * the specified user is a member of.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(EntityType.TUTORIAL))
+        WHERE
+        column(DbColumn.ID) IN
+          {
+            SELECT
+            column(DbColumn.TUTORIAL)
+            FROM
+            table(DbTable.TUTORIAL_MEMBERS)
+            WHERE
+            column(DbColumn.MEMBER) = value(userId)
+          }
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: User groups                                                                  -->
+<!-- ================================================================================ -->
+
+  
+  <dbh:method name="queryGroupsOfUser">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="String..." name="columns" hint="array"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns of the user groups the specified user is a member of.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(EntityType.USER_GROUP))
+        WHERE
+        column(DbColumn.ID) IN
+          {
+            SELECT
+            column(DbColumn.USER_GROUP)
+            FROM
+            table(DbTable.USER_GROUP_MEMBERS)
+            WHERE
+            column(DbColumn.MEMBER) = value(userId)
+          }
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="addMemberToUserGroup" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="int" name="groupId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Adds the specified user to the specified user group.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.USER_GROUP_MEMBERS)
+        {
+          column(DbColumn.MEMBER)
+          column(DbColumn.USER_GROUP)
+        }
+        VALUES
+        {
+          value(userId)
+          value(groupId)
+        }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate expectedRowCount="1"/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="removeMemberFromAllUserGroups" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Removes the specified user from all user groups.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        DELETE FROM
+        table(DbTable.USER_GROUP_MEMBERS)
+        WHERE
+        column(DbColumn.MEMBER) = value(userId)
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: E-learning classes                                                           -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="queryClassLecturers">
+    <dbh:params>
+      <dbh:param type="int" name="classId"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns for the lecturers of the specified e-learning class.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(EntityType.USER))
+        WHERE
+        column(DbColumn.ID) IN
+          {
+            SELECT
+            column(DbColumn.LECTURER)
+            FROM
+            table(DbTable.CLASS_LECTURERS)
+            WHERE
+            column(DbColumn.CLASS) = value(classId)
+          }
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryClassMembers">
+    <dbh:params>
+      <dbh:param type="int" name="classId"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns for the members of the specified e-learning class.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(EntityType.USER))
+        WHERE
+        column(DbColumn.ID) IN
+          {
+            SELECT
+            column(DbColumn.MEMBER)
+            FROM
+            table(DbTable.TUTORIAL_MEMBERS)
+            WHERE
+            column(DbColumn.CLASS) = value(classId)
+          }
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryClassTutorials">
+    <dbh:params>
+      <dbh:param type="int" name="classId"/>
+      <dbh:param type="String[]" name="columns"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the specified columns for the tutorials of the specified e-learning class.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        columns(this.filterColumns(columns))
+        FROM
+        table(DbTable.ofEntityTypeForRead(EntityType.TUTORIAL))
+        WHERE
+        column(DbColumn.ID) IN
+          {
+            SELECT
+            column(DbColumn.TUTORIAL)
+            FROM
+            table(DbTable.TUTORIAL_MEMBERS)
+            WHERE
+            column(DbColumn.CLASS) = value(classId)
+          }
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+  <dbh:method name="queryClassMemberIndex">
+    <dbh:params>
+      <dbh:param type="int" name="classId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      Returns all students, their tutorials, and their tutors, for the e-learning class
+      with the specified id. The columns of the returned result set are:
+      <h:ol>
+        <h:li>{@link DbColumn.ID ID} (of the student)</h:li>
+        <h:li>{@link DbColumn.FIRST_NAME FIRST_NAME} (of the student)</h:li>
+        <h:li>{@link DbColumn.SURNAME SURNAME} (of the student)</h:li>
+        <h:li>{@link DbColumn.TUTORIAL_ID TUTORIAL_ID}</h:li>
+        <h:li>{@link DbColumn.TUTORIAL_NAMW TUTORIAL_NAME}</h:li>
+        <h:li>{@link DbColumn.TUTOR_ID TUTOR_ID}</h:li>
+        <h:li>{@link DbColumn.TUTOR_FIRST_NAME TUTOR_FIRST_NAME}</h:li>
+        <h:li>{@link DbColumn.TUTOR_SURNAME TUTOR_SURNAME}</h:li>
+      </h:ol>
+    </dbh:doc>
+    <dbh:body>
+      final String STUDENTS = "students";
+      final String TUTORS = "tutors";
+      final String TUTORIALS = DbTable.TUTORIALS;
+      final String TUTORIAL_MEMBERS = DbTable.TUTORIAL_MEMBERS;
+      <dbh:sqlComposer>
+        SELECT
+        column(DbColumn.ID, STUDENTS)
+        column(DbColumn.FIRST_NAME, STUDENTS)
+        column(DbColumn.SURNAME, STUDENTS)
+        column(DbColumn.ID, TUTORIALS) AS column(DbColumn.TUTORIAL_ID)
+        column(DbColumn.NAME, TUTORIALS) AS column(DbColumn.TUTORIAL_NAME)
+        column(DbColumn.ID, TUTORS) AS column(DbColumn.TUTOR_ID)
+        column(DbColumn.FIRST_NAME, TUTORS) AS column(DbColumn.TUTOR_FIRST_NAME)
+        column(DbColumn.SURNAME, TUTORS) AS column(DbColumn.TUTOR_SURNAME)
+        FROM
+        table(DbTable.USERS) AS table(STUDENTS)
+        table(TUTORIALS)
+        table(DbTable.USERS) AS table(TUTORS)
+        table(DbTable.TUTORIAL_MEMBERS)
+        WHERE
+        column(DbColumn.CLASS, TUTORIAL_MEMBERS) = value(classId)
+        AND
+        column(DbColumn.ID, STUDENTS) = column(DbColumn.MEMBER, TUTORIAL_MEMBERS)
+        AND
+        column(DbColumn.ID, TUTORIALS) = column(DbColumn.TUTORIAL, TUTORIAL_MEMBERS)
+        AND
+        column(DbColumn.ID, TUTORS) = column(DbColumn.TUTOR, TUTORIALS)
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: Tutorials                                                                    -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="addMemberToTutorial" returnType="int">
+    <dbh:params>
+      <dbh:param type="int" name="userId"/>
+      <dbh:param type="int" name="tutorialId"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Adds the specified user to the specified tutorial.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        INSERT INTO
+        table(DbTable.TUTORIAL_MEMBERS)
+        {
+          column(DbColumn.MEMBER)
+          column(DbColumn.TUTORIAL)
+          column(DbColumn.CLASS)
+        }
+        VALUES
+        {
+          value(userId)
+          value(tutorialId)
+          {
+            SELECT
+            column(DbColumn.CLASS)
+            FROM
+            table(DbTable.ofEntityType(EntityType.TUTORIAL))
+            WHERE
+            column(DbColumn.ID) = value(tutorialId)
+          }
+        }
+      </dbh:sqlComposer>
+      <dbh:executeUpdate/>
+    </dbh:body>
+  </dbh:method>
+
+<!-- ================================================================================ -->
+<!-- h1: Languages                                                                    -->
+<!-- ================================================================================ -->
+
+  <dbh:method name="queryLangIdByCode" returnType="int" target="AbstractDbHelper">
+    <dbh:params>
+      <dbh:param type="String" name="code"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the id for the language with the specified code.
+    </dbh:doc>
+    <dbh:body>
+      <dbh:sqlComposer>
+        SELECT
+        column(DbColumn.ID)
+        FROM
+        table(DbTable.LANGUAGES)
+        WHERE
+        column(DbColumn.CODE) = value(code)
+      </dbh:sqlComposer>
+      String query = this.sqlComposer.getCode();
+      <dbh:log>"query = " + query</dbh:log>
+      ResultSet resultSet = this.connection.createStatement().executeQuery(query);
+      if ( !resultSet.next() )
+        throw new SQLException("No language found for code: " + code);
+      int id = resultSet.getInt(DbColumn.ID);
+      <dbh:log>"Done. id = " + id</dbh:log>
+      return id;
+    </dbh:body>
+  </dbh:method>
+
+</dbh:DbHelper>

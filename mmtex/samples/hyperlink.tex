@@ -1,0 +1,232 @@
+\documentclass{generic}
+
+
+\begin{document}
+\title{MMTex hyperlink samples}
+\subtitle{Several samples of the hyperlink command}
+
+
+\tableofcontents
+
+
+\section{The Source Code}
+\verbatim
+
+\begin{table}
+\link[]{hyperlink.xhtml\#anch1}{The first link test without a target} \\
+\link[\_blank]{hyperlink.xhtml\#anch2}{The second with a new window \_blank}\\
+\link[\_self]{hyperlink.xhtml\#anch3}{The third in the same window and frame \_self}\\
+\link[\_parent]{hyperlink.xhtml\#anch4}{The fourth brakes the inner frameset \_parent}\\
+\link[\_top]{hyperlink.xhtml\#anch5}{The fifth brakes every frameset \_top}\\
+\end{table}
+
+\begin{table}
+\link[]{\#anch1}{The first link test without a target} \\
+\link[\_blank]{\#anch2}{The second with a new window \_blank}\\
+\link[\_self]{\#anch3}{The third in the same window and frame \_self}\\
+\link[\_parent]{\#anch4}{The fourth brakes the inner frameset \_parent}\\
+\link[\_top]{\#anch5}{The fifth brakes every frameset \_top}\\
+\end{table}
+
+\subsection{Some text to jump around}
+
+
+\begin{table}[][][][c]
+just some space lines \\
+
+% [REMOVED SOME OF THEM}
+
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor[The first anchor]{anch1} \\
+---- \\
+---- \\
+---- \\
+\anchor[The second with some specialchars \$ ]{anch2} \\
+---- \\
+---- \\
+---- \\
+\anchor[The third with even more chars \}+ \emph{emph}]{anch3} \\
+---- \\
+---- \\
+---- \\
+\anchor{anch4}  And the fourth, without any text.. (Anchor end before this text)\\
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor{anch5} And the fifth\\
+\end{table}
+
+
+
+
+\endverbatim
+
+
+
+
+\section{And the result}
+\subsection{Full filename}
+
+\begin{table}
+\link[]{hyperlink.xhtml\#anch1}{The first link test without a target} \\
+\link[\_blank]{hyperlink.xhtml\#anch2}{The second with a new window \_blank}\\
+\link[\_self]{hyperlink.xhtml\#anch3}{The third in the same window and frame \_self}\\
+\link[\_parent]{hyperlink.xhtml\#anch4}{The fourth brakes the inner frameset \_parent}\\
+\link[\_top]{hyperlink.xhtml\#anch5}{The fifth brakes every frameset \_top}\\
+
+\end{table}
+
+\subsection{Anchorname only}
+\begin{table}
+\link[]{\#anch1}{The first link test without a target} \\
+\link[\_blank]{\#anch2}{The second with a new window \_blank}\\
+\link[\_self]{\#anch3}{The third in the same window and frame \_self}\\
+\link[\_parent]{\#anch4}{The fourth brakes the inner frameset \_parent}\\
+\link[\_top]{\#anch5}{The fifth brakes every frameset \_top}\\
+
+\end{table}
+
+
+\subsection{Some text to jump around}
+
+
+
+\begin{table}[][][][c]
+
+just some space lines \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor[The first anchor]{anch1} \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor[The second with some specialchars \$ ]{anch2} \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor[The third with even more chars \}+ \emph{emph}]{anch3} \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor{anch4}  And the fourth, without any text.. (Anchor end before this text)\\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+---- \\
+\anchor{anch5} And the fifth\\
+
+\end{table}
+
+
+
+
+\end{document}

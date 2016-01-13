@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+
+<xsl:param name="i18n-close-window">Close window</xsl:param>
+<xsl:param name="i18n-cancel">Cancel</xsl:param>
+<xsl:param name="i18n-errors-in-correction">Errors in correction</xsl:param>
+<xsl:param name="i18n-errors-in-correction-expl">
+  The system could not correct all exercises.
+  The administrators try to solve the problem as soon as possible.
+</xsl:param>
+<xsl:param name="i18n-account">Account</xsl:param>
+<xsl:param name="i18n-change">Change</xsl:param>
+<xsl:param name="i18n-feedback">feedback</xsl:param>
+<xsl:param name="i18n-new-student">New student</xsl:param>
+<xsl:param name="i18n-id">Id</xsl:param>
+<xsl:param name="i18n-worksheet">Worksheet</xsl:param>
+<xsl:param name="i18n-course-section">Course section</xsl:param>
+<xsl:param name="i18n-course">Course</xsl:param>
+<xsl:param name="i18n-timeframe">Timeframe</xsl:param>
+<xsl:param name="i18n-not-accessible">not accessible yet</xsl:param>
+<xsl:param name="i18n-editable">editable</xsl:param>
+<xsl:param name="i18n-not-editable">not editable any longer</xsl:param>
+<xsl:param name="i18n-load-worksheet">Load worksheet</xsl:param>
+<xsl:param name="i18n-load-course-section">Load course section</xsl:param>
+<xsl:param name="i18n-load-course">Load course</xsl:param>
+<xsl:param name="i18n-results">Results</xsl:param>
+<xsl:param name="i18n-summary">Summary</xsl:param>
+<xsl:param name="i18n-problem">Problem</xsl:param>
+<xsl:param name="i18n-result">Result</xsl:param>
+<xsl:param name="i18n-set-state-feedback">Feedback state</xsl:param>
+<xsl:param name="i18n-set-state-feedback-expl">
+  If you continue, all problems will be corrected and the feedback will be shown.
+  After that the problems could not be edit anymore.
+</xsl:param>
+<xsl:param name="i18n-set-state-work">Work state</xsl:param>
+<xsl:param name="i18n-set-state-work-expl">
+  If you continue, the evaluation will be deleted and you could edit the problems again.
+  The problems may receive new numbers.
+</xsl:param>
+<xsl:param name="i18n-to">till</xsl:param>
+<xsl:param name="i18n-no-student-selected">no student selected</xsl:param>
+<xsl:param name="i18n-not-edited">n.e.</xsl:param>
+<xsl:param name="i18n-not-corrected">n.c.</xsl:param>
+<xsl:param name="i18n-change-student">Select student</xsl:param>
+<xsl:param name="i18n-clear-student">Clear student selection</xsl:param>
+<xsl:param name="i18n-error">ERROR</xsl:param>
+<xsl:param name="i18n-error-in-student-selection">An error occurred during student selection</xsl:param>
+<xsl:param name="i18n-try-again">Please try again</xsl:param>
+<xsl:param name="i18n-student">Student</xsl:param>
+<xsl:param name="i18n-state">State</xsl:param>
+<xsl:param name="i18n-total">Total</xsl:param>
+<xsl:param name="i18n-evaluate">Evaluation</xsl:param>
+<xsl:param name="i18n-new">New</xsl:param>
+<xsl:param name="i18n-change-timeframe">Change timeframe</xsl:param>
+<xsl:param name="i18n-start">Begin</xsl:param>
+<xsl:param name="i18n-end">End</xsl:param>
+
+<!-- Info page link: -->
+<xsl:param name="i18n-info">Metainfos</xsl:param>
+<xsl:param name="i18n-info-expl">Page with metainformations for this document</xsl:param>
+</xsl:stylesheet>

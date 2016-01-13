@@ -1,0 +1,199 @@
+#!/bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+# $Id: mmssl,v 1.1 2009/09/17 23:28:01 rassy Exp $
+#
+# See http://slacksite.com/apache/certificate.html and
+# http://ca.tu-berlin.de/TUB-CA/TUB-Server-CA/dfn/server_ssl_leitfaden.html
+
+# Set fixed variabes (constants):
+readonly program_name=mmssl
+readonly program_version='$Revision: 1.1 $'
+readonly user_config_file=${program_name}.conf
+
+# Filename of the encrypted private key:
+encr_privkey_file=encr_privkey.key
+
+# Filename of the unencrypted private key:
+privkey_file=privkey.key
+
+# Length of the private key in bits:
+privkey_length=1024
+
+# Filename of the certificate:
+cert_file=cert.csr
+
+# Filename of the self-signed certificate:
+self_signed_cert_file=self_signed_cert.csr
+
+# Directory wth the random seed files:
+rand_seed_dir=rand_seed
+
+# Source user config file:
+[ -e "$user_config_file" ] && source "$user_config_file"
+
+# Set default task:
+task=main;
+
+# Process command line parameters:
+params=`getopt \
+  --longoptions help,version \
+  --options h,v \
+  -- \
+  "$@"`
+if [ $? -ne 0 ] ; then exit 1 ; fi
+eval set -- "$params"
+while true ; do
+  case "$1" in
+    --help|-h) task=show_help ; shift ;;
+    --version|-v) task=show_version ; shift ;;
+    --) shift ; break ;;
+  esac
+done
+targets=${*:-all}
+
+# Generates a RSA private key
+function gen_priv_key
+  {
+    echo "$program_name: Creating private key"
+    local seed=""
+    local file
+    for file in ${rand_seed_dir}/* ; do
+       if [ "$seed" ] ; then
+         seed="${seed}:${file}"
+       else
+         seed="${file}"
+       fi
+    done
+    openssl genrsa -des3 -rand $seed -out $encr_privkey_file $privkey_length
+    # pass phrase: "foobar"
+  }
+
+# Removes the pass phrase from the private key:
+function rm_pass_phrase
+  {
+    echo "$program_name: Creating private key without pass phrase"
+    openssl rsa -in $encr_privkey_file -out $privkey_file
+  }
+
+# Creates a CSR:
+function create_cert
+  {
+    echo "$program_name: Creating certificate"
+    openssl req -new -key $encr_privkey_file -out $cert_file
+  }
+
+# Self-signes the CSR:
+function self_sign_cert
+  {
+    openssl x509 -req -days 365 -signkey $encr_privkey_file \
+      -in $cert_file -out $self_signed_cert_file
+  }
+
+function main
+  {
+    for target in $targets ; do
+      case $target in
+        key) gen_priv_key ;;
+        rmpphr|rmpwd) rm_pass_phrase ;;
+        cert) create_cert ;;
+        selfsign) self_sign_cert ;;
+        all) gen_priv_key; rm_pass_phrase; create_cert ;;
+        *) echo "ERROR: Unknown target: $target"; exit 1 ;;
+      esac
+    done
+  }
+
+function show_help
+  {
+cat <<EOF
+Usage:
+  $program_name TARGETS
+  $program_name [ --help | -h | --version | -v ]
+Description:
+  Creates keys and certificates by means of the the openssl tool. What is
+  actually done is controlled by TARGETS, which is a list of keywords explained
+  below. Default values used by this script can be changed in the configuration
+  file $user_config_file, which is expected in the directory where the script is
+  started. The configuration file is sourced, so it can contain any Bash code;
+  however, its main purpose is to set the variables described below.
+Targets:
+  key
+    Creates the private key. To do this, files are required which serve as
+    random seed. The script uses all files found in a certain directory. The
+    default for latter is ./rand_seed. This can be changed in the config file.
+    The key will be encrypted and protected by a pass-phrase. Per default, the
+    key is saved in the file encr_privkey.key. Again, this can be changed in
+    the config file.
+  rmpphr
+    Removes the encryption and the pass-phrase from the private key and saves
+    the new key in the file privkey.key. The filename can be changed in the
+    configuration file. The original (encrypted and pass-phrase-protected) key
+    is not altered.
+  rmpwd
+    Same as rmpphr.
+  cert
+    Creates the certificate request and saves it in the file cert.csr. The
+    filename can be changed in the configuration file. You will be asked for
+    the X.509 attributes.
+  selfsign
+    Self-signes the certificate request and saves it in the file
+    self_signed_cert.csr. The filename can be changed in the configuration
+    file.
+  all
+    Same as key rmpphr cert.
+Config file variables:
+  rand_seed_dir
+    Directory with the files serving as random seed.
+    Default: rand_seed
+  encr_privkey_file
+    Filename of the encrypted and pass-phrase protected private key.
+    Default: encr_privkey.key
+  privkey_file
+    Filename of the non-encrypted and not pass-phrase protected private key.
+    Default: privkey.key
+  privkey_length
+    Length of the private key in bits.
+    Default: 1024
+  cert_file
+    Filename of the certificate request.
+    Default: cert.csr
+  self_signed_cert_file
+    Filename of the self-signed certificate.
+    Default: self_signed_cert.csr
+Options:
+  --help | -h
+      Print this help text and exot.
+  --version | -v
+      Print version information and exit.
+EOF
+  }
+
+function show_version
+  {
+    echo $program_version
+  }
+
+$task

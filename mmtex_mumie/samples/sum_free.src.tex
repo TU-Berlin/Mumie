@@ -1,0 +1,70 @@
+\documentclass{japs.summary}
+
+\begin{metainfo}
+  \name{Test}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \begin{components}
+
+  \end{components}
+  \generic{samples/g_sum_free.meta.xml}
+\end{metainfo}
+
+\begin{content}
+
+  \section{Erster Abschnitt}
+
+  Erster Absatz des ersten Abschnitts.
+
+  Eine Liste:
+
+  \begin{enumerate}
+    \item Eins
+    \item Zwei
+    \item Drei
+  \end{enumerate}
+
+  \section{Zweiter Abschnitt}
+
+  Zweiter Abschnitt.
+
+  \begin{ifstate}{feedback}
+
+    Nur sichtbar, wenn der Zustand des Arbeitsblatts = feedback ist
+
+    \begin{ifpoints}{0 10}
+      Zu wenig Punkte
+    \end{ifpoints}
+
+    \begin{ifpoints}{10.1 20}
+      Ok
+    \end{ifpoints}
+
+    \begin{ifpoints}{25 30}
+      Sehr gut!
+    \end{ifpoints}
+
+    \begin{casepoints}
+      \uptopoints{10}
+      Bis zu 10
+      \uptopoints{20}
+      Zwischen 10.1 und 20
+      \uptopoints{max}
+      20.1 oder mehr
+    \end{casepoints}
+
+  \end{ifstate}
+
+  \begin{iftimeframe}{inside}
+    Nur waehrend des Bearbeitungszeitraums sichtbar.
+  \end{iftimeframe}
+
+  \begin{iftimeframe}{after}
+    Nur nach dem Bearbeitungszeitraum sichtbar
+  \end{iftimeframe}
+
+\end{content}

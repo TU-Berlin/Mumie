@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="mmicon" default="all" basedir="..">
+
+  <!--
+    Properties
+  -->
+
+  <property file="build.properties"/>
+  <property environment="env"/>
+  <property name="mmicon.src.dir" value="src"/>
+  <property name="mmicon.src.java.dir" value="${mmicon.src.dir}/java"/>
+  <property name="mmicon.lib.dir" value="lib"/>
+  <property name="mmicon.lib.java.dir" value="${mmicon.lib.dir}/java"/>
+  <property name="mmicon.lib.java.classes.dir" value="${mmicon.lib.java.dir}/classes"/>
+  <property name="mmicon.test.dir" value="test"/>
+  <property name="mmicon.doc.dir" value="doc"/>
+  <property name="mmicon.doc.apidocs.dir" value="${mmicon.doc.dir}/apidocs"/>
+  <property name="mmicon.resources.dir" value="resources"/>
+  <property name="mmicon.resources.apidocs.css.file"
+            value="${mmicon.resources.dir}/apidocs.css"/>
+  <property name="mmicon.verbose" value="no"/>
+  <property name="mmicon.force" value="no"/>
+  <property name="mmicon.javac.verbose" value="no"/>
+  <property name="mmicon.javac.deprecation" value="no"/>
+  <property name="mmicon.javac.debug" value="yes"/>
+  <property name="mmicon.jar.file" value="mumie-icon.jar"/>
+  <property name="mmicon.jdk.apidocs.url" value=""/>
+  <property name="mmicon.vendor" value="Berlin University of Technology"/>
+  <property name="mmicon.version" value="-NONE-"/>
+
+  <!--
+    Auto-set properties
+  -->
+
+  <tstamp>
+    <format property="mmicon.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="mmicon.internal.force">
+    <istrue value="${mmicon.force}"/>
+  </condition>
+
+  <!--
+    Classpath
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <fileset dir="${mmicon.install.lib.java.dir}">
+        <include name="mumie-util.jar"/>
+        <include name="mumie-font.jar"/>
+      </fileset>
+    </path>
+    <property name="mmicon.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+     Dumping the settings of the global properties to stdout
+  -->
+
+  <target name="print-props"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="mmicon."/>
+  </target>
+
+  <!--
+     Deletes the compiled classes
+  -->
+
+  <target name="clear-classes"
+          description="Deletes the classes">
+    <delete verbose="{$mmicon.verbose}">
+      <fileset dir="${mmicon.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <!--
+     Deletes the compiled classes if (and only if) mmicon.internal.force is set, which is
+     equivalent to mmicon.force being true.
+  -->
+
+  <target name="clear-classes.iff-force" if="mmicon.internal.force">
+    <antcall target="clear-classes"/>
+  </target>
+
+  <!--
+     Compiles the classes. Previously compiled classes are deleted before if
+     mmicon.internal.force is set, which is equivalent to mmicon.force being 
+     true.
+  -->
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="clear-classes.iff-force, classpath">
+    <javac srcdir="${mmicon.src.java.dir}"
+           destdir="${mmicon.lib.java.classes.dir}"
+           listfiles="${mmicon.verbose}"
+           classpathref="classpath"
+           deprecation="${mmicon.javac.deprecation}"
+           verbose="${mmicon.javac.verbose}"
+           debug="${mmicon.javac.debug}"
+           failonerror="yes">
+    </javac>
+  </target>
+
+  <!--
+     Jars the compiled classes
+  -->
+
+  <target name="jar" 
+          description="Jars the classes">
+    <jar destfile="${mmicon.lib.java.dir}/${mmicon.jar.file}"
+         basedir="${mmicon.lib.java.classes.dir}"
+         excludes=".KEEP_ME">
+      <manifest>
+        <attribute name="Created" value="${mmicon.timestamp}"/>
+        <section name="net/mumie/icon">
+          <attribute name="Specification-Title" value="Mumie Icon Utilities"/>
+          <attribute name="Specification-Version" value="${mmicon.version}"/>
+          <attribute name="Specification-Vendor" value="${mmicon.vendor}"/>
+          <attribute name="Implementation-Title" value="net/mumie/icon"/>
+          <attribute name="Implementation-Version" value="${mmicon.version}"/> 
+          <attribute name="Implementation-Vendor" value="${mmicon.vendor}"/>
+        </section>
+      </manifest>  
+    </jar> 
+  </target>
+
+  <!--
+     Compiles the sources, and jars the compiled classes. Previously compiled classes are
+     deleted before if mmicon.internal.force is set, which is equivalent to mmicon.force being 
+     true.
+  -->
+
+  <target name="all"
+          description="Compiles and jars the classes"
+          depends="classes, jar">
+  </target>
+
+  <!--
+     Creates the API documentation for the Java classes
+  -->
+
+  <target name="apidocs"
+          depends="clear-apidocs, classpath"
+          description="Creates the API docs">
+    <mkdir dir="${mmicon.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Icon Utilities"
+             packagenames="net.mumie.icon.*"
+             sourcepath="${mmicon.src.java.dir}"
+             destdir="${mmicon.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${mmicon.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${mmicon.verbose}">
+      <link href="${mmicon.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+     Deletes the API documentation for the Java classes
+  -->
+
+  <target name="clear-apidocs">
+    <delete verbose="${mmicon.verbose}"
+            dir="${mmicon.doc.apidocs.dir}"/>
+  </target>
+
+</project>

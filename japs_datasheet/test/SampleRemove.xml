@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+  <unit name="unit_1">
+    <data name="data_11">Hello World!</data>
+    <data name="data_12">yes</data>
+    <data name="data_13">no</data>
+    <data name="data_14">unknown</data>
+    <data name="data_13">
+      <foo xmlns="http://foo"/>
+    </data>
+  </unit>
+  <unit name="unit_2">
+    <unit name="unit_21">
+      <data name="data_211">456</data>
+      <data name="data_212">789</data>
+    </unit>
+    <unit name="unit_22">
+      <data name="data_211">abc</data>
+      <data name="data_212">def</data>
+    </unit>
+  </unit>
+</data_sheet>

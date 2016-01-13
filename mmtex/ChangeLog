@@ -1,0 +1,171 @@
+2008-01-24  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* lib/include/table.mtx.pl:
+	Fixed help text for "table" enviroment.
+
+2007-09-12  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* lib/include/math.mtx.pl,
+	* styles/css/generic.css,
+	* styles/xsl/math.2xhtml.xsl:
+	Implemented normal text in formulas.
+
+2007-08-28  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* lib/include/tree.mtx.pl,
+	* lib/dcl/generic.dcl.pl ,
+	* styles/xsl/tree.2xhtml.xsl,
+	* styles/xsl/generic.2xhtml.xsl,
+	* build.sh:
+	Implemented trees.
+
+2007-08-09
+	* lib/include/table.mtx.pl: New layout of the table environment:
+	Only one optional argument.
+
+2007-07-30  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* lib/include/incremental.mtx.pl,
+	* lib/include/math_incremental.mtx.pl:
+	New libraries for incrementally expanding expressions. Still
+	experimental.
+
+	* styles/xsl/box.2xhtml.xsl,
+	* styles/xsl/generic.2xhtml.xsl,
+	* styles/xsl/horizontal_float.2xhtml.xsl,
+	* styles/xsl/hyperlink.2xhtml.xsl,
+	* styles/xsl/list.2xhtml.xsl,
+	* styles/xsl/math.2xhtml.xsl,
+	* styles/xsl/misc.2xhtml.xsl,
+	* styles/xsl/multimedia.2xhtml.xsl,
+	* styles/xsl/numbers.2xhtml.xsl,
+	* styles/xsl/preformatted.2xhtml.xsl,
+	* styles/xsl/simple_markup.2xhtml.xsl,
+	* styles/xsl/struct.2xhtml.xsl,
+	* styles/xsl/table.2xhtml.xsl,
+	* lib/dcl/generic.dcl.pl:
+	Switched over to XML with namespace.
+
+2007-07-06  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* styles/xsl/list.2xhtml.xsl, styles/css/generic.css,
+	images/strut.png: Better alignment of list labels with "strut"
+	images.
+
+	* styles/xsl/generic.2xhtml.xsl: Changed import order of
+	list.2xhtml.xsl and struct.2xhtml.xsl. The latter is now imported
+	before the former.
+
+	* build.sh: Installing/uninstalling of "strut" image; added image
+	directory to config.xsl.
+
+2007-04-26  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* lib/include/math.mtx.pl (init_default_math_nodes): Bugfix:
+	Command \cnum: Defaults for imaginary/real part where not set
+	properly.
+
+	* lib/perl/Mumie/MmTeX/Parser.pm (allow_tokens): Bugfix: in
+	modify_mode 'PREPEND', this list of allowed token types was not
+	manipulated, but replaced by a new, altered list.
+
+2007-04-04  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* bin/mmtex.tpl: Exit status 1 on error, even with multiple
+	sources. 
+
+2007-03-05  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* INSTALL: Revised section 2, "Installation location". Adapted it
+	to other build.sh scripts.
+
+	* COPYING: Renamed to LICENSE
+
+	* README: Adapted to the renaming COPYING -> LICENSE
+
+2006-09-29  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* lib/include/math.mtx.pl Revised; cleaned code.
+
+2006-09-18  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* build.sh: Environmanet variable $MM_BUILD_PREFIX as default for
+	$prefix.
+
+	* INSTALL: Added $MM_BUILD_PREFIX as possibility to change
+	$prefix.
+
+2006-09-16  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* lib/perl/Mumie/MmTeX/SelfDoc.pm: Bugfix (output for environments
+	was the same as for commands).
+
+	* lib/include/table.mtx.pl: New table environment parameters.
+
+2006-09-01  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* styles/xsl/math.2xhtml.xsl: Replaced data:double-strucks element
+	by an xsl:choose element. Comletely removed concept of data:*
+	elements.
+
+	* build.sh: Code cleaning; changed target print-vars into option
+	--vars.
+
+	* lib/include/math.mtx.pl: Code cleaning; re-implemented \inner
+	command.
+
+2006-08-11  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* styles/xsl/misc.2xhtml.xsl: Renamed general.2xhtml.xsl to
+	misc.2xhtml.xsl.
+
+	* lib/dcl/generic.dcl.pl: Renamed default mmtex documentclass from
+	"mmtex.general" to "generic"
+
+2006-08-08  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* lib/include/table.mtx.pl: Implemented the "cols" attribute of
+	the "table" element.
+
+2006-08-07  Tilman Rassy  <rassy@math.tu-berlin.de>
+
+	* lib/include/table.mtx.pl: Bugfix in set_tbl_cell_xxx() where xxx
+	= aligns | valigns | classes: Own value for
+	$scan_proc->{tbl_cell_xxx} in the new scan proc if necessary.
+
+2006-07-21  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* INSTALL: Added Xalan-Java to the requirements.
+
+	* build.sh: Environment variable $MMTEX_PREFIX no longer used as
+	default for $prefix (the only default is "/usr/local").
+	Implemented function show_help.
+	Corrected typo: "uninstall_version_file" was wronly
+	"uninstall_verfile".
+	Added missing variables $etc_dir and $version_file.
+	Added missing variables $release and $cvsroot and corresponding
+	entries in command line processing and docs.
+
+	* styles/xsl/mmtex/general.2xhtml.xsl: Improved CSS stylesheet
+	handling. Introduced the parameters $css-stylesheets and
+	$default-css-stylesheets.
+
+2006-07-20  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* build.sh: Bugfix in function create_conf_xsl (value for
+	parameter "css_dir" was wrong)
+
+	* styles/xsl/mmtex/general.2xhtml.xsl: Bugfix in template "styles"
+
+	* lib/include/css.mtx.pl: Simplified the library
+
+2006-07-18  Tilman Rassy  <rassy@math.TU-Berlin.DE>
+
+	* build.sh: Install/uninstall targets with fixed lists of files
+ 	(was only partly implemented), added lacking uninstall targets,
+	added "dist" target.
+
+	* INSTALL: Revised, updated
+
+	* README: Revised, updated
+

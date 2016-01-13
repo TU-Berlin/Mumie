@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<project name="japs-ds" default="all" basedir="..">
+
+  <!--
+    ================================================================================
+    Properties
+    ================================================================================
+  -->
+
+  <property environment="env"/>
+  <property name="japs-ds.src.dir" value="src"/>
+  <property name="japs-ds.src.java.dir" value="${japs-ds.src.dir}/java"/>
+  <property name="japs-ds.lib.dir" value="lib"/>
+  <property name="japs-ds.lib.java.dir" value="${japs-ds.lib.dir}/java"/>
+  <property name="japs-ds.lib.java.classes.dir" value="${japs-ds.lib.java.dir}/classes"/>
+  <property name="japs-ds.test.dir" value="test"/>
+  <property name="japs-ds.doc.dir" value="doc"/>
+  <property name="japs-ds.doc.apidocs.dir" value="${japs-ds.doc.dir}/apidocs"/>
+  <property name="japs-ds.resources.dir" value="resources"/>
+  <property name="japs-ds.resources.apidocs.css.file"
+            value="${japs-ds.resources.dir}/apidocs.css"/>
+  <property name="japs-ds.verbose" value="no"/>
+  <property name="japs-ds.force" value="no"/>
+  <property name="japs-ds.javac.verbose" value="no"/>
+  <property name="japs-ds.javac.deprecation" value="no"/>
+  <property name="japs-ds.javac.debug" value="yes"/>
+  <property name="japs-ds.jar.file" value="mumie-japs-datasheet.jar"/>
+  <property name="japs-ds.jdk.apidocs.url" value=""/>
+  <property name="japs-ds.signjar.alias" value="-NONE-"/>
+  <property name="japs-ds.signjar.storepass" value="-NONE-"/>
+  <property name="japs-ds.signjar.keystore" value="-NONE-"/>
+  <property name="japs-ds.vendor" value="Berlin University of Technology"/>
+  <property name="japs-ds.version" value="-NONE-"/>
+
+  <!--
+    ================================================================================
+    Auto-set properties
+    ================================================================================
+  -->
+
+  <tstamp>
+    <format property="japs-ds.timestamp" pattern="yyyy-MM-dd HH:mm:ss SSS z"/>
+  </tstamp>
+
+  <condition property="japs-ds.internal.force">
+    <istrue value="${japs-ds.force}"/>
+  </condition>
+
+  <!--
+    ================================================================================
+    Classpath for compiling
+    ================================================================================
+  -->
+
+  <target name="classpath">
+    <path id="classpath">
+      <!-- Currently, no additional libraries are needed -->
+    </path>
+    <property name="japs-ds.classpath" refid="classpath"/>
+  </target>
+
+  <!--
+    ================================================================================
+    Printing properties
+    ================================================================================
+  -->
+
+  <target name="properties.print"
+          description="Dumps property values to stdout">
+    <echoproperties prefix="japs-ds."/>
+  </target>
+
+  <!--
+    ================================================================================
+    Java classes
+    ================================================================================
+  -->
+
+  <target name="classes.delete"
+          description="Deletes the classes">
+    <delete verbose="{$japs-ds.verbose}">
+      <fileset dir="${japs-ds.lib.java.classes.dir}">
+        <exclude name=".KEEP_ME"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="classes.delete.iff-force" if="japs-ds.internal.force">
+    <!-- Deletes the compiled classes if (and only if) japs-ds.internal.force
+         is set, which is equivalent to japs-ds.force being true. -->
+    <antcall target="classes.delete"/>
+  </target>
+
+  <target name="classes"
+          description="Compiles the classes"
+          depends="classpath">
+    <javac srcdir="${japs-ds.src.java.dir}"
+           destdir="${japs-ds.lib.java.classes.dir}"
+           listfiles="${japs-ds.verbose}"
+           deprecation="${japs-ds.javac.deprecation}"
+           verbose="${japs-ds.javac.verbose}"
+           debug="${japs-ds.javac.debug}"
+           includeAntRuntime="yes"
+           failonerror="yes">
+      <classpath refid="classpath"/>
+    </javac>
+  </target>
+
+  <!--
+    ================================================================================
+    Jar
+    ================================================================================
+  -->
+
+  <target name="jar" 
+          description="Jars the compiled classes">
+    <jar destfile="${japs-ds.lib.java.dir}/${japs-ds.jar.file}"
+         basedir="${japs-ds.lib.java.classes.dir}"
+         excludes=".KEEP_ME"> 
+      <manifest>
+        <attribute name="Created" value="${japs-ds.timestamp}"/>
+        <section name="net/mumie/japs/datasheet">
+          <attribute name="Specification-Title" value="Japs Data Sheet"/>
+          <attribute name="Specification-Version" value="${japs-ds.version}"/>
+          <attribute name="Specification-Vendor" value="${japs-ds.vendor}"/>
+          <attribute name="Implementation-Title" value="net.mumie.japs.datasheet"/>
+          <attribute name="Implementation-Version" value="${japs-ds.version}"/> 
+          <attribute name="Implementation-Vendor" value="${japs-ds.vendor}"/>
+        </section>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="jar.sign"
+          depends="jar"
+          description="Signs the jar">
+    <signjar alias="${japs-ds.signjar.alias}"
+             storepass="${japs-ds.signjar.storepass}"
+             keystore="${japs-ds.signjar.keystore}">
+      <fileset dir="${japs-ds.lib.java.dir}">
+        <include name="${japs-ds.jar.file}"/>
+      </fileset>
+    </signjar>
+  </target>
+
+  <!--
+    ================================================================================
+    API docs
+    ================================================================================
+  -->
+
+  <target name="apidocs.delete">
+    <delete verbose="${japs-ds.verbose}"
+            dir="${japs-ds.doc.apidocs.dir}"/>
+  </target>
+
+  <target name="apidocs" depends="apidocs.delete"
+          description="Creates the API docs">
+    <mkdir dir="${japs-ds.doc.apidocs.dir}"/>
+    <javadoc doctitle="Mumie Japs Build Tools API "
+             packagenames="net.mumie.japs.datasheet.*"
+             sourcepath="${japs-ds.src.java.dir}"
+             destdir="${japs-ds.doc.apidocs.dir}"
+             classpathref="classpath"
+             stylesheetfile="${japs-ds.resources.apidocs.css.file}"
+             failonerror="yes"
+             verbose="${japs-ds.verbose}">
+      <link href="${japs-ds.jdk.apidocs.url}"/> 
+    </javadoc>
+  </target>
+
+  <!--
+    ================================================================================
+    Main target - creates all
+    ================================================================================
+  -->
+
+  <target name="all"
+          description="Builds all"
+          depends="classes.delete.iff-force, classes, jar, jar.sign">
+  </target>
+
+</project>

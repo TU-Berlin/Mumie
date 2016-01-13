@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:grades="http://www.mumie.net/xml-namespace/grades"
+                exclude-result-prefixes="xsl-ext grades">
+
+<xsl-ext:import lid="xsl-problem-grades-grouping-i18n" internal="yes"/>
+  
+<xsl:output method="xml"
+            encoding="ASCII"/>
+
+<!-- Number of worksheets -->
+<xsl:param name="number-of-worksheets">
+  <xsl:value-of select="count(/*/grades:worksheet)"/>
+</xsl:param>
+
+<xsl:param name="part-one-max-label">7</xsl:param>
+
+<!-- Global target params -->
+<xsl:param name="target01"><xsl:value-of select="$i18n-target01"/></xsl:param>
+<xsl:param name="target02"><xsl:value-of select="$i18n-target02"/></xsl:param>
+<xsl:param name="target03"><xsl:value-of select="$i18n-target03"/></xsl:param>
+<xsl:param name="target04"><xsl:value-of select="$i18n-target04"/></xsl:param>
+<xsl:param name="target05"><xsl:value-of select="$i18n-target05"/></xsl:param>
+
+<!-- <xsl:template match="*" priority="0">
+  <xsl:copy>
+    <xsl:copy-of select="@*"/>
+    <xsl:apply-templates select="*"/>
+  </xsl:copy>
+</xsl:template>
+ -->
+
+<xsl:template match="/*">
+  <xsl:variable name="worksheets" select="/*/grades:worksheet"/>
+  <xsl:copy>
+    <xsl:apply-templates select="node()|@*"/>
+    <!-- add "target" xml nodes -->
+    <xsl:if test="$number-of-worksheets = '1'">
+      <xsl:element name="grades:target">
+        <xsl:attribute name="name">01</xsl:attribute>
+        <xsl:attribute name="title">
+          <xsl:value-of select="$target01"/>
+        </xsl:attribute>
+      </xsl:element>
+    </xsl:if>
+    <xsl:element name="grades:target">
+      <xsl:attribute name="name">02</xsl:attribute>
+      <xsl:attribute name="title">
+        <xsl:value-of select="$target02"/>
+      </xsl:attribute>
+    </xsl:element>
+    <xsl:element name="grades:target">
+      <xsl:attribute name="name">03</xsl:attribute>
+      <xsl:attribute name="title">
+        <xsl:value-of select="$target03"/>
+      </xsl:attribute>
+    </xsl:element>
+    <xsl:element name="grades:target">
+      <xsl:attribute name="name">04</xsl:attribute>
+      <xsl:attribute name="title">
+        <xsl:value-of select="$target04"/>
+      </xsl:attribute>
+    </xsl:element>
+    <xsl:element name="grades:target">
+      <xsl:attribute name="name">05</xsl:attribute>
+      <xsl:attribute name="title">
+        <xsl:value-of select="$target05"/>
+      </xsl:attribute>
+    </xsl:element>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="node()|@*" priority="0" >
+  <xsl:copy>
+    <xsl:apply-templates select="node()|@*"/>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="grades:user_problem_grade" priority="1">
+  <xsl:copy>
+    <xsl:copy-of select="@*"/>
+    <xsl:attribute name="target">
+      <xsl:variable name="problem" select="/*/grades:problem[@ref_id=current()/@ref_id]"/>
+      <xsl:variable name="worksheet" select="/*/grades:worksheet[@id=$problem/@worksheet_id]"/>
+      <xsl:choose>
+        <xsl:when test="$number-of-worksheets = '1' and $worksheet/@category = 'homework'">01</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$worksheet/@category='homework' and $worksheet/@label &lt;= $part-one-max-label and $problem/@category!='traditional'">02</xsl:when>
+            <xsl:when test="$worksheet/@category='homework' and $worksheet/@label &gt; $part-one-max-label and $problem/@category!='traditional'">03</xsl:when>
+            <xsl:when test="$worksheet/@category='prelearn'">04</xsl:when>
+            <xsl:when test="$worksheet/@category='selftest'">05</xsl:when>
+            <xsl:otherwise>none</xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="grades:worksheet" priority="1">
+  <xsl:copy>
+    <xsl:copy-of select="@*"/>
+    <xsl:attribute name="target">
+      <xsl:choose>
+        <xsl:when test="$number-of-worksheets = '1' and @category = 'homework'">01</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="@category='homework' and @label &lt;= $part-one-max-label">02</xsl:when>
+            <xsl:when test="@category='homework' and @label &gt; $part-one-max-label">03</xsl:when>
+            <xsl:when test="@category='prelearn'">04</xsl:when>
+            <xsl:when test="@category='selftest'">05</xsl:when>
+            <xsl:otherwise>none</xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+  </xsl:copy>
+</xsl:template>
+
+<xsl:template match="grades:problem" priority="1">
+  <xsl:copy>
+    <xsl:copy-of select="@*"/>
+    <xsl:attribute name="target">
+      <xsl:variable name="worksheet" select="/*/grades:worksheet[@id=current()/@worksheet_id]"/>
+      <xsl:choose>
+        <xsl:when test="$number-of-worksheets = '1' and $worksheet/@category = 'homework'">01</xsl:when>
+        <xsl:otherwise>
+          <xsl:choose>
+            <xsl:when test="$worksheet/@category='homework' and $worksheet/@label &lt;= $part-one-max-label and @category!='traditional'">02</xsl:when>
+            <xsl:when test="$worksheet/@category='homework' and $worksheet/@label &gt; $part-one-max-label and @category!='traditional'">03</xsl:when>
+            <xsl:when test="$worksheet/@category='prelearn'">04</xsl:when>
+            <xsl:when test="$worksheet/@category='selftest'">05</xsl:when>
+            <xsl:otherwise>none</xsl:otherwise>
+          </xsl:choose>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:attribute>
+  </xsl:copy>
+</xsl:template>
+
+</xsl:stylesheet>

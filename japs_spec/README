@@ -1,0 +1,93 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.4 2007/03/05 15:06:34 rassy Exp $
+
+
+                          MUMIE JAPS SPEZIFIKATIONEN
+
+
+1. Voraussetzungen
+   ===============
+
+  1.1. mmtex
+
+  1.2. mmxtr
+
+  1.3. Die Umgebungsvariable JAPS_SPEC_HOME muss gesetzt sein, und zwar auf das
+       aus dem CVS ausgecheckte japs_spec-Verzeichnis.
+
+
+
+2. Build
+   =====
+
+  2.1. Quellen aus dem CVS auschecken:
+
+         $ cvs [-d <cvs_root>] checkout japs_spec
+
+       wobei
+
+         <cvs_root> = [:ext:<user>@<host>:]/net/multimedia/JAPS/cvs
+         <host>     = Rechner im Mathe-Netz, vorzugsweise "fs"
+         <user>     = Benutzer
+
+  2.2. Umgebungsvariable JAPS_SPEC_HOME auf das dabei entstandene Verzeichnis
+       setzen, am besten permanent in ~/.bashrc bzw ~/.cshrc.
+
+  2.3. In $JAPS_SPEC_HOME wechseln und den Befehl
+
+         $ ./build.sh
+
+       eingeben.
+
+
+
+3. Update
+   ======
+
+  3.1. In $JAPS_SPEC_HOME wechseln
+
+  3.2. Ggf. cvs update machen
+
+  3.3. Den Befehl
+
+         $ ./build.sh
+
+       eingeben. Dabei werden nur die Quellen neu übersetzt, die sich
+       inzwischen geändert haben. Um alle Quellen zu übersetzen,
+
+         $ ./build.sh -f
+
+       eingeben. Weitere Informationen mit
+
+         $ ./build.sh -h
+
+
+
+4. Installation
+   ============
+
+  4.1. BEMERKUNG: Um in den Spezifikationen zu "browsen", ist eine Installation
+       nicht notwendig. Sie kann aber auf Wunsch durchgeführt werden.
+
+  4.2. Voraussetzung: Die Variable install_dir muss gesetzt sein. Dazu im
+       Basisverzeichnis von japs_spec eine Datei build.conf anlegen und folgende
+       Zeile eintragen:
+
+         install_dir=<install_dir>
+
+       Dabei ist <install_dir> das Verzeichnis, in das die Spezifikationen
+       installiert werden sollen.
+
+       BEMERKUNG: build.conf wird, falls vorhanden, vom Build-Skript build.sh mit
+       'source' eingelesen; d.h. der darin befindliche Text wird als Bash-Code
+       interpretiert und ausgeführt (build.sh ist ein Bash-Skript).
+
+  4.3. Ausführung: Den Befehl
+
+         $ ./build.sh install
+
+       eingeben. Bei der Installation entsteht ein Verzeichnis
+       <install_dir>/japs_spec, in dem sich die Spezifikationen befinden.
+
+
+-- ENDE DER DATEI --

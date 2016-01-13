@@ -1,0 +1,249 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Sitemap-Autocoding}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: sitemap_autocoding.tex,v 1.6 2007/05/28 23:39:26 rassy Exp $}
+
+Diese Spezifikation beschreibt die Erzeugung der Sitemap. Sie umfasst sowohl die
+Abläufe als auch das Format des dabei verwendeten XMLs.
+
+\tableofcontents
+
+\section{Überblick}\label{ueberblick}
+
+Die Sitemap \file{sitemap.xmap} wird aus einer XML-Quelle
+\file{sitemap.xmap.src} automatisch erzeugt. Dies geschieht während des
+Build-Prozesses oder auch im laufenden Betrieb. Letzteres kann notwendig sein,
+wenn sich Dokumente geändert haben, die in der Sitemap referenziert werden. Bei
+der Übersetzung von \file{sitemap.xmap.src} nach \file{sitemap.xmap} werden
+Checkin-Pfade und Namen zu Datenbank-Ids aufgelöst. Die Übersetzung
+bewerkstelligt ein Cocoon-Transformer,
+
+\begin{preformatted}%
+  net.mumie.cocoon.transformers.SitemapTransformer
+\end{preformatted}
+
+und setzt daher einen laufenden JAPS voraus.
+
+
+\section{XML-Format}
+
+Die Quelle \file{sitemap.xmap.src} besteht zum größten Teil aus "normalem"
+Sitemap-XML, also aus XML des entsprechenden vom Apache-Projekt definierten
+Formats. Dieses XML hat den Namensraum
+
+\begin{preformatted}%
+  \val{http://apache.org/cocoon/sitemap/1.0}
+\end{preformatted}
+
+und den Prefix \val{map}. Darüberhinaus enthält \file{sitemap.xmap.src}
+MUMIE-spezifisches XML. Dieses hat den Namensraum
+
+\begin{preformatted}%
+  \val{http://www.mumie.net/xml-namespace/sitemap-autocoding}
+\end{preformatted}
+
+und den Prefix \val{smac}. Es wird \emph{SmacXML} genannt. Z.z. gibt es in
+SmacXML nur Attribute, keine Elemente. Sie werden bei der Konvertierung in
+gleichnamige "normale" Attribute übersetzt. Beispiel:
+
+\begin{preformatted}[code]%
+  <map: parameter
+    name="{}user-groups"
+    smac:value="{}ugr-names-to-ids(admins, lecturers, tutors)"/>
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  <map: parameter
+    name="{}user-groups"
+    value="0, 3, 6"/>
+\end{preformatted}
+
+Die Werte von SmacXML-Attributen sind sogenannte \emph{Smac-Funktionen}. Sie
+werden bei der Übersetzung ausgeführt und geben jeweils einen String zurück.
+Dieser String ist der neue Wert des Attributs.
+
+Abschnitt \ref{smac_funktionen} enthält eine Liste aller Smac-Funktionen.
+
+Ein Smac-Funktionsaufruf hat die Form
+
+\begin{preformatted}[code]%
+  \var{name}(\var{param1}, \meta{...}, \var{paramN})
+\end{preformatted}
+
+Hierbei sind \var{name} der Name der Funktion und \var{param1}, \ldots,
+\var{paramN} die ihr übergebenden Parameter. Parameter können in einfache oder
+doppelte Anführungszeichen (\code{'} bzw. \code{"}) eingeschlossen werden,
+müssen aber nicht. Als Parameter-Angabe sind also
+
+\begin{preformatted}%
+  foo  "foo"  'foo'
+\end{preformatted}
+
+äquivalent. Werden keine Anführungszeichen verwendet, müssen die Zeichen
+
+\begin{preformatted}%
+  \{'"(),
+\end{preformatted}
+
+sowie Whitespaces durch einen Backslash geschützt werden. Innerhalb eines
+in einfache Anführungszeichen eingeschlossenen Parameters muss nur das
+\code{'}-Zeichen durch einen Backslash geschützt werden. Innerhalb eines
+in doppelte Anführungszeichen eingeschlossenen Parameters muss nur das
+\code{"}-Zeichen durch einen Backslash geschützt werden.
+
+\section{Liste aller Smac-Funktionen}\label{smac_funktionen}
+
+\subsection{add-url-prefix}
+
+Fügt den Japs-URL-Prefix zu einer relativen Japs-URL hinzu. Prototyp:
+
+\begin{preformatted}[code]%
+  add-url-prefix(\var{rel_url})
+\end{preformatted}
+
+\var{rel_url} ist die relative Japs-URL. 
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  add-url-prefix(auth/login)
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  https://japs.mumie.net/cocoon/auth/login
+\end{preformatted}
+
+
+\subsection{resolve-path}
+
+Löst den Checkin-Pfad eines Dokuments zu der entsprechenden Datenbank-Id auf,
+fügt diese in ein URL-Template ein und gibt die URL zurück. Prototyp:
+
+\begin{preformatted}[code]%
+  resolve-path(\var{url_template}, \var{path}, \var{doctype})
+\end{preformatted}
+
+Hierbei sind \var{url_template} das URL-Template, \var{path} der Checkin-Pfad und
+\var{doctype} der Dokument-Typ. \var{url_template} darf folgende folgende
+Platzhalter enthalten:
+
+\begin{enumerate}
+\item % \code{\%\{prefix\}}
+
+Wird durch den Japs-URL-Prefix ersetzt. Dieser hat normalerweise die Form
+
+\begin{preformatted}%
+    https://\var{host}\optional{:\var{port}}/cocoon
+\end{preformatted}
+
+wobei \var{host} und \var{port} der Hostname bzw. die Portnummer der Servers
+sind. Der Prefix wird dem Cocoon-Transformer, der die Sitemap erzeugt, als
+Konfigurationseintrag \code{url-prefix} übergeben (s. \ref{ueberblick} und
+API-Dokumentation des Transformers).
+
+\item % \code{\%\{id\}}
+
+Wird durch die Id des Dokuments ersetzt, das durch \var{doctype} und \var{path}
+bestimmt ist.
+
+\end{enumerate}
+
+\emph{Bemerkung:} Zwar ist das Dokument bereits durch \var{path} allein
+bestimmt, ohne den Dokumenttyp wäre die Suche in der Datenbank aber etwas
+aufwändig. Daher muss der Dokumenttyp (\var{doctype}) mit angegeben werden.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  resolve-path
+    (\%\{prefix\}/protected/view/document/type-name/page/id/\%\{id\},
+     checkin/system/misc/pge_layout_sample.meta.xml,
+     page)
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  https://japs.mumie.net/cocoon/protected/view/document/\meta{\backslash}
+  type-name/page/id/56
+\end{preformatted}
+
+[Der Backslash am Ende der ersten Zeile ist nicht Teil der URL, sondern zeigt
+nur an, dass die URL in Wirklichkeit aus \emph{einer} Zeile besteht, die aus
+Platzgründen in zwei Zeilen aufgespalten wurde.] Der URL-Prefix und die Id sind
+natürlich nur Beispiele und könnten auch anders lauten.
+
+\subsection{ugr-names-to-ids}
+
+Löst eine Liste von Benutzergruppen-Namen zu den entsprechenden Datenbank-Ids
+auf und gibt diese zurück. Prototyp:
+
+\begin{preformatted}[code]%
+  ugr-names-to-ids(\var{name1}, \meta{...}, \var{nameN})
+\end{preformatted}
+
+Hierbei sind \var{name1}, \ldots, \var{nameN} die Namen der
+Benutzergruppen. Der zurückgegebene String ist
+
+\begin{preformatted}[code]%
+  \var{id1}, \meta{...}, \var{idN}
+\end{preformatted}
+ 
+wobei \var{id1} die Id der Benutzergruppe \var{name1} ist, \var{id2} die von
+\var{name2} usw.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  ugr-names-to-ids(admins, lecturers, tutors)
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  0, 3, 6
+\end{preformatted}
+
+Die Ids sind natürlich nur Beispiele und könnten auch anders lauten.
+
+
+\subsection{use-mode-name-to-code}
+
+Wandelt einen Use-Mode-Namen in den entsprechenden Zahlencode um. Prototyp:
+
+\begin{preformatted}[code]%
+  use-mode-name-to-code(\var{name})
+\end{preformatted}
+
+\var{name} ist der Use-Mode-Name
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  use-mode-name-to-code(info)
+\end{preformatted}
+
+Wird übersetzt in:
+
+\begin{preformatted}[code]%
+  \var{code}
+\end{preformatted}
+
+wobei \var{code} der Zahlencode des Use-Modes \val{info} ist.
+
+-- WIRD FORTGESETZT --
+
+\end{document}

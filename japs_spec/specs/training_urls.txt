@@ -1,0 +1,54 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$I$
+
+
+                           URLS DES TRAININGS-TOOLS
+
+
+1. Problem-Element zum Bearbeiten:
+
+     protected/document/training/type-name/element/id/ID
+
+   Request-Parameter:     
+
+     ref=REF
+
+2. Download eines Input-Data-Sheets:
+
+     protected/training/download/problem-input-datasheet
+
+   Request-Parameter:
+
+     ref=REF
+
+3. Upload eines Antwort-Data-Sheets:
+
+     protected/training/upload/problem-answer-datasheet
+
+   Request-Parameter:
+
+     ref=REF
+
+     content=DATA_SHEET
+
+4. Upload von Multiple-Choice-Antworten:
+
+     protected/training/upload/multiple-choice-answers
+
+   Request-Parameter:
+
+     ref=REF
+
+
+Abkürzungen:
+
+REF 
+    Id der course_subsection-element-Referenz
+
+DATA_SHEET 
+    Code des Data-Sheets, URL-encoded  
+
+
+
+
+-- ENDE DER DATEI --

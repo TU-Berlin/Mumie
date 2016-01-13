@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_problem_grades_i18n_en.content.xml,v 1.8 2009/11/24 15:55:54 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:grades="http://www.mumie.net/xml-namespace/grades"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml">
+
+<xsl:variable name="i18n-abbrev-max">Max.</xsl:variable>
+<xsl:variable name="i18n-abbrev-not-corrected">n.c.</xsl:variable>
+<xsl:variable name="i18n-abbrev-not-edited">n.e.</xsl:variable>
+<xsl:variable name="i18n-abbrev-sum">&#931;</xsl:variable>
+<xsl:variable name="i18n-abbrevs">Shortcuts</xsl:variable>
+<xsl:variable name="i18n-achieved">Achieved</xsl:variable>
+<xsl:variable name="i18n-back">Back</xsl:variable>
+<xsl:variable name="i18n-close-window">Close window</xsl:variable>
+<xsl:variable name="i18n-correct">Correct</xsl:variable>
+<xsl:variable name="i18n-correction">Correction</xsl:variable>
+<xsl:variable name="i18n-correction-failed">Correction failed</xsl:variable>
+<xsl:variable name="i18n-classes">Classes</xsl:variable>
+<xsl:variable name="i18n-course">Course</xsl:variable>
+<xsl:variable name="i18n-headline">Grades</xsl:variable>
+<xsl:variable name="i18n-headline-tutorial">Tutorial-Grades</xsl:variable>
+<xsl:variable name="i18n-headline-traditional-problem-points">Offline problems</xsl:variable>
+<xsl:variable name="i18n-id">Id</xsl:variable>
+<xsl:variable name="i18n-invalid-input">Invalid input</xsl:variable>
+<xsl:variable name="i18n-name">Name</xsl:variable>
+<xsl:variable name="i18n-surname">Surname</xsl:variable>
+<xsl:variable name="i18n-firstname">First Name</xsl:variable>
+<xsl:variable name="i18n-not-corrected">not corrected</xsl:variable>
+<xsl:variable name="i18n-not-edited">not edited</xsl:variable>
+<xsl:variable name="i18n-points-greater-than-max">&gt; maximal point number</xsl:variable>
+<xsl:variable name="i18n-points-negative">Negative points</xsl:variable>
+<xsl:variable name="i18n-problem">Problem</xsl:variable>
+<xsl:variable name="i18n-problem-abbrev">Prob.</xsl:variable>
+<xsl:variable name="i18n-save">Save</xsl:variable>
+<xsl:variable name="i18n-submit">Submit</xsl:variable>
+<xsl:variable name="i18n-title">Grades</xsl:variable>
+<xsl:variable name="i18n-title-tutorial">Tutorial-Grades</xsl:variable>
+<xsl:variable name="i18n-title-traditional-problem-points">Offline problems</xsl:variable>
+<xsl:variable name="i18n-too-many-digits">Too many digits after decimal point</xsl:variable>
+<xsl:variable name="i18n-tutorial">Tutorial</xsl:variable>
+<xsl:variable name="i18n-tutorials">Tutorials</xsl:variable>
+<xsl:variable name="i18n-unknown-error">Unknown error</xsl:variable>
+<xsl:variable name="i18n-user">User</xsl:variable>
+<xsl:variable name="i18n-worksheet-abbrev">Worksheet</xsl:variable>
+
+<xsl:template name="i18n-correction-msg-text">
+  <xsl:variable
+    name="label"
+    select="/*/grades:worksheet[@id=//mumie:dynamic_data/mumie:param[@name='worksheet']/@value]/@label"/>
+  Worksheet <xsl:value-of select="$label"/> has been corrected
+  (a total of <xsl:value-of select="//mumie:dynamic_data/mumie:param[@name='num-corrections']/@value"/> problems)
+</xsl:template>
+
+<xsl:template name="i18n-correction-failed-msg-text">
+  <xsl:variable
+    name="label"
+    select="/*/grades:worksheet[@id=//mumie:dynamic_data/mumie:param[@name='worksheet']/@value]/@label"/>
+  <xsl:variable name="count-ok" select="//mumie:dynamic_data/mumie:param[@name='num-successful-corrections']/@value"/>
+  <xsl:variable name="count-failed" select="//mumie:dynamic_data/mumie:param[@name='num-corrections']/@value - $count-ok"/>
+  Not all Problems of worksheet <xsl:value-of select="$label"/>
+  could be corrected
+  (<xsl:value-of select="$count-ok"/> corrected,
+  <xsl:value-of select="$count-failed"/> not corrected)
+</xsl:template>
+
+</xsl:stylesheet>
+
+
+
+

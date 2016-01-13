@@ -1,0 +1,79 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: INSTALL,v 1.2 2006/09/05 12:21:00 rassy Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                      MMJSQL INSTALLATION INSTRUCTIONS
+
+
+
+1.Requirements
+  ============
+
+  1.1. Java 1.4.2_10. Probably, Java 1.5 works as well.
+
+
+2. Installation location
+   =====================
+
+All files are installed under a directory <prefix> which defaults to
+/usr/local. If you want to change this, proceed as follows: Change to the root
+directory of the MmJSQL distribution (this is the directory this file is in),
+create a file named build.conf and add the following line to it:
+
+  prefix=<my-prefix>
+
+where <my-prefix> is the directory where you want MmJSQL to be intstalled.
+
+Remark: The build and installation are done by a Bash script which reads the
+file build.conf by means of the 'source' command. Thus, you can use shell
+substitution in build.conf. E.g.,
+
+  prefix=$HOME
+
+would set the installation location to your home directory.
+
+Alternatively, you can set the environment variable MM_BUILD_PREFIX, and give
+it the value <my-prefix>. This has the advantage that MM_BUILD_PREFIX is
+recognized by other build scripts of the MUMIE project, too.
+
+If <prefix> is set both in build.conf and by the environment variable
+MM_BUILD_PREFIX, the setting in build.conf takes precedence.
+
+
+3. Build and Installation
+   ======================
+
+  3.1. Change to the root directory of the MmJSQL distribution (this is the
+       directory this file is in).  
+
+  3.2. Type
+
+         $ ./build.sh
+
+       This builds MmJSQL. 
+
+  3.4. Make sure you have write permission in <prefix>. Switch user to root if
+       necessary.
+
+  3.5. Type
+
+         $ ./build.sh install
+
+       This installs MmJSQL.
+
+Remark: build.sh is MmJSQL's build script. To get more information about it,
+type
+
+  $ ./build.sh -h
+
+
+4. Post-installation setup
+   =======================
+
+If you want to use MmJSQL, make sure <prefix>/lib/java/mumie-sql.jar is in
+your classpath.
+
+
+-- END OF FILE --

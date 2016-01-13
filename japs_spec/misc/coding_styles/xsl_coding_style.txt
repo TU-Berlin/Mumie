@@ -1,0 +1,167 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: xsl_coding_style.txt,v 1.2 2007/03/27 12:21:26 rassy Exp $
+
+
+                            MUMIE XSL-CODING-STYLE
+
+
+1. Keine Tabs verwenden
+
+  Tabs können von unterschiedlichen Editoren unterschiedlich interpretiert
+  werden. Die Formatierung kann dadurch zunichte gemacht werden.
+
+
+2. Einrückungen: Start- und End-Tag in gleicher Spalte; 2 Zeichen Einrücktiefe
+
+  Beispiel:
+
+    <foo>
+      <bar>
+        Hallo Welt!
+      </bar>
+    </foo>
+
+
+3. Attribute:
+
+  3.1. Falls die Zeilenbreite ausreicht, alle Attribute in derselben Zeile wie
+       das Start-Tag. Beispiel:
+
+         <foo width="12" height="25" id="AXX-001">
+
+  3.2. Falls die Zeilenbreite nicht ausreicht, eine der beiden folgenden
+       Formatierungen verwenden:
+
+    3.2.1. Erstes Attribut in derselben Zeile wie das Start-Tag, alle weiteren
+           in jeweils einer eigenen Zeile mit einer Einrücktiefe, die der
+           Spalte des ersten Attributs entspricht. Beispiel:
+
+             <foo comment="Ein verhaeltmismaessig langer Attribut-Wert"
+                  id="AXX-001/PRQ-3345-3454"
+                  depends="bar bazz foo-01 foo-03">
+
+    3.2.2. Alle Attribute in einer eigenen Zeile, mit einer Einrücktiefe von 2
+           gegenüber dem Start-Tag. Beispiel:
+
+             <foo
+               comment="Ein verhaeltmismaessig langer Attribut-Wert"
+               id="AXX-001/PRQ-3345-3454"
+               depends="bar bazz foo-01 foo-03">
+
+    Wo zweckmäßig, können 3.2.1 und 3.2.2 auch dahingehend agewandelt werden,
+    dass in einer Zeile mehrere Attribute stehen.
+
+
+4. Namen in Kleinbuchstaben mit "-"; evtl. Prefix mit "." abgetrennt; Namen
+   aussagekräftig wählen 
+
+  Beispiele:
+
+    category-name
+    xsl.set-applet-attributes
+
+  Wo zweckmäßig, kann von dieser Regel abgewichen werden. Wenn es z.B. um
+  Autocoding geht, ist es evtl. sinnvoll, soch an die Namens-Konventionen des
+  erzeugten Codes anzulehnen (und z.B. bei Java Namen wie "getDocTypeName" zu
+  verwenden).
+
+
+5. Maximale Zeilenlänge: 90 Zeichen
+
+  Ausnamen sind erlaubt. Wenn möglich, maximale Zeilenlänge jedoch noch unter
+  90 Zeichen halten (ca. 80 Zeichen).
+
+
+6. Nicht mehr als eine Leerzeile zum Trennen von Code-Blöcken
+
+  Beispiel:
+  
+    <!-- Max. number of points: -->
+    <xsl:variable name="points-max" select="//mumie:ref_attribute[@name='points']/@value"/>
+  
+    <!-- Score: -->
+    <xsl:variable name="score"
+      select="$datasheet/ds:unit[@name='user']/ds:unit[@name='meta']/ds:unit[@name='score']"/>
+  
+    <!-- Points achieved by the user: -->
+    <xsl:variable name="points">
+      <xsl:if test="$score and $score!='' and $score != -1">
+        <xsl:variable name="temp" select="round($points_max * $score * 10) div 10"/>
+        <xsl:if test="string($temp)!='NaN'">
+          <xsl:value-of select="$temp"/>
+        </xsl:if>
+      </xsl:if>
+    </xsl:variable>
+  
+  FALSCH:
+  
+    <!-- Max. number of points: -->
+    <xsl:variable name="points-max" select="//mumie:ref_attribute[@name='points']/@value"/>
+  
+
+    <!-- Score: -->
+    <xsl:variable name="score"
+      select="$datasheet/ds:unit[@name='user']/ds:unit[@name='meta']/ds:unit[@name='score']"/>
+  
+
+    <!-- Points achieved by the user: -->
+    <xsl:variable name="points">
+      <xsl:if test="$score and $score!='' and $score != -1">
+        <xsl:variable name="temp" select="round($points_max * $score * 10) div 10"/>
+        <xsl:if test="string($temp)!='NaN'">
+          <xsl:value-of select="$temp"/>
+        </xsl:if>
+      </xsl:if>
+    </xsl:variable>
+
+  Gilt auch für Zwischenräume zwischen Top-Level-Elementen (z.B. Templates) und
+  -Kommentaren:
+
+    <xsl:template name="template-01">
+      <!-- ... -->
+    </xsl:template>
+
+    <xsl:template name="template-02">
+      <!-- ... -->
+    </xsl:template>
+
+    <!--
+      Description ...
+    -->
+
+    <xsl:template name="template-03">
+      <!-- ... -->
+    </xsl:template>
+
+  FALSCH:
+
+    <xsl:template name="template-01">
+      <!-- ... -->
+    </xsl:template>
+
+
+    <xsl:template name="template-02">
+      <!-- ... -->
+    </xsl:template>
+
+
+    <!--
+      Description ...
+    -->
+
+    <xsl:template name="template-03">
+      <!-- ... -->
+    </xsl:template>
+
+
+7. Zur Gliederung des Codes Kommentare der Form
+
+     # =======================================================================
+     # Ueberschrift
+     # =======================================================================
+
+   verwenden.
+
+
+
+-- ENDE DER DATEI --

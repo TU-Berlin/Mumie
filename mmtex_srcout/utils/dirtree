@@ -1,0 +1,192 @@
+#!/usr/bin/perl -w
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+use Env qw(MMTEX_HOME);
+use Getopt::Long;
+
+#------------------------------------------------------------------------#
+#   Make sure there is the XML:Directoy modul in the path entered below
+#------------------------------------------------------------------------#
+use lib "/net/multimedia/Perl/";
+use XML::Directory::String;
+use constant PROGRAM => "dirtree";
+use Cwd qw(abs_path);
+
+GetOptions
+  (
+   'folder=s' => sub { $start_folder = set_option(@_); },
+   'output=s' => \$output_file,
+   'help'     => \&show_help,
+   'stylesheet=s' => \$stylesheet,
+  )
+  or exit();
+
+
+if ($ARGV[0])
+  {
+    $start_folder = set_option('' ,$ARGV[0]);
+  }
+
+
+if (not $start_folder)
+  {
+    die("No starting directory given");
+  }
+
+
+#------------------------------------------------------------------------#
+#   Check start_folder, output file and stylesheet
+#------------------------------------------------------------------------#
+if(not $MMTEX_HOME)
+  {
+    print "WARNING: MMTEX_HOME not set.\n".
+	  "Programm will work without, but stylesheet will no be set automatic";
+  }
+
+
+
+if (not -r      $start_folder    )
+  {
+    $start_folder = "$MMTEX_HOME/$start_folder";
+    if (not -r $start_folder)
+      {
+	die("\nERROR: Start folder does not exist or is not readable by user.\n".
+	    "Correction attempt by adding '$MMTEX_HOME' failed.\n".
+	    "Folder: $start_folder \n\n");
+      }
+  }
+$output_file ||= "$start_folder/xml_dirtree.xml";
+$output_file .= '.xml' if $output_file !~ m/.xml$/;
+
+if ($stylesheet && not -r $stylesheet)
+  {
+    $stylesheet = "$MMTEX_HOME/$stylesheet";
+    if (not -r $stylesheet)
+      {
+	die("\nERROR: Stylesheet does not exist or is not readable by user.\n".
+	    "Correction attempt by adding '$MMTEX_HOME' failed.\n".
+	    "Stylesheet: $stylesheet \n\n");
+      }
+  }
+
+$stylesheet ||= "$MMTEX_HOME/styles/xsl/dirtree.xsl";
+
+
+
+
+#------------------------------------------------------------------------#
+#   Parse the directory and create the sample_index.html
+#------------------------------------------------------------------------#
+print "\n\n1) Parsing '$start_folder'";
+$dir = XML::Directory::String->new("$start_folder",2,99);
+$dir->parse_dir;
+@res = $dir->get_array;
+
+open OUT, ">$output_file";
+print OUT shift(@res) . "\n";
+print OUT "<?xml-stylesheet type='text/xsl' href='$stylesheet'?>\n";
+foreach (@res)
+  {
+    print OUT $_ . "\n";
+  }
+close OUT;
+
+print "\n2) Done, wrote xml_index to '$output_file'";
+print "\n   Associated stylesheet is '$stylesheet' ";
+print "\n   XML-File may be viewed in any (good) browser.";
+
+print "\n\n";
+
+
+
+
+sub show_help
+  {
+
+    print "
+Usage:
+  " . PROGRAM . " [START_FOLDER] [QUERY_OPTIONS]
+
+Query options:
+
+   --output=FILENAME             Set result_filename, will be placed in start_folder
+   --stylesheet=FILENAME         Set the associated stylesheet
+   --help                        Display this text
+
+
+Auto-Correct and Default-Folders:
+
+  START-FOLDER:     If given folder is not readable, dirtree will
+                    try to prefix with MMTEX_HOME and check again.
+
+  stylesheet:       Default value is 'MMTEX_HOME/styles/xsl/dirtree.xsl'
+                    If given filename doesn't exist, dirtree will
+                    try to prefix with MMTEX_HOME and check again.
+
+Short abstract about function:
+
+  This programm will parse the given directory, create a XML File, and
+  associate the given or default stylesheet to the result.
+  This file may be viewed in any (good) browser as an directory index.
+  The appearance of the result will depend on the used stylesheet.
+
+";
+    exit
+  }
+	
+sub set_option
+  {
+    $target = replace_tilde($_[1]);
+    if (-d $target)
+      {
+	$target = abs_path($target);
+      }
+    else
+      {
+	$target =~ s/([^\/]+)$//g;
+	$file = $1;
+	$target = abs_path($target);
+	$target .= "/$file";
+      }
+	
+    return $target    if (-r "$target");
+    die("\nCan't read $target\n");
+  }
+
+sub replace_tilde
+  {
+    $dir = shift;
+    $dir =~ s{
+			^ ~             # find a leading tilde
+			(               # save this in $1
+			[^/]        # a non-slash character
+			*     # repeated 0 or more times (0 means me)
+		       )
+		      }{
+			$1
+			  ? (getpwnam($1))[7]
+			    : ( $ENV{HOME} || $ENV{LOGDIR} )
+			  }ex;
+    return $dir;
+  }

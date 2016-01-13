@@ -1,0 +1,200 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Entwicklung von Dokumenten mit Java-Quellen}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: entw_dok_mit_java_quellen.tex,v 1.4 2008/08/11 11:57:33 rassy Exp $}
+
+Diese Spezifikation beschreibt die Besonderheiten bei der Entwicklung von
+Dokumenten mit Java-Quellen. Das sind z.Z. Dokumente der Typen "{}applet" und
+"java_class".
+
+\tableofcontents
+
+\section{Einleitung}
+
+Dokumente der Typen "{}applet" und "java_class" liegen zunächst als Java-Quellen
+vor. Die Quelldateien haben Namen der Form \var{pure_name}\file{.src.java}, wobei
+\var{pure_name} der Rumpfname (\emph{pure name}) des Dokuments ist. Hieraus
+müssen jeweils eine Master-Datei \var{pure_name}\file{.meta.xml} und eine
+Content-Datei generiert werden. Im Fall von Applets ist die Content-Datei ein
+Jar-Archiv, im Fall von "java_class" Dokumenten eine Datei mit
+Java-Bytecode. Die Content-Dateien heissen entsprechend
+\var{pure_name}\file{.content.jar} bzw. \var{pure_name}\file{.content.class}.
+
+Ähnlich wie bei TeX-Quellen werden die Metainformationen im Quelltext angeben.
+Dazu dienen Javadoc-Tags, und zwar \code{@author} und zusätzliche,
+Mumie-spezifische Tags (s. Abschnitt \ref{javadoc_tags}).
+
+Das Erzeugen der Master- und Content-Datei erfolgt durch den Mmcdk-Befehl
+\file{mmjava}. Im Fall von Applets wird dabei die Content-Datei, wenn nötig,
+gleich signiert.
+
+
+\section{Entwicklungsverzeichnis vs. Checkin-Verzeichnis}\label{entw_checkin_verz}
+
+Als Mumie-Dokumente müssen Applets und Java-Klassen in eine
+\href{sections.xhtml}{Section} und damit in ein Verzeichnis des Checkin-Baums
+einsortiert werden. Andererseits ist es in der Java-Entwicklung üblich (und bei
+einigen IDE's sogar unumgänglich), dass die Quellen in einer
+Verzeichnisstruktur liegen, die sich aus der Java-Paketstruktur ergibt.
+Ausserdem muessen die Dateinamen der Quellen die Form
+\var{pure_name}\file{.java} und nicht \var{pure_name}\file{.src.java} haben.
+
+Um das Problem zu lösen, wird folgende Vorgehensweise empfohlen: Die Quellen
+werden in Verzeichnissen abgelegt, die sich aus der Paketstruktur ergeben. Im
+Checkin-Baum werden Softlinks zu den Quellen gemacht. Die Softlinks haben
+Dateinamen der Form \var{pure_name}\file{.src.java}, die entsprechenden Quellen
+Dateinamen der Form \var{pure_name}\file{.java}. Damit diese Links automatisch
+erstellt werden können, muss der Pfad der Section, in dem das Java-Dokument
+liegen soll, als spezieller Javadoc-Tag \code{@mm.section} angegeben werden (s.
+auch Abschnitt \ref{javadoc_tags}).
+
+
+\section{Zusätzliche Javadoc-Tags}\label{javadoc_tags}
+
+Dieser Abschnitt listet alle Mumie-Javadoc-Tags auf. Die Tags sind sämtlich vom
+Block-Typ und nur im Javadoc-Kommentar zur Klasse erlaubt (also nicht in
+Methoden- und Variablen-Kommentaren) (vgl. Javadoc-Manual von Sun).
+
+\begin{enumerate}
+
+\item \code{@mm.buildClasspath}
+
+  Zusätzlicher Classpath-Eintrag für die Kompilierung. Der Wert wird als
+  Pfad relativ zu \var{prefix}\file{/lib/java} interpretiert, wobei
+  \var{prefix} der gemeinsame Installations-Prefix aller Mumie-Pakete ist. Das
+  Tag darf mehrfach vorkommen oder auch ganz fehlen.
+
+  Das Tag ist dazu gedacht, Bibliotheken und Klassen anzugeben, die zur
+  Kompilierzeit benötigt werden, sich aber nicht aus einem
+  \code{@mm.requireApplet}- oder \code{@mm.requireJar}-Tag ergeben. Beispiel:
+  Ein Dokument vom Typ "java_class" benötigt gewisse Bibliotheken aus dem
+  \file{WEB-INF/lib}-Verzeichnis des Cocoon.
+
+\item \code{@mm.category}
+  
+  Kategorie, als String. Nur beim Dokument-Typ "java_class" erlaubt, dort
+  zwingend.
+
+\item \code{@mm.changelog}
+
+  Werdegang des Dokuments (für Entwickler). Optional
+
+\item \code{@mm.copyright}
+
+  Copyright-Angabe. Optional.
+
+\item \code{@mm.description}
+
+  Beschreibung des Dokuments (für Benutzer). Optional
+
+\item \code{@mm.height}
+
+  Nur beim Dokument-Typ "{}applet" erlaubt. Gibt die empfohlene Höhe in Pixeln
+  an. Optional, Default ist 400.
+
+  Die Angabe bezieht sich auf den Bereich, der dem Applet vom Browser auf der
+  XHTML-Seite zur Verfügung gettsellt wird. Bei Applets, die zunächst als
+  Button starten und später in einem eigenen Fenster laufen, ist dies
+  \emph{nicht} die Höhe des Fensters, sondern die Höhe des Buttons.
+
+\item \code{@mm.section}
+
+  Checkin-Pfad der Section, in die das Dokuments einsortiert werden
+  soll. Dieses Tag legt somit auch fest, in wo im Checkin-Verzeichnis der
+  Softlink zur Quelle dieses Dokuments gemacht wird (s. Abschnitt
+  \ref{entw_checkin_verz}). Zwingend
+
+\item \code{@mm.sign}
+
+  Nur beim Dokument-Typ "{}applet" erlaubt. Gibt an, ob das Applet signiert
+  werden soll oder nicht. Mögliche Werte (Bedeutung selbsterklärend): \code{true},
+  \code{false}, \code{yes}, \code{no}. Optional, Default ist \code{no}.
+
+\item \code{@mm.infoPage}
+
+  Checkin-Pfad der Info-Seite des Dokuments. Die Info-Seite muss vom Typ
+  \code{generic_page} sein. Optional
+
+\item \code{@mm.thumbnail}
+
+  Checkin-Pfad des Thumbnails des Dokuments. Das Thumbnail muss vom Typ
+  \code{generic_image} sein. Optional
+
+\item \code{@mm.status}
+
+  \emph{[VERALTET]} Status des Dokuments, als String. Optional
+
+\item \code{@mm.width}
+
+  Nur beim Dokument-Typ "{}applet" erlaubt. Gibt die empfohlene Breite in Pixeln
+  an. Optional, Default ist 400.
+
+  Die Angabe bezieht sich auf den Bereich, der dem Applet vom Browser auf der
+  XHTML-Seite zur Verfügung getstellt wird. Bei Applets, die zunächst als
+  Button starten und später in einem eigenen Fenster laufen, ist dies
+  \emph{nicht} die Breite des Fensters, sondern die Breite des Buttons.
+
+\item \code{@mm.type}
+
+  Dokument-Typ, als String. Zwingend
+
+\item \code{@mm.requireApplet}
+
+  Nur beim Dokument-Typ "{}applet" erlaubt. Gibt ein benötigtes anderes
+  Appletan. Der Wert muss ein Checkin-Pfad zur Master-Datei eines Dokuments vom
+  Typ "{}applet" sein. Das Tag darf mehrfach vorkommen oder auch ganz fehlen.
+
+\item \code{@mm.requireJar}
+
+  Nur beim Dokument-Typ "{}applet" erlaubt. Gibt ein benötigtes Jar an. Der
+  Wert muss ein Checkin-Pfad zur Master-Datei eines Dokuments vom Typ "{}jar"
+  sein. Das Tag darf mehrfach vorkommen oder auch ganz fehlen.
+  
+\end{enumerate}
+
+
+\section{Angabe von Autoren}
+
+Autoren werden durch das Standard-Javadoc-Tag \code{@author} angegeben. Mmcdk
+und Japs benötigen den Autor als Checkin-Pfad der entsprechenden
+Master-Datei. Erzeugt man aus der Java-Quelle mit dem \file{javadoc}-Tool eine
+API-Dokumentation in HTML-Format, so wird das Tag ebenfalls ausgewertet. Hier
+wünscht man sich eine mehr menschen-lesbare Form, z.B.:
+
+\begin{preformatted}%
+  \var{Vorname} \var{Nachname} <\var{E-Mail}>
+\end{preformatted}
+
+Um beiden Anforderungen zu genügen, erwartet Mmcdk, dass der Wert des
+\code{@author}-Tags den Checkin-Pfad der Master-Datei des Autors in runden
+Klammern enthält. Ausserhalb der Klammern können die menschen-lesbaren Angaben
+stehen. Zulässige Formate wären z.B.
+
+\begin{preformatted}%
+  \var{Vorname} \var{Nachname} <\var{E-Mail}> (\var{pfad})
+\end{preformatted}
+
+und
+
+\begin{preformatted}%
+  \var{Nachname} (\var{pfad})
+\end{preformatted}
+
+Hierbei ist \var{pfad} der Checkin-Pfad der Master-Datei des Autors. Konkretes Beispiel:
+
+\begin{preformatted}%
+  Markus Gronau <gronau@math.tu-berlin.de> (org/users/usr_gronau.meta.xml)
+\end{preformatted}
+
+-- ENDE DER DATEI --
+
+\end{document}

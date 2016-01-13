@@ -1,0 +1,32 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: applet_offline_preview.txt,v 1.1 2007/03/28 12:21:20 rassy Exp $
+
+
+                     OFFLINE-MODUS FÜR APPLETS IM PREVIEW
+
+
+        Diese Spezifikation muss mit dem Gesamtentwurf der Applet-Modi
+        abgestimmt werden.
+
+Erscheint das (Hausaufgaben-)Applet auf einer Preview-XHTL-Seite, so soll es
+das Input-Datasheet von einer Datei lesen und das Antwort-Datasheet in eine
+Datei speichern. Dazu werden dem Applet zwei Parameter übergeben:
+
+  inputDatasheetFile   Name der Datei, die das Input-Datasheet enthält
+
+  answerDatasheetFile  Name der Datei, in die das Antwort-Datasheet geschrieben
+                       wird 
+
+Ein weiterer Parameter schaltet diesen Modus ein. Die Gestaltung dieses
+Parameters hängt vom Gesamtentwurf der Applet-Modi ab. Möglich wäre z.B.:
+
+  previewMode   "true" oder "false", gibt an, ob der Preview-Mode aktiviert
+                werden soll
+
+oder
+
+  mode          Gibt den Mode an; "preview" für Preview.
+
+
+
+--ENDE DER DATEI --

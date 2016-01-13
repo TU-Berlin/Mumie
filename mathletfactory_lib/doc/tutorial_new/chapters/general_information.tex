@@ -1,0 +1,68 @@
+
+\author{Markus Gronau}
+
+\section{About this document}
+  This document adresses to mathlet developers who wants to get familiar with the creation
+  of mathlets using the MathletFactory's library. It does not aim to describe each
+  single class but to illustrate the necessary techniques and philosophies for the 
+  construction of a mathlet. This technical stuff will be accompanied by 
+  comprehensive examples and hints. A complete overview of all classes can be found
+  in the APIDOC. The use of the APIDOC will be assumed.
+
+\section{About the Mumie MathletFactory}
+The \mumie is an e-learning platform specialized in mathematics and mathematical sciences.
+It is a fully web-based learning- and teaching environment using standard techniques
+(such as XHTML, MathML and Java) for deploying mathematical content to the end-user inside 
+a standard compliant internet browser.\\
+\\
+The \mf is a Java library and part of the \mumie in which it is used to produce and to visualize
+dynamic, interactive mathematical content with Java applets (so called ``mathlets''). It allows
+the rapid development of such mathlets, containing complex mathematical algorithms and scenes
+along with a common generic behaviour and appearance.\\
+The \mf library contains a large collection of mathematical objects (so called \mmos), which can 
+be used both in calculations and presentations of dynamic problems.
+Their visualizations may be both symbolic and graphical (both 2D and 3D).
+Their state may be interactively changeable by the user and may cause further interaction between them.\\
+\\
+The \mf is developed since 2001 and released in 2007 the milestone 2.0, which has been used since then by
+several thousands of students at different international universities. The main development
+effort is actually done for the milestone 2.1 which will be released in spring 2008.\\
+\\
+The \mf library is open source and provided under the MIT license. It is compliant with 
+all Java versions of SUN Microsystems and Apple Inc. starting with Version 1.4.2\footnote{Some 
+additional extensions may require a newer Java version.}. Further information and documentation 
+as well as source code is available under \url{http://www.mumie.net}.
+
+\section{Fundamental Concepts}
+
+\subsubsection*{Generic programming of mathlets}
+The programming of mathlets is generic and easy to use but does not restrict the applet developer
+in his creativity. By automatically adding standard features to new mathlets and providing a
+flexible and generic applet ``skeleton'' the developer can concentrate on the mathematical content.\\
+The \mf library acts hereby as a reusable component system.
+
+\subsubsection*{Separation of logic and representation}
+The \mf follows the philosophy to separate the (abstract) mathematical object from its further
+representation(s) on the screen, defining a veritable Model-View-Controller architecture (MVC).
+By handling interactive actions (e.g. user interaction) through generic but specific \textit{events}, 
+changes are automatically reflected to the mathematical model and also propagated to any dependant 
+objects, allowing even complex dependency trees.
+
+\subsubsection*{Abstract number fields for arbitrary-precise calculations}
+Most mathematical objects are based on an abstract number class which makes it possible to perform
+calculations on a particular number field with its own arbitrary precision. While some operations
+need a complex number field, other situations can be more satisfied with an answer in whole numbers.
+Furthermore while e.g. floating point operations are executed faster than rational ones, the latter 
+are more precise and user friendly.
+
+\subsubsection*{Open extensible framework}
+The \mf library offers a wide spectrum of objects for the most needed mathematical entities and 
+applet developer's concerns but also can be extended in almost every included technology\footnote{
+Some extension features are only available in the up-coming milestone 2.1}. By
+providing an open framework and both a complete API documentation and tutorials for its techniques, 
+the \mf truly underlines its open source idea.
+
+\section{Available resources}
+  The MathletFactory library as well as the APIDOC, examples, sources and other
+  documentation can be downloaded from the internet site:\\
+  \indent\indent\indent\indent\indent\indent \textbf{http://www.mumie.net}

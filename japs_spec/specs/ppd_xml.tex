@@ -1,0 +1,141 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Personalisierte-Aufgaben-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: ppd_xml.tex,v 1.4 2006/08/11 16:18:23 rassy Exp $}
+
+Personalisierte Aufgaben entstehen dadurch, dass Teile der Daten einer Aufgabe
+(z.B. die Koeffizienten einer Linearkombination) für jeden Teilnehmer anders
+gewählt werden. Dies lässt sich z.B. durch Zufallszahlen oder Zahlen, die aus
+der Matrikelnummer generiert werden, realisieren.
+
+Das Aufgaben-XML enthält Platzhalter für die personalisierten Daten. Diese
+gehören einem speziellen XML, dem \emph{Personalized Probelm Data XML} oder kurz
+\emph{PPD-XML} an. Es ist Gegenstand dieser Spezifikation.
+
+\tableofcontents
+
+\section{Namensraum}
+
+Der Namensraum des PPD-XMLs ist
+\val{http://www.mumie.net/xml-namespace/personalized-problem-data}. Der übliche
+Prefix lautet \val{ppd}. Das PPD-XML wird normalerweise mit Prefixes
+geschrieben.
+
+\section{Datasheet-Pfade}
+
+Normalerweise werden die Werte, die die personalisierten Daten für einen
+bestimmten Studenten annehmen, nach ihrer Erzeugung in einem Datasheet
+abgelegt. Deshalb müssen die Daten im PPD-XML mit Pfaden versehen werden.  S.
+hierzu \href{data_sheet_xml\#adressierung}{Adressierung von
+  Datasheet-Einträgen}.
+
+\section{Elemente}\label{ppd_xml}
+
+Im Folgenden werden alle PPD-XML-Elemente aufgelistet.
+
+\subsection{ppd:copy}\label{element_copy}
+
+Erzeugt eine Kopie eines anderen PPD-Ausdrucks. Prototyp:
+
+\begin{preformatted}[code]%
+  <ppd:copy path="\var{path}"/>
+\end{preformatted}
+
+\var{path} gibt den Pfad an, unter dem der zu kopierende PPD-Ausdruck im
+Datasheet eingeordnet ist.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  <ppd:random_integer path="user/problem/value1" min="1" max="4"/>
+
+  <!-- ... -->
+
+  <ppd:copy path="user/problem/value1"/>
+\end{preformatted}
+
+Das erste PPD-Element erzeugt eine zufällige ganze Zahl zwischen 1 und 4 (s.
+\ref{element_random_integer}), das zweite eine Kopie davon.
+
+\subsection{ppd:random_integer}\label{element_random_integer}
+
+Erzeugt eine zufällige ganze Zahl. Prototyp:
+
+\begin{preformatted}[code]%
+  <ppd:random_integer path="\var{path}" min="\var{min}" max="\var{max}" \optional{non_zero="\alt{{yes}{no}}"}/>
+\end{preformatted}
+
+\var{min} und \var{max} bestimmen den Bereich, in dem die Zufallszahl $x$
+liegen soll. Es müssen ganze Zahlen mit $\,\mbox{\var{min}} \le
+\mbox{\var{max}}$ sein.  Mit \attrib{non_zero} kann festgelegt werden, ob $x$
+von Null verschieden sein muss (\val{yes}) oder nicht (\val{no}). Default ist
+\val{no}. \var{path} gibt den Pfad an, unter dem $x$ in das Datasheet
+eingeordnet wird.
+
+[Genauer gilt: Der Bereich $\Omega$, aus dem $x$ kommt, ist gleich $ \{
+\mbox{\var{min}}, \ldots, \mbox{\var{max}} \}\setminus\{0\}$, falls \attrib{non_zero} den
+Wert \val{yes} hat, andernfalls $\{ \mbox{\var{min}}, \ldots, \mbox{\var{max}}
+\}$. Innerhalb von $\Omega$ sind die Zufallszahlen gleichverteilt.]
+
+\subsection{ppd:random_rational}\label{element_random_rational}
+
+Erzeugt eine zufällige rationale Zahl. Prototyp:
+
+\begin{preformatted}[code]%
+  <ppd:random_rational path="\var{path}"
+                       numerator_min="\var{num_min}" numerator_max="\var{num_max}"
+                       denominator_min="\var{den_min}" denominator_max="\var{den_max}"
+                       \optional{non_zero="\alt{{yes}{no}}"} \optional{reduce="\alt{{yes}{no}}"}/>
+\end{preformatted}
+
+\var{num_min} und \var{num_max} bestimmen den Bereich, in dem der Zähler der
+Zufallszahl $x$ liegen soll, \var{den_min}, \var{den_max} den entsprechenden
+Bereich für den Nenner. Es müssen ganze Zahlen mit $\,\mbox{\var{num_min}} \le
+\mbox{\var{num_max}}$ und $\,\mbox{\var{den_min}} \le \mbox{\var{den_max}}$
+sein. Mit \attrib{non_zero} kann festgelegt werden, ob $x$ von Null verschieden
+sein muss (\val{yes}) oder nicht (\val{no}). Default ist \val{no}. Hat
+\attrib{reduce} den Wert \val{yes}, so wird $x$ so weit wie möglich gekürzt,
+andernfalls nicht gekürzt.  Default für \attrib{reduce} ist \val{yes}.
+\var{path} gibt den Pfad an, unter dem $x$ in das Datasheet eingeordnet wird.
+
+[Genauer gilt: Zähler und Nenner werden zufällig und unabhängig aus Bereichen
+$\Omega_Z$ bzw. $\Omega_N$ gezogen, die wie folgt definiert sind: Hat
+\attrib{non_zero} den Wert \val{yes}, so ist $\Omega_Z = \{
+\mbox{\var{num_min}}, \ldots, \mbox{\var{num_max}} \}\setminus\{0\}$,
+andernfalls $\Omega_Z = \{ \mbox{\var{num_min}}, \ldots, \mbox{\var{num_max}}
+\}$. Unabhängig von \attrib{non_zero} ist $\Omega_N = \{ \mbox{\var{den_min}},
+\ldots, \mbox{\var{den_max}} \}\setminus\{0\}$. Zähler und Nenner sind in
+$\Omega_Z$ bzw. $\Omega_N$ gleichverteilt.]
+
+\subsection{ppd:random_real}\label{element_random_real}
+
+Erzeugt eine zufällige reelle Zahl (tatsächlich eine zufällige
+\code{double}-Zahl im IT-Sinne). Prototyp:
+
+\begin{preformatted}[code]%
+  <ppd:random_real path="\var{path}" min="\var{min}" max="\var{max}"/>
+\end{preformatted}
+
+\var{min} und \var{max} bestimmen den Bereich, in dem die Zufallszahl $x$
+liegen soll. Es müssen reelle Zahlen mit $\,\mbox{\var{min}} \le
+\mbox{\var{max}}$ sein. \var{path} gibt den Pfad an, unter dem $x$ in das
+Datasheet eingeordnet wird.
+
+[Genauer gilt: Der Bereich $\Omega$, aus dem $x$ kommt, ist gleich
+$[\mbox{\var{min}}, \mbox{\var{max}}]$. Innerhalb von $\Omega$ sind die
+Zufallszahlen gleichverteilt.]
+
+
+
+-- ENDE DER DATEI --
+
+\end{document}

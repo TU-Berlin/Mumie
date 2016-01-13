@@ -1,0 +1,145 @@
+package net.mumie.srv.notions;
+
+public class ProblemDataType
+{
+  // --------------------------------------------------------------------------------
+  // Global variabled and constants, except autocoded 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The undefined problem data type.
+   */
+
+  public static final int UNDEFINED = -1;
+
+  // --------------------------------------------------------------------------------
+  // Auxiliaries 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the array index of the specified problem data type code.
+   */
+
+  protected static final int indexOf (int code)
+  {
+    int index = -1;
+    for (int i = 0; i < types.length && index == -1; i++)
+      {
+        if ( types[i] == code )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid problem data type code: " + code);
+    return index;
+  }
+
+  /**
+   * Returns the array index of the problem data type with the specified name.
+   */
+
+  protected static final int indexOf (String name)
+  {
+    int index = -1;
+    for (int i = 0; i < names.length && index == -1; i++)
+      {
+        if ( names[i].equals(name) )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid problem data type name: " + name);
+    return index;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting codes for names and vice versa
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the name for the (pseudo-)document type represented by the specified numerical
+   * code.
+   */
+
+  public static final String nameFor (int code)
+  {
+    return names[indexOf(code)];
+  }
+
+  /**
+   * Returns the numerical code for the specified (pseudo-)document type name.
+   */
+
+  public static final int codeFor (String name)
+  {
+    return types[indexOf(name)];
+  }
+
+  // --------------------------------------------------------------------------------
+  // Checking whether a code or name exists as a problem data type
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns true if the specified integer exists as a problem data type code;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (int code)
+  {
+    for (int i = 0; i < types.length; i++)
+      {
+        if ( types[i] == code )
+          return true;
+      }
+    return false;
+  }
+
+  /**
+   * Returns true if the specified string exists as a problem data type name;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (String name)
+  {
+    for (int i = 0; i < names.length; i++)
+      {
+        if ( names[i].equals(name) )
+          return true;
+      }
+    return false;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting all problem data types
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns an array containing all problem data types. The array is is not backed by any
+   * variables of this class, so changes to the array do not effect this class. 
+   */
+
+  public static final int[] allTypes ()
+  {
+    int[] typesCopy = new int[types.length];
+    System.arraycopy(types, 0, typesCopy, 0, types.length);
+    return typesCopy;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private ProblemDataType ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("ProblemDataType must not be instanciated");
+  }
+}

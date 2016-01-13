@@ -1,0 +1,349 @@
+<?xml version="1.0"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: mumie.roles.src,v 1.38 2009/12/17 22:31:42 rassy Exp $
+-->
+
+<!DOCTYPE role-list
+  [
+    <!ELEMENT role-list (role+)> 
+    <!ELEMENT role (hint*)>
+    <!ELEMENT hint EMPTY>
+    <!ATTLIST role name CDATA #REQUIRED
+              shorthand CDATA #REQUIRED
+              default-class CDATA #IMPLIED>
+    <!ATTLIST hint shorthand CDATA #REQUIRED
+              class CDATA #REQUIRED>
+  ]
+>
+
+<role-list xmlns:mumie="http://www.mumie.net/xml-namespace/roles">
+
+  <!-- ================================================================================ -->
+  <!-- h1: Database                                                                     -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.db.DbHelper"
+        shorthand="db-helper"
+        default-class="net.mumie.cocoon.db.PostgreSQLDbHelper"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Checkin                                                                      -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.checkin.ZipCheckinRepository"
+        shorthand="zip-checkin-repository"
+        default-class="net.mumie.cocoon.checkin.DefaultZipCheckinRepository"/>
+
+  <role name="net.mumie.cocoon.checkin.EditableCheckinRepository"
+        shorthand="editable-checkin-repository"
+        default-class="net.mumie.cocoon.checkin.SimpleEditableCheckinRepository"/>
+
+  <role name="net.mumie.cocoon.checkin.CheckinHelper"
+        shorthand="checkin-helper"
+        default-class="net.mumie.cocoon.checkin.DefaultCheckinHelper"/>
+
+  <role name="net.mumie.cocoon.checkin.ContentObjectToCheckinSelector"
+        shorthand="content-objects-to-checkin"
+        default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+    <mumie:hints/>
+  </role>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Documents and pseudo-documents                                               -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.documents.DocumentSelector"
+        shorthand="documents"
+        default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+    <mumie:hints/>
+  </role>
+
+  <role name="net.mumie.cocoon.pseudodocs.SessionUser"
+        shorthand="session-user"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultSessionUser"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.GeneralUser"
+        shorthand="general-user"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultGeneralUser"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.UserGroup"
+        shorthand="general-user"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultUserGroup"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.Semester"
+        shorthand="semester"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultSemester"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.Tutorial"
+        shorthand="tutorial"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultTutorial"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.ELClass"
+        shorthand="el-class"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultELClass"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.PseudoDocumentSelector"
+        shorthand="pseudo-documents"
+        default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+    <mumie:hints/>
+  </role>
+
+  <role name="net.mumie.cocoon.content.VariableTypeContentObject"
+        shorthand="content-object"
+        default-class="net.mumie.cocoon.content.VariableTypeContentObjectImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Misc.                                                                        -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.util.PasswordEncryptor"
+        shorthand="password-encryptor"
+        default-class="net.mumie.cocoon.util.MD5PasswordEncryptor"/>
+
+  <role name="net.mumie.cocoon.xml.FragmentSAXFilter"
+        shorthand="fragment-sax-filter"
+        default-class="net.mumie.cocoon.xml.DefaultFragmentSAXFilter"/>
+
+  <role name="net.mumie.cocoon.util.CocoonEnabledDataSheet"
+        shorthand="data-sheet"
+        default-class="net.mumie.cocoon.util.DefaultCocoonEnabledDataSheet">
+  </role>
+
+  <role name="net.mumie.cocoon.classloading.DbClassLoaderWrapper"
+        shorthand="db-class-loader-wrapper"
+        default-class="net.mumie.cocoon.classloading.DefaultDbClassLoaderWrapper">
+  </role>
+
+  <role name="net.mumie.cocoon.documents.DocumentIndex"
+        shorthand="document-index"
+        default-class="net.mumie.cocoon.documents.DefaultDocumentIndex"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.PseudoDocumentIndex"
+        shorthand="pseudo-document-index"
+        default-class="net.mumie.cocoon.pseudodocs.DefaultPseudoDocumentIndex"/>
+
+  <role name="net.mumie.cocoon.session.SessionXMLizer"
+        shorthand="session-xmlizer"
+        default-class="net.mumie.cocoon.session.DefaultSessionXMLizer"/>
+
+  <role name="net.mumie.cocoon.util.ProblemContext"
+        shorthand="problem-context"
+        default-class="net.mumie.cocoon.util.DefaultProblemContext"/>
+
+  <role name="net.mumie.cocoon.util.UserProblemContext"
+        shorthand="user-problem-context"
+        default-class="net.mumie.cocoon.util.DefaultUserProblemContext"/>
+
+  <role name="net.mumie.cocoon.util.UploadHelper"
+        shorthand="upload-helper"
+        default-class="net.mumie.cocoon.util.DefaultUploadHelper"/>
+
+  <role name="net.mumie.cocoon.util.GenericDocumentResolver"
+        shorthand="generic-document-resolver"
+	      default-class="net.mumie.cocoon.util.DefaultGenericDocumentResolver"/>
+
+  <role name="net.mumie.cocoon.util.ClassesAndCoursesIndex"
+	      shorthand="classes-and-courses-index"
+	      default-class="net.mumie.cocoon.util.DefaultClassesAndCoursesIndex"/>
+
+  <role name="net.mumie.cocoon.grade.UserWorksheetGrades"
+	      shorthand="user-worksheet-grades"
+	      default-class="net.mumie.cocoon.grade.UserWorksheetGradesImpl"/>
+
+  <role name="net.mumie.cocoon.grade.UserWorksheetGrade"
+	      shorthand="user-worksheet-grade"
+	      default-class="net.mumie.cocoon.grade.UserWorksheetGradeImpl"/>
+
+  <role name="net.mumie.cocoon.grade.WorksheetUserProblemGrades"
+        shorthand="worksheet-user-problem-grades"
+        default-class="net.mumie.cocoon.grade.WorksheetUserProblemGradesImpl"/>
+  
+  <role name="net.mumie.cocoon.grade.TutorialUserProblemGrades"
+	      shorthand="tutorial-user-grades"
+	      default-class="net.mumie.cocoon.grade.TutorialUserProblemGradesImpl"/>
+  
+  <role name="net.mumie.cocoon.grade.TutorialUserTraditionalProblemGrades"
+	      shorthand="tutorial-user-traditional-grades"
+	      default-class="net.mumie.cocoon.grade.TutorialUserTraditionalProblemGradesImpl"/>
+
+  <role name="net.mumie.cocoon.grade.UserProblemGrades"
+        shorthand="user-grades"
+        default-class="net.mumie.cocoon.grade.UserProblemGradesImpl"/>
+
+  <role name="net.mumie.cocoon.grade.TotalClassGrades"
+        shorthand="total-class-grades"
+        default-class="net.mumie.cocoon.grade.TotalClassGradesImpl"/>
+
+  <role name="net.mumie.cocoon.grade.ClassUserWorksheetGrades"
+	      shorthand="class-user-worksheet-grades"
+	      default-class="net.mumie.cocoon.grade.ClassUserWorksheetGradesImpl"/>
+
+  <role name="net.mumie.cocoon.grade.ClassUserProblemGrades"
+        shorthand="class-user-problem-grades"
+        default-class="net.mumie.cocoon.grade.ClassUserProblemGradesImpl"/>
+
+  <role name="net.mumie.cocoon.grade.WorksheetBulkCorrector"
+	      shorthand="worksheet-bulk-corrector"
+	      default-class="net.mumie.cocoon.grade.WorksheetBulkCorrectorImpl"/>
+
+  <role name="net.mumie.cocoon.grade.WorksheetUserBulkCorrector"
+        shorthand="worksheet-user-bulk-corrector"
+        default-class="net.mumie.cocoon.grade.WorksheetUserBulkCorrectorImpl"/>
+
+  <role name="net.mumie.cocoon.grade.WorksheetTutorialBulkCorrector"
+        shorthand="worksheet-tutorial-bulk-corrector"
+        default-class="net.mumie.cocoon.grade.WorksheetTutorialBulkCorrectorImpl"/>
+
+  <role name="net.mumie.cocoon.util.Reference"
+	      shorthand="doc-pair-reference"
+	      default-class="net.mumie.cocoon.util.DefaultReference"/>
+
+  <role name="net.mumie.cocoon.pseudodocs.ClassTutorialIndex"
+	      shorthand="doc-pair-reference"
+	      default-class="net.mumie.cocoon.pseudodocs.ClassTutorialIndexImpl"/>
+
+  <role name="net.mumie.cocoon.util.CoursesAndTutorialsIndex"
+	      shorthand="courses-and-tutorials-index"
+	      default-class="net.mumie.cocoon.util.CoursesAndTutorialsIndexImpl"/>
+
+  <role name="net.mumie.cocoon.util.ClassMembersIndex"
+        shorthand="class-members-index"
+        default-class="net.mumie.cocoon.util.ClassMembersIndexImpl"/>
+
+  <role name="net.mumie.cocoon.grade.UserWorksheetGradeMessage"
+	      shorthand="user-worksheet-grade-message"
+	      default-class="net.mumie.cocoon.grade.UserWorksheetGradeMessageImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Synchronization                                                              -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.sync.SyncCommandSelector"
+        shorthand="sync-commands"
+        default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+    <mumie:hints/>
+  </role>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Events                                                                       -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.event.EventHandlerSelector"
+        shorthand="event-handlers"
+        default-class="org.apache.avalon.excalibur.component.ExcaliburComponentSelector">
+    <mumie:hints/>
+  </role>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Messages                                                                     -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.msg.MessageDestinationTable"
+        shorthand="message-destination-table"
+        default-class="net.mumie.cocoon.msg.MessageDestinationTableImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Problems, homework, correction                                               -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.util.UserProblemData"
+        shorthand="user-problem-data"
+        default-class="net.mumie.cocoon.util.DefaultUserProblemData"/>
+
+  <role name="net.mumie.cocoon.util.PPDHelper"
+        shorthand="ppd-helper"
+        default-class="net.mumie.cocoon.util.DefaultPPDHelper"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Mail                                                                         -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.mail.MailHelper"
+        shorthand="mail-helper"
+        default-class="net.mumie.cocoon.mail.DefaultMailHelper"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Http client                                                                  -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.httpclient.SimpleHttpClient"
+        shorthand="http-client"
+        default-class="net.mumie.cocoon.httpclient.SimpleHttpClientImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Upload                                                                       -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.util.UploadHelper"
+        shorthand="upload-helper"
+        default-class="net.mumie.cocoon.util.DefaultUploadHelper"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Signatures                                                                   -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.sign.SignHelper"
+        shorthand="sign-helper"
+        default-class="net.mumie.cocoon.sign.DefaultSignHelper"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Receipts                                                                     -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.receipt.ReceiptHelper"
+        shorthand="receipt-helper"
+        default-class="net.mumie.cocoon.receipt.ReceiptHelperImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Search                                                                       -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.search.UserSearcher"
+        shorthand="user-searcher"
+        default-class="net.mumie.cocoon.search.UserSearcherImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Client time                                                                  -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.clienttime.ClientTime"
+        shorthand="client-time"
+        default-class="net.mumie.cocoon.clienttime.ClientTimeImpl"/>
+
+  <!-- ================================================================================ -->
+  <!-- h1: Deletion                                                                     -->
+  <!-- ================================================================================ -->
+
+  <role name="net.mumie.cocoon.delete.DeleteHelper"
+        shorthand="delete-helper"
+        default-class="net.mumie.cocoon.delete.DeleteHelperImpl"/>
+
+</role-list>

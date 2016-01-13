@@ -1,0 +1,220 @@
+<?xml version="1.0"  encoding = "ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!-- $Id: xsl_problem_correction.content.xml,v 1.16 2009/08/03 00:25:15 rassy Exp $ -->
+
+<xsl:stylesheet version="1.0"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:crp="http://www.mumie.net/xml-namespace/correction-report"
+                xmlns:ds="http://www.mumie.net/xml-namespace/data-sheet"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:mk="http://www.mumie.net/xml-namespace/marking"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:math-ext="http://www.mumie.net/xml-namespace/mathml-ext"
+                exclude-result-prefixes="xsl-ext crp ds mumie mk mtx math math-ext">
+
+<xsl-ext:import lid="xsl-mmtex-math" internal="yes"/>
+<xsl-ext:import lid="xsl-problem-i18n" internal="yes"/>
+
+<xsl:output method="xml"/>
+
+<mumie:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- Label of the "Back" button: -->
+<xsl:param name="back-button-label"/>
+
+<!-- URL of the "Back" button: -->
+<xsl:param name="back-button-url"/>
+
+<!-- The marking: -->
+<xsl:variable name="marking"
+              select="/*/ds:unit[@name='user']/ds:data[@name='marking']/mk:marking"/>
+
+<!-- All subtasks: -->
+<xsl:variable name="subtasks" select="$marking/mk:subtasks/mk:subtask"/>
+
+<!-- Number of subtasks: -->
+<xsl:variable name="num-subtasks" select="count($subtasks)"/>
+
+<!-- All explanations: -->
+<xsl:variable name="explanations" select="$marking/mk:subtasks/mk:subtask/mk:explanation"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Paragraphs                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mk:par">
+  <p>
+    <xsl:apply-templates select="@*"/>
+    <xsl:apply-templates/>
+  </p>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Math                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template match="math:math">
+  <math:math>
+    <xsl:copy-of select="@*"/>
+    <xsl:apply-templates mode="math"/>
+  </math:math>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Code blocks                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mk:codeblock">
+  <pre class="code"><xsl:apply-templates/></pre>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Console output                                                               -->
+<!-- ================================================================================ -->
+
+<xsl:template match="mk:output[not(@class='error')]">
+  <pre class="output"><xsl:apply-templates/></pre>
+</xsl:template>
+
+<xsl:template match="mk:output[@class='error']">
+  <pre class="error-output"><xsl:apply-templates/></pre>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Buttons                                                                      -->
+<!-- ================================================================================ -->
+
+<xsl:template name="back-button">
+  <a class="button">
+    <xsl:attribute name="href">
+      <xsl:text>javascript:history.back()</xsl:text>
+    </xsl:attribute>
+    <xsl:value-of select="$i18n-back"/>
+  </a>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main templates                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title><xsl:value-of select="$i18n-problem-solutions"/></title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-problem-correction"/></xsl:attribute>
+      </link>
+    </head>
+    <body>
+      <div class="main-bounded-width">
+        <h1><xsl:value-of select="$i18n-marking"/></h1>
+        <xsl:choose>
+          <xsl:when test="$marking/mk:subtasks">
+            <table class="genuine">
+              <thead>
+                <tr>
+                  <xsl:if test="$num-subtasks &gt; 1">
+                    <td><xsl:value-of select="$i18n-subtask-number"/></td>
+                  </xsl:if>
+                  <td><xsl:value-of select="$i18n-answer"/></td>
+                  <td><xsl:value-of select="$i18n-solution"/></td>
+                  <xsl:if test="$explanations/node()">
+                    <td>
+                      <xsl:value-of select="$i18n-explanation"/>
+                    </td>
+                  </xsl:if>
+                </tr>
+              </thead>
+              <tbody>
+                <xsl:for-each select="$subtasks">
+                  <tr>
+                    <xsl:if test="$num-subtasks &gt; 1">
+                      <td class="subtask-number">
+                        <p><xsl:number value="position()" format="a)"/></p>
+                      </td>
+                    </xsl:if>
+                    <td>
+                      <xsl:apply-templates select="mk:answer"/>
+                    </td>
+                    <td>
+                      <xsl:apply-templates select="mk:solution"/>
+                    </td>
+                    <xsl:if test="mk:explanation/node()">
+                      <td>
+                        <xsl:apply-templates select="mk:explanation"/>
+                      </td>
+                    </xsl:if>
+                  </tr>
+                </xsl:for-each>
+              </tbody>
+            </table>
+            <xsl:if test="$marking/mk:commonexpl">
+              <h2><xsl:value-of select="$i18n-explanation"/></h2>
+              <p>
+                <xsl:apply-templates select="$marking/mk:commonexpl"/>
+              </p>
+            </xsl:if>
+          </xsl:when>
+          <xsl:otherwise>
+            <dl class="marking">
+              <dt><xsl:value-of select="$i18n-answer"/>:</dt>
+              <dd>
+                <xsl:apply-templates select="$marking/mk:answer"/>
+              </dd>
+              <dt><xsl:value-of select="$i18n-solution"/>:</dt>
+              <dd>
+                <xsl:apply-templates select="$marking/mk:solution"/>
+              </dd>
+              <xsl:if test="$marking/mk:explanation">
+                <dt><xsl:value-of select="$i18n-explanation"/>:</dt>
+                <dd>
+                  <xsl:apply-templates select="$marking/mk:explanation"/>
+                </dd>
+              </xsl:if>
+            </dl>
+          </xsl:otherwise>
+        </xsl:choose>
+        <div class="buttons">
+          <xsl:call-template name="back-button"/>
+        </div>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

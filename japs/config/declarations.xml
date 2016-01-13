@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<declarations xmlns="http://www.mumie.net/xml-namespace/declarations"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://www.mumie.net/xml-namespace/declarations declarations.xsd">
+
+  <!-- ====================================================================== -->
+  <!-- h1: Data entity types                                                  -->
+  <!-- ====================================================================== -->
+
+  <data-entity-types>
+  
+    <document-type name="page"
+                   code="101"
+                   no-refs-to="generic_summary,summary">
+      <description>
+        An ordinary web page. The content is in XHTML plus an extension XML. Documents of
+        this type are used to implement auxiliary pages like the start page, framesets, etc.
+      </description>
+    </document-type>
+  
+    <document-type name="xsl_stylesheet"
+                   code="102"
+                   no-refs-to="course, course_section, worksheet,
+                               generic_summary,summary,
+                               element,generic_element,
+                               subelement,generic_subelement,
+                               problem,generic_problem">
+      <description>
+        An XSL stylesheet. The content is in XSLT plus an extension XML.
+      </description>
+    </document-type>
+  
+    <document-type name="css_stylesheet"
+                   code="103"
+                   no-refs-to="course, course_section, worksheet,
+                               generic_summary,summary,
+                               element,generic_element,
+                               subelement,generic_subelement,
+                               problem,generic_problem">
+      <description>
+        A CSS stylesheet. The content is XML (it is translated on-the-fly to the
+        actual CSS format when the stylesheet is requestet).
+      </description>
+    </document-type>
+  
+    <document-type name="js_lib"
+                   code="104"
+                   refs-to="image">
+      <description>
+        A JavaScript library. The content is XML (it is translated on-the-fly to 
+        the actual JavaScript code when the library is requestet).
+      </description>
+    </document-type>
+    
+    <document-type name="image"
+                   code="105"
+                   format="binary"
+                   has-width-and-height="yes"
+                   no-refs-to="*">
+      <description>
+        An image. The content is binary (the image data) and may be in any of the
+        following farmats: PNG, JPEG, GIF, TIFF (the Mumie administrator can add more
+        when the server is installed).
+      </description>
+    </document-type>
+    
+    <document-type name="applet"
+                   code="106"
+                   format="binary"
+                   has-qualified-name="yes"
+                   has-width-and-height="yes"
+                   is-recursive-component="yes"
+                   has-source="yes"
+                   refs-to="jar">
+      <description>
+        A Java-Applet. The content is binary; it is a Jar archive containing the
+        applet class file, perhaps class files needed by the applet, and supplementary
+        resources like property files.
+      </description>
+    </document-type>
+    
+    <document-type name="jar"
+                   code="107"
+                   format="binary"
+                   is-recursive-component="yes"
+                   refs-to="jar">
+      <description>
+        A Jar archive. The content is binary (the jar file).
+      </description>
+    </document-type>
+    
+    <document-type name="java_class"
+                   code="108"
+                   format="binary"
+                   no-refs-to="*">
+      <description>
+        A single java class. The content is the class file. Documents of this type
+        are used to implement correctors for problems.
+      </description>
+    </document-type>
+    
+    <document-type name="flash"
+                   code="109"
+                   format="binary"
+                   has-width-and-height="yes"
+                   is-recursive-component="yes"
+                   refs-to="flash, image, sound">
+      <description>
+        A Flash movie. The content is binary (the '*.fla' file).
+      </description>
+    </document-type>
+    
+    <document-type name="sound"
+                   code="110"
+                   format="binary"
+                   has-duration="yes"
+                   no-refs-to="*">
+      <description>
+        An audio document. The content is binary (the sound data) and may be in the formats MPEG
+        or WAF (the administrator can add more formats at build-time of the Mumie server).
+      </description>
+    </document-type>
+    
+    <document-type name="movie"
+                   code="111"
+                   format="binary"
+                   has-duration="yes"
+                   no-refs-to="*">
+      <description>
+        An video document. The content is binary (the video data).
+      </description>
+    </document-type>
+    
+    <document-type name="element"
+                   code="112"
+                   has-category="yes"
+                   has-source="yes"
+                   no-refs-to="course, course_section, worksheet, generic_summary, summary">
+      <description>
+        A mathematical content entity. There exist different kinds of elements, distinguished
+        by the 'category' metainfo. Examles are: 'theorem', 'definition', 'motivation'. Elements
+        are written in a special TeX dialect which is converted to XML by the mmtex tool. Thus,
+        the actual content is in XML, created from sources in TeX.
+      </description>
+    </document-type>
+    
+    <document-type name="subelement"
+                   code="113"
+                   has-category="yes"
+                   has-source="yes"
+                   no-refs-to="course, course_section, worksheet, generic_summary, summary">
+      <description>
+        A mathematical content sub-entity. Similar to 'element'. Different kinds of subelements
+        exist, distinguished by the 'category' metainfo. Examples are: 'visualization', 'remark',
+        'example'. Subelements are written in TeX and translated to XML by the mmtex tool.
+      </description>
+    </document-type>
+    
+    <document-type name="problem"
+                   code="114"
+                   has-category="yes"
+                   has-source="yes"
+                   no-refs-to="course, course_section, worksheet, generic_summary, summary">
+      <description>
+        A mathematical problem. This document type is similar to 'element'. There exist
+        three different kinds of problems, distinguished by the category metainfo: 'applet',
+        'mchoice', and 'traditional'. Problems of the first kind are edited in a Java
+        applet. Problems of the second kind contain multiple-choice questions. Problems of the
+        third kind are not edited online; rather, the user submitts a written solution to a
+        human corrector. Like elements, problems are written in TeX and translated to XML by
+        the 'mmtex' tool. 
+      </description>
+    </document-type>
+    
+    <document-type name="course"
+                   code="115"
+                   has-class="yes"
+                   has-summary="yes"
+                   has-members="yes"
+                   refs-to="course_section, worksheet">
+      <description>
+        A course. Represents a course as a document rather then a course as a organizational
+        unit (the latter is representet by the pseudo-document type 'class'). A course
+        consists of several course sections arranged in a net. The content is XML. Courses are
+        created by the CourseCreater, a GUI tool for that purpose.
+      </description>
+    </document-type>
+    
+    <document-type name="course_section"
+                   code="116"
+                   has-summary="yes"
+                   refs-to="element, generic_element, subelement, generic_subelement">
+      <description>
+        A course section. I.e, a sub-unit of a course. Consists of elements and subelements
+        arranged in a net. The content is XML. Course sections are created with the
+        CourseCreater (see 'course').
+      </description>
+    </document-type>
+    
+    <document-type name="worksheet"
+                   code="117"
+                   has-category="yes"
+                   has-summary="yes"
+                   has-timeframe="yes"
+                   refs-to="problem,generic_problem">
+      <description>
+        A worksheet. I.e., a collection of problems arranged in a net. Three different kinds
+        exist, distinguished by the category meta-information: 'homework', 'prelearn', and
+        'selftest'. The first describes a worksheet given as a homework to the students, the
+        second a prealerning worksheet, and the third a worksheet with which the students can
+        train and test themselves autonomously.
+      </description>
+    </document-type>
+    
+    <document-type name="summary"
+                   code="118"
+                   has-source="yes"
+                   no-refs-to="course, course_section, worksheet, generic_summary, summary">
+      <description>
+        A summary of a course, sourse section or worksheet. Written in TeX and translated to
+        XML by the 'mmtex' tool. 
+      </description>
+    </document-type>
+  
+    <document-type name="generic_page"
+                   code="201"
+                   is-generic-of="page"
+                   description="Generic counterpart of document type 'page'"/>
+  
+    <document-type name="generic_xsl_stxlesheet"
+                   code="202"
+                   is-generic-of="xsl_stylesheet"
+                   description="Generic counterpart of document type 'xsl_stylesheet'"/>
+  
+    <document-type name="generic_css_stxlesheet"
+                   code="203"
+                   is-generic-of="css_stylesheet"
+                   description="Generic counterpart of document type 'css_stylesheet'"/>
+  
+    <document-type name="generic_image"
+                   code="205"
+                   is-generic-of="image"
+                   description="Generic counterpart of document type 'image'"/>
+  
+    <document-type name="generic_sound"
+                   code="210"
+                   is-generic-of="sound"
+                   description="Generic counterpart of document type 'sound'"/>
+  
+    <document-type name="generic_movie"
+                   code="211"
+                   is-generic-of="movie"
+                   description="Generic counterpart of document type 'movie'"/>
+  
+    <document-type name="generic_element"
+                   code="212"
+                   is-generic-of="element"
+                   description="Generic counterpart of document type 'element'"/>
+  
+    <document-type name="generic_subelement"
+                   code="213"
+                   is-generic-of="subelement"
+                   description="Generic counterpart of document type 'subelement'"/>
+  
+    <document-type name="generic_problem"
+                   code="214"
+                   is-generic-of="problem"
+                   description="Generic counterpart of document type 'problem'"/>
+  
+    <document-type name="generic_summary"
+                   code="218"
+                   is-generic-of="summary"
+                   description="Generic counterpart of document type 'summary'"/>
+  
+    <pseudo-document-type name="section"
+                          code="301"
+                          description="A section. Similar to a directory on a computer."/>
+  
+    <pseudo-document-type name="theme"
+                          code="302"
+                          description="A theme."/>
+    
+    <pseudo-document-type name="language"
+                          code="303"
+                          description="A language."/>
+  
+    <pseudo-document-type name="user"
+                          code="304"
+                          description="A user."
+                          java-class="DefaultGeneralUser"/>
+  
+    <pseudo-document-type name="user_group"
+                          code="305"
+                          description="A user group"/>
+  
+    <pseudo-document-type name="semester"
+                          code="306"
+                          description="An semester."/>
+  
+    <pseudo-document-type name="class"
+                          code="307"
+                          java-class="DefaultELClass">
+      <description>
+        A course in the sense of an organizational unit. A class has lecturers, students
+        attending it, learning groups, and a semester it takes place in (see pseudo-document
+        types 'tutorial' and 'semester'). Does not represent the contents of teaching; this
+        is done by the document type 'course'.
+      </description>
+    </pseudo-document-type>
+  
+    <pseudo-document-type name="tutorial"
+                          code="308"
+                          description="A learning group of students of a class."/>
+  
+  </data-entity-types>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Additional reference data                                          -->
+  <!-- ====================================================================== -->
+
+  <refs-config>
+
+    <ref-config origin="worksheet" target="generic_problem" has-points="yes"/>
+
+    <ref-config origin="course" target="course_section" has-label="yes"/>
+
+    <ref-config origin="course_section" target="generic_element" has-label="yes"/>
+
+    <ref-config origin="course_section" target="generic_subelement" has-label="yes"/>
+
+    <ref-config origin="worksheet" target="generic_problem" has-label="yes"/>
+    
+  </refs-config>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Database tables                                                    -->
+  <!-- ====================================================================== -->
+
+  <db-tables>
+
+    <db-table name="media_types" description="The possible media types"/>
+
+    <db-table name="categories" description="The possible categories"/>
+
+    <db-table name="ref_types" description="The possible reference types"/>
+
+    <db-table name="user_group_members" description="Assigns users to groups"/>
+
+    <db-table name="user_group_members_detailed"
+              description="Contains variuos informations about user group members"/>
+
+    <db-table name="class_lecturers" description="Assigns lecturers to teaching classes"/>
+
+    <db-table name="tutorial_members" description="Assigns users to tutorials"/>
+
+    <db-table name="classes_and_courses"
+              description="Containa all classes and all (latest) courses"/>
+
+    <db-table name="problem_data_types" description="The possible problem data types"/>
+
+    <db-table name="problem_context" description="Contains variuos informations about problems"/>
+
+    <db-table name="assigned_problems"
+              description="View with data about problems referenced from worksheets"/>
+
+    <db-table name="data_entities"
+              description="View with common metainfos of all documents and pseudo-documents"/>
+
+    <db-table name="latest_data_entities">
+      <description>
+        View with common metainfos of all latest, non-deleted documents and pseudo-documents
+      </description>
+    </db-table>
+
+  </db-tables>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Database columns                                                   -->
+  <!-- ====================================================================== -->
+
+  <db-columns>
+
+    <db-column name="author" description="Id of an author"/>
+
+    <db-column name="category" description="Id of the category"/>
+
+    <db-column name="changelog" description="Changelog entry"/>
+
+    <db-column name="class" description="Id of a teaching class"/>
+
+    <db-column name="class_id" description="Id of a teaching class"/>
+
+    <db-column name="class_name" description="Name of an teaching class"/>
+
+    <db-column name="class_sync_id" description="Synchronization id of a teaching class"/>
+
+    <db-column name="code" description="Two- or three-letter code for a language"/>
+
+    <db-column name="contained_in" description="Id of the section containing this (pseudo-)document"/>
+
+    <db-column name="content" description="Content of this document"/>
+
+    <db-column name="content_length" description="Length of the content, in bytes"/>
+
+    <db-column name="content_type" description="Id of the media type of the content"/>
+
+    <db-column name="copyright" description="Copyright note"/>
+
+    <db-column name="corrector" description="Id of the corrector"/> 
+
+    <db-column name="created" description="Time of creation"/>
+
+    <db-column name="course_id" description="Id of a course"/>
+
+    <db-column name="course_name" description="Name of a course"/>
+
+    <db-column name="deleted" description="Whether this (pseudo-)document is deleted"/>
+
+    <db-column name="description" description="Description"/>
+
+    <db-column name="document" description="Id of a document"/>
+
+    <db-column name="duration" description="Duration in milliseconds"/> 
+
+    <db-column name="entity" description="Id of a document or pseudo-document"/>
+
+    <db-column name="email" description="E-mail address"/>
+
+    <db-column name="first_name" description="A person's first name"/>
+
+    <db-column name="from_doc" description="Origin of a reference"/>
+
+    <db-column name="generic_document" description="Id of a generic document"/>
+
+    <db-column name="height" description="Height in pixel"/> 
+
+    <db-column name="id" description="Id of the (pseudo-)document"/>
+
+    <db-column name="label" description="Label of a component"/>
+
+    <db-column name="language" description="Id of the language"/>
+
+    <db-column name="last_login" description="Time of last login"/>
+
+    <db-column name="last_modified" description="Time of last modification"/>
+
+    <db-column name="lecturer" description="Id of a lecturer"/>
+
+    <db-column name="lid" description="A local id"/>
+
+    <db-column name="login_name" description="Login name"/>
+
+    <db-column name="member" description="A member of a (pseudo-)document that can have members"/>
+
+    <db-column name="name" description="Name"/>
+
+    <db-column name="password" description="Password (encrypted)"/>
+
+    <db-column name="path" description="Path of a document or pseudo-document"/>
+
+    <db-column name="points" description="A problem's maximal points"/>
+
+    <db-column name="problem_category" description="Category of a problem"/>
+
+    <db-column name="problem_id" description="Id of a problem"/>
+
+    <db-column name="problem_label" description="Label of a problem"/>
+
+    <db-column name="problem_name" description="Name of a problem"/>
+
+    <db-column name="problem_ref_id" description="Id of a worksheet/generic-problem reference"/>
+
+    <db-column name="pure_name" description="Pure name"/>
+
+    <db-column name="qualified_name" description="Qualified name (Java)"/> 
+
+    <db-column name="ref" description="Id of a reference"/>
+
+    <db-column name="ref_id" description="Id of a reference"/>
+
+    <db-column name="ref_type" description="Id of a reference type"/>
+
+    <db-column name="result" description="Result of a user in a problem"/>
+
+    <db-column name="score" description="Score for a homework problem"/>
+
+    <db-column name="section_path" description="Path of a the section of a (pseudo-)document"/>
+
+    <db-column name="semester" description="Id of a semester"/>
+
+    <db-column name="state" description="Id of the state of a worksheet with respect to a user"/>
+
+    <db-column name="student_first_name" description="First name of a student"/>
+
+    <db-column name="student_id" description="Id of a student"/>
+
+    <db-column name="student_surname" description="Surname of a student"/>
+
+    <db-column name="subtype" description="A subtype (used with media types as minor type)"/>
+
+    <db-column name="summary" description="Id of a summary"/>
+
+    <db-column name="surname" description="A person's surname"/>
+
+    <db-column name="sync_home" description="Id of the sync home section of a user"/>
+
+    <db-column name="sync_id" description="A synchronization id"/>
+
+    <db-column name="the_user" key="USER" description="Id of a user"/>
+
+    <db-column name="theme" description="Id of the theme"/>
+
+    <db-column name="timeframe_start" description="Beginning of timeframe"/>
+
+    <db-column name="timeframe_end" description="End of timeframe"/>
+
+    <db-column name="tutor" description="Tutor of a tutorial"/>
+
+    <db-column name="tutor_first_name" description="First name of a tutor"/>
+
+    <db-column name="tutor_id" description="Id of a tutor"/>
+
+    <db-column name="tutor_surname" description="Surname of a tutor"/>
+
+    <db-column name="tutorial" description="Id of a tutorial"/>
+
+    <db-column name="tutorial_id" description="Id of a tutorial"/>
+
+    <db-column name="tutorial_name" description="Name of a tutorial"/>
+
+    <db-column name="tutorial_sync_id" description="Synchronization id of a tutorial"/>
+
+    <db-column name="type" description="A type (media major type or (pseudo-)document type)"/>
+
+    <db-column name="to_doc" description="Target of a reference"/>
+
+    <db-column name="user_group" description="Id of a user_group"/>
+
+    <db-column name="user_email" description="Email address of an user"/>
+
+    <db-column name="user_first_name" description="First name of a user"/>
+
+    <db-column name="user_id" description="Id of an user"/>
+
+    <db-column name="user_login_name" description="Login name of an user"/>
+
+    <db-column name="user_surname" description="Surname of an user"/>
+
+    <db-column name="user_sync_id" description="Sync id of a user"/>
+
+    <db-column name="vc_thread" description="Id of the vc thread"/>
+
+    <db-column name="version" description="Version"/>
+
+    <db-column name="worksheet_category" description="Category of a worksheet"/>
+
+    <db-column name="worksheet_id" description="A worksheets id"/>
+
+    <db-column name="worksheet_label" description="Label of a worksheet"/>
+
+    <db-column name="worksheet_name" description="Name of a worksheet"/>
+
+    <db-column name="width" description="Width in pixel"/>
+
+  </db-columns>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Categories                                                         -->
+  <!-- ====================================================================== -->
+
+  <categories>
+
+    <category name="motivation"
+              code="101"
+              description="A motivation"/>
+
+    <category name="definition"
+              code="201"
+              description="A definition"/>
+
+    <category name="theorem"
+              code="202"
+              description="A theorem"/>
+
+    <category name="application"
+              code="203"
+              description="An application"/>
+
+    <category name="algorithm"
+              code="204"
+              description="An algorithm"/>
+
+    <category name="lemma"
+              code="205"
+              description="A lemma"/>
+
+    <category name="proof"
+              code="301"
+              description="A proof"/>
+
+    <category name="deduction"
+              code="302"
+              description="A deduction"/>
+
+    <category name="remark"
+              code="303"
+              description="A remark"/>
+
+    <category name="example"
+              code="304"
+              description="An example"/>
+
+    <category name="visualization"
+              code="305"
+              description="A visualization"/>
+
+    <category name="history"
+              code="306"
+              description="Historical information"/>
+
+    <category name="mchoice"
+              code="401"
+              description="A problem consisting of multiple choice questions"/>
+
+    <category name="applet"
+              code="402"
+              description="A problem that is to be solved with an applet"/>
+
+    <category name="traditional"
+              code="403"
+              description="A problem without corrector"/>
+
+    <category name="pretest"
+              code="501"
+              description="A pretest worksheet"/>
+
+    <category name="prelearn"
+              code="502"
+              description="A prelearning worksheet"/>
+
+    <category name="homework"
+              code="503"
+              description="A homework worksheet"/>
+
+    <category name="selftest"
+              code="504"
+              description="A selftest worksheet"/>
+
+    <category name="corrector"
+              code="601"
+              description="A corrector for problems"/>
+
+    <category name="corrector_inner_class"
+              code="602"
+              description="Inner class of a corrector for problems"/>
+
+  </categories>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Media types                                                    -->
+  <!-- ====================================================================== -->
+
+  <media-types>
+
+    <media-type type="text"
+                subtype="plain"
+                code="101"
+                suffix="txt"
+                description="A plain text document"/>
+
+    <media-type type="text"
+                subtype="xml"
+                code="102"
+                description="An XML document"/>
+    
+    <media-type type="text"
+                subtype="html"
+                code="103"
+                description="A HTML document"/>
+
+    <media-type type="text"
+                subtype="css"
+                code="104"
+                description="A CSS stylesheet"/>
+
+    <media-type type="text"
+                subtype="tex"
+                code="105"
+                description="A TeX document (TeX, LaTeX, MmTeX, ...)"/>
+
+    <media-type type="text"
+                subtype="java"
+                code="106"
+                description="A Java source document"/>
+
+    <media-type type="image"
+                subtype="png"
+                code="201"
+                description="A PNG image"/>
+
+    <media-type type="image"
+                subtype="gif"
+                code="202"
+                description="A GIF image"/>
+
+    <media-type type="image"
+                subtype="jpeg"
+                suffix="jpg"
+                code="203"
+                description="A JPEG image"/>
+
+    <media-type type="application"
+                subtype="x-javascript"
+                code="301"
+                suffix="js"
+                description="JavaScript"/>
+    
+    <media-type type="application"
+                subtype="zip"
+                code="302"
+                description="A zip archive"/>
+
+    <media-type type="application"
+                subtype="x-java-vm"
+                code="303"
+                suffix="class"
+                description="A Java class"/>
+
+    <media-type type="application"
+                subtype="x-java-archive"
+                code="304"
+                suffix="jar"
+                description="A jar archive"/>
+
+    <media-type type="application"
+                subtype="x-shockwave-flash"
+                code="305"
+                suffix="swf"
+                description="A SWF Flash document"/>
+
+    <media-type type="audio"
+                subtype="mpeg"
+                suffix="mpg"
+                code="401"
+                description="An MPEG audio document"/>
+
+    <media-type type="audio"
+                subtype="wav"
+                code="402"
+                description="A WAV audio document"/>
+    
+  </media-types>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Reference types                                                    -->
+  <!-- ====================================================================== -->
+
+  <reference-types>
+
+    <reference-type name="component"
+                    code="101"
+                    description="Used as a component"/>
+
+    <reference-type name="link"
+                    code="102"
+                    description="Referenced as a link"/>
+
+  </reference-types>
+
+  <!-- ====================================================================== -->
+  <!-- h1: Problem data types                                                 -->
+  <!-- ====================================================================== -->
+
+  <problem-data-types>
+
+    <problem-data-type name="common_data"
+                       code="101"
+                       description="Problem data common to all users"/>
+
+    <problem-data-type name="personalized_data"
+                       code="102"
+                       description="User-specific problem data"/>
+
+    <problem-data-type name="answers"
+                       code="103"
+                       description="Answers to a problem"/>
+
+    <problem-data-type name="correction"
+                       code="104"
+                       description="Correction of the answers"/>
+    
+  </problem-data-types>
+  
+</declarations>

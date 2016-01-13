@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   $Id: pge_admin_home_de.content.xml,v 1.10 2009/03/05 16:14:15 rassy Exp $
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+
+  <head>
+    <title>MUMIE Administrator-Seite</title>
+    <mmx:css-stylesheet/>
+  </head>
+
+  <body>
+
+    <mmx:top-bar checked="admin"/>
+
+    <div class="main-bounded-width">
+
+    <h1>Administration</h1>
+
+    <p>
+      Von hier aus k&#246;nnen Sie Einstellungen und Daten &#228;ndern und Informationen
+      &#252;ber den Status des Serves abfragen. Die folgenden Links f&#252;hren Sie zu den
+      einzelnen Funktionalit&#228;ten.
+    </p>
+    
+    <table class="list">
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/admin/status/service/overview">Service Status &#220;bersicht</a></p>
+        </td>
+        <td>
+          <p>Liste aller Service-Klassen mit Status-Informationen</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/admin/status/sessions/overview">Aktive Sitzungen</a></p>
+        </td>
+        <td>
+          <p>Liste aller aktiven Sitzungen mit Status-Informationen</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <p><a mmx:href="lid=pge-user-management">Benutzerverwaltung</a></p>
+        </td>
+        <td>
+          <p>Benutzerverwaltung</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/admin/db-content">Db-Inhalt</a></p>
+        </td>
+        <td>
+          <p>&#220;bersicht der Db-Inhalte</p>
+        </td>
+      </tr>
+      <tr>
+        <td class="list-label">
+          <p><a href="%{prefix}/protected/admin/clear-cache">Cache l&#246;schen</a></p>
+        </td>
+        <td>
+          <p>L&#246;scht den Server-Cache</p>
+        </td>
+      </tr>
+    </table>
+
+    <mmx:footer/>
+    </div>
+
+  </body>
+
+</html>
+

@@ -1,0 +1,192 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Data-Sheet-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: data_sheet_xml.tex,v 1.4 2006/08/11 16:18:22 rassy Exp $}
+
+  Das "Data Sheet XML" ist ein generisches XML-Format zur Beschreibung von
+  Konfigurationsdaten u.ä. mit einer einfachen hierarchischen Struktur. Es
+  soll insbesondere zur Versorgung der Trainings-Applets mit Eingabedaten
+  verwendet werden.
+
+\tableofcontents
+
+\section{Grundsätzliches}
+
+\begin{enumerate}
+  
+\item Namespace: \val{http://www.mumie.net/xml-namespace/data-sheet}
+  
+\item Root-Element: \element{data_sheet}
+  
+\item Darin: Beliebig viele \element{unit}- und/oder \element{data}-Elemente.
+  
+\item In einem \element{unit}-Element: Beliebig viele \element{unit}- und/oder
+  \element{data}-Elemente.
+  
+\item Die \element{data}-Elemente dienen zur Aufnahme der eigentlichen Daten.
+  Jedes solche Element entspricht einem Datum. Der Inhalt eines
+  \element{data}-Elements darf beliebiges XML sein, dass jedoch entweder nicht
+  zum Data-Sheet-Namespace (http://www.mumie.net/xml-namespace/data-sheet)
+  gehört oder ein reiner Text-Knoten ist.
+  
+\item Die \element{unit}-Elemente dienen zur Gliederung und Strukturierung der
+  Daten. Sie können beliebig geschachtelt werden. Dadurch lässt sich eine
+  baumartige Anordnung der Daten erreichen.
+  
+\item \label{name} Jedes \element{unit}- und \element{data}-Element hat ein
+  \attrib{name}-Attribut und damit einen Namen. Der Name darf aus Buchstaben,
+  Zahlen, und den Zeichen "-", "_", "." bestehen und muss mit einem Buchstaben
+  beginnen. Unter den Kindelementen eines \element{unit}-Elements muss der Name
+  eindeutig sein.
+
+\end{enumerate}
+
+
+
+\section{XML-Elemente}
+
+\begin{preformatted}%
+<data_sheet>
+  <!-- Content: unit* data* -->
+</data_sheet>
+\end{preformatted}
+
+\begin{preformatted}%
+<unit
+  name="NAME">
+  <!-- Content: unit* data* -->
+</unit>
+\end{preformatted}
+
+\begin{preformatted}%
+<data
+  name="NAME">
+  <!-- PCDATA ANY_EXCEPT_DS_ELEMENT* -->
+</data>
+\end{preformatted}
+
+Abkürzungen/Platzhalter:
+
+\begin{description}[code-doc]
+  
+\item[NAME] Name eines unit- oder data-Elements. S. \ref{name}.
+  
+\item[PCDATA] Text
+  
+\item[ANY_EXCEPT_DS_ELEMENT] Element ausserhalb des Data-Sheet-Namespaces.
+
+\end{description}
+
+
+
+\section{Beispiel}
+
+\begin{preformatted}[code]%
+<data_sheet xmlns="http://www.mumie.net/xml-namespace/data-sheet">
+  <unit name="matrix_pair">
+    <data name="left_matrix">
+      <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+        <!-- MathML-Code  -->
+      </mtable>
+    </data>
+    <data name="right_matrix">
+      <mtable xmlns="http://www.w3.org/1998/Math/MathML">
+        <!-- MathML-Code -->
+      </mtable>
+    </data>
+  </unit>
+  <data name="vectors"/>
+    <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+      <!-- MathML-Code -->
+    </mrow>
+    <mrow xmlns="http://www.w3.org/1998/Math/MathML">
+      <!-- MathML-Code -->
+    </mrow>
+  </data>
+</data_sheet>
+\end{preformatted}
+
+
+
+\section{Adressierung}\label{adressierung}
+
+Jedes \element{data}-Element lässt sich durch einen XPath-artigen String
+adressieren. Dieser wird aus den Namen der Eltern-Units und seinem eigenen
+Namen, mit "/"-Zeichen getrennt, gebildet:
+
+\begin{preformatted}%
+  \var{UNIT_NAME}/\var{KIND_UNIT_NAME}/.../\var{DATA_NAME}
+\end{preformatted}
+
+Z.B. hätte die zweite Matrix in obigen Beispiel die Adresse
+
+\begin{preformatted}%
+  matrix_pair/right_matrix
+\end{preformatted}
+
+Statt "Adresse" wird auch (häufiger) die Bezeichnung "Pfad" ("path")
+verwendet.
+
+
+
+\section{Extraction-XML}\label{extraction_xml}
+
+\begin{enumerate}
+  
+\item Das sogenannnte Extraction-XML bietet die Möglichkeit, Knoten in
+  beliebigen XML-Dokumenten als Data-Sheet-Daten zu markieren. Diese können
+  dann extrahiert und zu einem Data-Sheet zusammengefasst werden.
+  
+\item Namespace des Extraction-XMLs:
+  \val{http://www.mumie.net/xml-namespace/data-sheet/extract}
+
+  Üblicher Prefix: \val{dsx}
+
+  Extraction-XML-Elemente werden immer mit Prefix geschrieben.
+  
+\item Das Extraction-XML umfasst zwei Elemente: \element{dsx:data} und
+  \element{dsx:datalabel}.
+  
+\item Das \element{dsx:data}-Element zeichnet seine Nachfahren als den Inhalt
+  eines \element{data}-Elements des Data-Sheets aus. Es hat ein oder zwei
+  Attribute:
+
+  \begin{enumerate}
+    
+  \item \attrib{path} -- \label{path} Der Pfad des \element{data}-Elements im
+    Data-Sheet.
+    
+  \item \attrib{clickable} -- \label{clickable} Optional. Mögliche Werte:
+    "yes|no". Gibt an, ob die Daten in der gerenderten Form des Quelldokuments
+    anklickbar sein sollen. Was beim Klick passiert, ist Sache der
+    Transformation, die das Quelldokument nach (X)HTML (oder ein anderers
+    Endformat) übersetzt.
+
+  \end{enumerate}
+  
+\item Das \element{dsx:datalabel}-Element zeichnet sein Elternelement als den
+  Inhalt eines \element{data}-Elements des Data-Sheets aus. Leer, ein oder zwei
+  Attribute:
+
+  \begin{enumerate}
+    
+  \item \attrib{path} -- S. \ref{path}.
+    
+  \item \attrib{clickable} -- S. \ref{clickable}.
+
+  \end{enumerate}
+
+\end{enumerate}
+
+-- ENDE DER DATEI --
+
+\end{document}

@@ -1,0 +1,738 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2010 Technische Universitaet Berlin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/* 
+   Author: Tilman Rassy <rassy@math.tu-berlin.de>
+  
+   $Id: mumie_doc.css,v 1.2 2007/07/01 23:57:25 rassy Exp $ 
+*/
+
+/* -------------------------------------------------------------------------------- */
+/*                                  General                                         */
+/* -------------------------------------------------------------------------------- */
+
+html
+{ 
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  padding: 0px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
+}
+
+body
+{
+  max-width: 55em;
+  padding: 0px 0px 0px 0px;
+  margin: 1em 1em 1em 1em;
+  text-align: justify;
+}
+
+.inline
+{
+  display:inline;
+}
+
+*[title]
+{
+  cursor: default;
+}
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                  Simple Markup                                   */
+/* -------------------------------------------------------------------------------- */
+
+em, *.emph
+  { 
+    font-weight: normal; 
+    font-style: italic; 
+  }
+
+em.deprecated
+  {
+    font-weight: normal; 
+    font-style: normal; 
+    background-color: #e2e2e2;
+    padding: 4px 4px 4px 4px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: #f4a460;
+  }
+
+em.important
+  {
+    padding: 2px 4px 2px 4px;
+    background-color: #ffff00;
+  }
+
+em.not-impl
+  {
+    background-color: #ffff00;
+  }
+
+code, *.code
+  { 
+    font-family: monospace;
+    font-weight: inherit; 
+    font-style: normal; 
+  }
+
+kbd, *.keyb
+  { 
+    font-family: monospace;
+    font-weight: normal; 
+    font-style: normal; 
+    color: #ff0000;
+  }
+
+var, *.var
+  { 
+    font-family: monospace;
+    font-style: normal;
+    font-weight: bold;
+    color: #228b22;
+  }
+
+var.weak, var.alt
+  { 
+    font-style: italic;
+    font-family: inherit;
+    color: #228b22;
+    font-weight: inherit;
+  }
+
+*.plhld
+  { 
+    font-family: monospace;
+    font-style: normal; 
+    color: #c71585;
+  }
+
+*.file
+  {
+    color: #00008c;
+  }
+
+code.xml-element, code.xml-attrib, code.xml-value, code.value, code.param
+  { 
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+  }
+
+code.xml-element
+  {
+    color: #800080;
+  }
+
+code.xml-attrib, code.param
+  { 
+    color: #8B0000;
+  }
+
+code.xml-value, code.value
+  {
+    color: #104e8b; 
+  }
+
+code.db-table, code.db-column
+  { 
+    font-family: Helvetica, sans-serif;
+    font-weight: bolder;
+  }
+
+code.db-table
+  {
+    color: #483d8b;
+  }
+
+code.db-column
+  { 
+    color: #8b2252;
+  }
+
+code.sql
+  { 
+    color: #8b2252;
+  }
+
+code.tex-cmd, code.tex-env
+  {
+    font-family: Helvetica, sans-serif;
+    font-weight: bolder;
+    color: #cd5c5c;
+  }
+
+pre *.meta, code *.meta
+  {
+    color: #B35745;
+  }
+
+pre code.xml-element, pre code.xml-attrib, pre code.xml-value
+  { 
+    font-family: monospace;
+    font-weight: bolder;
+  }
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                   Structuring                                    */
+/* -------------------------------------------------------------------------------- */
+
+p
+{ 
+  margin: 10px 0px 10px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+div.title
+{  
+  margin: 25px 0px 40px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+div.authors
+{
+  margin: 8px 0px 8px 0px;
+}
+
+div.author
+{
+  margin: 2px 0px 2px 0px;
+  font-weight: bold;
+}
+
+div.version
+{ 
+  margin: 8px 0px 8px 0px;
+  font-family: monospace;
+  font-weight: bold;
+}
+
+div.section
+{
+  margin: 25px 0px 25px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+div.subsection
+{  
+  margin: 20px 0px 20px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                    Headlines                                     */
+/* -------------------------------------------------------------------------------- */
+
+h1
+{ 
+  font-weight: bold; 
+  font-size: 22pt;
+  margin: 5px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+h1.sub
+{ 
+  font-weight: bold; 
+  font-size: 14pt;
+  margin: 10px 0px 5px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+h2
+{ 
+  font-weight: bold; 
+  font-size: 18pt;
+  margin: 10px 0px 10px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+h3
+{ 
+  font-weight: bold; 
+  font-size: 14pt;
+  margin: 5px 0px 5px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+span.section-no
+  { 
+    font-weight: bold;
+    font-size: 18pt;
+    margin-top: 0x;
+    margin-bottom: 0px;  
+    margin-left: 0px;
+    margin-right: 0.2em;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+span.subsection-no
+  { 
+    font-weight: bold;
+    font-size: 14pt;
+    margin-top: 0x;
+    margin-bottom: 0px;  
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+span.subsubsection-no
+  { 
+    font-weight: bold;
+    font-size: 12pt;
+    margin-top: 0x;
+    margin-bottom: 0px;  
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                    Lists                                         */
+/* -------------------------------------------------------------------------------- */
+
+dl
+{
+  margin: 0px 0px 0px 0px;
+}
+
+dt
+{
+  font-weight: bold;
+  margin: 4px 0px 2px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+dd
+{
+  margin: 0px 0px 0px 1em;
+  padding: 0px 0px 0px 0px;
+}
+
+dd > p:first-child
+{
+  margin-top: 4px;
+}
+
+dl.code-doc > dt
+  {
+    font-weight: normal;
+    font-family: monospace;
+  }
+
+table.list
+  {
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin: 5px 1em 5px 1em;
+  }
+
+table.list table.list
+  {
+    margin-top: 2px;
+    margin-bottom: 2px;
+  }
+
+
+table.list > tr > td
+  {
+    vertical-align: top;
+  }
+
+table.list > tr > td.label
+  {
+    vertical-align: top;
+    padding-right: 0.25em;
+  }
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                    Boxes                                         */
+/* -------------------------------------------------------------------------------- */
+
+*[class="box frame"]
+{
+  border-style: solid;
+  border-width: 1px;
+  padding: 0px 2px 0px 2px;
+}
+
+*[class="box important"]
+{
+  padding: 2px 4px 2px 4px;
+  margin: 0px 1em 0px 1em;
+  background-color: #ffff00;
+}
+
+*[class="box remark"]
+{
+  border-style: solid;
+  border-width: 1px;
+  padding: 2px 16px 2px 16px;
+  background-color: #eeeeee;
+}
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                    Tables                                        */
+/* -------------------------------------------------------------------------------- */
+
+table.genuine
+{ 
+  border-collapse: collapse;
+  margin: 4px 1em 4px 1em;
+}
+
+table.genuine thead
+{
+  background-color: #EAEAEA;
+  font-weight: bold;
+  }
+
+table.genuine td
+{
+  text-align: attr(align);
+  vertical-align: attr(valign);
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-style: solid;
+  border-color: #949494;
+  border-width: 1px;
+}
+
+table.genuine tfoot
+  { 
+    font-size: 10pt;
+  }
+
+table.plain
+{ 
+}
+
+table.plain thead
+  {
+    font-weight: bold;
+  }
+
+table.plain td
+{
+  background-color: white;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  border-style: none;
+}
+
+table.plain tfoot
+  { 
+    font-size: 10pt;
+  }
+
+/* -------------------------------------------------------------------------------- */
+/*                                      Links                                       */
+/* -------------------------------------------------------------------------------- */
+
+a:link, a:visited
+  { 
+    color: #0000ff;
+  }
+
+a:hover
+  { 
+    color: #00008b;
+    background-color: #c1ffc1;
+  }
+
+a:active
+  { 
+    color: #ff0000;
+    background-color: #9aff9a;
+  }
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                Table of contents                                 */
+/* -------------------------------------------------------------------------------- */
+
+div.toc
+{
+  margin: 30px 0px 30px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+div.toc h2
+{
+  font-size: 20pt;
+  margin: 10px 0px 10px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+div.toc > ul
+{ 
+  list-style-type: none;
+  margin: 0px 0px 0px 1em;
+  padding: 0px 0px 0px 0px;
+}
+
+
+div.toc li.section
+{
+  margin: 4px 0px 4px 0px;
+}
+
+div.toc li.subsection
+{
+  margin: 4px 0px 4px 0px;
+}
+
+div.toc li.subsubsection
+{
+}
+
+div.toc li.section ul, div.toc li.subsection ul, div.toc li.subsubsection ul
+{ 
+  list-style-type: none;
+}
+
+div.toc li.section span.number, div.toc li.subsection span.number, div.toc li.subsubsection span.number
+{
+  margin-right: 0.1em;
+}
+
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                         Preformatted and verbatim text                           */
+/* -------------------------------------------------------------------------------- */
+
+pre
+{
+  margin: 10px 0px 10px 0px;
+  padding: 0px 0px 0px 0px;
+}
+
+pre[class="block code"]
+{
+  background-color: #fff8ea;
+  margin: 10px 1em 10px 1em;
+  padding: 10px 10px 10px 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #696a80;
+}
+
+span.verb, span.pref
+{
+  font-family: monospace;
+}
+
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                         Images                                                   */
+/* -------------------------------------------------------------------------------- */
+
+img
+{
+  margin: 8px 1em 8px 1em;
+}
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                       Math                                       */
+/* -------------------------------------------------------------------------------- */
+
+table.equation
+{
+ border-style: none;
+ border-spacing: 0px;
+}
+
+table.equation td.all
+{
+  width: 800px;
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+table.equation td.left-margin
+{
+  width: 50px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+table.equation td.right-margin
+{
+  width: 50px;
+  text-align: right;
+  vertical-align: middle;
+}
+
+
+
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                       Math                                       */
+/* -------------------------------------------------------------------------------- */
+
+/* A slightly nicer vector arrow */
+mo[class="vector-arrow"]
+{
+  font-family: symbol;
+  font-size: 12pt;
+}
+
+mi[class="vector underline"]
+{
+  text-decoration: underline;
+}
+
+mrow[class="vector underline"]
+{
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+mtable[class="normal script"]
+{
+  font-size: 10pt;
+}
+
+mtable[class="normal script"] > mtr > mtd
+{
+  margin: 0pt 0pt 0pt 0pt;
+  padding: 0pt 0pt 0pt 0pt;
+}
+
+
+/* -------------------------------------------------------------------------------- */
+/*                                       Row|Column-vector                          */
+/* -------------------------------------------------------------------------------- */
+
+mtable[class="row-vector"] mtd
+{
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+
+mtable[class="column-vector"] mtd
+{
+  margin: 0px 0px 0px 0px;
+  padding: 0px 0px 0px 0px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* -------------------------------------------------------------------------------- */
+/*                                       Highlight in Math                         */
+/* -------------------------------------------------------------------------------- */
+
+*[class='Mark-0-Style']
+{ 
+  color: red;
+  font-weight: bold;
+ }
+
+*[class='Mark-1-Style']
+{ 
+  color: blue;
+  font-weight: bold;
+ }
+
+*[class='Mark-2-Style']
+{ 
+  color: green;
+  font-weight: bold;
+ }
+
+*[class='Mark-3-Style']
+{ 
+  color: #FF9900;
+  font-weight: bold;
+ }
+
+
+*[class='Mark-4-Style']
+{ 
+  color: fuchsia;
+  font-weight: bold;
+ }
+
+*[class='Mark-5-Style']
+{ 
+  color: purple;
+  font-weight: bold;
+ }
+
+*[class='Mark-6-Style']
+{ 
+  background-color: red;
+  font-weight: bold;
+ }
+
+*[class='Mark-7-Style']
+{ 
+  background-color: blue;
+  font-weight: bold;
+ }
+
+*[class='Mark-8-Style']
+{ 
+  background-color: green;
+  font-weight: bold;
+ }
+
+*[class='Mark-9-Style']
+{ 
+  background-color: #FF9900;
+  font-weight: bold;
+ }
+

@@ -1,0 +1,308 @@
+\documentclass[lang=de]{generic}
+
+\begin{document}
+
+\title{Selbesteinschätzungstest-Test}
+\subtitle{Anleitung für Tester}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: anleitung.tex,v 1.3 2008/04/03 12:18:44 rassy Exp $}
+
+\tableofcontents
+
+\section{Allgemeines}
+
+In diesem Test werden die Funktionalitäten der Selbsteinschätzungstests
+geprüft. Der Test sollte nach jeder nicht-trivialen Änderung an Codestellen
+durchgeführt werden, die diese Funktionalitäten betreffen.
+
+Geprüft werden:
+
+\begin{itemize}
+\item Das Bearbeiten von Aufgaben im Zustand \code{work} des
+  Selbsteinschätzungstests
+\item Das Umschalten vom Zustand \code{work} in den Zustand \code{feedback}
+\item Die Adaptivität der Zusammenfassung (Abhängigkeit vom Zustand und der
+  erreichten Punktzahl)
+\item Die Nicht-Bearbeitbarkeit und Lösungsanzeige der Aufgaben im Zustand
+  \code{feedback}
+\item Das Umschalten vom Zustand \code{feedback} in den Zustand \code{work}
+\end{itemize}
+
+\section{Testumgebung}
+
+Der Test wird mit Hilfe eines Mumie-Servers ausgeführt, der durch die
+automatischen Tests entstanden ist. Ein solcher Server enthält einen Kurs
+"Selftest" mit einem Aufgabenblatt der Kategorie \code{selftest}
+(Selbsteinschätzungstest). Es ist das einzige Aufgabenblatt des Kurses. Dieses
+Aufgabenblatt wird im folgenden das \emph{Testblatt} genannt. Ferner enthält
+der Server drei studentische Benutzer, die bereits Aufgaben des Testblatts
+gelöst haben. Sie werden im folgenden als \emph{Student 1} bis \emph{3}
+bezeichnet. Ihre Login-Namen sind \code{student1}, \code{student2} und
+\code{student3}. Ihre erreichten Punktzahlen sind 12 bzw. 6.3 bzw. 2.8. Die
+maximal erreichbare Punktzahl ist 12. Anfänglich befindet sich das Testblatt
+für alle drei Benutzer im Zustand \code{work} (bearbeitbar).
+
+Der Test gliedert sich in drei Teile:
+
+\begin{itemize}
+\item Teil I: Testzeitpunkt liegt vor Beginn des Bearbeitungszeitraums. Hier
+  soll nur getestet werden, ob das System richtig reagiert, wenn ein Student
+  auf ein Aufgabenblatt oder eine Aufgabe zuzugreifen versucht.
+\item Teil II: Testzeitpunkt liegt innerhalb des Bearbeitungszeitraums
+\item Teil III: Testzeitpunkt liegt nach Ende des Bearbeitungszeitraums
+\end{itemize}
+
+Bei der Durchführung des Tests muss der Bearbeitungszeitraum des Testblatts
+entspechend angepasst werden.
+
+
+\section{Durchführung Teil I}
+
+
+\subsection{Versuch als Student das Testblatt aufzurufen}
+
+Als Student sind Aufgabenblätter und Aufgaben vor Beginn des
+Bearbeitungszeitraums nicht durch Links zu erreichen. Daher folgendermassen
+vorgehen:
+
+\begin{itemize}
+\item Als Administrator einloggen
+\item Das Testblatt aufrufen
+\item Rechtsklick im rechten Frame, dann \emph{This Frame} > \emph{View Frame Info}
+\item Die URL steht unter \emph{Address}. Diese URL notieren (z.B. mit Maus
+  selektieren und in Editor übertragen).
+\item Ausloggen und als einer der Benutzer Student 1 bis 3 einloggen 
+\item Notierte URL aufrufen
+\end{itemize}
+
+Es sollte eine Seite mit folgendem Text angezeigt werden:
+
+\begin{block}
+  Vor Bearbeitungszeitraum
+
+  Der Bearbeitungszeitraum dieses Aufgabenblatts hat noch nicht begonnen.
+  Das Aufgabenblatt ist daher noch nicht freigegeben.
+\end{block}
+
+\subsection{Versuch als Student eine Aufgabe aufzurufen}
+
+In gleicher Weise eine Aufgabe aufrufen. Es sollte (als Student) eine Seite mit
+folgendem Text angezeigt werden:
+
+\begin{block}
+  Vor Bearbeitungszeitraum
+
+  Der Bearbeitungszeitraum des Aufgabenblatts, zu dem diese Aufgabe
+  gehört, hat noch nicht begonnen. Die Aufgabe ist daher noch nicht
+  freigegeben.
+\end{block}
+
+
+\section{Durchführung Teil II}
+
+Nacheinander für Student 1 bis 3 die folgenden Schritte durchführen.
+
+\subsection{Zusammenfassung im Zustand "work"}\label{zus_work}
+
+Einloggen, zum Testblatt navigieren, Zusammenfassung aufrufen. Oben sollte
+
+\begin{block}
+  \floatright{bearbeitbar}
+  Bearbeitungszeitraum: \var{von} - \var{bis} 
+\end{block}
+
+stehen, wobei \var{von} und \var{bis} Anfangs- und Endzeitpunkt des
+Bearbeitungszeitraums darstellen, und darunter folgender Text:
+
+\begin{block}
+  Zustand des Arbeitsblatts = work
+
+  Während des Bearbeitungszeitraums
+\end{block}
+
+
+\subsection{Auswertung}
+
+Unten auf den Button \emph{Auswertung} klicken. Es erscheint ein Dialogfenster,
+in dem der Benutzer gefragt wird, ob die Auswertung tatsächlich durchgeführt
+werden soll. Dieses Dialogfenster bestätigen. Jetzt sollte oben
+
+\begin{block}
+  \floatright{feedback}
+  Bearbeitungszeitraum: \var{von} - \var{bis} 
+\end{block}
+
+stehen. Für \var{von} und \var{bis} s. \ref{zus_work}. Wenn nicht, kann dies am
+Browser-Cache liegen. Browser-Cache löschen oder Seite mit \emph{Shift Reload}
+neu laden.
+
+
+\subsection{Zusammenfassung im Zustand "feedback"}
+
+Der Text der Zusammenfassung sollte wie folgt aussehen:
+
+\begin{block}
+  Zustand des Arbeitsblatts = work
+
+  \var{Benutzerabhängig}
+
+  Während des Bearbeitungszeitraums
+\end{block}
+
+wobei \var{Benutzerabhängig} für einen vom Benutzer (genauer dessen Punktzahl)
+abhängigen Teil steht. Er sollte für die jeweiligen Benutzer wie folgt lauten:
+
+Für Student 1:
+
+\begin{block}
+  (A) Punktzahl zwischen 10.1 und maximaler Punktzahl
+
+  (B) Punktzahl zwischen 10.1 und maximaler Punktzahl
+\end{block}
+
+Für Student 2:
+
+\begin{block}
+  (A) Punktzahl zwischen 6.1 und 10
+
+  (B) Punktzahl zwischen 6.1 und 10
+\end{block}
+
+Für Student 3:
+
+\begin{block}
+  (A) Punktzahl zwischen 0 und 6
+
+  (B) Punktzahl zwischen 0 und 6
+\end{block}
+
+
+\subsection{Aufgaben im Zustand "feedback"}
+
+Die beiden Aufgaben des Testblatts aufrufen. Verifizieren, dass sich die
+Aufgaben nicht bearbeiten lassen, die Lösung aber angezeigt werden kann.
+
+\subsection{Neue Daten}
+
+Zum Testblatt (Zusammenfassung) zurücknavigieren.
+Unten auf den Button \emph{Neu} klicken. Es erscheint ein Dialogfenster,
+in dem der Benutzer gefragt wird, ob die Auswertung tatsächlich gelöscht
+werden soll. Dieses Dialogfenster bestätigen. Jetzt sollte oben wieder
+
+\begin{block}
+  \floatright{bearbeitbar}
+  Bearbeitungszeitraum: \var{von} - \var{bis} 
+\end{block}
+
+stehen. Wenn nicht, kann dies am Browser-Cache liegen. Browser-Cache löschen
+oder Seite mit \emph{Shift Reload} neu laden.
+
+
+\subsection{Aufgaben im Zustand "work"}
+
+Die beiden Aufgaben des Testblatts aufrufen. Verifizieren, dass sich die
+Aufgaben bearbeiten und Anworten speichern lassen. Für mindestens einen
+Benutzer den Vektor $a$ aus Aufgabe 2 merken (s. \ref{neue_zufallszahlen}).
+
+
+\subsection{Neue Zufallszahlen}\label{neue_zufallszahlen}
+
+Nur für den Benutzer, für den der Vektor $a$ aus Aufgabe 2 notiert wurde: Zum
+Testblatt (Zusammenfassung) zurücknavigieren, Zustand zu \code{feedback} und
+danach gleich wieder zu \code{work} ändern, wieder zu Aufgabe 2
+navigieren. Prüfen, ob der Vektor $a$ jetzt andere Werte hat.
+
+
+\subsection{Vorbereitung für Teil III}
+
+Als Vorbereitung für Teil III: Als Student 1 in Zustand \code{feedbak}
+wechseln.
+
+
+\section{Durchführung Teil III}
+
+Als Student 1 und 2 die folgenden Schritte durchführen:
+
+\subsection{Zusammenfassung}
+
+Einloggen, zum Testblatt navigieren, Zusammenfassung aufrufen. Oben sollte
+
+\begin{block}
+  \floatright{nicht mehr bearbeitbar}
+  Bearbeitungszeitraum: \var{von} - \var{bis} 
+\end{block}
+
+stehen. Für \var{von} und \var{bis} s. \ref{zus_work}. Der Text darunter sollte
+lauten:
+
+\begin{block}
+  Zustand des Arbeitsblatts = feedback
+
+  Nach dem Bearbeitungszeitraum
+\end{block}
+
+
+\subsection{Aufgaben}
+
+Die beiden Aufgaben des Testblatts aufrufen. Verifizieren, dass sich die
+Aufgaben nicht bearbeiten lassen, die Lösung aber angezeigt werden kann.
+
+
+
+\section{Organisatorisches}
+
+Alle Fehler sollen in unser Bug-Tracking-System eingetragen werden. URL:
+
+\begin{preformatted}%
+  \link{http://www3.math.tu-berlin.de/rt}{www3.math.tu-berlin.de/rt}
+\end{preformatted}
+
+Dabei bitte folgendes beachten:
+
+\begin{itemize}
+\item Fehler, die bereits gemeldet wurden und noch nicht behoben sind, nicht
+  noch einmal melden. Falls sich durch diesem Test neue Erkenntnisse ergeben,
+  diese bei dem alten Bug eintragen (als Comment oder Reply).
+\item Korrekte Kategorie (Queue) angeben: Startet das Applet nicht oder meldet
+  es einen Fehler: \emph{mathlet-factory}; ist etwas inhaltlich falsch (Tippfehler
+  usw.): \emph{content}; sonst: \emph{japs}
+\item \emph{Owner} nicht setzen
+\item Immer angeben, in welchem Dokument der Fehler aufgetreten ist. Tritt
+  derselbe Fehler in mehreren Dokumenten auf, ein Beispiel-Dokument
+  angeben.
+\item Für jede Durchführung des Tests ein kurzes Protokoll
+    anlegen und ins CVS einchecken, im selben Verzeichnis, in dem sich diese
+    Anleitung befindet. Vorschlag für den Dateinamen:
+\begin{preformatted}%
+  protokoll\_\var{datum}.txt
+\end{preformatted}
+wobei \var{datum} das Datum des Tests im Format \var{YYYY-MM-dd} ist. Erstreckt
+sich der Test über mehrere Tage, das Startdatum nehmen. Beginnen mehrere Tests
+am selben Tag, Dateinamen in
+\begin{preformatted}%
+  protokoll\_\var{datum}_\var{n}.txt
+\end{preformatted}
+    abändern, wobei \var{n} die Tests durchnumeriert, mit 1 beginnend.
+
+    Das Protokol soll insbesondere folgende Angaben enthalten:
+
+    \begin{itemize}
+    \item Wer getestet hat
+    \item Beginn und Ende des Tests
+    \item Grund des Tests (z.B. die Änderungen im Mumie-Code).
+    \item Welche Dokumente zum Test herangezogen wurden
+    \item Welche Bugs gemeldet wurden (RT-Ticket-Ids), und bei welchen Dokumenten
+      sie aufgetreten sind
+    \end{itemize}
+
+    Ein festes Format für das Protokoll gibt es nicht. Ausser den obigen
+    Angaben kann das Protokoll weitere Beobachtungen und Bemerkungen
+    enthalten.
+
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,184 @@
+#! /bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+
+set -e
+
+webapps_dir=/usr/share/tomcat5.5/webapps
+japs_src_dir=/usr/local/src/japs
+cocoon_src_dir=/usr/local/src/cocoon-2.1.8
+backup_dir=/var/backups/mumie
+postgres_java_dir=/usr/local/share/java
+apache_conf_mods_dir=/etc/apache2/mods-available
+
+# Adapt this to the machine this script is running on:
+server_url=
+password=
+sign_keystore_password=
+
+function error
+  {
+    echo "ERROR: $*" 1>&2
+    echo
+    exit 1
+  } 
+
+function create_webapp
+  {
+    [ "$server_url" ] || error "Server URL not specified"
+    [ "$password" ] || error "Password not specified"
+    [ "$sign_keystore_password" ] || error "Sign keystore password not specified"
+    [ "$webapp_name" ] || error "Webapp name not specified"
+
+    cd $webapps_dir
+    [ -e "$webapp_name" ] && error "Webapp $webapp_name exists already"
+
+    # Stop tomcat:
+    /etc/init.d/tomcat5.5 stop
+
+    # Create webapp dir and intstall Cocoon in it:
+    mkdir -v "$webapp_name"
+    cd "$webapp_name"
+    jar xf $cocoon_src_dir/build/cocoon/cocoon.war
+
+    # Add postgres jdbc jar to WEB-INF/lib:
+    cp -v $postgres_java_dir/postgresql-8.4-701.jdbc4.jar WEB-INF/lib
+
+    # Adjust Apache configuration:
+    cd $apache_conf_mods_dir
+    cp -v jk.conf $backup_dir
+    echo "
+# Send everything for context /${webapp_name} to worker named cocoon (ajp13)
+JkMount  /${webapp_name}/* cocoon
+JkMount  /${webapp_name} cocoon
+" >> jk.conf
+
+    # Reload Apache configuration:
+    /etc/init.d/apache2 force-reload
+
+    # Prepare japs build:
+    cd $japs_src_dir
+    local name=`echo "$webapp_name" | tr '-' '_'`
+    local db_name="$name"
+    local db_user_name="$name"
+    local sign_keystore_name="${name}_sign.keystore"
+    local build_conf_file="build.${webapp_name}.conf"
+    echo "
+tomcat_home=/usr/share/tomcat5.5
+webapp_name=$webapp_name
+url_prefix=${server_url}/${webapp_name}
+db_admin_name=postgres
+db_admin_password=''
+db_name=$db_name
+db_user_name=$db_user_name
+db_user_password=$password
+japs_admin_password=$password
+# mail_smtp_host=
+mail_from_name=Admin
+mail_from_address=admin@mumie-hosting.net
+mail_reply_name=Admin
+mail_reply_address=admin@mumie-hosting.net
+qf_applet_mail_to_name=\"QF Applet\"
+qf_applet_mail_to_address=qf-applet@mumie-hosting.net
+sign_key_dn=\"CN=MUMIE Team, O=integral-learning GmbH, C=DE\"
+sign_keystore_file=/etc/tomcat5.5/$sign_keystore_name
+sign_keystore_password=$sign_keystore_password
+java_opts=\"-Djavax.net.ssl.trustStore=/usr/local/src/japs/build.keystore\"" \
+    > $build_conf_file
+    rm -vf build.conf
+    ln -s $build_conf_file build.conf
+
+    # Japs build, step 1:
+    ./build.sh -f all-step1
+    set_webapp_owner
+
+    # Start Tomcat:
+    /etc/init.d/tomcat5.5 start
+    echo "Giving Tomcat 10 seconds to initialize ..."
+    sleep 10
+
+    # Japs build, step 2:
+    ./build.sh -f all-step2
+
+    # Japs build, step 3:
+    ./build.sh -f all-step3
+
+    # Build and install sign helper:
+    ./build.sh -f signhelper-keystore
+    ./build.sh -f install-signhelper-keystore
+    # Set the owner of the sign keystore to tomcat55:
+    chown tomcat55 /etc/tomcat5.5/$sign_keystore_name
+
+    # Set owner of webapp dir again:
+    set_webapp_owner
+  }
+
+function set_webapp_owner
+  {
+    local old_dir=`pwd`
+    cd $webapps_dir
+    chown -R tomcat55 $webapp_name
+    cd $old_dir
+  }
+
+function show_help
+  {
+    cat <<EOF
+Usage:
+  create_mumie_webapp WEBAPP_NAME
+  create_mumie_webapp --help | -h
+Description:
+  Creates a new Mumie webapp with the spacifed name
+Options:
+  --help | -h
+      Print this help text and exit
+EOF
+  }
+
+task=create_webapp
+
+# Process command line parameters:
+params=`getopt \
+  --longoptions force,help,version \
+  --options f,h,v \
+  -- \
+  "$@"`
+if [ $? -ne 0 ] ; then exit 1 ; fi
+eval set -- "$params"
+while true ; do
+  case "$1" in
+    --help|-h) task=show_help ; shift ;;
+    --version|-v) task=show_version ; shift ;;
+    --) shift ; break ;;
+  esac
+done
+webapp_name="$1"
+
+[ $task == "create_webapp" ] && [ ! "$webapp_name" ] && task="show_help"
+
+$task
+
+
+

@@ -1,0 +1,67 @@
+Beim Klicken mit der rechten Maustaste im Graphframe erscheint das Kontextmenü,
+welches abhängig von dem Typ der markierten Komponenten ist.
+
+Beim Aufruf des Kontextmenüs wird unterschieden, ob sich dabei eine
+Komponente bzw. Kante "unter" dem Mauszeiger befindet, oder ob der Bereich
+darunter leer ist. Da die rechte Maustaste ebenso zum Markieren verwendet wird,
+bezieht sich im ersten Fall das Kontextmenü nur auf die markiere eine
+Komponente bzw. Kante, im letzten Fall auf alle markierten Komponenten
+bzw. Kanten.
+
+Soll das Kontextmenü für mehrere Komponenten und Kanten aufgerufen werden, so muss
+an eine freie Stelle geklickt werden.
+
+Im Folgenden sind die Einträge der Kontextmenüs tabellarisch in Abhängigkeit
+zum Typ der markierten Komponenten aufgeführt.
+
+\emph{Mainkomponenten}
+\begin{table}
+  \head
+  Text
+  \body
+"Löschen"\\
+"Schwarze Kante ziehen"\\
+"rote Kante ziehen"\\
+"Label setzen"
+\end{table}
+
+\emph{Branchkomponenten}
+\begin{table}
+  \head
+  Text
+  \body
+"Löschen"\\
+"Schwarze Kante ziehen"
+\end{table}
+
+\emph{Subkomponente}
+\begin{table}
+  \head
+  Text
+  \body
+"Löschen"\\
+"Move In"\\
+"Move Out"\\
+"Label setzen"
+\end{table}
+
+\emph{Kanten}
+\begin{table}
+  \head
+  Text
+  \body
+"Löschen"\\
+ "rote Kante setzen" bzw. "rote Kante entfernen"\\
+"Kante in Netzwerk nehmen" oder "aus Netzwerk entfernen"\\
+''Richtung ändern"
+\end{table}
+
+Die vorherigen Tabellen beschrieben das Kontextmenü, wenn nur eine Komponente
+markiert ist. Sind beliebige Komponenten und/oder Kanten ausgewählt, so enthält
+das Kontextmenü nur den Punkt "Löschen".
+
+Sind Komponente ausgewählt, die einen Roten Faden erzeugen können, so erscheint
+dazu auch der Menüpunkt "Roten Faden erzeugen".
+
+Wenn genau zwei Komponenten vom Typ Graphkomponente ausgewählt sind, dann
+enthält das Kontextmenü neben dem Punkt "Löschen" noch den Punkt "Verbinden".

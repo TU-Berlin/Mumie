@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<mf:property_sheet xmlns:mf="http://www.mumie.net/xml-namespace/mf-property-sheet">
+	
+	<mf:screen-type name="ST_J3D" type="3d">
+	
+	  <mf:transform-types>
+	  
+		  <mf:transform-types name="NUMBERVECTORSPACE_DEFAULT_TO_DEFAULTBASE_TRANSFORM">
+		  
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.algebra.linalg.MMDefaultR3" transformer="net.mumie.mathletfactory.transformer.j3d.DefaultR3Transformer"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.algebra.linalg.MMDefaultR3Vector" transformer="net.mumie.mathletfactory.transformer.j3d.DefaultR3VectorTransformer"/>
+		    
+		  </mf:transform-types>
+		  
+		  <mf:transform-types name="AFFINE_DEFAULT_TRANSFORM">
+		  
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DPoint" transformer="net.mumie.mathletfactory.transformer.j3d.Affine3DPointTransformer"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DPolygon" transformer="net.mumie.mathletfactory.transformer.j3d.Affine3DPolygonTransformer"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DLineSegment" transformer="net.mumie.mathletfactory.transformer.j3d.Affine3DLineSegmentTransformer"/>
+		    
+		  </mf:transform-types>
+		  
+		  <mf:transform-types name="AFFINE_DEFAULT_TRANSFORM" transformer="net.mumie.mathletfactory.transformer.j3d.Affine3DSubspaceTransformer">
+		  
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DLine"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DPlane"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DSubspace"/>
+		    
+		  </mf:transform-types>
+		  
+		  <mf:transform-types name="FUNCTION_OVER_RN_AFFINE_GRAPH_TRANSFORM">
+		  
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.analysis.function.multivariate.MMFunctionOverR2" transformer="net.mumie.mathletfactory.transformer.j3d.FunctionOverR2Transformer"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.analysis.function.multivariate.MMParametricFunctionInR3" transformer="net.mumie.mathletfactory.transformer.j3d.ParametricFunctionInR3Transformer"/>
+		    
+		    <mf:transform-type master="net.mumie.mathletfactory.mmobject.geom.affine.MMAffine3DQuadric" transformer="net.mumie.mathletfactory.transformer.j3d.Affine3DQuadricTransformer"/>
+		    
+		  </mf:transform-types>
+		  
+	  </mf:transform-types>
+	  
+	</mf:screen-type>
+
+</mf:property_sheet>

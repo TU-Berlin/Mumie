@@ -1,0 +1,144 @@
+package net.mumie.srv.notions;
+
+public class Category
+{
+  // --------------------------------------------------------------------------------
+  // Global variables and constants, except autocoded 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The undefined category.
+   */
+
+  public static final int UNDEFINED = -1;
+
+  // --------------------------------------------------------------------------------
+  // Auxiliaries 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the array index of the specified category code.
+   */
+
+  protected static final int indexOf (int code)
+  {
+    int index = -1;
+    for (int i = 0; i < categories.length && index == -1; i++)
+      {
+        if ( categories[i] == code )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid category code: " + code);
+    return index;
+  }
+
+  /**
+   * Returns the array index of the category with the specified name.
+   */
+
+  protected static final int indexOf (String name)
+  {
+    int index = -1;
+    for (int i = 0; i < names.length && index == -1; i++)
+      {
+        if ( names[i].equals(name) )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid category name: " + name);
+    return index;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting codes for names and vice versa
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the name of the category represented by the specified numerical code.
+   */
+
+  public static final String nameFor (int code)
+  {
+    return names[indexOf(code)];
+  }
+
+  /**
+   * Returns the numerical code for the specified category name.
+   */
+
+  public static final int codeFor (String name)
+  {
+    return categories[indexOf(name)];
+  }
+
+  // --------------------------------------------------------------------------------
+  // Checking whether a code or name exists as a category
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns true if the specified integer exists as a category code;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (int code)
+  {
+    for (int i = 0; i < categories.length; i++)
+      {
+        if ( categories[i] == code )
+          return true;
+      }
+    return false;
+  }
+
+  /**
+   * Returns true if the specified string exists as a category name;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (String name)
+  {
+    for (int i = 0; i < names.length; i++)
+      {
+        if ( names[i].equals(name) )
+          return true;
+      }
+    return false;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting all categories
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns an array containing all categorys. The array is is not backed by any
+   * variables of this class, so changes to the array do not effect this class. 
+   */
+
+  public static final int[] allCategries ()
+  {
+    int[] categoriesCopy = new int[categories.length];
+    System.arraycopy(categories, 0, categoriesCopy, 0, categories.length);
+    return categoriesCopy;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private Category ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("Category must not be instanciated");
+  }
+}

@@ -1,0 +1,106 @@
+#! /bin/bash
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+
+set -e
+
+readonly program_name="mmclearlogs"
+
+# Adapt this to the machine this script is running on:
+webapps_dir=/usr/share/tomcat5.5/webapps
+
+# List of  webapps the logs of which are deleted by default. Adapt this
+# to yor needs.
+default_webapps=`ls $webapps_dir`
+
+function error
+  {
+    echo "ERROR: $*" 1>&2
+    echo
+    exit 1
+  } 
+
+function clear_webapp_logs
+  {
+    local webapp
+    for webapp in $webapps ; do
+      echo "$program_name: deleting logs of webapp \"$webapp\""
+      local logs_dir="$webapps_dir/$webapp/WEB-INF/logs"
+      [ -e "$webapps_dir/$webapp" ] || error "Webapp $webapp does not exist"
+      if [ -e "$logs_dir" ] ; then
+        cd "$logs_dir"
+	local log_files=`ls`
+	if [ "$log_files" ] ; then
+          rm -v *
+        else
+          echo "$program_name: no log files exist"
+        fi
+      else
+        echo "$program_name: no log directory ($logs_dir_dir) exists"
+      fi
+    done
+  }
+
+function show_help
+  {
+    cat <<EOF
+Usage:
+  $program_name [WEBAPP1_NAME WEBAPP2_NAME ...]
+  $program_name --help | -h
+Description:
+  Delets the logs of the specified webapps. If no webapps are specified,
+  delets the logs of the default webapps (see below).
+Default webapps:
+  $default_webapps
+Options:
+  --help | -h
+      Print this help text and exit
+EOF
+  }
+
+task=clear_webapp_logs
+
+# Process command line parameters:
+params=`getopt \
+  --longoptions force,help,version \
+  --options f,h,v \
+  -- \
+  "$@"`
+if [ $? -ne 0 ] ; then exit 1 ; fi
+eval set -- "$params"
+while true ; do
+  case "$1" in
+    --help|-h) task=show_help ; shift ;;
+    --version|-v) task=show_version ; shift ;;
+    --) shift ; break ;;
+  esac
+done
+webapps="$@"
+[ "$webapps" ] || webapps="$default_webapps"
+
+$task
+
+
+

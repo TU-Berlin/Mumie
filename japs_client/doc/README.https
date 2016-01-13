@@ -1,0 +1,55 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README.https,v 1.2 2006/10/17 10:35:38 rassy Exp $
+
+
+                       USING THE JAPS CLIENT WITH HTTPS
+
+
+If you use the japs client in an applet, it should work with HTTPS without any
+further steps provided the browser works with HTTPS. If you use the japs client
+in a standalone Java application, you have to take care that Java knows and
+trusts the certicate of the server. To achieve this, proceed as follows.
+
+1. Create a directory named
+
+     <prefix>/etc/japs_client/ssl
+
+   where <prefix> is the directory defined in the file INSTALL.
+
+2. Copy the server certificate file to <prefix>/etc/japs_client/ssl. Give the
+   copy the name
+
+     <server_name>.crt
+
+   Choose for <server_name> a string that identifies the server.
+
+3. Change into <prefix>/etc/japs_client/ssl and import the server certificate
+   into a newly created keystore named "trusted_certs" by typing:
+
+     $ keytool -import -keystore trusted_certs -alias <server_name> -file <server_name>.crt
+
+   You will be asked for a password for the new keystore. Type a password of
+   your choice (and make sure you can remember it later).
+
+   keytool is a program that comes with the Java SDK. See the Java SDK
+   documentation for more information about that program.
+
+   NOTE: You can import more server certificates the same way, into the same keystore.
+
+4. When you start a Java application that uses the japs client, set the system
+   property
+
+     javax.net.ssl.trustStore
+
+   to
+
+     <prefix>/etc/japs_client/ssl/trusted_certs
+
+   Example: Say your application's start class is foo.bar.Bazz. Then the
+   command line to start the application would be
+
+     $ java -Djavax.net.ssl.trustStore=<prefix>/etc/japs_client/ssl/trusted_certs foo.bar.Bazz
+
+
+- END OF FILE -
+

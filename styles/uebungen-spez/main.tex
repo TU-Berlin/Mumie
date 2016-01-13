@@ -1,0 +1,325 @@
+\documentclass[12pt,a4paper]{article}
+
+\ifx\pdftexversion\undefined
+  \usepackage[dvips,final]{graphicx}
+\else
+  \usepackage[pdftex,final]{graphicx}
+\fi
+
+\RequirePackage{../macros/mumie}
+
+\setlength{\textwidth}{150mm}
+\setlength{\oddsidemargin}{35mm}
+\setlength{\evensidemargin}{35mm}
+
+
+\def\comment#1{\reversemarginpar\marginpar{\raggedright\hspace{0pt}\textsf{\tiny#1}}}
+
+% defs für dieses dokument:
+\def\xml{\texttt{mumie}XML}
+\newcommand{\note}[1]
+{%
+  \fboxsep3mm%
+  \fbox{%
+    {\Huge!}
+    \hspace{1mm}%
+    \begin{minipage}{12cm}#1\end{minipage}%
+    \hspace{1mm}%
+    {\Huge!}%
+  }%
+}
+
+\begin{document}
+
+%%%%%%%%%  START Titelseite %%%%%%%%%
+
+\thispagestyle{empty}
+
+\vspace*{1cm}%
+
+%\font\authorfont=cmss10 scaled 1440\relax
+%\font\titlefont=ccr10 scaled 3456\relax
+
+\begin{center}
+\phantom.
+\vspace*{5cm}
+
+
+\texttt{\textsf{\Huge Spezifikation}}
+\bigskip
+
+\styletitle{{\texttt{mumie}Übungen}}
+\phantom.
+\vspace*{3cm}
+\begin{center}
+Thomas Döhring, Dominik Eberlein, Andreas Hoffmann, Marianne Kardinal
+
+\end{center}
+
+\includegraphics{../macros/mumie_klein}
+
+%\ifx\pdfoutput\undefined
+%  \epsfig{file=../macros/mumie_klein.ps,width=2cm,angle=0}
+%\else
+%  \includegraphics[width=2cm,angle=0]{../macros/mumie_klein.pdf}
+%\fi
+\vspace*{3cm}
+
+\begin{tabular}{ll}
+\textsf{Maintainer:}& Dominik Eberlein\\
+\textsf{Datum:}&
+   \verb+$Date: 2004/06/24 10:21:04 $+\\ % Wird vom cvs eingetragen
+\textsf{CVS-Version:}&
+   \verb+$Revision: 1.11 $+\\            % Wird vom cvs eingetragen
+\end{tabular}
+\end{center}
+
+\clearpage
+
+
+%%%%%%%%% END Titelseite %%%%%%%%%
+
+\tableofcontents
+
+\newpage
+
+\part{Inhaltliches Konzept}
+
+\section{Arten von Übungen}
+
+Der didaktische Aufbau der \texttt{mumie}Übungsumgebung ist stark an
+die Vorgehensweise von G.~P\'olya in \cite{polya} angelehnt. Ein
+Übungsabschnitt zu einem Themengebiet besteht aus folgenden
+Teilen:
+
+\begin{description}
+\item[Musteraufgabe:] Damit soll eine charakteristische
+Aufgabenstellung aus dem jeweiligen Themengebiet gegeben werden.
+Durch Visualisierungen oder weitere Erläuterungen wird die Bedeutung
+der Aufgabe und die eigentliche Problemstellung herausgestellt.
+Die Lösung wird dem Studierenden zu dieser Aufgabe präsentiert.
+
+\item[Erarbeitung eines systematischen Lösungswegs:] Zur Festigung
+einer systematischen Herangehensweise muss der Studierende sich selbst
+ein Rechenschema oder die passenden Voraussetzungen und Aussagen des
+entsprechenden Satzes erarbeiten. Dazu bekommt er mehrere mögliche
+Rechenschritte bzw.~Voraussetzungen und Aussagen zur Auswahl. Aus
+diesen hat er die richtigen auszuwählen und in passender Weise
+anzuordnen.
+
+\item[Übungsaufgaben:] Auf die Einführung durch exemplarische
+Musteraufgabe und systematischer Herangehensweise folgen mehrere
+Übungsaufgaben, die damit lösbar sind. Wir sehen dafür folgende
+Möglichkeiten: 
+\begin{itemize}
+\item Multiple-Choice-Aufgaben: Auf eine Aufgabenstellung hin werden
+jeweils mehrere mögliche Lösungsschritte angeboten.  Der
+Nutzer soll daraus den/die passenden auswählen.
+\item Zahl-/Texteingabe: Der Studierende gibt ein Ergebnis über
+Tastatur in ein Texteingabefeld ein. Dies erscheint nur bei einfachen
+Eingaben (etwa eine Zahl oder ein einfacher algebraischer Ausdruck)
+sinnvoll. Ansonsten kann eine Überprüfung der Eingabe schwierig oder
+oft nicht möglich sein.
+\end{itemize}
+\item[Aufgabenblätter:] Auf eine Benutzeranfrage hin wird aus einem
+Aufgabenpool ein Übungsblatt mit mehreren Rechenaufgaben generiert und
+im HTML oder PDF-Format zur Verfügung gestellt. Der Studierende kann
+dieses mit Papier und Bleistift ähnlich wie bei einem konventionellen
+Übungsblatt lösen. Der Vorteil liegt hier in der Möglichkeit der
+benutzeradaptiven Zusammenstellung der Aufgaben.  Unter Umständen mit
+Zeitverzögerung oder Passworteingabe kann dazu ein Lösungsblatt
+abgerufen werden.
+\end{description}
+
+Für eine weitergehende Beschreibung dieses Zugangs und Erläuterung an
+einem Beispiel verweisen wir auf~\cite{MK} und~\cite{MKAH}
+
+\section{Navigation}
+
+Wir sehen drei Schnittstellen der Übungsumgebung mit den restlichen
+Teilen der Lernplattform:
+
+\subsection{Direkte Navigation}
+
+Der Nutzer hat die Möglichkeit, direkt in das Übungstool zu
+navigieren. Das bedeutet eine zentral erreichbare Einstiegsseite in
+den Übungsbereich. Dort werden dann sämtliche Übungsabschnitte nach
+Themengebieten geordnet aufgelistet. Der gewünschte Abschnitt kann
+ausgewählt werden, woraufhin die eigentlichen Aufgaben angezeigt
+werden: Musteraufgabe, Rechenschema sowie mehrere Übungsaufgaben
+zu dem Themengebiet.  Dieser Zugang bietet eine lineare Auflistung
+der Übungen unter Verwendung der Theorie-Struktur.
+
+\subsection{Lerntool $\to$ Übungstool}
+
+Die Navigationsleiste kann in mehrere Registerkarten unterteilt werden:
+
+\begin{itemize}
+\item  In der Registerkarte für das Lerntool befinden sich
+die Theorie-Elemente, \mbox{-Subelemente} und -Kursabschnitte. 
+Das ist die jetzige Navigationsansicht.
+\mbox{$\to$ Theorie-Registerkarte}
+\item Zu jedem Kursabschnitt
+der Theorie kann auch ein Kursabschnitt für die
+Übungen definiert werden. Dieser wird in einer zweiten Registerkarte
+dargestellt. $\to$ Übungs-Registerkarte
+
+\end{itemize}
+
+Beide Kursabschnitte werden durch den Kurs-Autor bei der Erstellung des Kurses
+definiert. 
+
+Übungen können also als Übungsabschnitt wie folgt in einen Kurs
+integriert werden:
+
+Mit der Übungs-Register\-karte kann einem Theorie-Kurs\-ab\-schnitt eine
+Auswahl von Übungen zugeordnet werden. Der Aufbau der
+Navigationsstruktur für die Übungen entspricht der Struktur
+der bekannten Navigationsnetze im Theorieteil.
+
+\subsection{Übungstool $\to$ Lerntool}
+Macht ein Benutzer beim Bearbeiten einer Übung bestimmte Fehler, so
+kann daraus möglicherweise geschlossen werden, welchen Theorieteil er
+nicht richtig verstanden hat. Aus der Übung heraus soll ihm dann
+angeboten werden, den entsprechenden Theorieteil noch einmal
+durchzuarbeiten.
+
+Der Autor eines Kurses soll dazu die Möglichkeit haben,
+Referenztabellen anzulegen, die für die einzelnen Übungen Sprungmarken
+zu den passenden Theorieteilen enthalten.  Es können dabei einzelne
+Elemente oder auch ganze Kursabschnitte angegeben werden (via ID des
+Elements oder Kurses). Wird aus einer Übung heraus eine solche 
+Sprungmarke angewählt, so sind drei Fälle zu unterscheiden:
+
+\begin{enumerate}
+\item Wird ein einzelnes Element oder Subelement angesprungen, so wird
+dieses in den aktuellen Hauptframe geladen. Die Registerkarte mit dem
+Theorienetz wird geöffnet und das entsprechende Element bzw.~
+Subelement markiert.
+\item Es wird der aktuelle Theorieabschnitt angesprungen: In diesem Fall
+wird im Navigationsframe die Theorie-Registerkarte wieder aktiviert.
+Im Hauptframe wird die Übersichtseite des Kursabschnitts angezeigt.
+\item Wird in einen anderen Theorieabschnitt gesprungen, so 
+erscheint eine weitere (dritte) Registerkarte 
+im Navigationsframe. Diese enthält das Navigationsnetz des angesprungenen
+Abschnitts. 
+Im Hauptframe wird die Übersichtseite des Kursabschnitts angezeigt.
+Zur Übung kann durck Klick auf die Übungs-Registerkarte
+jederzeit zurücknavigiert werden.
+\end{enumerate}
+
+\part{Implementierung}
+
+Im folgenden gehen wir auf die Implementierung der oben angesprochenen
+Konzepte ein. Wir verweisen dazu auch auf den zweiten Teil von~\cite{MKAH}.
+
+\section{Strukturierung}
+
+\subsection{Übungsabschnitte und -elemente}
+
+Es gibt vier Typen von Übungselementen (analog zu \texttt{theorem},
+\texttt{definition} etc.~im Theorieteil), die in der
+\textit{categories}-Tabelle aufgeführt werden:
+
+\begin{description}
+\item[Musteraufgabe] (\texttt{exercise\_prototype})
+\item[Rechenschema]  (\texttt{exercise\_procedure})
+\item[Übungsaufgabe] (\texttt{exercise\_online})
+\item[Aufgabenblatt] (\texttt{exercise\_worksheet})
+\end{description}
+
+Die Übungsabschnitte (Kursabschnitte, die nur Übungs-Elemente
+enthalten) werden wir Kursabschnitte behandelt.
+Die Übungselemente werden als \texttt{page}-Dokumente definiert.
+
+\bigskip\par
+\textbf{TODOs:}
+\smallskip
+
+\begin{itemize}
+\item Erweiterung der XML-Spezifikation der \texttt{page}-Dokumente $\to$ PH
+\item Spezifikation der Vorgehensweise zur Auflösung von Referenzen in
+Flash-Filmen via Parameter in der einbindenden HTML-Seite
+
+\item Erweiterung der DB: Spezifikation + Abstimmung mit Fritz/Tilman
+
+\end{itemize}
+
+\subsection{Hierachische Gliederung}
+
+Die Übungen werden wie die Theorie-Elemente den existierenden
+\texttt{sections} zugeordnet.
+
+
+
+
+\section{Navigation}
+
+\subsection{Direkte Navigation}
+
+Die Auswahl der Übungsabschnitte erfolgt analog zu der Auswahl der
+Kurse mit dem TreeviewApplet.
+Alle Elemente eines Abschnitts werden dabei vom TreeViewApplet aufgelistet
+und der Nutzer kann die passenden Übungen auswählen.
+
+
+\subsection{Lerntool $\to$ Übungstool}
+
+Der Autor kann mit dem CourseCreator Übungs-Kursabschnittsgraphen
+definieren. Diese werden dann entsprechend vom StructTransformer
+dargestellt.
+
+\subsection{Übungstool $\to$ Lerntool}
+
+Wird beim Bearbeiten einer Übung ein Fehler gemacht, so kann die Übung
+eine Rückkehr zur Theorie anbieten. Die Referenzen dazu werden vom
+Kurs-Autor beim Erstellen der Kurse eingegeben.
+Genauer: Eine Übung verlangt verschiedene Sprungmarken (etwa Satz von
+Stokes oder Berechnung des Oberflächenintegrals). Der Kursautor gibt
+für jede dieser Sprungmarken einen entsprechenden Theorieteil (ID
+eines Kursabschnitts oder ID eines Elements --- Auswahl durch das 
+Sprungmarkenzuweisungsfentster) 
+im CourseCreator an und die Referenzen werden im
+structXML gespeichert. Beim Aufruf der Übung werden diese vom
+Navitationsnetz an das einbettende \texttt{page}-Dokument übergeben, 
+woraus die Parameter (für den Flash-Film / das Java-Applet) in HTML
+erzeugt werden. 
+
+
+\bigskip\par
+\textbf{TODOs:}
+\smallskip
+
+\begin{itemize}
+\item Anpassung der Metainfo-XML-Spezifikation
+
+\item Erstellung einer Spezifikation für das Custom-Metainfo-XML
+für Sprungmarken 
+
+\item Erstellung einer Spezifikation zur Erstellung von Übungen
+mit Components, Links und Sprungmarken 
+
+\item Übungen anpassen
+\end{itemize}
+
+
+\begin{thebibliography}{8888}
+\bibitem{MKAH}
+\raggedright
+Hoffmann, Andreas und Kardinal, Marianne: \emph{Vorstellung
+verschiedener Übungs\-typen und Integratoin in den JAPs}, 2003,
+\texttt{http:\slash \slash mumie.ma.tum.de\slash mumie\slash mk...}
+
+\bibitem{MK}
+Kardinal, Marianne: \emph{Ideen zur Erstellung interaktiver Übungen}, 2003,
+\texttt{http:\slash \slash mumie.ma.tum.de\slash mumie\slash mk\slash Prototypprojekt\slash konzepte\_in\_tex\slash ideen.pdf}
+
+\bibitem{spez:metainfo}
+\texttt{mumie}Metainfo Spezifikation, 
+\texttt{http:\slash \slash mumie.ma.tum.de\slash dokumente\slash styles\slash software\_spez\slash mumieMetainfoXML-current.ps}
+
+\bibitem{polya}
+P\'olya, George: \emph{How to solve it}, Princetion University Press, 1973
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,24 @@
+package net.mumie.srv.notions;
+
+public class XMLNamespacePrefix
+{
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private XMLNamespacePrefix ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("XMLNamespacePrefix must not be instanciated");
+  }
+}

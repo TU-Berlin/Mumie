@@ -1,0 +1,407 @@
+Stand 12. August 2008
+
+I. Grundsätze:
+===========
+1. Ins cvs kommt alldas was benötigt wird um alle Dateien mit den vorhanden
+   Werkzeugen zu erzeugen.
+
+2. Beim Aufbau eines Kurses geht man vom Kleinen zum Grossen, d.h.
+-  Erstelle die inhaltlichen Elemente (z.B. Definitionen, Beispiele, Aufgaben)
+   und bringe sie auf den Server und ins cvs.
+-  Erstelle Summaries für HA-, PL-Blätter, Kursabschnitte und Kurs und bringe
+   sie auf den Server und ins cvs
+-  Erstelle HA-, PL-Blätter und Kursabschnitte und weise Ihnen Inhalte und
+   Summeries zu.
+-  Erstelle den Kurs und weise im Summary, Kursabschnitte, HA- und PL-Blätter
+   zu.
+-  APPLETS: Zu einem einzigen Applet gibt es in der Mumie verschiedene Dateien:
+        1. Die Quelle: 
+        mathletfactory_content/src/java/net/mumie/mathlet/linalg
+        /MatrixTimesMAtrixTimesVector.java
+        2. Die Mumien-typischen Dateien, die aber dem Root_Checkin verzeichnis 
+        (beim mir ist dies japs2/checkin) 
+        ./japs2/checkin/content/lineare_algebra/media/applets
+        /MatrixTimesMAtrixTimesVector.meta.xml
+        ./japs2/checkin/content/lineare_algebra/media/applets
+        /MatrixTimesMAtrixTimesVector.content.jar
+        stehen. 
+        3. Eine Kopie der Quelldatei 
+        ./japs2/checkin/content/lineare_algebra/media/applets
+        /MatrixTimesMAtrixTimesVector.src.java
+
+        Die Quelldatei (1) kommt aus dem cvs. Alle anderen werden durch den
+        build-Prozess erzeugt.  Im Tex-File muss die Referenz auf die
+        meta.xml-Datei stehen. 
+
+3. .meta.xml können nur einmal auf MUMIEN-Server eingecheckt werden. 
+
+
+II. Erstellen eines neuen Inhaltsbausteins (summary, element, sub_element, problem)
+=========================================================================
+
+1.  Kopieren einer Vorlage z.B. aus dem Verzeichnis mmtex_mumie/samples/ 
+    und abspeichern unter <name>.src.tex im entsprechenden Verzeichnis
+    linear_algebra_content/checkin/content/lineare_algebra
+    /1_ohne_geometrische_struktur/ 1_1_vektorraeume_und_der_k_hoch_n
+    /1_1_1_vektorraeume/1_1_1_1_grundlagen/
+2.  Name und Description ausfüllen.
+3.  In  <name>.src.tex den Link zum entsprechenden generischen Dokument setzen
+    (Dieses Dokument existiert noch nicht)
+4.  Ev. Komponenten einfügen (Bild, Applet,..)
+5.  Text erstellen.
+6.  Speichern
+7.  Mit mmtex <name>_de.content.xml und <name>_de.meta.xml erzeugen.
+8.  Mit dem Befehl  
+    mmr2gdoc <name>_de.meta.xml 
+    das entsprechende generische Dokument erzeugen:
+    g_<name>.meta.xml
+9.  Mit mmprev ein Preview erzeugen. Mit dem Kommando in einer Shell: 
+    firefox  <name>_de.preview.xhtml
+    das Dokument kontrollieren.
+10.  g_<name>.meta.xml und <name>_de.meta.xml mit mmckin in 
+    Mumien-Server einchecken.
+11. g_<name>.meta.xml und  <name>.src.tex ins cvs einchecken.
+
+
+III. Erstellen einer neuen Lehrveranstaltung und eines neuen Kurses (course_section):
+=====================================================================================
+1. Erstelle ein cls_document im directory classes
+2. Erstellen eines Summary (siehe erstellen eines Inhaltsbausteins)
+3. Erstellen der Kursdokumente (<name>.meta.xml, <name>.content.xml):
+     |- CC mit mmcc im directory des CC oeffnen
+     |- im Menue "Neuer Kurs" auswählen
+     |- Name und Description eintragen
+     |- ev den neuen Kurs einer Lehrveranstaltung zuordnen (nur dann kann der
+     |  Kurs auf dem MUMIEN-Server als Kurs gesehen werden).
+     |- Summary einfügen (ist vorlaeufig noch notwendig)
+     |- ev Kursabschnitte einfügen, zuweisen, Labels setzen.
+     |- Speichern (damit wird eine content.xml und meta.xml Datei erstellt)
+     |- meta.xml und content.xml auf Mumien-Server mit mmckin einchecken.
+     |- meta.xml und content.xml ins CVS einchecken.
+
+
+IV. Erstellen eines neuen Kursabschnittes (course_sub_section)
+==========================================================
+analog zu "Erstellen eines Summary"
+
+
+V. Erstellen eines neuen Verzeichnisses (section) lokal u.auf dem MUMIEN-Server
+============================================================================
+kann mit mmsec erzeugt werden (siehe auch mmsec -h).
+Beispiel: Erzeugen eines neuen Direktories ethz unter org/
+1. Wechsle in das Verzeichnis wo das neue Verzeichnis als Unterverzeichnis
+   erstellt werden soll.
+2. Schreibe: mmsec ethz -n <name> -d <description>
+3. cvs add ethz
+4. Wechsle in das Verzeichnis ethz und checke .meta.xml auf dem Mumien-Server
+   ein.
+5. cvs add und commit von .meta.xml
+
+
+VI. Neue Version der Mathlet-Factory Library compilieren und einchecken.
+====================================================================
+1. cd mathletfactory_lib
+2. ./build.sh -f all
+3. ./build.sh -f install
+4. ./build.sh -f mount-checkin
+5. cd $MM_CHECKIN_ROOT
+6. mmckin -a <alias> system/libraries/jar_mathlet_factory.meta.xml
+
+
+VII. Alias zum Einchecken setzen:
+============================
+1. Mit mmalias -l ansehen, welche alias bereits gesetzt sind.
+
+2. cd $MM_BUILD_PREFIX
+
+3. Erstelle in MM_BUILD_PREFIX/etc/mmcdk einen File:
+local_mmcdk.init
+und schreibe z.Beispiel: (vgl für Syntax mmalias -h)
+mmalias default http://appendix.math.tu-berlin.de:8080/cocoon admin
+mmalias rs http://localhost:8080/cocoon admin
+
+4. Führe das Ding aus mit:
+. local_mmcdk.init
+
+
+VIII Kopieren eines Kurses:
+=========================================================================
+Voraussetzung: Der Kurs soll in eine bereits bestehende Lehrveranstaltung eingebunden
+werden: 
+1. Neues Verzeichnis mit erstellen (siehe obigen Abschnitt V)
+   Beispiel:   mmsec  <neu> -n <neu>  -d Kopie des Kurses vom letzten Jahr.  
+2. In das neue Verzeichnis gehen und .meta.xml auf den Mumie-Server packen.
+3. .meta.xml in ein tmp-Verzeichnis auslagern.
+4. Kurs- Kursabschnitte und Worksheets in das neue Verzeichnis kopieren:
+      cp alter_kurs/* neuer_kurs/
+5. In das neue Verzeichnis gehen und dort die Bezeichnung des Kurses ändern
+am einfachsten von Hand. (Kann auch mit dem folgenden sed Skript gemacht
+werden: 
+for F in `find -name "crs_*"`; do mv $F `echo $F|sed -e 's/alter_kurs/neuer_kurs/'`; done
+6. Referenzen in allen Files ändern (perl Skript)
+perl -i.bak -p -e 's:alter_kurs:neuer_kurs:' *
+Variante für Ersetzung in einem directory tree:
+perl -i.bak -p -e 's:test:suber:' `find -name "*.txt"`
+Bemerkung: um \ zu ersetzten schreibe \\.
+7. Wenn alles richtig ersetzt wurde die .bak Dateien löschen.
+8. alle *meta.xml Dateien auf den Server packen:
+mmckin *.meta.xml
+9. cd .. und dort das neue Verzeichnis im CVS dazufügen (cvs add).
+10. das .meta.xml aus dem tmp-Verzeichnis wieder zurückholen (vgl 3.)
+11. wieder in das neue Verzeichnis gehen und alles was notwendig ist ins CVS
+einchecken d.h. 
+11.1. alle TeX-files der Summeries *.src.tex 
+11.2. vom Rest die *.meta.xml und die *.content.xml 
+
+Bemerkungen: 
+a) falls der Kurs in eine neue Lehrveranstalung integriert werden soll,
+dann zuerst diese erstellen.  
+
+IX. INFO-Blätter
+============
+sollen sogar mit IE angezeigt werden, d.h. sie müssen vom Typ xxx.html sein.
+
+So werden sie erstellt:
+1. mmtex this.filename.tex, macht ein this.filename.xml
+2. mmxalan this.filename.xml, macht eine this.filename.xhtml
+3. xhtml2html.pl this.filename.xhtml, macht ein this.filename.html
+
+Beispiel (verkürzt):
+***************************************************************************
+\documentclass[lang=de]{generic}
+\setstyles{normal:infoblatt.css}
+\newcommand{\Unixpool}{Unixpool}
+\begin{document}
+
+Technische Universit"at Berlin\\
+Fakult"at II - Mathematik und Naturwissenschaften\\
+
+\title{Informationsblatt MUMIE}
+
+\version{Stand: 07.10.2007}
+\tableofcontents
+
+Liebe Studierende,
+...
+
+Für Organisatorisches .. ein Info-Blatt auf ISIS \link{\#fn1}{(1)}
+\link{http://www.isis.tu-berlin.de/course/view.php?id=311}{Organisatorisches Informationsblatt}
+\\
+Für technische Fragen (vgl.  Abschnitt: \link{\#techn_hilfe}{Technische Hilfe})
+haben wir zusätzlich zu diesem Infoblatt eine Erste-Hilfe Stelle eingerichtet,
+das TUMULT-Forum:
+\link{http://www.moses.tu-berlin.de/forum}{http://www.moses.tu-berlin.de/forum},
+dort unter Mathematik auf
+\link{http://mulf3.math.tu-berlin.de/moses_forum/server_root/index.php?t=thread\&frm_id=79\&S=0cdde632b46668b160722a7ddd521f2b}{Lineare Algebra}
+klicken.  
+
+\section{Wie kann ich auf die MUMIE zugreifen?} Inhalte und
+
+\section{Ansichten}
+
+\begin{description}
+\item[Startseite] Hier finden Sie eine Reihe von Links, die meistens
+\item[Kurs] Die Kurs-Seite hat einen linken und einen rechten Frame. Im rechten
+  \begin{itemize}
+  \item grau: Noch nicht freigegeben.
+  \end{itemize}
+\item[Aufgabe]
+\end{description}
+
+1. \label{fn1} Falls Sie zum ersten Mal ISIS besuchen müssen Sie sich zuerst die
+\end{document}
+**************************************************************************
+Info-Blatt liegt beispielsweis hier: habnix:/srv/apache-2.2.4/htdocs/info
+
+Infoblatt muss auf der Desktop-Seite verlinkt sein:
+japs_checkin/checkin/system/start/pge_start
+
+
+
+Bearbeitungzeitraum in DB einstellen.
+=====================================
+Beispiel habnix:
+
+\begin{itemize}
+\item Als root auf habnix einloggen. Gehe nach /srv/pgsql-8.2.3/bin und starte
+DB mit  ./psql -Ujaps mdb01
+\item  select pure_name, id, timeframe_end, timeframe_start from worksheets;
+zeigt den aktuellen Stand an.
+\item update worksheets set timeframe_start='2007-10-12 00:00:00',
+timeframe_end='2007-10-19 12:00:00;
+\item auf server kontrollieren, ev. Cache löschen.
+\end{itemize}
+
+
+
+Startseite Automatix
+===================
+Startseite fuer Automatix unter japs_local/checkin im CVS 
+Bearbeiten:
+
+1. In <checkin_root>/system/start die Dateien 
+pge_start.meta.xml, pge_start.content.xml loeschen.
+
+2. In <checkin_root>/system/start Softlinks zu den entsprechenden
+Dateien in japs_local/checkin erzeugen:
+ln -s <dir>/japs_local/checkin/pge_start.meta.xml
+ln -s <dir>/japs_local/checkin/pge_start.content.xml
+wobei <dir> das Verzeichnis ist, wo Ihr japs_local ausgecheckt habt.
+
+3. Nach Aenderungen an der Startseite cvs commit
+!!!_nicht_ in   <checkin_root>/system/start, sondern in
+<dir>/japs_local/checkin aufrufen.
+Der Punkt 3 ist deshalb wichtig, weil wir im CVS
+des 2.0-Branchs natuerlich 
+keine standord-spezifischen Dokumente haben wollen.
+ 
+4. mmckin von <checkin_root>/system/start aus starten. 
+
+
+Links auf Firefox, MathML, Java, Java3D:
+========================================
+http://www.mozilla-europe.org/de/products/firefox/
+http://www.mozilla.org/projects/mathml/fonts/
+http://java.sun.com/javase/downloads/index.jsp
+http://java.sun.com/products/java-media/3D/download.html
+
+
+
+
+Konfiguration Applets in TeX-Quellen:
+=====================================
+a) Applets in Übungsaufgaben
+\begin{execute}
+\begin{applet}[200][20]{applet}
+    \param{appletWidth}{600}
+    \param{appletHeight}{700}
+\end{applet}
+\end{execute}
+
+
+b) überall sonst:
+(Achtung: keine execute Umgebung)
+\begin{applet}[80][20]{applet}
+  \param{embeddingMode}{button}   % Lässt Applet in seperatem Window starten. 
+  \param{buttonText}{Demo}          %Text fuer den Button
+  \param{appletWidth}{600}         %Breite des Fensters
+  \param{appletHeight}{600}        %Hoehe des Fensters
+\end{applet}
+
+Checkliste zur Vorbereitung der nächsten Woche:
+==============================================
+
+1. Inhalt Online-Skript
+1.1. Summary prüfen
+1.2. Inhaltsbausteine durchgehen und prüfen
+1.3. Ev. Metadaten eintragen.
+
+2. Hausaufgabe:
+2.1. Bearbeitungszeitraum prüfen
+2.2. Summary prüfen
+2.3. Inhalte prüfen
+
+3. Prelearning: 
+3.1. Bearbeitungszeitraum prüfen
+3.2. Summary prüfen
+3.3  Inhalte prüfen
+
+
+Datenbank starten, stoppen
+==========================
+pg_ctl start -o "-i" -D "PG_HOME/data -l $PG_HOME/data/logfile.txt
+pg_ctl stop
+
+
+Tomcat starten
+==============
+tomcat start
+tomcat stop
+
+
+Quittungen.
+==========
+Format:
+rcp__uid__bnr__anr__datum.zip
+wobei
+uid = Benutzer-Id
+bnr = Nummer des Aufgabenblatts
+anr = Nummer der Aufagbe
+datum = Datum in der Form Jahr-Monat-Tag_Stunde-Minute-Sekunde
+
+Beispiel:
+rcp__354__3__1__2007-11-21_16-23-41.zip
+
+Links
+=====
+\begin{links}
+    \link{generic_element}{samples/g_def_link_target.meta.xml}{def}
+    \link{generic_subelement}{samples/g_exm_link_target.meta.xml}{exm}
+\end{links}
+
+Link zu einem \href{exm}{Beispiel}.
+Externer Link zu \ehref{http://www.mozilla.com}{Mozilla}.
+
+Bilder erstellen
+================
+Siehe help zu mm-Befehl mmimage
+
+
+Info zu einem mmtex commando
+============================
+Beispiel:
+mmtex -c creategeneric
+
+
+Komplexe Zahlen installieren:
+=============================
+Repository liegt in Zürich im svn:
+$SVNROOT/mumie_content/vorkurs/complex_number_content.
+Dabei ist
+SVNROOT=https://svn-stat.math.ethz.ch/lemuren/trunk
+
+TeX-Quellen: checkin/content/complex_numbers/<chapter>
+mit <chapter> = 01_einleitung, ...,  10_gebrochen_lineare_funktionen
+
+Java-Quellen: src/java/net/mumie/mathlet/complex
+Es handelt sich aber nur um Dummies.
+
+Bilder: checkin/content/complex_numbers/media/bilder
+
+Um mit dem Repository arbeiten zu koennen, sind folgende Schritte notwendig 
+(ein installiertes mmcdk wird vorausgesetzt). <repo-base> bezeichnet das 
+Wurzelverzeichnis des Repositories, <checkin-root> das Checkin-Wurzelverzeichnis.
+  1. In <repo-base>:
+       ./build.sh mount-checkin
+  2. In <repo-base>/src/java/net/mumie/mathlet/complex:
+       mmlnjava *.java
+  3. In <checkin-root>/content/complex_numbers/media/applets:
+       mmjava *.src.java
+  4. In <checkin-root>/content/complex_numbers/media: Verzeichnis "bilder" 
+     loeschen:
+       rm -rf bilder
+  5. Weiterhin in <checkin-root>/content/complex_numbers/media: Softlink nach
+     <repo-base>/checkin/content/complex_numbers/media/bilder erstellen:
+       ln -s <repo-base>/checkin/content/complex_numbers/media/bilder
+  6. In <reop-base>:
+       ./build.sh mmtex
+
+
+Auswahl der Sprachen
+====================
+
+Damit mmtex beim Konvertieren das xml-file mit der gewünschten Sprache
+erzeugt muss das Kommando
+mmtex --param lang=en xxxx.src.tex 
+bzw
+mmtex --param lang=de xxxx.src.tex 
+verwendet werden.
+
+Installation von Zertifikaten:
+==============================
+Um die Zertifikate für Java zur Verfügung zu stellen, müssen sie in einen
+Container "keystore" eingelesen werden. Dazu wird das Program keytool
+verwendet. Am einfachsten holt man sich die Sachen von /net/mumie/etc/mmcdk
+Ein genauere Erklärung ist in INSTALL von japs_client und von mmcdk (für
+https) zu finden.
+

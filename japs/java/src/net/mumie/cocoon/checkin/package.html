@@ -1,0 +1,58 @@
+<!-- 
+  Author: Tilman Rassy <rassy@math.tu-berlin.de>
+  $Id: package.html,v 1.3 2007/01/28 21:56:56 rassy Exp $  
+-->
+
+<html>
+
+  <body>
+
+    Contains classes and interfaces to check-in new documents and pseudo-documents.
+
+    <h3>Classes representing (pseudo-)documents to check-in</h3>
+
+    <p>
+      Documents and pseudo-documents to check-in are represented by instances of
+      {@link net.mumie.cocoon.checkin.ContentObjectToCheckin ContentObjectToCheckin}. This
+      interface is implemented by the abstract class {@link
+      net.mumie.cocoon.checkin.AbstractContentObjectToCheckin
+      AbstractContentObjectToCheckin}, which has two abstract subclasses: {@link
+      net.mumie.cocoon.checkin.documents.AbstractDocumentToCheckin
+      AbstractDocumentToCheckin} and {@link
+      net.mumie.cocoon.checkin.pseudodocs.AbstractPseudoDocumentToCheckin
+      AbstractPseudoDocumentToCheckin}. The former represents documents, the latter
+      pseudo-documents. {@link net.mumie.cocoon.checkin.documents.AbstractDocumentToCheckin
+      AbstractDocumentToCheckin} is extended by several non-abstract classes
+      <code>XxxToCheckin</code> where Xxx denotes a document type. Each of them
+      represents a document of a particular type. These classes are autocoded by the XSL
+      stylesheet <code>DocumentToCheckin.xsl</code>. Similarly, {@link
+      net.mumie.cocoon.checkin.documents.AbstractPseudoDocumentToCheckin
+      AbstractPseudoDocumentToCheckin} is extended by several non-abstract classes 
+      <code>XxxToCheckin</code> where Xxx denotes a pseudo-document type. Each of them
+      represents a pseudo-document of a particular type. These classes are not autocoded.
+    </p>
+
+    <p>
+      There are two more interfaces: {@link
+      net.mumie.cocoon.checkin.documents.DocumentToCheckin DocumentToCheckin} and {@link
+      net.mumie.cocoon.checkin.pseudodocs.PseudoDocumentToCheckin
+      PseudoDocumentToCheckin}. The former represents documents, the latter
+      pseudo-documents. Both extend {@link net.mumie.cocoon.checkin.ContentObjectToCheckin
+      ContentObjectToCheckin}. The former is implemented by {@link
+      net.mumie.cocoon.checkin.documents.AbstractDocumentToCheckin
+      AbstractDocumentToCheckin}, the latter by {@link
+      net.mumie.cocoon.checkin.pseudodocs.AbstractPseudoDocumentToCheckin
+      AbstractPseudoDocumentToCheckin}. Currently, both interfaces are void (define no
+      methods).
+    </p>
+
+    <p>
+      The relationships between the classes are shown in the following UML diagram. A 
+      <a href="doc-files/XxxxToCheckin_classes.png">more detailed diagram</a> is available, too.
+    </p>
+    <img src="doc-files/XxxxToCheckin_classes_small.png"
+         title="UML diagram of the classes representing (pseudo-)documents to check-in"
+         style="border-style:none">
+  </body>
+
+</html>

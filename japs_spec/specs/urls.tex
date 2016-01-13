@@ -1,0 +1,662 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{URLs}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+  \author[lehmannf@math.tu-berlin.de]{Fritz Lehmann-Grube}
+\end{authors}
+
+\version{$Id: urls.tex,v 1.10 2007/06/19 16:09:59 lehmannf Exp $}
+
+\tableofcontents
+
+\section{Bezeichnungen}
+
+In diesem Abschnitt werden einige häufig wiederkehrende Bezeichnungen eingeführt.
+
+\begin{enumerate}
+
+\item \var{prefix}
+
+  Konstanter Anfangsteil jeder Japs-URL. Hat in der Regel die Form:
+
+\begin{preformatted}[code]%
+  http://\var{host}\optional{:\var{port}}/\var{servlet}
+\end{preformatted}
+
+    Hierbei bezeichnet \var{host} den Server, \var{port} den verwendeten Port und \var{servlet}
+    den Namen, unter dem der Servelet-Container das Cocoon-Servlet findet
+    (meist \val{cocoon}). -- Beispiel:
+
+\begin{preformatted}[code]%
+  http://mumie.math.tu-berlin.de/cocoon
+\end{preformatted}
+
+\item \emph{Relative Japs-URL}\label{rel_japs_url}
+
+  Japs-URL ohne \var{prefix}. Wenn klar ist, dass es sich um eine Japs-URL
+  handelt, wird statt "relative Japs-URL" auch einfach "Japs-URL" gesagt.
+
+\item \emph{URL-Komponenten}
+
+  Durch \val{/}-Zeichen begrenzte Teile einer relativen Japs-URL. Statt
+  "{}URL-Komponenten" wird manchmal auch einfach von "Komponenten" gesprochen.
+
+\end{enumerate}
+
+
+
+
+
+\section{Grundsätzlicher Aufbau}
+
+Jede relative Japs-URL hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  \var{access}/\var{context}/\var{weitere_komponenten}
+\end{preformatted}
+
+Die ersten beiden Komponenten, \var{access} und \var{context}, werden in den
+beiden folgenden Unterabschnitten erklärt. \var{weitere_komponenten} steht für
+beliebige weitere Komponenten.
+
+
+\subsection{Die access-Komponente}
+
+\var{access} kann die Werte \val{public} und \val{protected} annehmen. Im Fall
+von \val{public} handelt es sich um eine \emph{öffentliche URL}. Öffentliche
+URLs sind ohne Autentifizierung zugänglich. Im Fall von \val{protected} handelt
+es sich um eine \emph{geschützte URL}. Geschützte URLs sind nur mit
+Autentifizierung zugänglich.
+
+
+\subsection{Die context-Komponente}\label{context_komp}
+
+\var{context} ist der sogenannte \emph{Kontext} der URL. Der Kontext dient
+einmal zur Klassifizierung der URls, hat aber noch einen weiteren Aspekt: Ein
+und dasselbe Dokument kann in verscheidenen Formen an den Browser ausgeliefert
+werden, z.B. einmal als normale Ansicht des Dokuments, einmal als Info-Seite
+mit allen Daten zum Dokument. Mit anderen Web-Resourcen verhält es sich
+ähnlich. Der URL-Kontext unterscheidet diese verschiedenen Formen.
+
+Die folgende Tabelle listet alle URL-Kontexte auf:
+
+\begin{table}
+\head
+   Kontext & Beschreibung
+\body
+ \val{admin} & Administrator-Seiten\\
+ \val{alias} & Alias für andere URLs\\
+ \val{auth} & Seiten, die mit Autentifizierung zu tu haben\\
+ \val{checkin} & Checkin-Seiten\\
+ \val{correction} & Aufgaben-Korrekturen\\
+ \val{error} & Fehlermeldungen\\
+ \val{homework} & Hausaufgaben\\
+ \val{info-raw} & Info-Seite als XML\\
+ \val{info} & Info-Seite als XHTML\\
+ \val{nav} & Navigation\\
+ \val{qf} & Entgegennahme eines Fehlerberichts\\
+ \val{sync} & Synchronisation mit Master-LMS\\
+ \val{view-pers} & Normale Ansicht, personalisiert\\
+ \val{view} & Normale Ansicht
+\end{table}
+
+\section{Standard-URLs}
+
+\subsection{Übersicht}
+
+\begin{preformatted}%
+  \var{prefix}
+    |-public
+    |   |-auth
+    |       |-\href{\#std_urls_auth_login_seite}{login-request}
+    |       |-\href{\#std_urls_auth_eig_login}{login}
+    |       |-\href{\#std_urls_auth_antw_fehl_login}{login-failed}
+    |
+    |-protected
+        |-auth
+        |   |-\href{\#std_urls_auth_antw_ergf_login}{login-successful}
+        |   |-\href{\#std_urls_auth_ausloggen}{logout}
+        |   |-\href{\#std_urls_auth_logout_fehl}{logout-failed}
+        |   |-\href{\#std_urls_auth_ber_eingel}{already-logged-in}
+        |
+        |-admin
+        |   |-\href{\#std_urls_admin_home}{home}
+        |   |-\href{\#std_urls_admin_clear_cache}{clear-cache}
+        |   |-\href{\#std_urls_admin_create_sitemap}{create-sitemap}
+        |   |-status
+        |       |-service
+        |       |   |-\href{\#std_urls_admin_stat_serv_overv}{overview}
+        |       |   |-class-name
+        |       |       |-\var{class-name} \meta{[}\href{\#std_urls_admin_stat_serv}{Beschreibung}\meta{]}
+        |       |
+        |       |-sessions
+        |           |-\href{\#std_urls_admin_stat_sess_overv}{overview}
+        |
+        |-checkin
+        |   |-\href{\#std_url_checkin_checkin}{checkin}
+        |
+        |-correction
+        |   |-\href{\#std_url_worksheet_correction}{worksheet}
+        |
+        |-error
+        |   |-\href{\#std_url_err_perm_den}{permission-denied}
+        |
+        |-\var{context} \meta{[nur view, view-pers, info]}
+        |   |-document
+        |   |   |-\var{type-spec}
+        |   |       |-\var{type}
+        |   |           |-\var{doc-spec}
+        |   |               |-\var{doc} \meta{[}\href{\#std_urls_dok}{Beschreibung}\meta{]}
+        |   |
+        |   |-pseudo-document
+        |   |   |-\var{type-spec}
+        |   |       |-\var{type}
+        |   |           |-\var{doc-spec}
+        |   |               |-\var{doc} \meta{[}\href{\#std_urls_psdok}{Beschreibung}\meta{]}
+        |   |
+        |   |-document-index
+        |   |   |-\var{type-spec}
+        |   |       |-\var{type} \meta{[}\href{\#std_urls_dok_index}{Beschreibung}\meta{]}
+        |   |
+        |   |-pseudo-document-index
+        |   |   |-\var{type-spec}
+        |   |       |-\var{type} \meta{[}\href{\#std_urls_psdok_index}{Beschreibung}\meta{]}
+        |   |
+        |   |-\href{\#std_url_cls_crs_index}{classes-and-courses-index}
+        |
+        |-homework
+        |   |-document
+        |   |   |-\var{type-spec}
+        |   |       |-\var{type}
+        |   |           |-\var{doc-spec}
+        |   |               |-\var{doc} \meta{[}\href{\#std_urls_dok}{Beschreibung}\meta{]}
+        |   |
+        |   |-\href{\#std_urls_downl_aufgd}{problem-data}
+        |   |-\href{\#std_urls_store_prb_ans}{store-problem-answers}
+        |   |-\href{\#std_urls_prb_corr}{problem-correction}
+        |
+        |-alias
+            |-\href{\#std_urls_start}{start}
+            |-\href{\#std_urls_courses}{courses}
+            |-\href{\#std_urls_account}{account}
+            |-\href{\#std_urls_admin}{admin}
+            |-\href{\#std_urls_db_browser}{db-browser}
+            |-\href{\#std_urls_void}{void}
+\end{preformatted}
+
+Detaillierte Beschreibungen der URLs finden sich in den folgenden Unterabschnitten.
+
+\subsection{Autentifizierung}
+
+\begin{enumerate}
+
+\item Aufforderung zum Login mit Benutzernamen und
+  Passwort:\label{std_urls_auth_login_seite}
+
+\begin{preformatted}[code]%
+  public/auth/login-request
+\end{preformatted}
+
+Ist der Web-Client ein Browser, so wird ein XHTML-Formular ausgeliefert, in das
+Benutzername und Passwort einzugeben sind. Nach Klicken eines "{}Ok"-Buttons
+werden Benutzername und Passwort an die eigentliche Login-URL,
+\code{public/auth/login} (\ref{std_urls_auth_eig_login}), geschickt. Ist der
+Web-Client eine Java-Klasse (z.B. der JapsClient), so wird eine Textseite mit
+dem Inhalt \code{"Login required"} ausgeliefert und zusätzlich der Response
+Header \code{X-Mumie-Login-Required} auf \code{yes} gesetzt. Es ist Sache der
+Java-Klasse, Benutzernamen und Passwort zu ermitteln und and die eigentliche
+Login-URL zu schicken.
+
+\item Eigentlicher Login:\label{std_urls_auth_eig_login}
+
+\begin{preformatted}[code]%
+  public/auth/login
+\end{preformatted}
+
+Führt den eigentlichen Login durch (Anmeldung mit Benutzernamen und Passwort).
+Bei Erfolg wird der Benutzer an die urpsrünglich angeforderte Seite
+weitergeleitet, sofern es eine solche gibt, sonst an die URL
+\code{protected/auth/login-successful} (\ref{std_urls_auth_antw_ergf_login}.).
+Bei Fehlschlag wird der Benutzer an die URL \code{public/auth/login-failed}
+(\ref{std_urls_auth_antw_fehl_login}) weitergeleitet.
+
+\item Antwort nach erfolgreichem Login:\label{std_urls_auth_antw_ergf_login}
+
+\begin{preformatted}[code]%
+  protected/auth/login-successful
+\end{preformatted}
+
+Hierhin wird der Benutzer nach erfolgreichem Login weitergeleitet, wenn er keine
+andere Seite angegeben hat. Ist der Client ein Browser, so ist dies
+i.d.R. ein Alias für die Startseite.
+
+\item Antwort nach fehlgeschlagenem Login:\label{std_urls_auth_antw_fehl_login}
+
+\begin{preformatted}[code]%
+  public/auth/login-failed
+\end{preformatted}
+
+Hierhin wird der Benutzer nach fehlgeschlagenem Login weitergeleitet. Ist der
+Client ein Browser, so ist diese Seite weitgehend mit \code{public/auth/login}
+(\ref{std_urls_auth_login_seite}) identisch, enthält aber zusätzlich eine
+Fehlermeldung. Ist der Client eine Java-Klasse (z.B. der JapsClient), so wird
+eine Textseite mit dem Inhalt \code{"Login failed"} ausgeliefert und zusätzlich
+der Response Header \code{X-Mumie-Login-Required} auf \code{yes} gesetzt.
+
+\item Ausloggen:\label{std_urls_auth_ausloggen}
+
+\begin{preformatted}[code]%
+  protected/auth/logout
+\end{preformatted}
+
+Meldet den Benutzer beim System ab. Bei erfolgreichem Logout wird der Benutzer
+auf die Login-Seite \code{public/auth/login} (\ref{std_urls_auth_login_seite})
+weitergeleitet, sonst auf die Seite \code{protected/auth/logout-failed}
+(\ref{std_urls_auth_logout_fehl}).
+
+\item Antwort nach fehlgeschlagenem Logout:\label{std_urls_auth_logout_fehl}
+
+\begin{preformatted}[code]%
+  protected/auth/logout-failed
+\end{preformatted}
+
+\item Hinweis "bereits eingeloggt"\label{std_urls_auth_ber_eingel}
+
+\begin{preformatted}[code]%
+  protected/auth/already-logged-in
+\end{preformatted}
+
+Auf diese Seite wird weitergeleitet, wenn der Benutzer einen Login-Versuch
+unternimmt, aber bereits eingeloggt ist. 
+
+\end{enumerate}
+
+
+\subsection{Administration}
+
+
+\begin{enumerate}
+
+\item\label{std_urls_admin_home} Administrations-Startseite:
+
+\begin{preformatted}[code]%
+  protected/admin/home
+\end{preformatted}
+
+\item\label{std_urls_admin_clear_cache} Löschen des Caches:
+
+\begin{preformatted}[code]%
+  protected/admin/clear-cache
+\end{preformatted}
+
+Löscht den serverseitigen Cocoon-Cache im Hauptspeicher des Rechners.
+
+\item\label{std_urls_admin_create_sitemap} Erzeugen der Sitemap:
+
+\begin{preformatted}[code]%
+  protected/admin/create-sitemap
+\end{preformatted}
+
+Erwartet eine Sitemap-Quelldatei als Upload; liefert die daraus erzeugte
+Sitemap aus. S. auch \href{sitemap_autocoding.xhtml}{Sitemap-Autocoding
+  Spezifikation}.
+
+\item\label{std_urls_admin_stat_serv_overv} Übersicht über alle Service-Klassen:
+
+\begin{preformatted}[code]%
+  protected/admin/status/service/overview
+\end{preformatted}
+
+Es wird eine Tabelle angezeigt, die für jede Service-Klasse eine Zeile mit
+Informationen enthält.
+
+\item\label{std_urls_admin_stat_serv} Übersicht über eine bestimmte Service-Klasse:
+
+\begin{preformatted}[code]%
+  protected/admin/status/service/class-name/\var{class-name}
+\end{preformatted}
+
+Zeigt detaillierte Informationen zu einer bestimmtem
+Service-Klasse. \var{class-name} ist der Full Qualified Name der Klasse.
+
+\item\label{std_urls_admin_stat_sess_overv} Übersicht über alle Sessions:
+
+\begin{preformatted}[code]%
+  protected/admin/status/sessions/overview
+\end{preformatted}
+
+Es wird eine Tabelle angezeigt, die für jede Session eine Zeile mit
+Informationen enthält.
+
+\end{enumerate}
+
+
+\subsection{Checkin}
+
+\begin{enumerate}
+
+\item\label{std_url_checkin_checkin} Checkin von (Pseudo-)Dokumenten:
+
+\begin{preformatted}[code]%
+  protected/checkin/checkin
+\end{preformatted}
+
+Erweitet ein Zip-Archiv mit Checkin-Dateien als Upload. Führt den Checkin aus
+und liefert eine Antwortseite zurück.
+
+\end{enumerate}
+
+
+\subsection{Correction}\label{std_urls_worksheet_correction}
+
+\begin{enumerate}
+
+\item\label{std_urls_worksheet_correction} Korrektur aller Aufgaben eines Aufgabenblatts
+
+\begin{preformatted}[code]%
+  protected/correction/worksheet/id/\var{doc}
+\end{preformatted}
+Dabei ist \var{doc} die Datenbank-Id eines Dokuments vom Typ \code{worksheet}.\\
+Falls der aufrufende Benutzer \code{staff} der Lehrveranstaltung dieses Kurses
+ist, werden die in diesem Aufgabenblatt enthaltenen (generischen) Aufgaben
+korrigiert, falls nicht schon eine aktuelle Korrektur existiert.\\
+Als aktuell gilt eine Korrektur, wenn sie jünger ist als
+\begin{itemize}
+\item die zugehörige Aufgabe (nicht-generisches \code{problem}),
+\item das zugehörige Anwort-Datasheet und
+\item die zugehörige Korrektorklasse
+\end{itemize}
+Als \code{staff} gilt ein Benutzer, wenn er
+\begin{itemize}
+\item der Benutzergruppe \code{admins} angehört,
+\item ein \code{course_lecturer} der Lehrveranstaltung (\code{class}) des Kurses ist oder
+\item der \code{tutor} eines \code{tutorials} der Lehrveranstaltung (\code{class}) des Kurses ist.
+\end{itemize}
+Wenn als Request-Parameter 
+\begin{preformatted}[code]%
+  force=true
+\end{preformatted}
+mitgegeben wird, werden auch aktuelle Korrekturen mit neuen überschrieben.\\
+\\
+Es wird eine Antwortliste ausgeliefert.
+
+\end{enumerate}
+
+
+\subsection{Error}
+
+\begin{enumerate}
+
+\item\label{std_url_perm_den} "Zugriff-Verweigert"-Meldung:
+
+\begin{preformatted}[code]%
+  protected/error/permission-denied
+\end{preformatted}
+
+\end{enumerate}
+
+
+
+\subsection{Dokumente}\label{std_urls_dok}
+
+Die relative URL eines Dokuments hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  protected/\var{context}/document/\var{type-spec}/\var{type}/\var{doc-spec}/\var{doc}
+\end{preformatted}
+
+Die Variablen haben folgende Bedeutung:
+
+\begin{enumerate}
+
+  \item \var{context}\label{std_urls_docs_context}
+
+    Der Kontext (s. \ref{context_komp}).
+
+  \item \var{type-spec}\label{std_urls_docs_type_spec}
+
+    Gibt an, wie der Dokument-Typ spezifiziert wird, als Name
+    oder numerischer Code. Mögliche Werte: \val{type-name} (als Name),
+    \val{type-code} (als numerischer Code)
+
+  \item \var{type}\label{std_urls_docs_type}
+
+    Der Dokument-Typ. Die möglichen Werte hängen von
+    \var{type-spec} ab: ist \var{type-spec} gleich \val{type-name}, so muss
+    \var{type} ein Dokument-Typ-Name sein (z.B. \val{element},
+    \val{generic_image}); ist \var{type-spec} gleich \val{type-code}, so muss
+    \var{type} ein Dokument-Typ-Code sein (z.B. \val{2}, \val{7}).
+
+  \item \var{doc-spec} 
+
+    Gibt an, wie das Dokument spezifiziert wird, als Id
+    oder Pfad. Mögliche Werte: \val{id} (als Id), \val{path} (als Pfad).
+
+  \item \var{doc} 
+
+    Spezifiziert das Dokument. Die möglichen Werte hängen von
+    \var{doc-spec} ab: ist \var{doc-spec} gleich \val{id}, so muss \var{doc}
+    eine Id sein; ist \var{doc-spec} gleich \val{path}, so muss \var{doc} ein
+    Pfad sein.
+
+\end{enumerate}
+
+Beispiele: (Zeilenumbrüche mit vorangestelltem \code{\meta{\verb'\'}} dienen
+nur der Lesbarkeit und gehören, wie der \code{\meta{\verb'\'}} selbst, nicht
+zur URL.)
+
+\begin{preformatted}[code]%
+  protected/view/document/type-name/xsl_stylesheet/id/35
+
+  protected/view/document/type-name/generic_image/id/143
+
+  protected/view/document/type-code/15/id/35
+
+  protected/view/document/type-code/7/id/143
+
+  protected/view/document/type-name/xsl_stylesheet/path/\meta{\verb'\'}
+    system/common/xsl_page
+
+  protected/view/document/type-name/generic_image/path/\meta{\verb'\'}
+    system/common/g_img_mumie
+\end{preformatted}
+
+
+\subsection{Pseudo-Dokumente}\label{std_urls_psdok}
+
+Die relative URL eines Pseudo-Dokuments hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  protected/\var{context}/pseudo-document/\var{type-spec}/\var{type}/\var{doc-spec}/\var{doc}
+\end{preformatted}
+
+Die Variablen haben folgende Bedeutung:
+
+\begin{enumerate}
+
+  \item \var{context}\label{std_urls_psdocs_context}
+
+    Der Kontext (s. \ref{context_komp}).
+
+  \item \var{type-spec}\label{std_urls_psdocs_type_spec} 
+
+    Gibt an, wie der Typ des Pseudo-Dokuments spezifiziert wird, als Name
+    oder numerischer Code. Mögliche Werte: \val{type-name} (als Name),
+    \val{type-code} (als numerischer Code)
+
+  \item \var{type}\label{std_urls_psdocs_type} 
+
+    Der Typ des Pseudo-Dokuments. Die möglichen Werte hängen von
+    \var{type-spec} ab: ist \var{type-spec} gleich \val{type-name}, so muss
+    \var{type} ein Pseudo-Dokument-Typ-Name sein (z.B. \val{element},
+    \val{generic_image}); ist \var{type-spec} gleich \val{type-code}, so muss
+    \var{type} ein Pseudo-Dokument-Typ-Code sein (z.B. \val{2}, \val{7}).
+
+  \item \var{doc-spec} 
+
+    Gibt an, wie das Pseudo-Dokument spezifiziert wird, als Id
+    oder Pfad. Mögliche Werte: \val{id} (als Id), \val{path} (als Pfad).
+
+  \item \var{doc} 
+
+    Spezifiziert das Pseudo-Dokument. Die möglichen Werte hängen von
+    \var{doc-spec} ab: ist \var{doc-spec} gleich \val{id}, so muss \var{doc}
+    eine Id sein; ist \var{doc-spec} gleich \val{path}, so muss \var{doc} ein
+    Pfad sein.
+
+\end{enumerate}
+
+Beispiele: (Zeilenumbrüche mit vorangestelltem \code{\meta{\verb'\'}} dienen
+nur der Lesbarkeit und gehören, wie der \code{\meta{\verb'\'}} selbst, nicht
+zur URL.)
+
+\begin{preformatted}[code]%
+  protected/view/pseudo-document/type-name/class/id/12
+
+  protected/view/pseudo-document/type-name/tutorial/id/39
+
+  protected/view/pseudo-document/type-code/5/id/12
+
+  protected/view/pseudo-document/type-code/6/id/39
+
+  protected/view/pseudo-document/type-name/class/path/\meta{\verb'\'}
+    org/classes/linalg_sosem_07
+
+  protected/view/pseudo-document/type-name/tutorial/path/\meta{\verb'\'}
+    org/tutorials/linalg_sosem_07/mo_10_12_ma_713
+\end{preformatted}
+
+
+\subsection{(Pseudo-)Dokument-Listen}\label{std_urls_dok_index}
+
+Eine Liste aller Dokumente eines bestimmten Typs erhält man unter folgender
+URL:
+
+\begin{preformatted}[code]%
+  protected/\var{context}/document-index/\var{type-spec}/\var{type}
+\end{preformatted}
+
+Die Variablen \var{context}, \var{type-spec} und \var{type} haben die gleiche
+Bedeutung wie \ref{std_urls_docs_context} bzw. \ref{std_urls_docs_type_spec}
+bzw.  \ref{std_urls_docs_type}.
+
+\label{std_urls_psdok_index}
+
+Eine Liste aller Pseudo-Dokumente eines bestimmten Typs erhält man unter folgender
+URL:
+
+\begin{preformatted}[code]%
+  protected/\var{context}/pseudo-document-index/\var{type-spec}/\var{type}
+\end{preformatted}
+
+Die Variablen \var{context}, \var{type-spec} und \var{type} haben die gleiche
+Bedeutung wie \ref{std_urls_psdocs_context} bzw.
+\ref{std_urls_psdocs_type_spec} bzw.  \ref{std_urls_psdocs_type}.
+
+\label{std_url_cls_crs_index}
+
+Eine gemeinsame Liste aller Lehrveranstaltungen und Kurse erhält man unter folgender
+URL:
+
+\begin{preformatted}[code]%
+  protected/\var{context}/classes-and-courses-index
+\end{preformatted}
+
+Die Variable \var{context} hat die gleiche Bedeutung wie
+\ref{std_urls_docs_context}. 
+
+
+
+\subsection{Aufgabendaten}
+
+\begin{enumerate}
+
+\item Download der Aufgabendaten: \label{std_urls_downl_aufgd}
+
+\begin{preformatted}[code]%
+  protected/homework/problem-data
+\end{preformatted}
+
+Liefert die Daten zu einem Benutzer und einer Aufgabe als Datasheet. Der
+Benutzer ist der der Session, die Aufgabe ergibt sich aus der Id der Referenz
+Aufgabenblatt-Aufgabe, die durch den Request-Parameter \val{ref} übertragen
+wird.
+
+\item Speicherung von Antworten: \label{std_urls_store_prb_ans}
+
+\begin{preformatted}[code]%
+  protected/homework/store-problem-answers
+\end{preformatted}
+
+Die Antworten befinden sich als Datasheet im Request-Parameter
+\val{content}. Daneben muss ein weiterer Request-Parameter \val{ref} übertragen
+werden, der die Id der Referenz Aufgabenblatt-Aufgabe enthält.
+
+\item Korrektur: \label{std_urls_prb_corr}
+
+\begin{preformatted}[code]%
+  protected/homework/problem-correction
+\end{preformatted}
+
+Liefert die Korrektur einer Aufgabe für einen Benutzer. Wird die URL vom
+Lehrpersonal oder Administrator aufgerufen und existiert der
+Request-Parameter \val{user}, so ergibt sich der Benutzer aus diesem Parameter,
+sonst aus dem Besitzer der Session. Die Aufgabe ergibt sich aus Id der Referenz
+Aufgabenblatt-Aufgabe, die durch den Request-Parameter \val{ref} übertragen
+wird.
+
+\end{enumerate}
+
+\subsection{Aliase}
+
+\begin{enumerate}
+
+\item Startseite:\label{std_urls_start}
+
+\begin{preformatted}[code]%
+  protected/alias/start
+\end{preformatted}
+
+\item Kursauswahlseite:\label{std_urls_courses}
+
+\begin{preformatted}[code]%
+  protected/alias/courses
+\end{preformatted}
+
+\item Verwaltung des eigenen Kontos:\label{std_urls_account}
+
+\begin{preformatted}[code]%
+  protected/alias/account
+\end{preformatted}
+
+\item Administrator-Seite:\label{std_urls_admin}
+
+\begin{preformatted}[code]%
+  protected/alias/admin
+\end{preformatted}
+
+\item Einstiegsseite für den DB-Browser:\label{std_urls_db_browser}
+
+\begin{preformatted}[code]%
+  protected/alias/db-browser
+\end{preformatted}
+
+\item Leere Seite:\label{std_urls_void}
+
+\begin{preformatted}[code]%
+  protected/alias/void
+\end{preformatted}
+
+\end{enumerate}
+
+
+
+-- ENDE DER DATEI -- 
+
+\end{document}

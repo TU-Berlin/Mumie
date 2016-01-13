@@ -1,0 +1,237 @@
+/*
+ * The MIT License (MIT)
+ * 
+ * Copyright (c) 2010 Technische Universitaet Berlin
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+/* Javadoc stylesheet for the net.mumie.cocoon.* packages */
+/* Based on the default Javadoc style sheet. */
+
+/* Author:  Tilman Rassy */
+/* $Id: apidocs.css,v 1.2 2004/01/21 16:52:31 fmeyer Exp $ */
+
+
+/* ================================================================================ */
+/*                            Default Javadoc stylesheet                            */
+/* ================================================================================ */
+
+/* Javadoc style sheet */
+
+/* Define colors, fonts and other style attributes here to override the defaults  */
+
+/* Page background color */
+body { background-color: #FFFFFF }
+
+/* Table colors */
+.TableHeadingColor     { background: #CCCCFF } /* Dark mauve */
+.TableSubHeadingColor  { background: #EEEEFF } /* Light mauve */
+.TableRowColor         { background: #FFFFFF } /* White */
+
+/* Font used in left-hand frame lists */
+.FrameTitleFont   { font-size: normal; font-family: normal }
+.FrameHeadingFont { font-size: normal; font-family: normal }
+.FrameItemFont    { font-size: normal; font-family: normal }
+
+/* Example of smaller, sans-serif font in frames */
+/* .FrameItemFont  { font-size: 10pt; font-family: Helvetica, Arial, sans-serif } */
+
+/* Navigation bar fonts and colors */
+.NavBarCell1    { background-color:#EEEEFF;}/* Light mauve */
+.NavBarCell1Rev { background-color:#00008B;}/* Dark Blue */
+.NavBarFont1    { font-family: Arial, Helvetica, sans-serif; color:#000000;}
+.NavBarFont1Rev { font-family: Arial, Helvetica, sans-serif; color:#FFFFFF;}
+
+.NavBarCell2    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
+.NavBarCell3    { font-family: Arial, Helvetica, sans-serif; background-color:#FFFFFF;}
+
+
+
+/* ================================================================================ */
+/*                             Changes/additions                                    */
+/* ================================================================================ */
+
+a
+{
+  text-decoration: none;
+  color: #0000C0;
+}
+
+/* a > code */
+/* { */
+/*   color: #0000C0; */
+/* } */
+
+a:hover, a:focus
+{
+  background-color: #C1FFC1;
+}
+
+a:active
+{
+  background-color: #0000C0;
+  color: #C1FFC1;
+}
+
+a:visited
+{
+  color: #000080;
+}
+
+/* a:visited > code */
+/* { */
+/*   color: #000080; */
+/* } */
+
+table[border="1"]
+{ 
+  border-collapse: collapse;
+}
+
+table[border="1"], table[border="1"] thead, table[border="1"] tbody, table[border="1"] tfoot, table[border="1"] tr, table[border="1"] td
+{
+  border-style: solid;
+  border-width: 1px;
+}
+
+.TableHeadingColor
+{
+  background-color: #D3D3D3;
+}
+
+.TableSubHeadingColor
+{ 
+  background-color: #EFEFEF;
+}
+
+.NavBarCell1
+{ 
+  background-color: #EFEFEF;
+}
+
+.NavBarCell1 a
+{ 
+  text-decoration: none;
+}
+
+.NavBarFont1
+{ 
+  color: #0000C0;
+}
+
+.NavBarCell1Rev
+{ 
+  background-color: #0000C0;
+}
+
+code, .code
+{
+  font-family: courier, monospace;
+/*   color: #a0522d; */
+}
+
+kbd, .kbd
+{ 
+  font-family: courier, monospace;
+  color: #CD0000;
+}
+
+var, .var
+{ 
+  font-family: courier, monospace;
+  font-style: normal;
+  color: #8B008B;
+}
+
+.string
+{ 
+  font-family: courier, monospace;
+  font-style: normal;
+  color: #228B22;
+}
+
+.file
+{ 
+  font-family: courier, monospace;
+  font-style: normal;
+  color: #009999;
+}
+
+table.genuine
+{
+/*   background-color: #EFEFEF; */
+/*   border-style: solid; */
+/*   border-width: 2px; */
+  border-collapse: collapse; */
+/*   border-color: #6C6C6C; */
+}
+
+table.genuine > thead
+{ 
+  background-color: #EAEAEA;
+  font-weight: bold;
+}
+
+table.genuine > thead > tr > td, table.genuine > tbody > tr > td, table.genuine > tfoot > tr > td, table.genuine > tr > td
+{
+  text-align: left;
+  vertical-align: baseline;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 4px;
+  padding-bottom:4px;
+  border-style: solid;
+  border-color: #949494;
+  border-width: 1px;
+}
+
+table.invisible
+{
+  border-style: none;
+}
+
+dl.genuine > dt
+{ 
+  font-weight: bold;
+}
+
+dl.code-terms > dt
+{ 
+  font-family: courier, monospace;
+}
+
+dl.cmdline-params > dt
+{
+  font-family: courier, monospace;
+  font-weight: bold;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+dl.cmdline-params > dd
+{
+  margin-top: 1px;
+  margin-bottom: 1px;
+}
+
+.indented
+{
+  margin-left: 20px;
+}

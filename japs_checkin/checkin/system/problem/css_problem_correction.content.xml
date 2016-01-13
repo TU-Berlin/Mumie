@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='ASCII'?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+  Author: Tilman Rassy <rassy@math.tu-berlin.de>
+  $Id: css_problem_correction.content.xml,v 1.1 2008/09/02 13:02:09 rassy Exp $
+-->
+
+<css:style xmlns:css='http://www.mumie.net/xml-namespace/document/content/css_stylesheet'>
+
+<!-- ================================================================================ -->
+<!-- h1: Definitions                                                                  -->
+<!-- ================================================================================ -->
+
+<!-- Font sizes, relative: -->
+<css:def id="Small-rel" value="75%"/>
+<css:def id="small-rel" value="85%"/>
+<css:def id="normalsize-rel" value="100%"/>
+<css:def id="large-rel" value="125%"/>
+<css:def id="Large-rel" value="150%"/>
+<css:def id="LARGE-rel" value="200%"/>
+
+<!-- Colors: -->
+<css:def id="box-fill-color" value="#FBFBFB"/>
+<css:def id="box-border-color" value="#949494"/>
+<css:def id="hover-fill-color" value="#E3FFE3"/>
+
+<!-- Values for margin or padding: -->
+<css:def id="no-space" value="0px 0px 0px 0px"/>
+<css:def id="default-space" value="1em 1em 1em 1em"/>
+
+<!-- ================================================================================ -->
+<!-- h1: Headlines                                                                    -->
+<!-- ================================================================================ -->
+
+<css:rule selector='h4'>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<css:rule selector='h3'>
+  <css:property name='font-size' ref='normalsize-rel'/>
+</css:rule>
+
+<css:rule selector='h2'>
+  <css:property name='font-size' ref='large-rel'/>
+</css:rule>
+
+<css:rule selector='h1'>
+  <css:property name='font-size' ref='Large-rel'/>
+</css:rule>
+
+<css:rule selector='h1, h2, h3, h4, h5'>
+  <css:property name='font-weight' value='bold'/>
+  <css:property name='margin' value='1em 0em 0.5em 0em'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Subtask numbering                                                            -->
+<!-- ================================================================================ -->
+
+<css:rule selector='td.subtask-number'>
+  <css:property name='vertical-align' value='top'/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Display as list                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector='dl.marking'>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' value="0em 0em 0em 0em"/>
+</css:rule>
+
+<css:rule selector='dl.marking dt'>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' value="1em 0em 0.5em 0em"/>
+  <css:property name='font-weight' value='bold'/>
+</css:rule>
+
+<css:rule selector='dl.marking dt:first-child'>
+  <css:property name='margin-top' value="0em"/>
+</css:rule>
+
+<css:rule selector='dl.marking dd'>
+  <css:property name='padding' ref="no-space"/>
+  <css:property name='margin' value="0.5em 0em 0.5em 2em"/>
+</css:rule>
+
+<!-- ================================================================================ -->
+<!-- h1: Display as table                                                                  -->
+<!-- ================================================================================ -->
+
+<css:rule selector='table.genuine td'>
+  <css:property name='vertical-align' value="top"/>
+</css:rule>
+
+</css:style>

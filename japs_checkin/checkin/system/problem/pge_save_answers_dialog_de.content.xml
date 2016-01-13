@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!--
+   $Id: pge_save_answers_dialog_de.content.xml,v 1.8 2009/10/20 15:21:32 linges Exp $
+-->
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:mmx="http://www.mumie.net/xml-namespace/xhtml-extention">
+  <head>
+    <title>Antworten speichern</title>
+    <mmx:css-stylesheet/>
+    <script type="text/javascript" mmx:src="lid=jsl-ajax"/>
+    <script type="text/javascript">
+      var answers = window.opener.problemAnswers;
+
+      function saveAnswers ()
+      {
+        var ref = answers.getProblemRef();
+        var problem = answers.getProblemId();
+        var worksheet = answers.getWorksheetId();
+        var course = answers.getCourseId();
+        var content= answers.getAsString();
+        var request = new MmHttpRequest();
+        var handler = function ()
+          {
+            if ( request.getReadyState() == 4 )
+              {
+                if ( request.getStatus() == 200 )
+                  {
+                    var mmStatus = request.getResponseHeader("X-Mumie-Status");
+                    if ( !mmStatus || /^ERROR:/.test(mmStatus) )
+                      handleFailure(mmStatus);
+                    else
+                      handleSuccess(mmStatus, request.getResponseHeader("X-Mumie-Filename"));
+                  }
+                else
+                  handleFailure();
+              }
+          };
+        var path = answers.getStoreAnswersPath();
+        request.init("POST", path, false);
+        request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        request.setContent
+          ("ref=" + ref +
+           "&amp;problem=" + problem +
+           "&amp;worksheet=" + worksheet +
+           "&amp;course=" + course +
+           "&amp;content=" + encodeURIComponent(content) +
+           "&amp;send-receipt-with-response=false");
+        request.setHandler(handler);
+        request.send();
+      }
+
+      function handleSuccess (mmStatus, receiptFilename)
+      {
+
+
+        if ( mmStatus == "OK. Issued receipt" )
+          {
+            <!-- var receiptURL =
+              answers.URL_PREFIX + "/" + answers.RECEIPT_PATH + "/" + receiptFilename; -->
+            
+            var receiptURL ="problem-answers-reseipt/" + receiptFilename; 
+            document.getElementById("A.receipt").setAttribute("href", receiptURL);
+            document.getElementById("P.receipt").style.display = "block";
+          }
+        document.getElementById("DIV.initial").style.display = "none";
+        document.getElementById("DIV.feedback-success").style.display = "block";
+      }
+
+      function handleFailure (mmStatus)
+      {
+        var id;
+        if ( mmStatus == "ERROR: Before timeframe" )
+          id = "P.error-before-timeframe";
+        else if ( mmStatus == "ERROR: After timeframe" )
+          id = "P.error-after-timeframe";
+        else if ( mmStatus == "ERROR: Not a course member")
+          id = "P.error-not-a-course-member";
+        else
+          id = "P.error-unknown";
+
+        document.getElementById(id).style.display = "block";
+        document.getElementById("DIV.initial").style.display = "none";
+        document.getElementById("DIV.feedback-failure").style.display = "block";
+      }
+    </script>
+  </head>
+
+  <body onload="javascript:saveAnswers()">
+
+    <div class="main-bounded-width" id="DIV.initial">
+      <h1>Antworten speichern</h1>
+      <p>
+        Antworten werden gespeichert &#8230;
+      </p>
+    </div>
+
+    <div class="main-bounded-width" id="DIV.feedback-success" style="display:none">
+      <h1>MUMIE Antworten speichern</h1>
+      <p>
+        Antworten erfolgreich gespeichert.
+      </p>
+      <p id="P.receipt" style="display:none">
+        F&#252;r Ihre Abgabe wurde eine elektronische Quittung erstellt.
+        <a id="A.receipt">Quittung herunterladen</a>
+      </p>
+      <p>
+        <button type="button" onclick="javascript:window.close()">Fenster schlie&#223;en</button>
+      </p>
+    </div>
+
+    <div class="main-bounded-width" id="DIV.feedback-failure" style="display:none">
+      <h1>MUMIE Antworten speichern</h1>
+      <div class="error">
+        <p>
+          Beim Speichern ist ein Fehler aufgetreten:
+        </p>
+        <p id="P.error-before-timeframe" style="display:none">
+          Der Bearbeitungszeitraum hat noch nicht begonnen.
+        </p>
+        <p id="P.error-after-timeframe" style="display:none">
+          Der Bearbeitungszeitraum ist bereits abgelaufen
+        </p>
+        <p id="P.error-not-a-course-member" style="display:none">
+          Sie sind nicht Mitglied der Lehrveranstaltung, zu der diese Aufgabe geh&#246;rt.
+        </p>
+        <p id="P.error-unknown" style="display:none">
+          Unbekannter Fehler
+        </p>
+      </div>
+      <p>
+        <button type="button" onclick="javascript:window.close()">Fenster schlie&#223;en</button>
+      </p>
+    </div>
+
+  </body>
+</html>

@@ -1,0 +1,164 @@
+#!/usr/bin/perl -w
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+# $Id: mmrpl,v 1.1.1.1 2009/07/03 11:35:49 rassy Exp $
+
+use Getopt::Long;
+
+sub message
+  {
+    print(@_) unless ( $quiet );
+  }
+
+sub read_file
+  {
+    my $filename = $_[0];
+    open(INPUT, $filename) or die("Can't open file $filename for reading: $!\n");
+    my $input = join('', <INPUT>);
+    close(INPUT);
+    return(\$input);
+  }
+
+sub write_file
+  {
+    my ($output_ref, $filename) = @_;
+    open(OUTPUT, ">$filename") or die("Can't open file $filename for writing: $!\n");
+    print(OUTPUT ${$output_ref});
+    close(OUTPUT);
+  }
+
+sub replace_in_file
+  {
+    my ($pattern, $replacement, $input_filename, $output_filename) = @_;
+    $output_filename ||= $input_filename;
+    my $input = read_file($input_filename);
+    my $code = '${$input} =~ s/' . "$pattern/$replacement/gm";
+    my $count = eval($code);
+    write_file($input, $output_filename);
+    return ( $count || 0 );
+  }
+
+sub do_replacements
+  {
+    my $count = 0;
+
+    defined($pattern) || die("Missing pattern\n");
+    defined($replacement) || die("Missing replacement\n");
+
+    if ( scalar(@input_filenames) == 1 )
+      {
+        $count = replace_in_file($pattern, $replacement, $input_filenames[0], $output_filename);
+        message("$count\n")
+          unless ( ( $count == 0 ) && $suppress_unchanged );
+      }
+    elsif ( scalar(@input_filenames) > 1 )
+      {
+        if ( $output_filename  )
+          {
+            die("Ouput file must not be specified with multiple input files\n");
+          }
+        foreach my $filename (@input_filenames)
+          {
+            $count = replace_in_file($pattern, $replacement, $filename, $filename);
+            message("$filename: $count\n")
+              unless ( ( $count == 0 ) && $suppress_unchanged );
+          }
+      }
+    else
+      {
+        message("No input files specified\n");
+      }
+  }
+
+sub show_help
+  {
+    print(
+"Usage:
+  $program_name \[OPTIONS\] PATTERN REPLACEMENT FILE1 FILE1 ...
+  $program_name \[ --echo | -e | --help | -h | --version | -v \]
+Description:
+  Replaces each occurrence of PATTERN by REPLACEMENT in each file FILE1, FILE2,
+  etc. PATTERN is interpreted as a Perl regular expression.
+    The output is written to the same file the input comes from unless the
+  --output or -o option is set. This option is allowed only if exactly one
+  input file is given.
+    For each file successfuly processed, the program prints the number of
+  replacements to stdout; and when more then one input file is given, the
+  input filename is printed in front of that number. This messages can be
+  turned off by setting the --quiet or -q option. If the --ignaore-unchanged
+  or -s option is set, messages for files with no replacements are suppressed.
+Options:
+  --help, -h
+      Print this help text and exit.
+  --version, -v
+      Print version information and exit.
+  --output=FILE, -o FILE
+      Write output to FILE. Allowed only if exactly one input file is given.
+  --quiet, -q
+      Suppress messages to stdout.
+  --suppress-unchanged, -s
+      Supress messages for files where no replacements where made
+  --echo, -e
+      Print PATTERN and REPLACEMENT to stdout and exit (useful to check what
+      arrived at the program after shell command line processing).
+");
+  }
+
+sub show_version
+  {
+    print('$Version$', "\n");
+  }
+
+sub echo
+  {
+    print("-->$pattern<-- -->$replacement<--\n");
+  }
+
+$program_name = 'mmrpl';
+$task = \&do_replacements;
+$quiet = 0;
+$suppress_unchanged = 0;
+$output_filename = undef();
+
+GetOptions
+  (
+   'output|o=s' => \$output_filename,
+   'quiet|q' => \$quiet,
+   'echo|e' => sub { $task = \&echo },
+   'suppress-unchanged|s' => \$suppress_unchanged,
+   'version|v' => sub { $task = \&show_version },
+   'help|h' => sub { $task = \&show_help },
+  )
+  or exit($!);
+
+$pattern = shift();
+$replacement = shift();
+@input_filenames = @ARGV;
+$| = 1;
+
+&{$task}();
+
+
+

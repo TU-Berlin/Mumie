@@ -1,0 +1,194 @@
+package net.mumie.srv.notions;
+
+public class FileRole
+{
+  // --------------------------------------------------------------------------------
+  // Global variabled and constants, except autocoded 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * The undefined file role.
+   */
+
+  public static final int UNDEFINED = -1;
+
+  // --------------------------------------------------------------------------------
+  // Auxiliaries 
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the array index of the specified file role code.
+   */
+
+  protected static final int indexOf (int code)
+  {
+    int index = -1;
+    for (int i = 0; i < fileRoles.length && index == -1; i++)
+      {
+        if ( fileRoles[i] == code )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid file role code: " + code);
+    return index;
+  }
+
+  /**
+   * Returns the array index of the file role with the specified name.
+   */
+
+  protected static final int indexOf (String name)
+  {
+    int index = -1;
+    for (int i = 0; i < names.length && index == -1; i++)
+      {
+        if ( names[i].equals(name) )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid file role name: " + name);
+    return index;
+  }
+
+  /**
+   * Returns the array index of the file role with the specified suffix.
+   */
+
+  protected static final int indexOfSuffix (String suffix)
+  {
+    int index = -1;
+    for (int i = 0; i < suffixes.length && index == -1; i++)
+      {
+        if ( suffixes[i].equals(suffix) )
+          index = i;
+      }
+    if ( index == -1 )
+      throw new IllegalArgumentException("Invalid file role suffix: " + suffix);
+    return index;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting codes for names and vice versa
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the name for the file role represented by the specified numerical
+   * code.
+   */
+
+  public static final String nameFor (int code)
+  {
+    return names[indexOf(code)];
+  }
+
+  /**
+   * Returns the numerical code for the specified file role name.
+   */
+
+  public static final int codeFor (String name)
+  {
+    return fileRoles[indexOf(name)];
+  }
+
+  /**
+   * Returns the numerical code of the file role for the specified suffix.
+   */
+
+  public static final int codeForSuffix (String suffix)
+  {
+    return fileRoles[indexOfSuffix(suffix)];
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting suffixes
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns the suffix for the file role represented by the specified numerical
+   * code.
+   */
+
+  public static final String suffixOf (int code)
+  {
+    return suffixes[indexOf(code)];
+  } 
+
+  /**
+   * Returns the suffix for the specified file role name.
+   */
+
+  public static final String suffixOf (String name)
+  {
+    return suffixes[indexOf(name)];
+  } 
+
+  // --------------------------------------------------------------------------------
+  // Checking whether a code or name exists as a file role
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns true if the specified integer exists as a file role code;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (int code)
+  {
+    for (int i = 0; i < fileRoles.length; i++)
+      {
+        if ( fileRoles[i] == code )
+          return true;
+      }
+    return false;
+  }
+
+  /**
+   * Returns true if the specified string exists as a file role name;
+   * otherwise returns false.
+   */
+
+  public static final boolean exists (String name)
+  {
+    for (int i = 0; i < names.length; i++)
+      {
+        if ( names[i].equals(name) )
+          return true;
+      }
+    return false;
+  }
+
+  // --------------------------------------------------------------------------------
+  // Getting all file roles
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Returns an array containing all file roles. The array is is not backed by any
+   * variables of this class, so changes to the array do not effect this class. 
+   */
+
+  public static final int[] allFileRoles ()
+  {
+    int[] fileRolesCopy = new int[fileRoles.length];
+    System.arraycopy(fileRoles, 0, fileRolesCopy, 0, fileRoles.length);
+    return fileRolesCopy;
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private FileRole ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("FileRole must not be instanciated");
+  }
+}

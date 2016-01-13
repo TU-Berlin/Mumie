@@ -1,0 +1,141 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Auflösung generischer Dokumente}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: aufl_gen_dok.tex,v 1.3 2007/09/24 12:57:20 rassy Exp $}
+
+Unter der \emph{Auflösung eines generischen Dokuments} versteht man die
+Aufgabe, zu einem gegebenem generischen Dokument, einem gegebenem Theme und
+einer gegebenen Sprache das entsprechende "reale" Dokument aufzufinden. Diese
+Spezifikation beschreibt die Hintergründe und Regeln der Auflösung generischer
+Dokumente.
+
+\tableofcontents
+
+\section{Bezeichnungen}
+
+In der Spezifikation werden durchgängig folgende Notationen verwendet:
+
+\begin{table}[\cellaligns{cl}]
+\head
+Notation & Bedeutung
+\body
+$G$ & Menge aller generischen Dokumente \\
+$T$ & Menge aller Themes \\
+$L$ & Menge aller Sprachen \\
+$R$ & Menge aller realen Dokumente \\
+$t_0$ & Default-Theme \\
+$\ell_0$ & Default-Sprache \\
+$\ell_\ast$ & neutrale Sprache \\
+$f$ & Auflösungs-Abbbildung (s. \ref{aufl_abb}) \\
+$D$ & Definitionsbereich von $f$ (s. \ref{aufl_abb})
+\end{table}
+
+Die \emph{neutrale Sprache} kennzeichnet sprach-unspezifische Inhalte wie
+z.B. Bilder oder CSS-Stylesheets. Ihr internationaler Sprach-Code ist
+\code{zxx}.
+
+\section{Die Auflösungs-Abbildung}\label{aufl_abb}
+
+Sei $D$ die Menge aller Tripel $(g, t, \ell) \in G \times T \times L$, für die ein
+reales Dokument existiert. Ferner sei $f$ die Abbildung $D \rightarrow R$, die
+jedem $(g, t, \ell) \in D$ das entsprechende reale Dokument zuordnet. $f$ 
+heisst \emph{Auflösungs-Abbildung}. Der Wert eines $(g, t, \ell) \in D$
+bezüglich $f$ wird wie üblich mit $f(g, t, \ell)$ bezeichnet.
+
+[Spachvereinbarung: Sei $(g, t, \ell) \in G \times T \times L$ beliebig. Wir
+sagen, $f(g, t, \ell)$ \emph{existiert}, genau dann wenn $(g, t, \ell) \in D$.]
+
+Für jedes Paar von generischem und entsprechenden realen Dokumenttyp gibt es in
+der Datenbank eine Tabelle \code{gdim_\var{doctype}}, die die
+Auflösungs-Abbildung implementiert. \var{doctype} ist er Name des realen
+Dokumenttyps. Die Tabelle hat folgende Spalten:
+
+\begin{table}
+\head
+  Spalte & Beschreibung
+\body
+  \code{theme} & Id des Themes\\
+  \code{language} & Id der Spache\\
+  \code{generic_document} & Id des generischen Dokuments\\
+  \code{document} & Id des realen Dokuments\\
+\end{table}
+
+\section{Auflösung eines generischen Dokuments}
+
+Seien $t$ und $\ell$ das Theme bzw. die Sprache eines Benutzers. Angenommen,
+der Benutzer fordert das generische Dokument $g$ an. Gesucht ist das reale
+Dokument $r$, das der Japs ausliefern soll. Dabei ist zu bedenken, dass auch
+dann ein geeignetes reales Dokument ausgeliefert werden soll, wenn $f(g, t,
+\ell)$ nicht existiert.
+
+Die Regel für das Auffinden von $r$ lautet: $r$ ist das erste Dokument in der
+folgenden Reihe, das existiert:
+
+\begin{enumerate}
+\item $f(g, t,\ell)$
+\item $f(g, t_0,\ell)$
+\item $f(g, t,\ell_\ast)$
+\item $f(g, t_0,\ell_\ast)$
+\item $f(g, t,\ell_0)$
+\item $f(g, t_0,\ell_0)$
+\end{enumerate}
+
+Die Regel ist offenbar so konzipiert, dass immer zuerst ein Dokument in der
+Sprache des Benutzers gesucht wird. Erst wenn weder im Benutzer- noch im
+Default-Theme ein Dokument in dieser Sprache existiert, wird auf die neutrale
+und dann auf die Default-Sprache zurückgegriffen.
+
+Damit $r$ immer existiert, wird folgendes gefordert:
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item Für alle $g \in G$ existiert $f(g, t_0, \ell_\ast)$ oder $f(g, t_0, \ell_0)$.
+\end{enumerate}
+
+In Worten: Für jedes generische Dokument existiert das entsprechende reale
+Dokument im Default-Theme und der neutralen Sprache oder das entsprechende
+reale Dokument im Default-Theme und der Default-Sprache.
+
+In der Software wird obige Regel durch das Java-Interface
+
+\begin{preformatted}%
+  net.mumie.cocoon.util.GenericDocumentResolver
+\end{preformatted}
+
+repräsentiert. Dieses Interface definiert folgende Methode:
+
+\begin{preformatted}%
+  public int resolve (int typeOfGeneric,
+                      int idOfGeneric,
+                      int languageId,
+                      int themeId)
+    throws GenericDocumentResolveException;
+\end{preformatted}
+
+Die Argumente haben folgende Bedeutungen:
+
+\begin{table}
+\head
+  Argument & Bedeutung
+\body
+  \code{typeOfGeneric} & Typ des generischen Dokuments, als Zahlencode\\
+  \code{idOfGeneric} & Id der des generischen Dokuments\\
+  \code{languageId} & Id der Sprache\\
+  \code{themeId} & Id des Themes
+\end{table}
+
+Die Methode liefert für das durch die Argumente gegebene Tripel aus generischem
+Dokument, Theme und Sprache die Id des entsprechenden realen Dokuments zurück.
+
+-- ENDE DER DATEI --
+
+\end{document}

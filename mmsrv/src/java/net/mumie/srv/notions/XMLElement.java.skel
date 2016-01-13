@@ -1,0 +1,34 @@
+package net.mumie.srv.notions;
+
+public class XMLElement
+{
+  /**
+   * Returns the XML element name of the specified data entity type. Same as
+   * {@link EntityType#xmlElementOf EntityType.xmlElementOf(type)}.
+   */
+
+  public static final String ofEntityType (int type)
+  {
+    return EntityType.xmlElementOf(type);
+  }
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+
+  /**
+   * Disabled constructor.
+   */
+
+  private XMLElement ()
+    throws IllegalAccessException
+  {
+    throw new IllegalAccessException("XMLElement must not be instanciated");
+  }
+}

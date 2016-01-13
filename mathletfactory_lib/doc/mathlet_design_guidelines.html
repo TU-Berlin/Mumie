@@ -1,0 +1,178 @@
+<html>
+<head>
+  <title>Mathlet Design Guidelines</title>
+</head>
+<body>
+<a name="top"></a>
+Autor: Markus Gronau &lt;gronau@math.tu-berlin.de&gt;<br>
+$Id: mathlet_design_guidelines.html,v 1.1 2005/10/22 18:13:12 gronau Exp $
+
+<center><h1>Mathlet Design Guidelines</h1></center>
+
+
+<ol>                  
+  <li><a href="#Allgemein">Allgemein</a></li>
+  <li><a href="#Hausaufgaben">Hausaufgaben</a></li>
+  <li><a href="#Templates">Templates</a>
+  <ol>
+    <li><a href="#Rumpf_Mathlets">Rumpf für Mathlets</a></li>
+    <li><a href="#Rumpf_Corrector">Rumpf für Corrector-Klassen</a></li>
+  </ol>
+  </li>
+</ol>
+<hr>
+
+<a name="Allgemein"/>
+<h2>1. Allgemein</h2>
+<ul><li>
+     die Wahl eines Applet-Skeleton-Typs für ein Mathlet sollte eine wohlüberlegte
+     Tat sein, da sich ein späteres Umstellen auf einen anderen Mathlet-Typen meist
+     als sehr umfangreich darstellt.
+<br><br></li><li>
+     alle Methoden eines Mathlets sollten mit dem private Attribut
+     ausgestattet werden, um einen Missbrauch von Methoden-Aufrufen zu
+     gewährleisten. Dies schließt nicht jene Methoden ein, die durch die
+     Methoden-Vererbung bedingt nicht in ihrer Sichtbarkeit eingeschränkt
+     werden können (wie z.B. die public-Methoden <i>init()</i> und <i>reset()</i>).
+<br><br></li><li>
+     der "Einstiegspunkt" oder die erste aufgerufene Methode eines Applets
+     ist die <i>init()</i>-Methode. Sie wird zum Initialisieren des Applets vom
+     Web-Browser aufgerufen. Auszuführender Code muss also in dieser Methode
+     geschrieben werden. Die vollständige Beschreibung lautet:
+        <pre>public void init()</pre>
+<br></li><li>
+     um eine Applet-Skeleton-Klasse erfolgreich zu instantieren ist der Aufruf
+     der <i>init()</i>-Methode der Super-Klasse des Mathlets (z.B. <i>SingleG2DCanvasApplet, NoCanvasApplet</i>)
+     in der gleichnamigen Methode des Mathlets (am besten an erster Stelle) zu schreiben.
+     D.h. in der init()-Methode eines Mathlets steht folgender Aufruf an 1. Stelle.
+        <pre>super.init();</pre>
+<br></li><li>
+     Objekt-Definitionen sollten in der Methode
+        <pre>private void initializeObjects()</pre>
+     stehen. Unter Umständen kann diese Methode auch in der <i>reset()</i>-Methode
+     zum Neubesetzen von Werten dienen.
+<br><br></li><li>
+     nach dem Initialisieren der (MM)-Objekte werden in der Methode
+        <pre>private void defineDependencies()</pre>
+     die Dependecy-Adapter der MM-Objekte gesetzt.
+<br><br></li><li>
+     die Zahlenklasse eines Mathlets sollte im Feld
+        <pre>private Class numberClass</pre>
+     als 1. Variablen-Definition im Mathlet stehen. Durch Zuweisen von Werten wie z.B.
+        MInteger.class oder MRational.class oder MComplex.class
+     wird die Handhabe von MM-Objekten vereinfacht, da (fast) jedes von ihnen
+     eine Klasse als Argument im Konstruktor beinhaltet. Durch das Benutzen
+     einer einheitlichen Zalenklasse wird des weiteren die Flexibilität
+     des Mathlets erhöht.
+<br><br></li><li>
+     GUI-Komponenten wie z.B. Klick-Buttons, Panels, Labels, Renderer, ...
+     sollten in einem Mathlet erst nach dem Aufruf von super.init() mit dem
+     new Operator erstellt werden. Dies heißt insbesondere, dass Initialisierungen
+     nicht im Kopf des Mathlets stattfinden dürfen.
+</li></ul>
+<p align="right"><a href="#top">nach oben</a></p>
+<hr>
+<a name="Hausaufgaben"/>
+<h2>2. Hausaufgaben</h2>
+
+<ul><li>
+Hochpoppen des Applet-Fensters
+<ul><li>
+beim Start des Applets
+</li><li>
+nach Interaktion mit Website ("select"-Methoden)
+</li></ul>
+<br></li><li>
+Bestätigung durch den Benutzer
+<ul><li>
+wenn nicht alles ausgefüllt wurde und gespeichert werden soll
+</li><li>
+Löschen der Ergenisse eines Subtasks
+</li><li>
+Löschen aller Ergebnisse durch den Reset-Button
+</li></ul>
+</li></ul>
+
+<p align="right"><a href="#top">nach oben</a></p>
+<hr>
+<a name="Templates"/>
+<h2>3. Templates</h2>
+
+<a name="Rumpf_Mathlets"/>
+<h3>1. Rumpf für Mathlets</h3>
+<font color="darkblue"><pre>
+/**
+ * <i>Englische Beschreibung</i>
+ * 
+ * @author <i>Autor</i>
+ * @mm.docstatus finished
+ * @mm.status devel_ok
+ * @mm.description <i>Deutsche Beschreibung</i>
+ * @mm.rating none
+ * @mm.changelog 2004-11-18: Initial
+ * @mm.width 600
+ * @mm.height 600
+ */
+</pre></font>
+
+<a name="Rumpf_Corrector"/>
+<h3>2. Rumpf für Corrector-Klassen</h3>
+<font color="darkblue"><pre>
+/**
+ * @author <i>Autor</i>
+ * 
+ * @mm.category corrector
+ * @mm.status devel_ok
+ * @mm.description <i>Deutsche Beschreibung</i>
+ * @mm.changelog 2005-10-05: Initial
+ */
+</pre></font>
+<pre>
+import net.mumie.mathletfactory.mmobject.number.MMInteger;
+import net.mumie.mathletfactory.display.noc.number.MMNumberPanel;
+import net.mumie.mathletfactory.util.BasicApplicationFrame;
+
+import net.mumie.mathletfactory.appletskeleton.&lt;Applet-Skeleton-Klasse&gt;;
+
+public class &lt;Mathlet Name&gt; extends &lt;Applet-Skeleton-Klasse&gt; {
+
+  MMInteger number;
+  MMNumberPanel numberPanel;
+
+  public void init() {
+    super.init();
+    initializeObjects();
+
+    addControl( numberPanel );
+    ...
+  }
+
+  private void initializeObjects() {
+    number = new MMInteger(2);
+    number.setEditable(true);
+    numberPanel = (MMNumberPanel) number.getAsContainerContent();
+    numberPanel.setTextVisibleBeforeEdited(false);
+
+    ...
+  }
+
+  public void reset() {
+    number.setInteger(2);
+    number.render();
+    number.invokeUpdaters();
+
+    ...
+  }
+
+  public static void main(String[] args) {
+    &lt;Mathlet Name&gt; applet = new &lt;Mathlet Name&gt;();
+    applet.init();
+    BasicApplicationFrame frame = new BasicApplicationFrame(applet, &lt;Fenster-Breite&gt;, &lt;Fenster-Höhe&gt;);
+    frame.show();
+  }
+}
+
+</pre>
+<p align="right"><a href="#top">nach oben</a></p>
+</body>
+</html>

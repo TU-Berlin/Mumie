@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_course_section_summary.content.xml,v 1.17 2009/09/27 23:52:02 rassy Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns:sum="http://www.mumie.net/xml-namespace/document/summary"
+                xmlns:mtx="http://www.mumie.net/xml-namespace/mmtex"
+                xmlns:math="http://www.w3.org/1998/Math/MathML"
+                xmlns:math-ext="http://www.mumie.net/xml-namespace/mathml-ext"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie sum mtx math math-ext">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-stdlayout" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-struct" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-math" internal="yes"/>
+<xsl-ext:import lid="xsl-mmtex-media" internal="yes"/>
+<xsl-ext:import lid="xsl-summary-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global variables                                                             -->
+<!-- ================================================================================ -->
+
+<!-- HTML id of the main element, ie. the "table" element containing all the content -->
+<xsl:variable name="main-element-html-id">_MAIN_</xsl:variable>
+
+<!-- Id of the course section: -->
+<xsl:variable name="course-section-id">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">course-section</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Label of the course-section: -->
+<xsl:variable name="course-section-label">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">course-section-label</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Whether this content is shown in a frame -->
+<xsl:variable name="as-frame">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">as-frame</xsl:with-param>
+        <xsl:with-param name="default">no</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The URL of this page -->
+<xsl:variable name="this-url">
+  <xsl:call-template name="xsl.document-url">
+    <xsl:with-param name="context">homework</xsl:with-param>
+    <xsl:with-param name="document-type.name">course_section</xsl:with-param>
+    <xsl:with-param name="id" select="$course-section-id"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript">
+  
+  <!--
+    Popup "windows"
+  -->
+  
+  <xsl:call-template name="popup-javascript">
+    <xsl:with-param name="main" select="$main-element-html-id"/>
+  </xsl:call-template>
+  
+</xsl:template>
+
+
+<!-- ================================================================================ -->
+<!-- h1: Header                                                                       -->
+<!-- ================================================================================ -->
+
+<xsl:template name="header">
+  <table class="header">
+    <tr>
+      <td>
+        <div class="doctype">
+          <xsl:value-of select="$i18n-course-section"/>
+          <xsl:text> </xsl:text>
+          <xsl:value-of select="$course-section-label"/>
+        </div>
+      </td>
+      <td>
+        <div class="title">
+          <xsl:variable name="title" select="/*/mumie:content/sum:summary/mtx:title"/>
+          <xsl:choose>
+            <xsl:when test="$title">
+              <xsl:apply-templates select="$title" mode="header"/>
+            </xsl:when>
+            <xsl:otherwise>
+              <!-- TODO: course section name as fallback -->
+            </xsl:otherwise>
+          </xsl:choose>
+        </div>
+      </td>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template match="mtx:title" mode="header">
+  <xsl:apply-templates/>
+</xsl:template>
+
+<xsl:template match="mtx:title">
+  <!-- Ignored in normal processing -->
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Top-level structure                                                          -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="/*/mumie:name"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-mmtex-stdlayout"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-element"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-summary"/></xsl:attribute>
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+      <table class="root">
+        <tr>
+          <td>
+            <!-- Header: -->
+            <xsl:call-template name="header"/>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <!-- Main: -->
+            <div class="plain">
+              <xsl:apply-templates select="/*/mumie:content/sum:summary/*"/>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <!-- Footer: -->
+            <xsl:call-template name="footer"/>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

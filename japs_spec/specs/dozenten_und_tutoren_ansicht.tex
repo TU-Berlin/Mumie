@@ -1,0 +1,142 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Dozenten- und Tutoren-Ansicht}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: dozenten_und_tutoren_ansicht.tex,v 1.4 2006/08/11 16:18:22 rassy Exp $}
+
+\tableofcontents
+
+Diese Spezifikation beschreibt, was Dozenten und Tutoren zu sehen bekommen, wenn
+sie in Kursen browsen, und welche speziellen Features ihnen dabei zur Verfügung
+stehen.
+
+\section{Vorbemerkungen, Unterschiede zur Studenten-Ansicht}
+
+Betrachtet ein Student eine Aufgabe im Browser, so gilt abhängig vom
+Bearbeitungszeitraum des Übungsblatts folgendes:
+
+\begin{itemize}
+\item Hat der Bearbeitungszeitraum noch nicht begonnen, so sollte der Student
+  die Aufgabe gar nicht sehen. (Versucht er es doch, bekommt er eine
+  Fehlermeldung.)
+\item Läuft der Bearbeitungszeitraum, so kann der Student die Aufgabe
+  bearbeiten.
+\item Ist der Bearbeitungszeitraum bereits abgelaufen, so kann der Student
+  die Aufgabe nicht mehr bearbeiten, er bekommt aber die Musterlösungen und
+  eine korrigierte Fassung seiner Lösungen.
+\end{itemize}
+
+Es ist klar, dass dies für Dozenten und Tutoren anders sein muss.
+Sinnvollerweise sollten Dozenten und Tutoren Aufgaben in zwei Modi betrachten
+können: im ersten Modus werden, unabhängig vom Bearbeitungszeitraum, die
+Musterlösungen angezeigt, im zweiten die Lösungen eines bestimmten, vorher
+ausgewählten Studenten. Darüberhinnaus sollten Dozenten und Tutoren eine
+Übersichtsfunktion haben, mit der sie die Leistungen der Studenten schnell
+überblicken können.
+
+Für Nicht-Aufgaben (Elemente mit Kategorie $\neq$ "problem", Subelemente,
+Kurse, Course-Sections und -Subsections) sollte die Ansicht für Studenten,
+Dozenten und Tutoren gleich sein.
+
+\section{Solution und Correction View}
+
+Alle Dokumente eines Kurses können Dozenten und Tutoren in zwei Modi betrachten
+(vgl. o.):
+
+\begin{enumerate}
+\item \emph{Solution View:} Bei Aufgaben werden die Musterlösungen angezeigt,
+  ausserdem ein Button zum Wechseln in den Correction View. Bei Nicht-Aufgaben
+  normale Ansicht bis auf den Button zum Wechseln in den Correction View.
+\item \emph{Correction View:} Bei Aufgaben werden die Antworten eines zuvor
+  ausgewählten Studenten angezeigt, ausserdem Name und Id des Studenten, ein
+  Button zum Wechseln in den Solution View und ein Button zum Wechseln des
+  Studenten. Bei Nicht-Aufgaben normale Ansicht bis auf Namen und Id des
+  Studenten und den Buttons zum Wechseln in den Solution View bzw. Wechseln des
+  Studenten.
+\end{enumerate}
+
+Default ist der Solution View. Der Correction View steht erst nach dem Ende der
+Bearbeitungszeit zur Verfügung. Dann kann zwischen Solution und Correction View
+sowie zwischen Correction Views zu verschiedenen Studenten beliebig gewechselt
+werden, wie durch folgendes Schema veranschaulicht:
+
+\image{solution\_view\_correction\_view.png}
+
+Der Wechsel vollzieht sich immer zum selben Dokument im selben Kurs,
+d.h. befindet sich der Benutzer in einem Kurs C und dort (z.B.) in einer
+Aufgabe A und wechselt er vom Solution View zum Correction View für einen
+Studenten S, so betrachtet er anschliessend Aufgabe A in Kurs C für Student S.
+
+\section{Studenten-Auswahl-Dialog}
+
+Wird vom Solution in den Correction View oder innerhalb des Correction View zu
+einem anderen Studenten gewechselt, so erscheint ein Dialog zur Auswahl des
+Studenten. Dieser enthält eine Liste mit den Ids, Nachnamen, Vornamen und
+Account-Namen der Studenten. Wird ein Listenelement angeklickt, gilt der
+entsprechende Student als ausgewählt und der Dialog wird geschlossen.
+
+Der Dialog soll folgende Optionen anbieten:
+
+\begin{enumerate}
+\item Ordnen der Liste wahlweise nach: Ids, Nachnamen, Vornamen oder
+  Account-Namen.
+\item Öffnen der neuen Seite im aktuellen oder einem neuen Browser-Fenster (die
+  neue Seite ist diejenige, die nach dem Übergang vom Solution in den
+  Correction View bzw. nach dem Wechsel zu einem anderen Studenten zu sehen
+  sein soll).
+\item Auflistung aller Studenten oder nur derjenigen eines bestimmten
+  Tutoriums.
+\end{enumerate}
+
+Das Dialogfenster könnte also z.B. wie folgt aussehen:
+
+\image{studenten\_auswahl\_dialog.png}
+
+\section{Ansichten}
+Spezifikation TutorView
+\begin{description}
+\item [\var{X}\label{single_scores}] Eine (Matrix-)Tabelle für jedes Tutorium
+  \element{tutorial} und jedes Übungsblatt \element{course_subsection} mit:
+\begin{itemize}
+\item den verschiedenen Aufgaben \element{\$problem} als Spalten und 
+\item den verschiedenen Teilnehmern \element{\$user} als Zeilen.
+\item In den Zellen dieser Tabelle stehen die erreichten Punkte \element{$x$} im Verhältnis (als
+Bruch $\frac{x}{y}$) zur - über die Spalte konstanten - Anzahl \element{$y$} der
+erreichbaren Punkte.
+\end{itemize}
+Die Übersicht könnte also z.B. wie folgt aussehen:
+
+\image{studentenleistungen\_uebersicht.png}
+
+\item [\var{Y}\label{summed_scores}] Eine (Listen-)Tabelle für jedes Tutorium
+  \element{tutorial} (und Summen über gewisse, z.B. alle einer Lehrveranstaltung
+  \element{class}, s.u.)) mit:\\
+\begin{itemize}
+\item den Übungsblättern \element{\$course_subsection} als (Kopf-)Zeilen,
+\item den (optional ausblendbaren) Aufgaben \element{\$problem} als (Unter-)Zeilen
+\item und verschiedenen Attributen \element{\$attr} als Spalten.\\
+\end{itemize}
+In den Zellen stehen die zugeh"origen Attributwerte:
+\begin{itemize}
+\item Name
+\item Lid
+\item Summe $\sum$ über alle Studenten des Tutoriums (gewisser Tutorien) der erreichten Punkte.
+\end{itemize}
+Achtung: Die Attribute von Übungsblättern und Aufgaben müssen
+identifizierbar sein. Das heisst: in einer Spalte dieser Tabelle stehen
+untereinander Lids von Übungsblättern und Aufgaben. Dem sollte bei der
+Vereinbarung von Konventionen bei der Lid-Vergabe im CourseCreator Rechnung
+getragen werden.
+\end{description}
+
+-- ENDE DER DATEI --
+
+\end{document}

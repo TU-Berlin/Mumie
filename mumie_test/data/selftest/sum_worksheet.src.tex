@@ -1,0 +1,58 @@
+\documentclass{japs.summary}
+
+\begin{metainfo}
+  \name{Test}
+  \begin{description}
+    Ein Test
+  \end{description}
+  \begin{changelog}
+    Started
+  \end{changelog}
+  \begin{components}
+
+  \end{components}
+  \creategeneric
+\end{metainfo}
+
+\begin{content}
+
+  \begin{ifstate}{work}
+    Zustand des Arbeitsblatts = work
+  \end{ifstate}
+
+  \begin{ifstate}{feedback}
+
+    Zustand des Arbeitsblatts = feedback
+
+    \begin{ifpoints}{0 6}
+      (A) Punktzahl zwischen 0 und 6
+    \end{ifpoints}
+
+    \begin{ifpoints}{6.1 10}
+      (A) Punktzahl zwischen 6.1 und 10
+    \end{ifpoints}
+
+    \begin{ifpoints}{10.1 max}
+      (A) Punktzahl zwischen 10.1 und maximaler Punktzahl
+    \end{ifpoints}
+
+    \begin{casepoints}
+      \uptopoints{6}
+        (B) Punktzahl zwischen 0 und 6
+      \uptopoints{10}
+        (B) Punktzahl zwischen 6.1 und 10
+      \uptopoints{max}
+        (B) Punktzahl zwischen 10.1 und maximaler Punktzahl
+    \end{casepoints}
+
+  \end{ifstate}
+
+  \begin{iftimeframe}{inside}
+    W"ahrend des Bearbeitungszeitraums
+  \end{iftimeframe}
+
+  \begin{iftimeframe}{after}
+    Nach dem Bearbeitungszeitraum
+  \end{iftimeframe}
+
+\end{content}

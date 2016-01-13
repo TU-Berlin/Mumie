@@ -1,0 +1,1314 @@
+\documentclass[a4paper,12pt]{book}
+
+\usepackage{a4}
+\usepackage{isolatin1} 
+\usepackage{amsmath,amsthm,amstext,amssymb,amscd} 
+\usepackage{makeidx}
+\usepackage{bbm}
+\usepackage{epsfig} 
+\usepackage{longtable}
+
+\title{\textit{The MathletFactory Tutorial}}
+\date{January 11th 2005}
+\author{Markus Gronau, Tim Paehler}
+\newcounter{figcount}
+\newcommand{\appfac}{\emph{MathletFactory }}
+\newcommand{\mmo}{\emph{MMObject }}
+\newcommand{\mmos}{\emph{MMObjects }}
+\newcommand{\mmp}{\emph{MMPanel }}
+\newcommand{\mmps}{\emph{MMPanels }}
+\newcommand{\op}{\emph{Operation }}
+\newcommand{\ops}{\emph{Operations }}
+\newcommand{\rel}{\emph{Relation }}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Rtext}{$\mathbb{R}$ }
+\newcommand{\Ztext}{$\mathbb{Z}$}
+\begin{document}
+
+\maketitle
+
+\tableofcontents 
+
+\chapter{General informations}
+
+\section{What is the MathletFactory?}
+  
+  The \textit{MathletFactory} is a reusable component system for creating web-based 
+  interactive mathematical applets (mathlets) which allows the rapid development 
+  of such programs for instructional web systems.\\
+  The \textit{MathletFactory} is part of the project MuMIE (http://www.mumie.net).\\\\
+  Following the mathematical paradigm to separate logic from its representation, 
+  it consists of both a mathematical library and a presentation and interaction 
+  framework with an extensible event system.\\
+  On the mathematical side it contains a large and still growing collection of 
+  mathematical objects (up to now: number classes, matrices, polynomials, 
+  vectorspaces, functions etc.) which give it a power almost compared to that of a 
+  CAS. On the interactive side it allows users to place the mathematical objects 
+  in different contexts and interactively change their state. By defining 
+  dependencies between objects and update chains it allows learners to experience 
+  mathematics at work simply by dragging objects (e.g. a vector point) or by 
+  setting values from hand (e.g. values of a matrix) and watching the applet 
+  dynamically displaying the new result.
+
+\section{About this document}
+  This document adresses to mathlet developers who wants to get familiar with the creation
+  of mathlets using the MathletFactory's library. It does not aim to describe each
+  single class but to illustrate the necessary techniques and philosophies for the 
+  construction of a mathlet. This technical stuff will be accompanied by 
+  comprehensive examples and hints. A complete overview of all classes can be found
+  in the APIDOC. The use of the APIDOC will be assumed.
+
+\section{Available resources}
+  The MathletFactory library as well as the APIDOC, examples, sources and other
+  documentation can be downloaded from the internet site:\\
+  \indent\indent\indent\indent\indent\indent \textbf{http://www.mathletfactory.de}
+
+\section{Setting up the environment}
+  In order to compile and run java-applets you will need the Java Software Development Kit 
+  (JDK/SDK) of (at least) version 1.4 as well as the Java3D-classes for 3D-Mathlets
+  and the JavaMediaFramework (JMF) for screen capture support.\\
+  For viewing applets in your internet browser, you will need a Java-plugin.\\
+  All files can be downloaded for free from http://java.sun.com.\\
+  The Java APIDOC and Java tutorial are also available there.
+  \\\\
+  You will need to put the MathletFactory library (JAR-file) into the java-classpath
+  where the compiler and the runtime will search for the classes (see your 
+  java-documentation for informations about setting the classpath).
+  \\\\
+  The use of a professional Integrated Development Editor (IDE) instead of a simple
+  text editor is recommended. There you can include the APIDOC and the sources
+  into the editor for an easier programming. 
+  \\\\
+  If you want to publish your own mathlets in the internet, you will need to 
+  create a HTML-file where you can embed the applet (see Appendix) and to have 
+  a copy of the MathletFactory-library on your server where the browser plugin 
+  can find it.
+
+\newpage
+
+\chapter{Creating mathlets}
+
+\section{First steps}
+  \subsection{The choice of a mathlet type}
+  The mathlet-class needs to extend one of the template classes below.
+  There are mathlet template types for the most common needs. The main distinction
+  of theses templates is made by the number, the arrangement and the dimension of 
+  their canvases. \\
+  The following template types are available:
+  \begin{itemize}
+    \item {\bf"No-Canvas"} -- none canvas and 1 ControlPanel\\
+      \[NoCanvasApplet\footnote{net.mumie.mathletfactory.appletskeleton}\]
+    \item {\bf"Single"} -- 1 single canvas and below 1 ControlPanel\\
+      \[2D: SingleG2DCanvasApplet\footnote{net.mumie.mathletfactory.appletskeleton.g2d}, 
+      3D: SingleJ3DCanvasApplet\footnote{net.mumie.mathletfactory.appletskeleton.j3d}\]
+    \item {\bf"Side-By-Side"} -- 2 canvases arranged horizontally and below 1 ControlPanel\\
+      \[2D: SideBySideG2DCanvasApplet^{2}, 3D: SideBySideJ3DCanvasApplet^{3}\]
+    \item {\bf"Upper-Lower"} -- 2 canvases arranged vertically and below 1 ControlPanel\\
+      \[2D: UpperLowerG2DCanvasApplet^{2}\]
+    \item {\bf"Upper-Middle-Lower"} -- 3 canvases arranged vertically and below 1 ControlPanel\\
+      \[2D: UpperMiddleLowerG2DCanvasApplet^{2}\]
+  \end{itemize}
+  The ControlPanel resides below the canvases, except for the
+  \verb|NoCanvasApplet|: there it covers the whole mathlet's space.
+  
+  
+  \subsection{Creating the applet class}
+  The "entry point" of an applet is the \verb|init()| method which will be called
+  by the web-browser to load and initialize the applet.\\
+  An empty mathlet can look like this (e.g. for a "Single-Canvas"-applet):\\
+  {\small\ttfamily
+  \indent import net.mumie.mathletfactory.appletskeleton.g2d.*;\\\\
+  \indent public class MyApplet extends SingleG2DCanvasApplet \{\\
+  \indent ...\\
+  \indent \indent public void init() \{\\
+  \indent \indent \indent super.init() // needed to initialize the template\\
+  \indent \indent\indent ... // your entry point\\
+  \indent \indent \}\\
+  \indent \}\\
+  }
+  Note that the call \verb|super.init()| is needed to initialize the super class.\\\\
+  The browser plugin (or the appletviewer) needs a HTML page to start the applet.
+  There the location to the compiled applet, its size and other parameters are defined.
+  See \small{\textit{Appendix: Commands for embedding applets in websites}}.\\\\
+  
+  \subsection{Setting the title}
+  The title is shown at top of the mathlet, above the canvases or the control panel.
+  It can be set with\\
+  \indent \verb|setTitle(String)|\\
+  defined in the \verb|BaseApplet| class.
+  
+  \subsection{Implementing a {\tt main}-method}
+  In order to start the mathlet as an application (i.e. outside the browser from the
+  command line) you have to write:\\\\
+  {\small\ttfamily
+  \indent import ...\\
+  \indent import net.mumie.mathletfactory.util.*;\\\\
+  \indent public class MyApplet extends SingleG2DCanvasApplet \{\\
+  \indent\indent ...\\
+  \indent\indent public static void main(String[] args) \{\\
+  \indent\indent\indent MyApplet applet = new MyApplet();\\
+  \indent\indent\indent applet.init();\\
+  \indent\indent\indent applet.start();\\
+  \indent\indent\indent BasicApplicationFrame frame = \\
+  \indent\indent\indent\indent\indent\indent new BasicApplicationFrame(applet, 400, 300);\\
+  \indent\indent\indent frame.pack();\\
+  \indent\indent\indent frame.setVisible(true);\\
+  \indent\indent\}\\
+  \indent\}\\
+  }
+  
+\section{Using a Canvas}
+  A canvas is a paint board where \mmos, images and text can be displayed. It can hold either 2- or 3-dimensional
+  objects, their class is respectively \verb|MMG2DCanvas| or \verb|MMJ3DCanvas|, subclasses of \verb|MM2DCanvas| and
+  \verb|MM3DCanvas|.\footnote{The distinction of two 2D and 3D canvas classes was made to allow in future releases
+  the usage of other graphics implementations than the Java-proper ones (\textit{Graphics2D} and \textit{Java3D}).}
+  The common class of these two different canvas types is \verb|MMCanvas|, where the biggest part of functionality
+  is implemented.\\
+  Objects can be added with\\
+  \indent \verb|addObject(MMCanvasObjectIF|\footnote{net.mumie.mathletfactory.mmobject})\\
+  defined in \verb|MMCanvas|\footnote{net.mumie.mathletfactory.display}.
+
+\newpage
+\section{Using a ControlPanel}
+  The \verb|ControlPanel|\footnote{net.mumie.mathletfactory.appletskeleton.util} 
+  represents a container for GUI(Graphical User Interface)-components,
+  providing a flexible text editor-like layout manager. It allows the programmer 
+  to add components and to lay out them in the mathlet as easy as writing a text: the
+  ControlPanel's height will be divided upon all lines where each of them can have
+  a different horizontal alignment (left, right and center). Their height is determined
+  by the components's preferred sizes.\\
+  At the begin (means no object has been added yet) a "line pointer" starts at the first
+  line and adds all following components to it. A line will be terminated by a line
+  break. The pointer will then jump to the second line.\\
+  Note: No further adding and alignment setting will be possible for this line!\\
+  It is possible to use tabstops and other space holders for exact positioning.
+  \\\\
+  The ControlPanel is a base functionality of the BaseApplet and all of its
+  extending classes. In most cases it is positioned under the canvases (except for
+  the NoCanvasApplet: there it fills the whole vertical space). It can be accessed
+  through \verb|BaseApplet.getControlPanel()| or used indirectly by one of the delegate
+  methods defined in the BaseApplet. These delegaters are named after their
+  implementations in the ControlPanel, except the \verb|add()| method: its corresponding
+  delegate method is \verb|addControl()|.\footnote{This distinction was made
+  to show the difference between the add-method defined in the Applet-class
+  and this one.}\\
+  It is possible to create a new ControlPanel-instance (e.g. in a standalone applet
+  or in a new tab) but it is not necessary to do this in the predefined mathlet
+  classes.
+  \\\\
+  Method summary:
+  \begin{itemize}
+    \item \verb|add(JComponent)| -- adds a component to the actual line's end
+    \item \verb|insertLineBreak()| -- jumps to the next line
+    \item \verb|insertLineBreak(int)| -- jumps \verb|int| lines downwards
+    \item \verb|insertTab()| -- inserts a single tabstop
+    \item \verb|insertTab(int)| -- inserts \verb|int| tabstops
+    \item \verb|insertHSpace(int), insertVSpace(int)| -- inserts place holders with \verb|int| pixels width/height
+    \item sets the alignment of the actual and the following lines
+    \begin{itemize}
+      \item \verb|setLeftAlignment()| 
+      \item \verb|setCenterAlignment()|
+      \item \verb|setRightAlignment()|
+    \end{itemize}
+  \end{itemize}
+  
+\section{Using advanced BaseApplet functionality}
+  
+  \subsection{Structure of a mathlet}
+  The BaseApplet defines a common design for all mathlets where the components
+  are placed into predefined panels/panes (containers able to hold GUI-components).
+  The 3 main panels of a mathlet are (read from top to bottom):
+  \begin{itemize}
+    \item title pane containing a label with the mathlet's title
+    \item center pane containing the canvases and/or a control-panel
+    \item button pane containing the help, reset, screenshot and animation buttons
+  \end{itemize}
+  The center pane itself is divided into (from top to bottom)
+  \begin{itemize}
+    \item canvas pane containing a single canvas or an arrangement of several canvases
+    \item control-panel pane containing a ControlPanel
+  \end{itemize}
+  
+  \subsection{Using Tabs}
+    It is possible to open a new tab in the control-panel-, canvas- and center-pane.
+    This is done by calling \verb|add(String, Component)| on the following getters:
+    \begin{itemize}
+      \item getCanvasTabbedPane()
+      \item getCenterTabbedPane()
+      \item getControlTabbedPane()
+    \end{itemize}
+  These methods return a customized instance of a JTabbedPane\footnote{javax.swing.JTabbedPane}
+  (an instance of \verb|TabbedPanel| more precisly) which will show the real tab
+  (with the tab's title) only when more than one tab has been added.\\
+  Note: all of the BaseApplet's tabbed panes have allready a tab (containg the canvases, etc.).
+  But the tab's titles are not visible because they are the only tabs!\\\\
+  The add-method of these tabbed panes request a string for the tab's title and an
+  instance of Component\footnote{java.awt.Component} which can be e.g. a new 
+  ControlPanel, Canvas or JPanel (they all extends the class \verb|Component|).\\
+  The title of the first (default) tab can be set through the \verb|TabbedPanel|-proper
+  method \verb|setTitleAt(int, String)|. The instance of this underlying SWING-class
+  can be accessed through \verb|getTabbedPane()| in the class \verb|TabbedPanel|.
+  
+  \subsection{Adding a reset button}
+  The button itself can be added by simply calling \verb|addResetButton()| inside
+  an extended BaseApplet-class. By pressing the button, the method 
+  \verb|public void reset()| will be called in the mathlet. To react on this event
+  you will have to overwrite this method in the applet-class.
+  
+  \subsection{Adding a screenshot button}
+    The button will be visible when calling \verb|addScreenShotButton()| inside an
+    extended BaseApplet-class.
+  
+  \subsection{Extending directly the {\tt BaseApplet}}
+  Each {\tt BaseApplet} consists of several panels which are not yet added to the visible GUI (the
+  {\it center}, {\it canvas} and {\it control pane}).
+  Extending directly the {\tt BaseApplet} class means that this work has to been done explicitly.\\
+  The biggest part of a {\tt BaseApplet} is the {\it center pane} which takes all the place between
+  the title and the bottom bars. In a case of a so called "no-canvas-applet" the {\it center pane}
+  has been added only a \emph{ControlPanel}. Note that each of theses panels in {\tt BaseApplet}
+  is an extended version of \verb|JPanel| and \verb|JTabbedPanel|, allowing to show register cards
+  only if more than 1 component has been added. Theses panels haves the additional identifier {\it tabbed}
+  \footnote{In the case of the {\it center pane}, this and the {\it center tabbed pane} are exactly the same.}.
+  In \verb|NoCanvasApplet| we have to write:\\
+  \verb|    getCenterPane().add(getControlTabbedPanel());|\\\\
+  In \verb|SingleG2DCanvasApplet| we have to write:
+  \begin{footnotesize}
+  \begin{verbatim}
+    getCanvasTabbedPanel().add(getCanvasPane());
+    getCanvasPane().setLayout(new BorderLayout());
+    m_canvas = new MMG2DCanvas();
+    getCanvasPane().add(m_canvas, BorderLayout.CENTER);
+    getCanvasPane().add(getControlTabbedPanel(), BorderLayout.SOUTH);
+    getCenterPane().add(getCanvasTabbedPanel());
+  \end{verbatim}
+  \end{footnotesize}
+  
+  \clearpage
+  
+\section{Using the MumieTheme}
+  The MathletFactory uses an extended version of the Java SWING Metal-theme. It is used to
+  retrieve default values for fonts and colors from a property-file.\\
+  The class must be used in a static way, i.e. calling \verb|MumieTheme.DEFAULT_THEME| gets
+  the actual single working instance of that class. Values can be retrieved through the various
+  \verb|get|-methods.\\
+  The default property files are located in the \verb|resource| folder of the distribution.
+  It is possible to write its own files or to change the existing ones to manage its own
+  default values.\\
+  Due to the architecture of SWING, all properties should be (re-)loaded in the \verb|updateUI()| method
+  of the corresponding SWING-class because after an update of the user interface, all dependant
+  classes will reload their default properties from SWING.\\\\
+  
+  \subsection{Property Names}
+  By default, each SWING component listens to various properties defining its font, color or
+  border. Every property starts with the name of the component by omitting the "SWING-J" (i.e. "Button"
+  instead of "JButton"), followed by a dot and the property type: "font", "background", etc.\\
+  There also exist special properties for several \appfac classes (e.g. Canvas.background).
+  
+  \subsection{Fonts}
+  A legal fonts declaration for the MumieTheme consists of 3 comma separated values: 
+  font name, style and size.\\
+  The font style is coded into the following strings: PLAIN, BOLD, ITALIC, BOLD-ITALIC.\\
+  Example:\\
+  \begin{verbatim}
+    Button.font=Dialog,BOLD-ITALIC,12
+  \end{verbatim}
+  
+  \subsection{Colors}
+  A legal fonts declaration for the MumieTheme consists of three 3 comma separated color components 
+  for red, green and blue (RGB).\\
+  Example:\\
+  \begin{verbatim}
+    Button.background=230,230,230
+  \end{verbatim}
+  
+  \clearpage
+
+\section{Writing Help Files}
+  \subsection{Default Help Files}
+  By default, each mathlet comes along with a set of help files describing the base common
+  functionality of each mathlet. The type of the mathlet (g2d, no-canvas, j3d) will be
+  questioned to decide which default help files will be needed.\\
+  The available files are located under \verb|resource/html|.
+  
+  \subsection{Individual Help Files}
+  Each mathlet can have its own individual help file which must be a valid HTML file.
+  If the applet parameter \verb|helpURL| was not set, the mathlet will try to search for its 
+  help file with the following assumptions:
+  \begin{itemize}
+    \item the help file is located in the same directory as the mathlet or 
+    \item in the subdirectory \verb|help| of the mathlet's directory
+    \item the help file is named after the mathlet with the suffixes \verb|_info.html| or 
+    \verb|_info_<locale>.html|
+  \end{itemize}
+  
+  
+  \subsection{Displaying Help Files}
+  By default, each mathlet contains at the bottom left corner a {\it help} button opening
+  the help for this mathlet.\\
+  When the mathlet was started as an applet inside a web browser, it will try to
+  open the help file inside a new browser window. If it was started as an application, no
+  applet context is available so the mathlet will show the help file in an own window.
+  Note that in this case the Java class \verb|JEditorPane|, responsible for displaying the file in the
+  mathlet window, can only parse HTML 3.2. In case of a browser environment, the HTML version
+  of the help file must be readable by the web browser.
+  
+  
+
+\clearpage
+\input{WriteAnApplet.tex}
+\clearpage
+
+
+  
+\chapter{MMObjects}
+
+\section{Introduction}
+  \mmos (Multimedial Mathematical Objects) are the primary entities with which 
+  an application programmer of the MathletFactory has to deal with. The MathletFactory 
+  tutorial gives an overview of the framework that provides the simple use of \mmos. 
+  This can be summarized in one sentence: \mmos encapsulate the mathematical and 
+  interactivity state and are mapped onto graphic primitives (so called {\it drawables}) 
+  and panel representation (so called {\it MMPanels}) by the use of specialised 
+  {\it transformers}.\\
+  An \mmo is either a super class of a mathematical class\\(located in \verb|net.mumie.mathletfactory.math|)
+  implementing the \verb|MMObjectIF| interface or an extension of the class \verb|MMDefaultCanvasObject|
+  or \verb|DefaultMMObject|, implementing 
+  itself this interface and its necessary methods.\\
+  Note: \\
+  \begin{itemize}
+    \item -- every \mmo's name starts with the two capital letters "MM"
+    \item -- every \mmo is located in the tree branch \verb|net.mumie.mathletfactory.mmobject|
+  \end{itemize}
+  
+  
+\section{Displaying MMObjects}
+  A single \mmo can be displayed in multiple instances of container- and canvas drawables.
+  (a "Container" means a box where GUI-elements such as buttons, labels and textfields
+  can be added and displayed)(e.g. the \verb|ControlPanel| or a simple \verb|JPanel|).\\
+  Thereby it is possible to display the \mmo's content for different transform types
+  in separate drawables and even in multiple instances for the same type.
+  
+ \subsection{Representing content in Containers}
+    Each time one of the methods
+     \begin{itemize}
+      \item getAsContainerContent()
+      \item getAsContainerContent(int)
+    \end{itemize}
+    is called, a new container drawable instance is created and returned. The first
+    method returns the default container drawable, the second the drawable designated
+    by the transform type. It is necessary to store it in a variable because these
+    methods will never return this same instance again. The returned component can
+    then by casted to the drawables runtime class to gain access to class-specific 
+    functionality.
+  
+  \subsection{Representing content in Canvases}
+    Each time one of the methods
+     \begin{itemize}
+      \item getAsCanvasContent()
+      \item getAsCanvasContent(int)
+    \end{itemize}
+    is called, a new container drawable instance is created and returned. The first
+    method returns the default container drawable, the second the drawable designated
+    by the transform type. It is necessary to store it in a variable because these
+    methods will never return this same instance again. The returned component can
+    then by casted to the drawables runtime class to gain access to class-specific 
+    functionality.
+    
+  \subsection{Display Properties}
+  Each \mmo has its own display properties which define appearance related settings such as colors,
+  fonts or transparency. They can be returned and set with
+  \begin{itemize}
+    \item \verb|getDisplayProperties()|
+    \item \verb|setDisplayProperties(DisplayProperties)|
+  \end{itemize}
+  Both methods are defined in the interface \verb|MMObjectIF|.\\
+  Moreover some MM-classes have extended properties where special settings are
+  possible. By casting to the \verb|DisplayProperties|-runtime class they offer additional methods to
+  change other useful settings such as the line width, point radius or the basic shape of a drawable:\\
+  \begin{footnotesize}
+  \begin{verbatim}
+  MMAffine2DPoint p1;
+  // ... initializing the point ...
+  PointDisplayProperties pdp = (PointDisplayProperties)p1.getDisplayProperties();
+  pdp.setPointRadius(10);
+  \end{verbatim}
+  \end{footnotesize}
+  Sometimes we want to have 2 identical display properties, except 1 setting. Avoid such code:\\
+  \begin{footnotesize}
+  \begin{verbatim}
+  DisplayProperties dp1 = new DisplayProperties();
+  DisplayProperties dp2 = dp1; (*)
+  dp1.setTransparency(0.25);
+  dp2.setTransparency(0.75); // dp1 will be changed!
+  \end{verbatim}
+  \end{footnotesize}
+  It is possible to call \verb|clone()| on an instance of \verb|DisplayProperties| to copy the settings
+  into a new independant instance. The line (*) must be:\\
+  {\small\ttfamily
+    DisplayProperties dp2 = dp1.clone();\\
+  }
+  \\See \small{\textit{Appendix: Usage of DisplayProperties in \mmos and Drawables}}
+  for a list of available properties-classes and their implementing \mmos and 
+  the drawables using them.  
+  
+  
+\section{Rendering cycle}
+  Each rendering cycle is started either by a canvas, by the mathlet author (calling a manual repaint on the \mmo with 
+  the \verb|render()| method) or by a handler (calling itself the \verb|render()| method).\\
+  The \mmo forwards the repaint request to all of its working transformers which will set the internal data
+  of the \mmo's drawables accordingly to the actual mathematical content.\\
+  Calling \verb|render()| on a \mmo is therefore equivalent to calling \verb|render()| on every transformer
+  instance hold by the \mmo.\\
+  \\
+  Example: 2D point\\
+  The \verb|MMAffine2DTransformer| gets the coordinates of its "master" (here: \verb|Affine2DPoint|) and passes 
+  them to its drawable (here: \verb|G2DPointDrawable|) which will draw a point at the new coordinates in the canvas.\\
+  When dragging the point with the mouse, an instance of the class \verb|Affine2D|\-\verb|MouseTranslateHandler| will set 
+  the new coordinates in the master (a \verb|MMAffine2DPoint|) and the rendering cycle will continue
+  as described above.
+  
+  
+\section{Number class}
+  Most \mmos (or maybe their underlying mathematical classes) are dependant of a number type,
+  means calculations are made through the number-class-proper arithmetic operations/methods.\\
+  All MM-classes need this number class as parameter for their constructors for initializing their
+  internal fields with numbers of this class. A change of the class outside the constructor (i.e. after
+  initializing) is generally not possible.\\
+  The available number classes are (located in \verb|net.mumie.mathletfactory.math.number|):\\
+  {\ttfamily
+    MDouble, MComplex, MRational, MComplexRational, MBigRational, MInteger, MNatural, MRealNumber, Zmod5.\\
+  }
+  
+\section{Adding new MMObjects}
+  
+This document gives a brief overview of how to add user defined \mmos to the MathletFactory. This is done in three steps: 
+Extending the {\tt MMDefaultCanvasObject}, implementing the associated transformer(s) and registering the \mmo-transformer 
+mapping in the specific transformer.properties file(s).
+  
+\subsection{Introduction}
+\mmos are the primary entities with which an application programmer of the MathletFactory has to deal with. The MathletFactory 
+tutorial gives an overview of the framework that provides the simple use of \mmos. This can be summarized in one sentence: \mmos
+encapsulate the mathematical and interactivity state and are mapped onto graphic primitives (so called {\it drawables}) and panel 
+representation (so called {\it MMPanels}) by the use of specialised {\it transformers}.
+
+\subsection{Extending the {\tt MMDefaultCanvasObject}}
+Writing a \mmo usually starts by implementing a subclass of the {\tt MMDefaultCanvasObject}
+class\footnote{\mmos with no graphical representation can use instead the class {\tt MMDefaultObject} which represents a \mmo with 
+only a symbolic representation}. This class provides already 
+the base functionality for handling the interactivity state (handlers, updaters, dependencies), therefore only the mathematical state 
+has to be implemented. An alternative approach would be to extend one of the mathematical classes by implementing the 
+{\tt MMCanvasObjectIF} interface. This was, for example, done in the implementation of some \mmos representing affine geometric 
+entities (points, lines, etc.).\\
+The abstract methods to be implemented when extending\\ {\tt MMDefaultCanvasObject} are the two following:\\
+
+\begin{description}
+\item[{\tt getDefaultTransformType()}]
+Should return one of the transform types specified as constant in the class 
+{\tt GeneralTransformer}. As may be guessed, this value is important for determining the correct transformer for the 
+\mmo when invoking the methods\\ {\tt MMDefaultCanvasObject.getAsContainerContent()} and\\
+{\tt MMDefaultCanvasObject.getAsCanvasContent()}.\\
+ 
+\item[{\tt getNumberClass()}] 
+This method implements the number class used by the \mmo. This must be one of the subclasses
+of {\tt MNumber} and specifies, whether the mathematical entity bases on integer, rational, real, etc. numbers. The number 
+class is needed for initializing all \mmos, a change after initialization is usually
+not possible.
+\end{description}
+
+\subsection{Implementing the Transformer}
+The transformer offers functionality responsible for the rendering, i.e. the mapping of \mmos onto graphical primitives 
+(drawables) or panel representations (MMPanels). Note that it does not implement the actual graphical representation itself but keeps 
+it as a reference and updates its configuration according to the \mmo's state. This allows it to reuse graphical primitives for 
+a wide range of \mmos.\\
+For allowing sophisticated geometry rendering, the MathletFactory offers a two level rendering approach using Math coordinates, world
+coordinates and screen coordinates with the appropriate transformation functions {\tt math2World} and {\tt math2Screen}. However, for 
+simple (usually affine) rendering, only one of these transformations has to be specified other than the identity.\\
+Corresponding to the different rendering subsystems, there are three different types of transformers. The G2D transformers (located 
+in the subpackage {\tt transformer.g2d}) perform rendering for 2D representations using the Java2D api, the J3D transformers (located 
+in the subpackage {\tt transformer.j3d}) perform rendering for 3D representations using the Java3D api and the NOC (=No Canvas) 
+transformers (located in the subpackage {\tt transformer.noc}) perform rendering onto Components.\\
+Provided the drawable or MMPanel exists, implementing a transformer is quite straightforward and can be done by copying an existing
+transformer and editing a few methods. These methods differ with the type of the transformer and are listed in the following
+subsections:
+
+\subsubsection{G2D Transformers}
+For G2D Transformers, extending the class {\tt Affine2DDefaultTransformer} offers a good starting point. Besides the constructor, 
+where the drawables are specified (see below), the following methods need to be implemented:
+\begin{description}
+\item[{\tt synchronizeMath2Screen()}] This method is used for rendering the mathematical state directly onto the screen.
+ 
+\item[{\tt synchronizeWorld2Screen()}] This method is used for rendering the world coordinates (already calculated from the 
+mathematical state) onto the screen. This method is usually invoked by {\tt synchronizeMath2Screen()} after {\tt math2World}
+transformation has been performed.
+\end{description}
+
+\subsubsection{J3D Transformers}
+For J3D Transformers, extending the class {\tt Affine3DDefaultTransformer} offers a good starting point. Besides the constructor, 
+where the drawables are specified (see below), the following methods need to be implemented:
+\begin{description}
+\item[{\tt synchronizeMath2Screen()}] This method is used for rendering the mathematical state. As the actual representation on
+the screen depends on the viewers position, this method should only implement the transformation from mathematical state to 
+resulting world coordinates, leaving the projection on the screen to the 3D rendering system.
+ 
+\item[{\tt getWorldPickPointFromMaster()}] This method should return a 3D point, that might act as a `center of gravity' when 
+determining the medium distance of the drawable from the viewer. 
+\end{description}
+
+\subsubsection{NOC Transformers}
+For NOC transformers, the class {\tt ContainerObjectTransformer} should be extended, representations using matrices may be 
+derived from\\ {\tt TransformerUsingMatrixPanel}. The following methods need to be implemented:
+\begin{description}
+\item[{\tt initialize(MMObjectIF master)}] This method is used for creating the MMPanel, handing it over the master \mmo
+needed for call-backs (e.g. editing of entries).
+\item[{\tt render()}] This method is used for rendering the mathematical state directly onto the screen. Note that unlike in the
+canvas transformers, where rendering does not include the actual drawing of the object (this is done by the canvas), this 
+method should contain a {\tt repaint()} call for the MMPanel after transferring the mathematical state.
+\end{description}
+
+\subsection{Using and Referencing Drawables in {\tt CanvasTransformers}}
+Since an \mmo transformed by a single transformer may have multiple drawables (e.g. a cuboid would be displayed by using
+multiple rectangles), some of which may be active or inactive (e.g. a line would be either rendered by a line drawable or 
+- in the degenerated case - by a point drawable), the developer has to specify the type of drawables needed by the Transformer.
+The {\tt CanvasTransformers} class therefore offers support for multiple types of drawables, the following is an excerpt from 
+its source code:
+
+\begin{footnotesize}
+\begin{verbatim}
+  /**
+   * this array holds all possible {@link ...CanvasDrawable}s
+   * necessary to visualize the mathematics
+   */
+  protected CanvasDrawable[] m_allDrawables;
+
+  /**
+   * this array holds additional <code>CanvasDrawables</code> that might be
+   * required by the &quot;real&quot; mathematics. Here we think of extra
+   * presentation of boundary values for functions defined on borel sets
+   * (these might be displayed as point objects, whereas the actual function
+   * graph is displayed as a polygon) etc.
+   */
+  protected CanvasDrawable[] m_additionalDrawables;
+
+  /** If a drawable is contained in this set, it neither rendered, nor drawn. */
+  protected Set m_invisibleDrawables = new HashSet();
+
+  /**
+   * this will be the instance of the current active (valid)
+   * <code>CanvasDrawable</code> and always points to one of the drawables
+   * stored in {@link #m_allDrawables}.
+   */
+  protected CanvasDrawable m_activeDrawable;
+\end{verbatim}
+\end{footnotesize}
+Since the fields are used in various methods, they should be initialized in the constructor.
+
+\subsection{Registration of the MMObject-Transformer Mapping}
+After the transformer has been constructed, it needs to be registered for a chosen transform type and in a specific display.
+This is done by adding an entry to the {\tt transformer.properties.g2d}, {\tt transformer.properties.j3d} or  
+{\tt transformer.properties.noc} file (depending on the type of the transformer), located in the transformer package. This 
+entry is of the following form:\\
+{\footnotesize\tt <transform type>\#<screen type>\#<mmobject class>=<transformer class>}\\ 
+where {\tt transform type} is either the default transform type of the \mmo or the argument specified in the 
+{\tt getAsCanvasContent(int transformType)} or {\tt setCanvasTransformer(int transformType, int screenType)} call creating the 
+transformer and {\tt screen type} is {\tt ST\_GRAPHICS2D}, {\tt ST\_J3D} or {\tt ST\_NO\_CANVAS}. The possible values for
+both of these variables are constants defined in the {\tt GeneralTransformer} class.
+  
+\chapter{Interactivity}
+  \section{Dependencies}
+  Sometimes a MM-object needs for its calculations the values of other objects.
+  This implies that it must be recalculate its value whenever its "parameters"
+  (i.e. the other objects) change to be up-to-date.\\
+  It is possible to define relations between MM-objects so that one of them is dependant
+  of the others. When one of the later is changed, the depending object will be
+  updated. This can be done be implementing all 3 methods defined in the 
+  \verb|DependencyIF|-interface
+  {\small\ttfamily
+  \begin{itemize}
+    \item doUpdate()
+    \item doUpdate(MMObjectIF dependant, MMObjectIF free)
+    \item doUpdate(MMObjectIF dependant, MMObjectIF[] free)
+  \end{itemize}
+  }
+  or by overwriting one of the methods of the
+  \verb|DependencyAdapter|-class (which implements the interface with empty methods).
+  The later possibility is recommended because it is sufficient to use only 1 of them: 
+  all 3 methods will be called one after the other during one update cycle.
+  Using the interface will cause to implement 2 methods with an empty body.\\
+  After the \textit{doUpdate}-method has been called, the \textit{dependant} object
+  will be rendered.
+  \\\\
+  Say we have 3 MM-objects named \textit{dependant, free1, free2} and we want the
+  \textit{dependant} to calculate its value if one of the free-objects changes its
+  value:\\
+  {\small\ttfamily
+  \begin{verbatim}
+  MMObjectIF dependant, free1, free2;
+  ... //initialize the fields above
+  dependant.dependsOn(new MMObjectIF[] {free1, free2},
+      new DependencyAdapter() {
+        public void doUpdate() {
+          ... // calculate
+        }
+      }
+  );
+  \end{verbatim}
+  }
+  If the MM-objects involved in this update are NOT known in the \textit{doUpdate}-method
+  (i.e. the adapter-class is used for many dependencies) the passed MM-objects
+  must be casted to their original class to use the full functionality of the
+  MM-class.
+  \\\\
+  {\bf Example:} line segment between 2 points\\
+  We want to create a line between 2 points that listens to changes of its start- and endpoint.
+  The \textit{dependant} wourld be a \verb|MMAffine2DLineSegment| and the 2 \textit{free}-objects
+  instances of \verb|MMAffine2DPoint|:\\
+  {\small\ttfamily
+  \begin{verbatim}
+  import net.mumie.mathletfactory.mmobject.geom.affine.*;
+  import net.mumie.mathletfactory.action.updater.DependencyAdapter;
+  ...
+  MMAffine2DLineSegment line1, line2;
+  MMAffine2DPoint start1, start2, end1, end2;
+  ...
+  DependencyAdapter lineAdapter = new DependecyAdapter() {
+    public void doUpdate(MMObjectIF dependant, MMObjectIF[] free) {
+      MMAffine2DLineSegment line = (MMAffine2DLineSegment) dependant;
+      MMAffine2DPoint p1 = (MMAffine2DPoint)free[0];
+      MMAffine2DPoint p2 = (MMAffine2DPoint)free[1];
+      line.setInitialPoint(p1);
+      line.setEndPoint(p2);
+    }
+  };
+  line1.dependsOn(new MMObjectIF[]{start1, end1}, lineAdapter);
+  line2.dependsOn(new MMObjectIF[]{start2, end2}, lineAdapter);
+  ...
+  \end{verbatim}
+  }
+  
+  \section{Updaters}
+  
+  \section{Animations}
+    Animations allow a succession of actions during a defined duration.
+    They are defined by one or many steps defining themselves the "real"
+    actions. The steps's order is determined by the order the steps have been added
+    to the animation (FIFO principle).
+    Successive actions should be grouped into separate steps where a better control
+    of initializations between two successive actions can be reached.
+    Actions which are dependant of the step's progress (e.g. dragging an object
+    from one position to another) must be made to process a number between zero
+    (begin)(0%) and 1 (end)(100%). There are 2 possiblities to 
+    
+    \subsection{Creating steps}
+    An animation step is created with a \textit{long}-value as duration or with a
+    second parameter, the call count as an \textit{int}-number.
+    \\\\
+    The animating calcuation part is done by the \textit{proceed(Progress)}-method which
+    must be overwritten by 
+    
+    \subsection{Using animation-dependencies}
+      Animation-dependencies work similiarly to the "normal" depedencies except that
+      the \textit{doUpdate}-methods have a third argument: the progress.
+      
+    \subsection{Displaying the controls}
+      The components available to control an animation are:
+      \begin{itemize}
+        \item the {\it button panel} with the main control buttons: {\tt getButtonPanel()}
+        \item the {\it description label} with the currently displayed message: {\tt getDescriptionLabel()}
+        \item the {\it options panel} for changing settings: {\tt getOptionsPanel()}
+      \end{itemize}
+      These 3 components are grouped into the {\it animation panel}: {\tt getAnimationPanel()}
+      \\\\
+      It is possible to place the {\it button panel} into the bottom bar of the mathlet,
+      between the {\it help- and reset-button} by using inside a {\it BaseApplet}-extending class
+      {\tt setAnimationPanel(Animation)}.
+  
+\chapter{MMPanels}
+  This chapter deals with the panels used to render \mmos in a container.
+  These so called \mmps have a set of common functionality and properties along with a specialisation
+  for their \mmos, their "masters".\\\\
+  Every \mmp derives from the homonymous class from the package\\ \textit{net.mumie.mathletfactory.display.noc}
+  or from a subclass of it, called {\tt MMEditablePanel}.
+  
+  \section{Common Functionality of \mmps}
+    \subsection{Initialisation}
+    Each \mmp has a constructor of at least 2 parameters where the first is the \textit{Master-MMObject} 
+    and the second is the transformer used to update this container drawable.
+    \mmps are intended to work \textit{for} a \mmo and not to be instantiated by the \textbf{new} operator.
+    The only way to create a new instance of a \mmp is to call \textit{getAsContainerContent()} on the \mmo
+    to be displayed.
+    
+    \subsection{Detecting User Changes}
+    Every \mmp contains a flag to indicate that the user has changed or entered data in the panel:
+    \begin{description}
+      \item[{\tt isEdited()}]
+      Returns if this \mmp was edited manually by the user.
+      \item[{\tt setEdited(boolean)}] 
+      Sets the {\tt edited} flag. My be used to reset the flag.
+    \end{description}
+    
+    \subsection{Text visibility}
+    There are 2 ways to hide the content in a \mmp without hiding the entire component.\\
+    The first is an absolute mechanism that hides the text until other specified.\\
+    The second is mechanism hides the text as long as the user has not edited the panel's value. It makes use of
+    the {\tt edited} flag.\\\\
+    The following methods overwrite the foreground with the background color to hide the text.
+    Note that only the "real content" can be hidden, i.e. the layout and style elements are not infected 
+    (e.g. the braces of a matrix or of an intervall).
+    \begin{description}
+      \item[{\tt boolean isTextVisible()}]
+      Returns if the content of this \mmp is visible. Default is true.
+      \item[{\tt void setTextVisible(boolean)}] 
+      Sets the content's visibility to the given boolean value.\\
+      
+      \item[{\tt boolean isTextVisibleBeforeEdited()}]
+      Returns if the panel's content will only be visible when the user enters data.
+      Default is true.
+      \item[{\tt void setTextVisibleBeforeEdited(boolean visible)}]
+      Sets the {\tt textVisibleBeforeEdited}-flag.
+    \end{description}
+    
+    \subsection{Panel size}
+    By default, each \mmp takes as much place as it needs but will never exceed its \textit{preferred size}.
+    But sometimes this dynamic resizing is not desired and, if the panel's best dimension is known, can be turned
+    off be setting his own preferred size by invoking these two methods:
+    \begin{description}
+      \item[{\tt void setWidth(int)}]
+      Sets the preferred width of this \mmp. Setting -1 will restore the default (automatic) size.
+      \item[{\tt void setHeight(int)}] 
+      Sets the preferred height of this \mmp. Setting -1 will restore the default (automatic) size.
+    \end{description}
+    
+  \section{Overview of \mmps}
+    \subsection{{\tt MMNumberPanel}}
+    This \mmp is used to render all numbers in the \appfac. It is derived from the {\tt OperationPanel} which is
+    basically used to render symbolic function expressions. It is used in many other \mmps where numbers
+    can be edited.
+    
+    \subsection{{\tt MMNumberMatrixPanel}}
+    This \mmp is used to render (number) matrices, linear equation systems and vectors/tuples. 
+    It makes use of the \mmps of its number components to render them. The matrix border can be changed 
+    to determinant, brackets and braces type.
+    It extends the \mmp with the possibility to set or get all attributes from its subcomponents in a single call.
+    \begin{description}
+      \item[{\tt boolean isCompletelyEdited()}]
+      Returns if all subcomponents were edited. Uses the {\tt edited} flag of its numbers.
+      \item[{\tt MMNumberPanel getEntryPanel(int row, int col)}] 
+      Returns the {\tt MMNumberPanel} of the matrix entry with the given indices.
+    \end{description}
+
+    \subsection{{\tt MMFunctionPanel}}
+    This \mmp is used to render symbolic function expressions for all function objects.
+    It is derived from the {\tt OperationPanel}.
+
+    \subsection{{\tt MMDoubleSliderPanel}}
+    This \mmp is used to render double values as a slider. By this way the user can drag the slider to
+    change the number value.
+    
+  
+\chapter{Internationalization}
+  Internationalization of mathlets can be done by using localizable messages (identified
+  by keys) for e.g. the title or descriptions inside the mathlet.
+  The mathlet developer is encouraged to use localizable messages instead of static
+  strings in order to free the code from language dependant expressions
+  and therefore to provide a more flexible language integration.\\\\
+  At start-up, the mathlet tries to load the correct messages-file for the executing system,
+  else it tries to load it in english.\\
+  
+  \section{Storing messages in a file}
+  Each language has its own abbreviation, e.g. "en" for english, "de" for german or
+  "fr" for french. The filename of the message-file is determined by the prefix
+ "{\tt Messages\_"} followed by the language abbreviation and the file ending "{\tt .properties}"
+  (e.g. {\tt Messages\_en.properties} for english). This file must reside in the mathlet's directory
+  and the locale of the executing system must correspond to that of the filename. A message
+  in the "en"-file could be:\\
+  \indent myApplet.title = This is the title in english!\\
+  whereas in the "de"-file:\\
+  \indent myApplet.title = Dies ist der Titel auf deutsch!\\
+  If no such message file is found, the default file ("{\tt Messages.properties"}) will be taken.
+  
+  \section{Using messages in a mathlet}
+  Message strings stored in a language file can be read through the {\tt getString(String key) }-method
+  defined in the {\tt BaseApplet}-class. Since every mathlet template extends this class,
+  this method is available in every mathlet.
+  
+
+\begin{appendix}
+
+\chapter{Overview of Implemented MMObjects}
+
+  {\bf Note:}\\
+  Every \mmo must have a copy constructor with its own entity as single parameter.
+  These constructors will not be listed below.\\
+  \\
+  {\bf Note:}\\
+  Every constructor which is not a copy constructor has a \verb|Class| parameter as first
+  (or even single) argument. This field must be one of the number classes providing calculations
+  on a specific number field for that \mmo. In the further, a constructor with no arguments
+  ("empty constructor") means with no arguments except the \verb|Class| parameter.
+  
+  \section{Affine Geometric Objects}
+    These objects exist whether in 2D or 3D space and are catacterized by their affine coordinates.\\
+    Location: net.mumie.mathletfactory.mmobject.geom.affine
+    
+    \subsection{Affine Points}
+      They can be constructed with their coordinates or by an empty constructor (in this case they get
+      the coordinates of the origin). These can be changed by various \verb|get|- and \verb|set|-methods.\\
+      {\bf Implementations:}\\
+        \verb|MMAffine2DPoint| - represents an affine 2D point\\
+        \verb|MMAffine3DPoint| - represents a point in the affine 3D space
+        
+    \subsection{Affine Lines}
+      These objects are caracterized by 2 points they are running through. They can be infinitely long or
+      a segment between these points. \\
+      {\bf Implementations:}\\
+        \verb|MMAffine2DLine| - represents an infinitely long line in 2D\\
+        \verb|MMAffine2DLineSegment| - represents a line segment in 2D\\
+        \verb|MMAffine3DLine| - represents an infinitely long line in 3D\\
+        \verb|MMAffine3DLineSegment| - represents a line segment in 3D
+      
+    \subsection{Ellipses}
+       Ellipses are internally represented by a symmetric 3x3
+       \verb|net.mumie.mathletfactory.util.math.NumberMatrix|.
+       They can be constructor either by this matrix or by the center, by the radian between
+       the semi axes and the canonic coordinate system and by the length of the semi axes or
+       by the two focal points of the ellipse and by the sum of the distances between an arbitrary point 
+       on the ellipse and the two focal points.\\
+       {\bf Implementations:}\\
+        \verb|MMAffine2DEllipse| - represents an ellipse in 2D space \\
+        \verb|MMAffine3DEllipse| - represents an ellipse in 3D space
+       
+    \subsection{Coordinate System}
+      A 2D coordinate system can be constructed either with default display options
+      and the origin as center or with custom settings for center, axes and grid line display.\\
+      {\bf Implementations:}\\
+        \verb|MMCoordinateSystem| - represents a configurable 2D coordinate system
+      
+    
+  \section{Analysis Objects}
+    \subsection{Monovariate Functions}
+      Monovariate real valued functions are constructed either by implementing one of the \verb|evaluate| methods
+      defined in the interface \verb|FunctionOverRIF| or by using a symbolic string representation of
+      the function using an \op.\\
+      {\bf Implementations:}\\
+        \verb|MMFunctionDefByOp| - represents a function defined by an \op\\
+        \verb|MMFunctionDefinedByExpression| - represents a function defined by an implementation of \verb|FunctionOverRIF|\\
+        \verb|MMFunctionDefinedBySamples| - represents a function defined by a discrete set of points\\
+        \verb|MMPiecewiseFunction| - represents a piecewise function defined by an \op for each interval
+      
+    \subsection{Multivariate Functions}
+      Multivariate functions are defined by a single expression or by distinct expressions for each dimension
+      (parametric functions).\\
+      {\bf Implementations:}\\
+        \verb|MMFunctionOverR2| - represents a function in the $R^2$ defined by an \op for $x$ and $y$\\
+        \verb|MMOneChainInR2| - represents a monovariate piecewise continuous function in the $R^2$\\
+        \verb|MMParametricFunctionInR2| - represents a parametric function in the $R^2$\\
+        \verb|MMParametricFunctionInR3| - represents a parametric function in the $R^3$
+      
+    \subsection{Series}
+    All implemented series work with \ops but also implement the interface \verb|FunctionOverRIF|.\\
+      {\bf Implementations:}\\
+        \verb|MMSeriesDefByOp| - represents a series defined by an \op\\
+        \verb|MMFourierSeriesDefByOp| - represents a Fourier series of a periodic function\\
+        \verb|MMFunctionSeriesDefByOp| - represents a monovariate real valued function series\\
+        \verb|MMPowerSeriesDefByOp| - represents a power series\\
+        \verb|MMTaylorSeriesDefByOp| - represents a Taylor series
+        
+      
+    \subsection{Sequences}
+      {\bf Implementations:}\\
+        \verb|MMSequence| - represents a sequence defined by an implementation of \verb|SequenceAdapter|\\
+        \verb|MMSequenceDefByOp| - represents a sequence defined by an \op\\
+        \verb|MMFunctionSequenceDefByOp| - represents a monovariate real valued function sequence defined by an \op\\
+        \verb|MMRecursiveSequenceDefByOp| - represents a recursive sequence defined by an \op
+        
+        
+    \subsection{Vector Fields}
+      {\bf Implementations:}\\
+        \verb|MMVectorField2DOverR2DefByExpression| - represents a vector field defined by an implementation of \verb|VectorField2DOverR2IF|\\
+        \verb|MMVectorField2DOverR2DefByComponents| - represents a vector field defined by 2 \ops
+  
+  \section{Numbers}
+    Location: net.mumie.mathletfactory.mmobject.number
+  
+  \section{Intervals and Sets}
+    Location: net.mumie.mathletfactory.mmobject.set
+      {\bf Implementations:}\\
+        \verb|MMInterval| - represents a simple set with a starting and an ending value\\
+        \verb|MMNumberSet| - represents a number set defined by an implementation of \verb|NumberSetIF|\\
+        \verb|MMSetDefByRel| - represents a set defined by a \rel
+  
+  \section{Linear Algebra Objects}
+    Location: net.mumie.mathletfactory.mmobject.algebra.linalg
+    
+    \subsection{Vector spaces and Vectors}
+	In the Mumie MathletFactory, vector spaces and vectors are tightly coupled. This results from the
+	design principle, that vector spaces have a basis that can be different than the canonical default
+ 	basis (and which is expressed in coordinates with respect to that default basis). For vectors this 
+	means, that the basis of the vector space they belong to also determines the coordinates of the 
+	vector with respect to the canonical basis.\\
+	Because of this, there is no possible way to create a vector without a vectorspace, the only methods
+	to create one are the \verb|getNewMMVectorFromDefaultCoordinates()| and \verb|getNewVectorFromDefaultCoordinates()|
+	methods of the associated vector space.\\
+      {\bf Implementations:}\\
+        \verb|MMDefaultR2| - represents the vector space $R^2$\\
+        \verb|MMDefaultR2Vector| - represents a vector in the $R^2$\\
+        \verb|MMDefaultR3| - represents the vector space $R^3$\\
+        \verb|MMDefaultR3Vector| - represents a vector in the $R^3$
+	
+    \subsection{Matrices}
+    Matrices are internally stored row-wise in a one-dimensional array. Their indexing begins
+    with 1 (as opposed to Java array indexing) for row and column indexes.\\
+      {\bf Implementations:}\\
+        \verb|MMNumberMatrix| - represents a (mxn) number matrix \\
+        \verb|MMNumberTuple| - represents a column number vector/tuple \\
+        \verb|MMOpMatrix| - represents a (mxn) operation matrix \\
+        \verb|net.mumie.mathletfactory.mmobject.util.MMStringMatrix| - represents a (mxn) string matrix 
+        
+    \subsection{Endomorphisms}
+	An endomorphism $E$ represent a linear map from a vector space into itself. It therefore requires either a
+	vector space as argument (which sets $E$ to the identity) or a basis of that vector space $b_1, b_2,...;b_n$	
+	in form of a vector array and its image under the endomorphism $Eb_1, Eb_2, ..., Eb_n$.\\
+	The Matrix of the endomorphism can be set and queried by the methods \verb|setDefaultMatrixRepresentation()|
+	and  \verb|getDefaultMatrixRepresentation()|.\\
+      {\bf Implementations:}\\
+        \verb|MMDefaultR2Endomorphism| - represents an endomorphism in $R^2$\\
+        \verb|MMDefaultR3Endomorphism| - represents an endomorphism in $R^3$
+
+    \subsection{Polynomials}
+      {\bf Implementations:}\\
+        \verb|MMPolynomial| - represents a polynomial both as algebraic entity and as function over $R$\\
+        \verb|MMBezierPolynomial| - represents a bezier polynomial
+    
+    \subsection{Equations and Relations}
+      {\bf Implementations:}\\
+        \verb|MMRelation| - represents an arbitrary complex algebraic relation\\
+        \verb|MMEquationSystem| - represents a system of 1 or more equations\\
+
+
+\chapter{Review of Function Visualisation}
+
+\section{Mathematical Approach}
+This section deals with the visualisation of real valued functions by their
+(two dimensional) graph. For a given function $f:I\mapsto \R$ we want to display the set
+$\{(t,f(t)) | \; t\in I\}\subset \R^2$ (at least, this will be the default visualisation type).\\
+All java function classes within the \appfac have to implement the interface
+{\texttt{FunctionOverRIF}}. This is a very simple interface only declaring the instruction how to get
+  the ``$y$'' from the ``$x$'':
+\begin{itemize}
+\item {\texttt{double evaluate(double x)}}
+\item {\texttt{void evaluate(MMNumber x, MMNumber y)}}
+\item {\texttt{void evaluate(double[] x, double[] y)}}
+\end{itemize}
+The first method using primitive java doubles is the method used for visualisation. In fact, the second method will not make sense for all types of
+functions. But think of a polynomial having only rational valued coefficients: this method
+might then
+be used to picture the fact that rational arguments are mapped to rational result values.
+The third method will evaluate for an array of input values the output by using the array y.\\
+During the code development and conception it turned out that for this rendering purpose it is comfortable to
+generalize the visualisation to
+the so called \emph{1-chain} in \Rtext over \Ztext.\\
+ This
+\emph{1-Chain} in \Rtext is defined as a formal expression\footnote{To be conform with the java indexing
+  in arrays, we let the summation index run from $0$ to $N-1$.}
+\[
+\sum_{i=0}^{N-1} \alpha_i f_i\quad\quad (\alpha_i\in \mathbb{Z}, \; f_i:I_i\mapsto \R, \; N\in\mathbb{N}).
+\]
+The $f_i$ are supposed to be continous real valued functions defined on closed Intervals $I_i\subset \R$.\\
+
+\section{Implemented Model}
+In the \appfac we have the class {\tt OneChainInRIF} modeling these mathematical objects. This modeling is slightly
+different from the expression above. Here we have
+\[
+\sum_{i=0}^{N-1} f_i \quad\quad (f_i:B_i\mapsto \R,\; N\in\mathbb{N}).
+\]
+That is, all the coefficients $\alpha_i$ are equal to $1$. The $B_i$ are elementary sets in \Rtext
+(i.e. finite union of disjoint intervals that may be of any type) that are modeled by the class {\texttt{FiniteBorelSet}}.
+Furthermore the $f_i$ need not to be continous, they are only required to be java classes that implement the {\texttt{FunctionOverRIF}}. \pagebreak
+The class {\tt OneChainInRIF} so far mainly declares the following two methods
+\begin{itemize}
+\item{\texttt{FunctionOverRIF getEvaluateExpressionInComponent(int indexOfComponent)}} returns the $i$-th evaluation expression
+  (corresponding to the element $f_i$ above) as a {\tt FunctionOverRIF}.
+\item{\texttt{FiniteBorelSet getBorelSetInComponent(int indexOfComponent)}} returns the $i$-th borel set.
+\end{itemize}
+The common interface for all the ``MMFunction objects'' that shall be rendered by their graph is {\tt MMOneChainInRIF} that extends {\tt
+  OneChainInRIF} and {\tt Discretizable1DIF} by adding the methods
+\begin{itemize}
+\item {\texttt{setVerticesCount(int i)}}
+\item {\texttt{int getVerticesCount()}}
+\end{itemize}
+These both methods are essential for the discretisation of the
+function graph (but are of no meaning for the mathematical content and so are a
+``pure'' \emph{MM-feature}).\\[1ex]
+Because all 1D-function classes do implement this interface, it is possible to use a single
+transformer type that does all the rendering stuff, the {\tt OneChainInRTransformer}.\\
+This
+transformer will render each set 
+\[
+S_i:= \{(t,f_i(t))|\;t\in B_i\}\quad\quad(0\le i\le N-1)
+\]
+ as a 2d-polygon. Observe that for a given function defined on an elementary set (a
+ {\texttt{FiniteBorelSet}} in \appfac terminology) we have $N=1$ and there is only a single set
+   $S_0$ to
+   be displayed.\\
+Let $n_i$ be the number of intervals in the $i$th elementary set, then according to the decomposition
+\[
+B_i = I_{i,0}\cup I_{i,1}\cup\ldots\cup I_{i,n_i-1}
+\]
+the transformer will discretise the curve on each $I_{i,j}$ corresponding to the value returned by {\texttt{getVerticesCount()}}. The {\texttt {OneChainInRTransformer}} is smart enough not to stupidly discretize each interval and then evaluate the suitable function
+expression -- it does perform a check which parts of the function will really be visible on the
+screen.\\
+A further improving but not yet implemented feature would be an adaptable
+  discretisation algorithm due to the (local) change rate (i.e. the derivative) of the function to display.\\[1ex]
+
+\section{Review of implemented function types}
+\begin{itemize}
+\item {\texttt {MMFunctionDefinedBySamples}}\\
+This function is determined by an array {\texttt {Affine2DPoint[] p}} of $N$ defining sample
+points. The domain is equal to $\bigcup_{i=0}^{N-1}\{p_x[i]\}$ and the evaluate method will simply
+return the corresponding $p_y[i]$ value. This class is also the base class for various types
+of spline classes which are also treated as ``sample point defined'' functions.
+
+\item {\texttt {MMFunctionDefByOp}}\\
+This type explicitly holds an instance of {\texttt {FiniteBorelSet}} as domain and a {\texttt {String}}
+expression (i.e. sin(x), exp(x), $\ldots$). A parsing mechanism ensures a fast realisation
+for the method {\texttt {double evaluate(double x)}}, which is always used for rendering.
+
+\item {\texttt {MMFunctionDefinedByExpression}}\\
+This class also holds explicitly its domain, but additionally holds an instance of {\texttt
+  {FunctionOverRIF}}. The latter is responsible for the ``real evaluating'' and offers a flexible
+approach for defining more sophisticated functions. By using the method {\texttt {void
+  setFunctionExpression(FunctionOverRIF f)}}, there is a fast approach to define arbitrary functions.
+
+\item {\texttt {MMPolynomial}}\\
+Essentially defined on it's coefficients, we treat this class as a real valued function for
+standard rendering.
+\end{itemize}
+
+{\textbf {Remark:}}\\
+Observe that all these functions have a very similar implementation of the {\texttt {MMOneChainInRIF}}. All of these classes define a 1-chain consisting of a single evaluation expression
+and because all of them do implement the interface {\texttt {FunctionOverRIF}} the method {\texttt {FunctionOverRIF getEvaluateExpression(int i)}} can simply be coded by returning the
+class itsself.
+\section{Fig: Function Structure I}
+{\includegraphics{images/FunctionStructureInMath}}
+
+\section{Fig: Function Structure II}
+\rotatebox{90}{\includegraphics{images/MMFunctionStructure}}
+
+\section{Fig: Implementation of Splines}
+\rotatebox{90}{\includegraphics{images/MMSplineStructure}}
+
+\clearpage
+\input{diss_tim.tex}
+\clearpage
+
+\chapter{Miscellaneous Topics}
+\section{Commands for embedding applets in websites}
+  It is possible to embed applets in websites via the traditional (and even deprecated)
+  \verb|<applet>|-tag or via the recommended \verb|<object>|-tag.\\
+  Below is a template for an \verb|<object>|-tag:\\
+  \begin{verbatim}
+    <object classid="java:MyApplet.class" codetyte="application/java"
+          codebase="./" archive="MyApplet.jar" width="400" height="300">
+      <param name="parameter1" value="...value...">
+      <param name="parameter2" value="...value...">
+    </object>
+  \end{verbatim}
+  Overview of attributes:
+  \begin{itemize}
+  \item \verb|classid| specifies the name of the applet with prefix "java:" and suffix ".class". Note that no path must be specified!
+  \item \verb|codebase| specifies the path to the class-file relative to the HTML page's location
+  \item \verb|archive| specifies a comma-separated list of needed archive files (e.g. zipped 
+  libraries where also the applet class can be located)
+  \end{itemize}
+
+\section{Table: DisplayProperties in MMObjects and Drawables}
+  {\small\ttfamily
+  \begin{tabular}{|l|l|l|} \hline
+    \rmfamily Properties-Class & \rmfamily implementing MM-Class & \rmfamily using Drawable\\ \hline\hline
+    LineDisplayProperties & MMAffine2DLine & G2DLineDrawable\\
+    & MMAffine2DLineSegment & J3DLineSegmentDrawable\\
+    & MMAffine2DRay & J3DPolyLineDrawable\\
+    & MMAffine3DLine & \\
+    & MMAffine3DLineSegment & \\
+    & MMCoordinateSystem & \\
+    & MMDefaultRNVector & \\
+    & MMVectorField2DOverR2- & \\
+    & \indent\indent DefByComponents & \\
+    & MMVectorField2DOverR2- & \\
+    & \indent\indent DefByExpression & \\ \hline
+    
+    PointDisplayProperties & MMAffine2DPoint & G2DPointDrawable\\
+    & MMAffine3DPoint & J3DPointDrawable\\
+    & MMDefaultRN & \\
+    & MMBezierPolynomialAdvanced & \\ \hline
+    
+    PolygonDisplayProperties & MMAffine2DPolygon & G2DPolygonDrawable\\
+    & MMFunctionDefByOp & \\
+    & MMFunctionDefinedByExpression & \\
+    & MMFunctionDefinedBySamples & \\
+    & MMPiecewiseFunction & \\
+    & MMStepFunction & \\
+    & MMBezierPolynomialAdvanced & \\
+    & MMPolynomial & \\
+    & MMParametricFunctionInR2 & \\
+    & MMOneChainInR2 & \\ \hline
+    
+    SurfaceDisplayProperties & MMFunctionOverR2 & \rmfamily(no explicit drawable)\\
+    & MMParametricFunctionInR3 & \\ 
+    & MMAffine3DPlane & \\ 
+    & MMAffine3DSubspace & \\ \hline
+  \end{tabular}
+  }
+  
+  \clearpage
+  
+  \section{Classes and their locations/packages}
+  This section lists the most used classes with their location inside the library.
+  All following package descriptions must have the explicit prefix  
+  \verb|net.mumie.mathletfactory|.\\\\
+  {\small\ttfamily
+  \begin{longtable}{l | l}
+    \rmfamily Class & \rmfamily Package\\ \hline\hline
+    \endhead
+    ActionManager & action\\
+    Affine2DKeyboardGridTranslateHandler & action.handler\\
+    Affine2DKeyboardTranslateHandler & action.handler\\
+    Affine2DMouseGridTranslateHandler & action.handler\\
+    Affine2DMouseTranslateHandler & action.handler\\
+    Affine3DKeyboardTranslateHandler & action.handler\\
+    Affine3DMouseTranslateHandler & action.handler\\
+    AffineLineSegmentBetweenPointsUpdater & action.updater\\
+    Animation & uitl.animation\\
+    AnimationDependencyAdapter & uitl.animation\\
+    AnimationDependencyUpdater & uitl.animation\\
+    \\
+    BaseApplet & appletskeleton\\
+    BasicApplicationFrame & util\\
+    \\
+    CanvasControllerIF & action\\
+    CanvasImage & util\\
+    CanvasMessage & util\\
+    Canvas2DObjectTransformer & transformer\\
+    Canvas3DObjectTransformer & transformer\\
+    ContainerObjectTransformer & transformer\\
+    ControlPanel & appletskeleton.util\\
+    \\
+    DefaultCanvasController & action\\
+    DependencyAdapter & action.updater\\
+    DependencyUpdater & action.updater\\
+    DisplayProperties & display\\
+    \\
+    FunctionAndDerivativeOverRIF & math.analysis.function\\
+    FunctionOverBorelSetIF & math.analysis.function\\
+    FunctionOverRIF & math.analysis.function\\
+    \\
+    GeneralTransformer & transformer\\
+    \\
+    LinearMap & math.algebra.linalg\\
+    LinearMapDefByVectorsUpdater & action.updater\\
+    LineDisplayProperties & display\\
+    \\
+    MathUtilLib & math.util\\
+    MatrixLayout & appletskeleton.util\\
+    MMAffine2DEllipse & mmobject.geom.affine\\
+    MMAffine3DEllipse & mmobject.geom.affine\\
+    MMAffine2DLine & mmobject.geom.affine\\
+    MMAffine3DLine & mmobject.geom.affine\\
+    MMAffine2DLineSegment & mmobject.geom.affine\\
+    MMAffine3DLineSegment & mmobject.geom.affine\\
+    MMAffine2DPoint & mmobject.geom.affine\\
+    MMAffine3DPoint & mmobject.geom.affine\\
+    MMComplex & mmobject.number\\
+    MMComplexRational & mmobject.number\\
+    MMCoordinateSystem & mmobject.geom.affine\\
+    MMDefaultCanvasObject & mmobject\\
+    MMDefaultObject & mmobject\\
+    MMDouble & mmobject.number\\
+    MMEditablePanel & display.noc\\
+    MMEquationSystem & mmobject.algebra\\
+    MMFunctionDefByOp & mmobject.analysis.function\\
+    MMFunctionDefinedByExpression & mmobject.analysis.function\\
+    MMFunctionDefinedBySamples & mmobject.analysis.function\\
+    MMFunctionPanel & display.noc.function\\
+    MMG2DCanvas & display.g2d\\
+    MMInteger & mmobject.number\\
+    MMInterval & mmobject.set\\
+    MMJ3DCanvas & display.j3d\\
+    MMNumberMatrix & mmobject.algebra.linalg\\
+    MMNumberMatrixPanel & display.noc.matrix\\
+    MMNumberPanel & display.noc.number\\
+    MMNumberSet & mmobject.set\\
+    MMNumberTuple & mmobject.algebra.linalg\\
+    MMObjectIF & mmobject\\
+    MMOpMatrix & mmobject.algebra.linalg\\
+    MMPanel & display.noc\\
+    MMPiecewiseFunction & mmobject.analysis.function\\
+    MMPolynomial & mmobject.algebra.poly\\
+    MMRational & mmobject.number\\
+    MMRelation & mmobject.algebra\\
+    MMSetDefByRel & mmobject.set\\
+    MMString & mmobject.util\\
+    MMStringMatrix & mmobject.util\\
+    MumieTheme & appletskeleton.util\\
+    \\
+    NoCanvasApplet & appletskeleton\\
+    NumberFactory & math.number\\
+    NumberMatrix & math.algebra.linalg\\
+    NumberTuple & math.algebra.linalg\\
+    NumberTypeDependentIF & math.number\\
+    \\
+    OneChainInRIF & math.analysis.function\\
+    OneChainInRNIF & math.analysis.function.multivariate\\
+    Operation & math.algebra.op\\
+    OperationPanel & display.noc.op\\
+    OpMatrix & math.algebra.linalg\\
+    OpParser & math.algebra.op\\
+    OpTuple & math.algebra.linalg\\
+    \\  
+    PointDisplayProperties & display\\
+    PolygonDisplayProperties & display\\
+    Progress & util.animation\\
+    PropertyHandlerIF & mmobject\\
+    \\
+    Relation & math.algebra.rel\\
+    RelParser & math.algebra.rel\\
+    \\
+    SequenceAdapter & math.analysis.sequence\\
+    SequenceIF & math.analysis.sequence\\
+    SeriesIF & math.analysis.sequence\\
+    SideBySideG2DCanvasApplet & appletskeleton.g2d\\
+    SideBySideJ3DCanvasApplet & appletskeleton.j3d\\
+    SingleG2DCanvasApplet & appletskeleton.g2d\\
+    SingleJ3DCanvasApplet & appletskeleton.j3d\\
+    SpecialCaseEvent & action.message\\
+    SpecialCaseListener & action.message\\
+    Step & util.animation\\
+    SurfaceDisplayProperties & display\\
+    \\
+    TabbedPanel & appletskeleton.util\\
+    TextLayout & appletskeleton.util\\
+    TextPanel & appletskeleton.util\\
+    \\
+    UpperLowerG2DCanvasApplet & appletskeleton.g2d\\
+    UpperMiddleLowerG2DCanvasApplet & appletskeleton.g2d\\
+    UsesOpArrayIF & math.algebra.op\\
+    UsesOperationIF & math.algebra.op\\
+    UsesRelationIF & math.algebra.rel
+    \\
+    VectorField2DOverR2IF & math.analysis.vectorfield\\
+    VectorFunctionOverBorelSetIF & math.analysis.function.multivariate\\
+    VectorFunctionOverDomainIF & math.analysis.function.multivariate\\
+    VectorFunctionOverRIF & math.analysis.function.multivariate
+    
+  \end{longtable}
+  }
+  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\input{TriangleAltitudeCode.tex}
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{appendix}
+\end{document}

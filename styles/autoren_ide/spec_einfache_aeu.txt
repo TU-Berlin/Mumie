@@ -1,0 +1,71 @@
+Autor: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: spec_einfache_aeu.txt,v 1.1 2004/05/11 18:51:56 rassy Exp $
+
+
+           SPEZIFIKATION DER EINFACHEN AUTOREN-ENTWICKLUNGSUMGEBUNG
+           ========================================================
+
+
+0. Begriffsklärung
+   ===============
+
+Die "einfache Autoren-Entwicklungs-Umgebung (eAEU)" ist ein Tool zum Erstellen
+von Inhalten mit Preview-Funktion, die ohne aufwendige Software-Installationen
+(Datenbank, Japs) asukommt und deshalb in ihren Funktionalitäten eingeschränkt
+ist. Insbesondere kann nicht jedes Dokument in vollem Umfang getestet werden.
+
+Unter der "vorläufigen Autoren-Entwicklungs-Umgebung (vAEU)" soll das
+z.Z. (Anfang Mai 2004) verwendete System (aus dem Japs-Build herausgelöste und
+angepasste Ant-Targets) verstanden werden.
+
+
+1. Funktionalitäten
+   ================
+
+Wie die vAEU auch soll die eAEU folgendes ermöglichen:
+
+1.1. Konvertieren von MumieTeX-Quellen.
+
+1.2. Erzeugen von Previews der bei 1.1. entstandenen Dokumente.
+
+Im Gegensatz zur vAEU soll die eAEU jedoch auch folgendes ermöglichen:
+
+1.1.1. Konvertieren einzelner MumieTeX-Quellen.
+
+1.1.2. Konvertieren aller MumieTeX-Quellen in einem Verzeichnis, optional
+       rekursiv.
+
+1.2.1. Erzeugen von Previews einzelner Dokumente.
+
+1.2.2. Erzeugen von Previews aller Dokumente in einem Verzeichnis, optional
+       rekursiv.
+
+1.3. Anzeigen der Previews im Mozilla
+
+1.4. Bequeme Navigation im Verzeichnisbaum des "Würfels".
+
+
+2. Performance
+   ===========
+
+Um die Wartezeiten des Benutzers zu verkürzen, sollen
+
+2.1. alle Operationen, in denen Java involviert ist, möglichst in derselben
+     Virtaul Machine ablaufen;
+
+2.2. Java-Objekte, deren Erzeugung aufwendig und zeitraubend ist
+     (XSL-Stylesheets, DOM-Bäume, ...) wenn möglich gecacht und gepoolt werden.
+
+
+3. Implementierung
+   ===============
+
+Die Benutzerschnittstelle der eAEU wird ein CLI (Command Line Interface) sein,
+genauer eine in Java implemetierte Shell. Die verschiedenen Operationen
+(Konvertieren von MumieTeX, Erzeugen von Previews, Navigation im "Würfel" usw.)
+stehen dem Benutzer als Shell-Befehle zur Verfügung. Diese nutzen von der Shell
+verwaltete Caches/Pools für XSL-Stylesheets, DOM-Bäume, und XPath-Objekte.
+
+Als Shell wird das Paket "mmsh" verwendet. Basisklassen für Caches und Pools
+stellt das paket "mmjutil" zur Verfügung. Beide befinden sich als CVS-Module im
+Berliner Japs-Repository.

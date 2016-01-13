@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_edit_tutorial_unpriv.content.xml,v 1.5 2009/11/17 16:01:41 linges Exp $
+-->
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global parameters and variables                                              -->
+<!-- ================================================================================ -->
+
+<!-- The mode of the page ("form" or "feedback"): -->
+<xsl:variable name="mode">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">mode</xsl:with-param>
+    <xsl:with-param name="default">form</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Which task had been performed ("created-tutorial" or "modified-tutorial"; feedback mode
+   only) -->
+<xsl:variable name="performed-task">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">performed-task</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Size of the text fields and text areas: -->
+<xsl:variable name="text-field-size">20</xsl:variable>
+<xsl:variable name="text-area-cols">60</xsl:variable>
+<xsl:variable name="text-area-rows">5</xsl:variable>
+
+<!-- Id of the edited tutorial (or -1 if new tutorial): -->
+<xsl:variable name="tutorial-id" select="/mumie:tutorial/@id"/>
+
+<!-- Whether the edited tutorial is a new tutorial: -->
+<xsl:variable name="new-tutorial">
+  <xsl:choose>
+    <xsl:when test="$tutorial-id &gt; 0">no</xsl:when>
+    <xsl:otherwise>yes</xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- Title and headline of the page: -->
+<xsl:variable name="title">
+  <xsl:choose>
+    <xsl:when test="$new-tutorial = 'yes'">
+      <xsl:value-of select="$i18n-new-tutorial"/>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$i18n-edit-tutorial"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:variable>
+
+<xsl:variable name="fb-message">
+  <xsl:choose>
+    <xsl:when test="$performed-task = 'created-tutorial'">
+      <xsl:value-of select="$i18n-created-new-tutorial"/>
+    </xsl:when>
+    <xsl:when test="$performed-task = 'modified-tutorial'">
+      <xsl:value-of select="$i18n-modified-tutorial"/>
+    </xsl:when>
+  </xsl:choose>
+</xsl:variable>
+
+<!-- All tutors: -->
+<xsl:variable
+  name="all-tutors"
+  select="//mumie:dynamic_data/mumie:store/mumie:user_group[mumie:name='tutors']/mumie:members/mumie:user"/>
+
+<!-- Current tutor of the tutorial: -->
+<xsl:variable name="current-tutor" select="/mumie:tutorial/mumie:tutor/mumie:user"/>
+
+<!-- The class: -->
+<xsl:variable
+  name="class"
+  select="//mumie:dynamic_data/mumie:store/mumie:class"/>
+
+<!-- Error message, if any: -->
+<xsl:variable name="error">
+  <xsl:call-template name="xsl.get-param-from-dynamic-data">
+    <xsl:with-param name="name">error</xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: JavaScript                                                                   -->
+<!-- ================================================================================ -->
+
+<xsl:template name="javascript">
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Utilities                                                                    -->
+<!-- ================================================================================ -->
+
+<xsl:template name="text-field">
+  <xsl:param name="name"/>
+  <xsl:param name="default-value"/>
+  <xsl:param name="size" select="$text-field-size"/>
+  <xsl:param name="html-id" select="concat('INPUT.', $name)"/>
+  <xsl:variable name="value">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name" select="$name"/>
+      <xsl:with-param name="default" select="$default-value"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <input id="{$html-id}"
+         type="text"
+         class="normal"
+         name="{$name}"
+         value="{$value}"
+         size="{$size}"
+         onfocus="setInputFocusStyle('{$html-id}')"
+         onblur="setInputNormalStyle('{$html-id}')">
+  </input>
+</xsl:template>
+
+<xsl:template name="text-area">
+  <xsl:param name="name"/>
+  <xsl:param name="default-value"/>
+  <xsl:param name="cols" select="$text-area-cols"/>
+  <xsl:param name="rows" select="$text-area-rows"/>
+  <xsl:param name="html-id" select="concat('INPUT.', $name)"/>
+  <xsl:variable name="value">
+    <xsl:call-template name="xsl.get-param-from-dynamic-data">
+      <xsl:with-param name="name" select="$name"/>
+      <xsl:with-param name="default" select="$default-value"/>
+    </xsl:call-template>
+  </xsl:variable>
+  <textarea id="{$html-id}"
+            class="normal"
+            name="{$name}"
+            cols="{$cols}"
+            rows="{$rows}"
+            onfocus="setInputFocusStyle('{$html-id}')"
+            onblur="setInputNormalStyle('{$html-id}')">
+    <xsl:value-of select="$value"/>
+  </textarea>
+</xsl:template>
+
+<xsl:template name="mark-as-mandatory">
+  <span class="mandatory-mark">*</span>
+</xsl:template>
+
+
+<!-- ================================================================================ -->
+<!-- h1: Error message                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template name="error-message">
+  <div class="error">
+    <h2><xsl:value-of select="$i18n-error"/></h2>
+    <xsl:choose>
+      <xsl:when test="$error='name-missing'">
+        <xsl:value-of select="$i18n-name-missing"/>
+      </xsl:when>
+      <xsl:when test="$error='invalid-capacity-value'">
+        <xsl:value-of select="$i18n-invalid-capacity-value"/>
+      </xsl:when>
+      <xsl:when test="$error='negative-capacity'">
+        <xsl:value-of select="$i18n-negative-capacity"/>
+      </xsl:when>
+    </xsl:choose>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Form                                                              -->
+<!-- ================================================================================ -->
+
+<xsl:template name="form-body">
+  <table class="grid">
+    <!-- Id (read-only): -->
+    <xsl:if test="$new-tutorial='no'">
+      <tr>
+        <td>Id:</td>
+        <td>
+          <xsl:value-of select="/mumie:tutorial/@id"/>
+          <input id="INPUT.id" type="hidden" name="id" value="{/mumie:tutorial/@id}"/>
+        </td>
+      </tr>
+    </xsl:if>
+    <!-- Class (read-only): -->
+    <tr>
+      <td><xsl:value-of select="$i18n-class"/>:</td>
+      <td><xsl:value-of select="$class/mumie:name"/></td>
+      <input id="INPUT.class" type="hidden" name="class" value="{$class/@id}"/>
+    </tr>
+    <!-- Name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-name"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">name</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:tutorial//mumie:name"/>
+        </xsl:call-template>
+        <xsl:call-template name="mark-as-mandatory"/>
+      </td>
+      <td/>
+    </tr>
+    <!-- Description: -->
+    <tr>
+      <td class="description-label"><xsl:value-of select="$i18n-description"/>:</td>
+      <td>
+        <xsl:call-template name="text-area">
+          <xsl:with-param name="name">description</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:tutorial//mumie:description"/>
+        </xsl:call-template>
+      </td>
+      <td/>
+    </tr>
+    <!-- Capacity: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-capacity"/>:</td>
+      <td>
+        <xsl:call-template name="text-field">
+          <xsl:with-param name="name">capacity</xsl:with-param>
+          <xsl:with-param name="default-value" select="/mumie:tutorial//mumie:capacity/@value"/>
+        </xsl:call-template>
+      </td>
+      <td/>
+    </tr>
+    <!-- Occupancy (read-only): -->
+    <tr>
+      <td><xsl:value-of select="$i18n-occupancy"/>:</td>
+      <td><xsl:value-of select="/mumie:tutorial/mumie:occupancy/@value"/></td>
+    </tr>
+    <!-- Tutor: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-tutor"/>:</td>
+      <td>
+        <select name="tutor">
+          <option value="void">
+            <xsl:if test="not($current-tutor)">
+              <xsl:attribute name="selected">selected</xsl:attribute>
+            </xsl:if>
+          </option>
+          <xsl:for-each select="$all-tutors">
+            <xsl:sort select="mumie:surname"/>
+            <xsl:sort select="mumie:first_name"/>
+            <option value="{@id}">
+              <xsl:if test="@id = $current-tutor/@id">
+                <xsl:attribute name="selected">selected</xsl:attribute>
+              </xsl:if>
+              <xsl:value-of select="concat(mumie:surname, ', ', mumie:first_name)"/>
+            </option>
+          </xsl:for-each>
+        </select>
+      </td>
+    </tr>
+  </table>
+  <input type="hidden" name="form-stage" value="1"/>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Button area                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template name="button-area">
+  <div class="buttons">
+    <button type="submit" name="submit" value="submit">
+      <xsl:value-of select="$i18n-submit"/>
+    </button>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Feedback                                                                     -->
+<!-- ================================================================================ -->
+
+<xsl:template name="fb-body">
+  <table class="grid">
+    <!-- Id: -->
+    <tr>
+      <td>Id:</td>
+      <td><xsl:value-of select="/mumie:tutorial/@id"/></td>
+    </tr>
+    <!-- Class: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-class"/>:</td>
+      <td><xsl:value-of select="$class/mumie:name"/></td>
+    </tr>
+    <!-- Name: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-name"/>:</td>
+      <td><xsl:value-of select="/mumie:tutorial/mumie:name"/></td>
+    </tr>
+    <!-- Description: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-description"/>:</td>
+      <td><xsl:value-of select="/mumie:tutorial/mumie:description"/></td>
+    </tr>
+    <!-- Capacity: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-capacity"/>:</td>
+      <td><xsl:value-of select="/mumie:tutorial/mumie:capacity/@value"/></td>
+    </tr>
+    <!-- Occupancy: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-occupancy"/>:</td>
+      <td><xsl:value-of select="/mumie:tutorial/mumie:occupancy/@value"/></td>
+    </tr>
+    <!-- Tutor: -->
+    <tr>
+      <td><xsl:value-of select="$i18n-tutor"/>:</td>
+      <td><xsl:value-of select="concat($current-tutor/mumie:first_name, ' ', $current-tutor/mumie:surname)"/></td>
+    </tr>
+  </table>
+</xsl:template>
+
+<xsl:template name="fb-button-area">
+  <div class="buttons">
+    <a class="button"
+       href='{$xsl.url-prefix}/protected/manage/edit-tutorial?class={$class/@id}&amp;id={$tutorial-id}'>
+      <xsl:value-of select="$i18n-change"/>
+    </a>
+  </div>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Main template                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="$title"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute> 
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-edit-tutorial"/></xsl:attribute> 
+      </link>
+      <script type="text/javascript">
+        <xsl:call-template name="input-element-javascript"/>
+        <xsl:call-template name="javascript"/>
+      </script>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-indented">
+
+        <div class="h1-container">
+          <div class="breadcrumb">
+            <a href="{$xsl.url-prefix}/protected/view/classes-and-courses-index">
+              <xsl:value-of select="$i18n-classes"/>
+            </a>
+            &gt;
+            <span class="item"><xsl:value-of select="//*/mumie:class/mumie:name"/></span>
+            &gt;
+            <a href="{$xsl.url-prefix}/protected/view/tutorials-for-class?class={//*/mumie:class/@id}">
+              <xsl:value-of select="$i18n-tutorials"/>
+            </a>
+            &gt;
+            </div>
+          <h1><xsl:value-of select="$title"/></h1>
+        </div>
+
+        <xsl:choose>
+          <xsl:when test="$mode = 'form'">
+            <p><xsl:call-template name="i18n-hints"/></p>
+            <xsl:if test="$error != ''">
+              <xsl:call-template name="error-message"/>
+            </xsl:if>
+            <form action="{$xsl.url-prefix}/protected/manage/edit-tutorial"
+                  enctype="multipart/form-data"
+                  method="post">
+              <xsl:call-template name="form-body"/>
+              <xsl:call-template name="button-area"/>
+            </form>
+          </xsl:when>
+          <xsl:when test="$mode = 'feedback'">
+            <p><xsl:value-of select="$fb-message"/></p>
+            <xsl:call-template name="fb-body"/>
+            <xsl:call-template name="fb-button-area"/>
+          </xsl:when>
+        </xsl:choose>
+
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+</xsl:stylesheet>

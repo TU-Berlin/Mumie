@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:dr="http://www.mumie.net/xml-namespace/data-records"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="xsl-ext dr">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-tutorials-for-class-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<xsl:variable name="courses" select="/*/dr:course"/>
+<xsl:variable name="courses-count" select="count($courses)"/>
+<xsl:variable name="tutorials" select="/*/dr:tutorial"/>
+<xsl:variable name="tutorials-count" select="count($tutorials)"/>
+
+
+<xsl:template match="/">
+  <html>
+    <head>
+      <title>
+        <xsl:value-of select="$i18n-title"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+         <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute> 
+      </link>
+      <link rel="stylesheet" type="text/css">
+         <xsl:attribute name="href"><xsl-ext:url lid="css-tutorials-for-class"/></xsl:attribute> 
+      </link>
+    </head>
+    <body>
+      <xsl:call-template name="top-bar"/>
+      <div class="main-indented">
+        <div class="h1-container">
+          <div class="breadcrumb">
+            <a href="{$xsl.url-prefix}/protected/view/classes-and-courses-index">
+              <xsl:value-of select="$i18n-classes"/>
+            </a>
+            &gt;
+            <span class="item"><xsl:value-of select="/*/@class_name"/></span>
+            &gt;
+          </div>
+          <h1><xsl:value-of select="$i18n-headline"/></h1>
+        </div>
+        <xsl:choose>
+          <xsl:when test="$tutorials-count &gt; 0">
+            <xsl:if test="$courses-count=1">
+              <p>
+                <xsl:value-of select="$i18n-course"/>: <xsl:value-of select="/*/dr:course/@name"/>
+              </p>
+            </xsl:if>
+            <xsl:choose>
+              <xsl:when test="$user-is-staff='yes' and ($user-is-lecturer='yes' or $user-is-admin='yes')">
+                <xsl:call-template name="tutorial-list-for-admins-lecturers"/>
+              </xsl:when>
+              <xsl:when test="$user-is-staff='yes' ">
+                <xsl:call-template name="tutorial-list-for-tutors"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:call-template name="tutorial-list-for-students"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:when>  
+          <xsl:otherwise>
+            <xsl:value-of select="$i18n-no-tutorials"/>
+            <xsl:if test="$user-is-staff='yes' ">
+              <xsl:call-template name="new-tutorial-button"/>
+            </xsl:if>
+          </xsl:otherwise>
+       </xsl:choose>
+      </div>
+    </body>
+  </html>
+</xsl:template>
+
+<xsl:template name="tutorial-list-for-tutors">
+  <table style="margin-left:0em" class="genuine">
+    <thead>
+      <xsl:choose>
+        <xsl:when test="$courses-count=1">
+          <tr>
+            <td><xsl:value-of select="$i18n-tutorial"/></td>
+            <td><xsl:value-of select="$i18n-id"/></td>
+            <td><xsl:value-of select="$i18n-tutor"/></td>
+            <td><xsl:value-of select="$i18n-capacity"/></td>
+            <td><xsl:value-of select="$i18n-occupancy"/></td>
+            <td colspan="3"></td>
+            <td></td>
+          </tr>
+        </xsl:when>
+        <xsl:otherwise>
+          <tr>
+            <td rowspan="2"><xsl:value-of select="$i18n-tutorial"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-id"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-tutor"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-capacity"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-occupancy"/></td>
+            <td colspan="{$courses-count * 3}"><xsl:value-of select="$i18n-course"/></td>
+            <td rowspan="2"></td>
+          </tr>
+          <tr>
+            <xsl:for-each select="$courses">
+              <xsl:sort select="@name"/>
+              <xsl:sort select="@id"/>
+              <td colspan="3"><xsl:value-of select="@name"/></td>
+            </xsl:for-each>
+          </tr>
+        </xsl:otherwise>
+      </xsl:choose>
+    </thead>
+    <tbody>
+      <xsl:for-each select="/*/dr:tutorial">
+        <xsl:sort select="@name"/>
+        <xsl:sort select="@id"/>
+        <xsl:variable name="tutorial-id" select="@id"/>
+        <tr>
+          <!-- Tutorial name: -->
+          <td><xsl:value-of select="@name"/></td>
+          <!-- Tutorial id: -->
+          <td><xsl:value-of select="@id"/></td>
+          <!-- Tutor: -->
+          <td><xsl:value-of select="concat(@tutor_surname, ',&#160;', @tutor_first_name)"/></td>
+          <!-- Capacity: -->
+          <td class="number"><xsl:value-of select="@capacity"/></td>
+          <!-- Occupancy: -->
+          <td class="number"><xsl:value-of select="@occupancy"/></td>
+          <xsl:for-each select="$courses">
+            <xsl:sort select="@name"/>
+            <xsl:sort select="@id"/>
+            <!-- Grades: -->
+            <td class="grades">
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                  <xsl:value-of
+                               select="concat($xsl.url-prefix,
+                               '/protected/view/tutorial-user-problem-grades',
+                               '?course=',@id,
+                               '&amp;tutorial=',$tutorial-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-grades"/>
+              </a>
+            </td>
+            <!-- Trad. problem points: -->
+            <td>
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                  <xsl:value-of
+                               select="concat($xsl.url-prefix,
+                               '/protected/view/traditional-problem-points',
+                               '?course=',@id,
+                               '&amp;tutorial=',$tutorial-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-traditional-problem-points"/>
+              </a>
+            </td>
+            <!-- csv: -->
+            <td class="grades">
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                  <xsl:value-of
+                               select="concat($xsl.url-prefix,
+                               '/protected/view/tutorial-user-problem-grades-csv',
+                               '?course=',@id,
+                               '&amp;tutorial=',$tutorial-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-csv-export"/>
+              </a>
+            </td>
+          </xsl:for-each>
+          <!-- Members: -->
+          <td>
+            <a class="button-inline">
+              <xsl:attribute name="href">
+                <xsl:value-of
+                             select="concat($xsl.url-prefix,
+                             '/protected/view/tutorial-members',
+                             '?class=',/*/@class_id,
+                             '&amp;tutorial=',$tutorial-id)"/>
+              </xsl:attribute>
+              <xsl:value-of select="$i18n-members"/>
+            </a>
+          </td>
+        </tr>
+      </xsl:for-each>
+    </tbody>
+  </table>
+</xsl:template>
+
+
+<xsl:template name="tutorial-list-for-admins-lecturers">
+  <table style="margin-left:0em" class="genuine">
+    <thead>
+      <xsl:choose>
+        <xsl:when test="$courses-count=1">
+          <tr>
+            <td><xsl:value-of select="$i18n-tutorial"/></td>
+            <td><xsl:value-of select="$i18n-id"/></td>
+            <td><xsl:value-of select="$i18n-tutor"/></td>
+            <td><xsl:value-of select="$i18n-capacity"/></td>
+            <td><xsl:value-of select="$i18n-occupancy"/></td>
+            <td colspan="3"></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </xsl:when>
+        <xsl:otherwise>
+          <tr>
+            <td rowspan="2"><xsl:value-of select="$i18n-tutorial"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-id"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-tutor"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-capacity"/></td>
+            <td rowspan="2"><xsl:value-of select="$i18n-occupancy"/></td>
+            <td colspan="{$courses-count * 3}"><xsl:value-of select="$i18n-course"/></td>
+            <td rowspan="2"></td>
+            <td rowspan="2"></td>
+          </tr>
+          <tr>
+            <xsl:for-each select="$courses">
+              <xsl:sort select="@name"/>
+              <xsl:sort select="@id"/>
+              <td colspan="3"><xsl:value-of select="@name"/></td>
+            </xsl:for-each>
+          </tr>
+        </xsl:otherwise>
+      </xsl:choose>
+    </thead>
+    <tbody>
+      <xsl:for-each select="/*/dr:tutorial">
+        <xsl:sort select="@name"/>
+        <xsl:sort select="@id"/>
+        <xsl:variable name="tutorial-id" select="@id"/>
+        <tr>
+          <!-- Tutorial name: -->
+          <td><xsl:value-of select="@name"/></td>
+          <!-- Tutorial id: -->
+          <td><xsl:value-of select="@id"/></td>
+          <!-- Tutor: -->
+          <td><xsl:value-of select="concat(@tutor_surname, ',&#160;', @tutor_first_name)"/></td>
+          <!-- Capacity: -->
+          <td class="number"><xsl:value-of select="@capacity"/></td>
+          <!-- Occupancy: -->
+          <td class="number"><xsl:value-of select="@occupancy"/></td>
+          <xsl:for-each select="$courses">
+            <xsl:sort select="@name"/>
+            <xsl:sort select="@id"/>
+            <!-- Grades: -->
+            <td class="grades">
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                  <xsl:value-of
+                                select="concat($xsl.url-prefix,
+                                '/protected/view/tutorial-user-problem-grades',
+                                '?course=',@id,
+                                '&amp;tutorial=',$tutorial-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-grades"/>
+              </a>
+            </td>
+            <!-- Trad. problem points: -->
+            <td>
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                  <xsl:value-of
+                                select="concat($xsl.url-prefix,
+                                '/protected/view/traditional-problem-points',
+                                '?course=',@id,
+                                '&amp;tutorial=',$tutorial-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-traditional-problem-points"/>
+              </a>
+            </td>
+            <!-- csv: -->
+            <td class="grades">
+              <a class="button-inline">
+                <xsl:attribute name="href">
+                <xsl:value-of
+                              select="concat($xsl.url-prefix,
+                              '/protected/view/tutorial-user-problem-grades-csv',
+                              '?course=',@id,
+                              '&amp;tutorial=',$tutorial-id)"/>
+                </xsl:attribute>
+                <xsl:value-of select="$i18n-csv-export"/>
+              </a>
+            </td>
+          </xsl:for-each>
+          <!-- Members: -->
+          <td>
+            <a class="button-inline">
+              <xsl:attribute name="href">
+                <xsl:value-of
+                              select="concat($xsl.url-prefix,
+                              '/protected/view/tutorial-members',
+                              '?class=',/*/@class_id,
+                              '&amp;tutorial=',$tutorial-id)"/>
+              </xsl:attribute>
+              <xsl:value-of select="$i18n-members"/>
+            </a>
+          </td>
+          <!-- edit: -->
+          <td>
+            <a class="button-inline">
+              <xsl:attribute name="href">
+                <xsl:value-of
+                              select="concat($xsl.url-prefix,
+                              '/protected/manage/edit-tutorial',
+                              '?class=',/*/@class_id,
+                              '&amp;id=',$tutorial-id)"/>
+              </xsl:attribute>
+              <xsl:value-of select="$i18n-edit"/>
+            </a>
+          </td>
+
+        </tr>
+      </xsl:for-each>
+    </tbody>
+    </table>
+    <xsl:call-template name="new-tutorial-button"/>
+</xsl:template>
+
+<xsl:template name="new-tutorial-button">
+  <p>
+    <a class="button">
+      <xsl:attribute name="href">
+        <xsl:value-of select="concat($xsl.url-prefix,
+                      '/protected/manage/edit-tutorial',
+                      '?class=',/*/@class_id)"/>
+      </xsl:attribute>
+      <xsl:value-of select="$i18n-new-tutorial"/>
+    </a>
+  </p>
+</xsl:template>
+
+<xsl:template name="tutorial-list-for-students">
+  <table style="margin-left:0em" class="genuine">
+    <thead>
+          <tr>
+            <td><xsl:value-of select="$i18n-tutorial"/></td>
+            <td><xsl:value-of select="$i18n-tutor"/></td>
+            <td><xsl:value-of select="$i18n-capacity"/></td>
+            <td><xsl:value-of select="$i18n-occupancy"/></td>
+          </tr>
+    </thead>
+    <tbody>
+      <xsl:for-each select="/*/dr:tutorial">
+        <xsl:sort select="@name"/>
+        <xsl:sort select="@id"/>
+        <xsl:variable name="tutorial-id" select="@id"/>
+        <tr>
+          <!-- Tutorial name: -->
+          <td><xsl:value-of select="@name"/></td>
+          <!-- Tutor: -->
+          <td><xsl:value-of select="concat(@tutor_surname, ',&#160;', @tutor_first_name)"/></td>
+          <!-- Capacity: -->
+          <td class="number"><xsl:value-of select="@capacity"/></td>
+          <!-- Occupancy: -->
+          <td class="number"><xsl:value-of select="@occupancy"/></td>
+        </tr>
+      </xsl:for-each>
+    </tbody>
+  </table>        
+</xsl:template>
+
+</xsl:stylesheet>

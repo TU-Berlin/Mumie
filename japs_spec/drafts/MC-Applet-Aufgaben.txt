@@ -1,0 +1,320 @@
+
+                                Spezifikation zu MC-Applet-Aufgaben
+                                ===================================
+
+
+Architektur-Überblick
+---------------------
+- eine Aufgabe besteht aus einer oder mehreren Fragen
+- eine Frage besteht aus einer Fragestellung, mehreren Antworten als Auswahlmöglichkeiten und eines Antwort-Typs (z.B. ja/nein, etc.)
+- Fragestellung und Antworten können TeX-Ausdrücke sein, die Variablen enthalten können
+- Variablen können Zufallszahlen oder algebraische Ausdrücke ("Funktionen") sein, die wieder Variablen enthalten können
+- korrekte Lösungen können explizit vorgegeben werden oder automatisch/implizit/generisch berechnet werden
+- implizite Darstellungen und Berechnungen können generisch oder benutzerdefiniert durch eigene Applets/Correctoren durchgeführt werden
+- die Bearbeitung der Aufgabe erfolgt in einem standardisiertem Applet, welches das Aussehen herkömlicher MC-Aufgaben nachahmt
+
+
+Einführung
+----------
+Im Gegensatz zu herkömlichen MC-Aufgaben werden MC-Applet-Aufgaben im TeX als richtige Applet-Aufgaben definiert, wobei die benötigten MC-Daten nicht über eigene TeX-Befehle und -Umgebungen sondern direkt über DataSheet-Elemente und deren Pfade definiert werden.
+TeX-Befehle werden dabei als Elemente und TeX-Umgebungen als Pfade definiert, die weitere Elemente enthalten können.
+Subtasks werden dabei nicht benutzt.
+
+
+TeX-Definition einer generischen MC-Applet-Aufgabe
+--------------------------------------------------
+
+  Alle Aufgaben-Definitionen müssen innerhalb eines "hidden"-Blocks stehen, damit die dort gespeicherten Daten nicht in
+  der HTML-Seite angezeigt werden.
+  Eine Frage wird über die Umgebung "common/problem/question_X/" definiert, wobei "X" die Nummer der jeweiligen Frage ist.
+  Erlaubt sind Werte ab "1".
+  Als Applet ist die Klasse (oder Unterklassen von ihr) MCProblemApplet zu verwenden.
+  Als Corrector ist die Klasse (oder Unterklassen von ihr) MCProblemCorrector zu verwenden.
+
+  1. Angabe des Anwort-Typs
+     Der Antwort-Typ wird über das Element "type" definiert, wobei folgende Werte erlaubt sind:
+       "unique"     - Genau eine Antwort kann angekreuzt werden.
+       "multiple"   - Eine oder mehrere Antworten können angekreuzt werden.
+       "yesno"      - Für jede Antwort muss "ja" oder "nein" angekreuzt werden.
+       "text[i[j]]" - Als Antwort muss ein Text in einem Textfeld eingegeben werden (mit i-Zeilen und j-Zeichen (beide optional, sonst 1 und 40 successive)).
+     Die Angabe dieses Elementes ist zwingend.
+
+  2. Angabe der Fragestellung
+     Die Fragestellung wird über das Element "task" definiert, welches einen Text-Inhalt hat.
+     Es kann Variablen enthalten.
+     Die Angabe dieses Elementes ist zwingend.
+
+  3. Angabe der Antworten
+     Für jede Frage können mehrere Antworten definiert werden.
+     Sie befinden sich unterhalb des Pfades "common/problem/question_X/choice_Y", wobei "Y" die Nummer der jeweiligen Antwort ist.
+     Erlaubt sind Werte ab "1".
+
+     3.1 Angabe des Antwort-Textes
+         Eine Antwort-Text wird über das Element "assertion" definiert, welches einen Text-Inhalt hat.
+         Es kann Variablen enthalten.
+         Die Angabe dieses Elementes ist zwingend.
+
+     3.2 Angabe der Lösung
+         Die Lösung einer Antwort wird über das Element "solution" definiert, wobei folgende Werte erlaubt sind:
+           "true"    - Antwort ist richtig
+           "false"   - Antwort ist falsch
+           "compute" - Die Richtigkeit der Antwort hängt von den personalisierten Daten ab und kann erst später ermittelt werden
+         Die Angabe von "compute" erfordert entweder die Angabe eines Algorithmus' im TeX (siehe 3.3) oder in einem individuellen Corrector.
+         Die Angabe dieses Elementes ist zwingend.
+         [Text-Fragen können bisher nur mit individuellen Correctoren behandelt werden, d.h. "compute"!}
+
+     3.3 Angabe des Lösungsalgorithmus'
+         Für implizite generische Berechnungen ist die Angabe eines Algorithmus' notwendig, der zur Ermittlung der Richtigkeit einer Anwort benutzt wird.
+         Hierzu wird die "correction" Umgebung benötigt, welche innerhalb einer "choice_Y" Umgebung erlaubt ist.
+
+       3.3.1 Angabe einer Relation
+             Die Richtigkeit einer Lösung wird durch eine Relation abgebildet, welche z.B. eine Gleichnung bestehend aus Funktionen beschreiben kann.
+             Sie wird in der Umgebung "relation" aufgesplittet in linke und rechte Seite ("left_side" und "right_side") und dem Zeichen ("sign") angegeben,
+             wobei beide Seiten als Funktionen-Variablen anzugeben sind, die Variablen enthalten können.
+             Die Angabe dieser Elemente ist zwingend.
+
+       3.3.2 Angabe der Berechnungsart [TODO]
+             Berechnungen können entweder algebraisch oder numerisch ausgefürt werden.
+             Diese Einstellung wird durch das Element "calculation" eingestellt, wobei folgende Werte erlaubt sind:
+               "algebraic" - algebraische Berechnung
+               "numerical" - numerische Berechnung
+             Die Angabe dieses Elementes ist optional. Der Default-Wert ist "algebraic".
+
+     3.4 Angabe einer Erklärung
+         Eine Erklärung wird über das Element "explanation" definiert, welches einen Text-Inhalt hat.
+         Es kann Variablen enthalten.
+         Die Angabe dieses Elementes ist optional. Der Default-Wert ist keine Erklärung.
+
+
+  4. Benutzung von Variablen
+     Für die dynamsche Anzeige und Berechnung von Ausdrücken mit personalisierten Zahlen werden Variablen benutzt, die einen rein
+     mathematischen Inhalt haben.
+
+    4.1 Namen und Pfade von Variablen
+        Variablen besitzen jeweils einen eindeutigen Identifikator (z.B. "a" oder "f"), der sich im Pfad der Variablen widerspiegelt.
+        Variablen können entweder global für eine ganze Frage oder lokal für eine Antwort definiert werden.
+        Dazu müssen diese entweder unterhalb "common/problem/question_X/vars" oder respektiv "common/problem/question_X/choice_Y/vars" definiert werden.
+        Lokale Variablen können globale überschreiben.
+
+    4.2 Zufallszahlen
+        Vom TeX generierte personalisierte Zahlen können als Variablen direkt unter ihrem Variablen-Pfad abgespeichert werden
+        (also z.B. unterhalb "common/problem/question_X/vars/a").
+
+    4.3 Zahlen-Klassen
+        Sowohl Zufallszahlen als auch Funktionen benötigen eine Zahlen-Klasse, über die sie eingelesen bzw. weiter verarbeitet werden.
+        Diese Klasse wird über das Element "field" definiert, wobei folgende Werte erlaubt sind:
+          "real"     - Gleitkomma-Zahlen (Double)
+          "rational" - rationale Zahlen
+          "complex"  - komplexe Zahlen
+          "complex-rational" - komplexe Zahlen mit rationalem Real- und Imaginärteil
+          "integer"  - ganzzahlige Zahlen
+        Die Angabe dieses Elementes ist optional. Der Default-Wert ist "real".
+
+    4.4 Präzision
+        Für Zufallszahlen und Funktionen kann die Rendering-Präzision global eingestellt werden.
+        Dies wird über das Element "precision" gesteuert, welches einen ganzzahligen Wert haben muss.
+        Die Angabe dieses Elementes ist optional. Der Default-Wert ist "2".
+
+    4.5 Funktionen
+        Algebraische Ausdrücke ("Funktionen") besitzen zusätzlich zu ihrem MathML-Inhalt noch weitere Eigenschaften und bilden eine eigene Umgebung,
+        die deren Namen trägt (also z.B. "common/problem/question_X/vars/f/").
+        Sie können aus Zufallszahlen und wieder anderen Funktionen bestehen.
+
+      4.5.1 Funktionsausdruck
+            Die mathematische Definition einer Funktion wird unterhalb des Elementes "content" abgespeichert.
+            Es können dabei beliebige algebraische Ausdrücke benutzt werden, die entweder als mathematische Formeln (math. Modus!) oder aber als 
+            Plain-Text direkt definiert werden.
+            Die Angabe dieses Elementes ist zwingend.
+
+      4.5.2 Aktion
+            Zu jeder Funktion kann eine Aktion definiert werden, die auf die Funktion angewendet wird. Sie wird durch das Element "action" beschrieben,
+            welches folgende Werte erlaubt:
+              "replace"   - Ersetzen von Variablen/Parametern in der Funktion
+              "calculate" - Ersetzen von Variablen und Berechnen des Ausdruckes
+            Die Angabe dieses Elementes ist optional. Der Default-Wert ist "replace".
+
+     4.5.3 Normalisierung
+           Für jede Funktion kann angegeben werden, ob sie normalisiert, d.h. ob sie z.B. vereinfacht werden soll.
+           Dies wird über das Element "normalize" erreicht, welches folgende Werte erlaubt:
+              "false" - kein Normalisieren
+              "true"  - Normalisieren mit Standard-Regeln
+              <Liste> - Normalisieren mit den aufgelisteten Regeln (durch Kommata getrennt)
+           Die Angabe dieses Elementes ist optional. Der Default-Wert ist "false".
+
+     4.5.4 Zahlen-Klasse
+           Für jede Funktion kann gesondert eine Zahlenklasse angegeben werden, die die globale Klasse ersetzt.
+           Dies wird über das Element "field" erreicht, welches die selben Werte wie das globale gleichnamige Element besitzt (siehe 4.3).
+           Die Angabe dieses Elementes ist optional. Der Default-Wert ist die globale Zahlen-Klasse.
+
+     4.5.5 Präzision [ToDo]*
+           Für jede Funktion kann gesondert eine Rendering-Präzision angegeben werden, die den globalen Wert ersetzt.
+           Dies wird über das Element "precision" erreicht, welches die selben Werte wie das globale gleichnamige Element besitzt (siehe 4.4).
+           Die Angabe dieses Elementes ist optional. Der Default-Wert ist der globale Präzisionswert.
+           [*: die Präzision müsste intern in den math. Objekten gespeichert werden, was momentan nicht möglich ist]
+
+    4.6 Benutzung in anderen Variablen
+        Variablen können ohne Einschränkung direkt in allen algebraischen Ausdrücken benutzt werden.
+
+    4.7 Benutzung in einer MC-Frage
+        Variablen können überall dort benutzt werden, wo die Eingabe von Text zulässig ist (d.h. in der Fragestellung, in Antworten und Erklärungen).
+        Sie werden über den Befehl "$<Var-Name>$" im Text definiert (also z.B. "sei f(x)=§f§ ...").
+
+
+  5. Auswahl einzelner Fragen aus "Pools"
+     Es besteht die Möglichkeit, anstatt alle Fragen auf einmal anzuzeigen und zu korrigieren, einen oder mehrere Pools zu definieren, 
+     aus denen jeweils eine Frage herausgepickt wird. Dazu müssen 2 Bedingungen erfüllt sein:
+
+    5.1 Angabe der auszuwählenden Fragen
+        Ein Pool wird implizit über die Grenzen einer Zufallszahlen-Definition im TeX gemacht, d.h. bespielsweise, dass eine Random-Zahl zwischen
+        1 und 4 einen Pool mit den Fragen 1-4 definiert, aus dem dann eine Zahl bzw. Frage gewählt wird.
+        Jede Auswahl wird unter dem Pfad "common/problem/questions/question_X" gespeichert, wobei X die Nummer des Pools ist. Erlaubt sind Werte ab "1".
+        Als Auswahl wird direkt ein ganzzahliger Wert gespeichert, der der Nummer der ausgewählten Frage entspricht. Erlaubt sind Werte ab "1". 
+
+    5.2 Benutzung anderer Basis-Klassen
+        Um die Auswahl von Fragen zu aktivieren, müssen statt den Basis-Klassen "MCProblemApplet" und "MCProblemCorrector" die Basis-Klassen
+        "MCRandomProblemApplet" und "MCRandomProblemCorrector" benutzt werden, welche wiederum von obigen Klassen ableiten.
+        In den Programmierungen eingener Unter-Klassen ändert sich dabei nichts, d.h. sie sind voll abwärtskompatibel.
+        
+    5.3 Hinweise
+        Es ist möglich, das Datasheet von solchen Aufgaben für "herkömliche" MC-Applet-Aufgaben zu benutzen, da diese sich nur in der Existenz
+        der Frage- bzw. Pool-Definitionen unterscheiden.
+        Des Weiteren ist es auf diese Art möglich, die Reihenfolge der Fragen zu verändern, indem die auszuwählenden Fragen explizit angegeben werden,
+        d.h. ohne Zufallszahlen.
+
+
+TeX-Definition einer benutzerdefinierten MC-Applet-Aufgabe
+----------------------------------------------------------
+
+  Als Applet ist eine Unterklasse von MCProblemApplet zu verwenden.
+  Als Corrector ist eine Unterklassen von MCProblemCorrector zu verwenden.
+
+  1. Angabe des Anwort-Typs
+     [wie Punkt 1 der generischen MC-Applet-Aufgaben]
+
+  Dies ist die einzige benötigte Information für eine benutzerdefinierte MC-Applet-Aufgabe. Sie erlaubt außerdem die Berechnung der Fragen-Anzahl.
+  Ansonsten ist die Definition von MC-Daten im TeX dem Autor überlassen, da Applet und Corrector speziell entscheiden, welche Daten sie benötigen.
+  Zum Auslesen der MC-Daten können die selben Methoden wie für die generischen Applets/Correctoren benutzt werden (siehe Applet-Architektur).
+
+
+Spezifikation der Applet-Architektur
+------------------------------------
+
+  Die Basis-Applet-Klasse "MCProblemApplet" bildet die Grundlage für sowohl generische als auch benutzerdefinierte MC-Problem-Applets.
+  Sie leitet von "BaseApplet" ab und benutzt für das Laden und Speichern von und in Datasheets die Klasse "MCAppletExercise", welche wiederum
+  von "MCAbstractExercise" ableitet und intern die Basis-Klasse "MumieExercise" benutzt.
+
+  1. Erstellen der Fragen
+     Für jede Frage wird die Methode "initQuestion(int)" mit Angabe der Frage-Nummer aufgerufen. In ihr werden sowohl die Fragestellung als auch die
+     möglichen Antworten der graphischen Oberfläche hinzugefügt. Sie kann in benutzerdefinierten Applets überschrieben werden, um die Gestaltung der 
+     MC-Aufgabe zu individualisieren. Die Default-Implementation lädt generische Daten für jede MC-Frage. Es ist möglich, auf sie in benutzerdefinierten 
+     Applets für einzelne Fragen zurückzugreifen. Sie fängt alle Fehler während der Applet-Ausführung automatisch ab durch das integrierte
+     Quality-Feedback-System.
+
+     Für die Gestaltung der Aufgabe stehen in Applets folgende Methoden zur Verfügung:
+       "setTask(int, java.awt.Component)" - setzt für die angegebene Frage die Fragestellung als GUI-Komponente
+       "setTask(int, java.lang.String)" - setzt für die angegebene Frage die Fragestellung als Text
+       "loadQuestionTask(int)" - gibt den Datasheet-Inhalt der Fragestellung der angegebenen Frage zurück
+       "addAssertion(int, java.awt.Component)" - fügt der angegebenen Frage eine neue Antwortmöglichleit als GUI-Komponente hinzu
+       "addAssertion(int, java.lang.String)" - fügt der angegebenen Frage eine neue Antwortmöglichleit als Text hinzu
+       "loadAssertion(int, int) - gibt den Datasheet-Inhalt des Antwort-Textes der angegebenen Frage der angegebenen Antwort zurück
+       "loadNumberVariable(int, String)" - lädt eine Zahlen-Variable von der angegebenen Frage und gibt diese als "MNumber" zurück
+       "loadFunctionVariable(int, String)" - lädt eine Funktionen-Variable von der angegebenen Frage und gibt diese als "Operation" zurück
+       "loadNumberVariable(int, int, String)" - lädt eine Zahlen-Variable von der angegebenen Frage und Antwort und gibt diese als "MNumber" zurück
+       "loadFunctionVariable(int, int, String)" - lädt eine Funktionen-Variable von der angegebenen Frage und Antwort und gibt diese als "Operation" zurück
+       "isNumberVariable(int, String)"* - gibt zurück, ob eine globale Zahlen-Variable für die angegebene Frage existiert
+       "isFunctionVariable(int, String)"* - gibt zurück, ob eine globale Funktionen-Variable für die angegebene Frage existiert
+       "isNumberVariable(int, int, String)"* - gibt zurück, ob eine lokale Zahlen-Variable für die angegebene Frage und Antwort existiert
+       "isFunctionVariable(int, int, String)"* - gibt zurück, ob eine lokale Funktionen-Variable für die angegebene Frage und Antwort existiert
+     Falls Elemente im Datasheet nicht vorhanden sein sollten, werden genannte Methoden (bis auf die *-Methoden) einen Fehler werfen.
+
+  2. Speichern der Antworten
+     Gespeichert werden immer alle Fragen auf einmal. Das Format der gespeicherten Antworten hängt unmittelbar vom Antwort-Typ ab.
+     Unabhängig von den selektierten Antworten wird ein "edited"-Flag unter "user/answer/generic/edited" mit dem Inhalt "true" gespeichert, um eindeutig zu
+     kennzeichnen, dass die Aufgabe bearbeitet worden ist.
+
+    2.1 Anwort-Typ "unique"
+        Die Nummer der selektierten Antwort wird unterhalb des Pfades "user/answer/question_X" gespeichert. (beginnend mit 1). Falls die Frage
+        nicht bearbeitet wurde, wird nichts gespeichert.
+
+    2.2 Anwort-Typ "multiple"
+        Alle selektierten Antworten werden unterhalb des Pfades "user/answer/question_X/choice_Y" gespeichert.
+        Ihr Wert kann nur "true" sein.
+
+    2.3 Anwort-Typ "yesno"
+        Alle bereits selektierten Antworten werden unterhalb des Pfades "user/answer/question_X/choice_Y" gespeichert.
+        Ihr Wert ist entweder "true" oder "false".
+
+    2.4 Anwort-Typ "text"
+        Nicht-leerer Text wird unterhalb des Pfades "user/answer/question_X/text" gespeichert.
+        Sonderzeichen werden dabei automatisch in Unicode umgewandelt.
+
+  3. Laden gespeicherter Antworten
+     Die gespeicherten Antworten werden immer für alle Fragen auf einmal geladen. Das Format der zu ladenden Antworten wird unmittelbar vom
+     Antwort-Typ abhängig gemacht. Es wird der Zustand vor dem letzten Speichern hergestellt.
+
+
+Spezifikation der Corrector-Architektur
+---------------------------------------
+
+  Die Basis-Corrector-Klasse "MCProblemCorrector" bildet die Grundlage für sowohl generische als auch benutzerdefinierte MC-Problem-Correctoren.
+  Sie implementiert "ProblemCorrector" und benutzt für das Laden und Speichern von und in Datasheets die Klasse "MCCorrectorExercise", welche wiederum
+  von "MCAbstractExercise" ableitet und intern die Basis-Klasse "CorrectorHelper" benutzt. Sie fängt alle Fehler während der Correcor-Ausführung automatisch ab.
+
+  1. Laden der Antworten
+     Für das Laden von MC-Daten aus einem Datasheet stehen in Correctoren folgende Methoden zur Verfügung:
+       "loadNumberVariable(int, String)" - lädt eine Zahlen-Variable von der angegebenen Frage und gibt diese als "MNumber" zurück
+       "loadFunctionVariable(int, String)" - lädt eine Funktionen-Variable von der angegebenen Frage und gibt diese als "Operation" zurück
+       "loadNumberVariable(int, int, String)" - lädt eine Zahlen-Variable von der angegebenen Frage und Antwort und gibt diese als "MNumber" zurück
+       "loadFunctionVariable(int, int, String)" - lädt eine Funktionen-Variable von der angegebenen Frage und Antwort und gibt diese als "Operation" zurück
+       "isNumberVariable(int, String)"* - gibt zurück, ob eine globale Zahlen-Variable für die angegebene Frage existiert
+       "isFunctionVariable(int, String)"* - gibt zurück, ob eine globale Funktionen-Variable für die angegebene Frage existiert
+       "isNumberVariable(int, int, String)"* - gibt zurück, ob eine lokale Zahlen-Variable für die angegebene Frage und Antwort existiert
+       "isFunctionVariable(int, int, String)"* - gibt zurück, ob eine lokale Funktionen-Variable für die angegebene Frage und Antwort existiert
+       "getTextAnswer(int)" - lädt den gespeicherten Text für die gegebene Frage
+       "correctTextAnswer(int)" - korrigiert eine Text-Frage und gibt die Punktzahl zurück
+
+  2. Berechnung der Lösungen
+     Für die Berechnung der Lösungen einer Frage ist die Art der Aufgabe Ausschlag gebend, da z.T. gar keine Rechnungen notwendig sind.
+
+    2.1 Generisch-explizit
+        Die Lösungen aus dem TeX und die Antworten werden direkt miteinander verglichen.
+
+    2.2 Generisch-implizit
+        Die Lösungen können jeweils direkt aus den im TeX definierten Relationen berechnet werden.
+
+    2.3 Benutzerdefiniert
+        Die Lösungen müssen im jeweiligen Corrector angegeben werden.
+        Dies wird über die Methode "protected boolean computeSolution(int questionNr, int answerNr)" getätigt, welche für eine Anwort einer Frage
+        entweder "true" oder "false" zurückgeben muss. Für einzelne Fragen/Antworten kann auch die Default-Implementation benutzt werden.
+
+    2.4 Text-Antworten
+        Diese können nicht generisch korrigiert werden sondern bedingen die Benutzung der Methode
+        "correctTextAnswer(int)", welche für jede Text-Frage aufgerufen wird.
+
+  3. Bewertung der Lösungen
+     Nach der Berechnung der Lösungen folgt der Vergleich mit den Benutzer-Antworten und anschließend eine quantitative Bewertung. Dabei werden
+     falsche Lösungen mit "0" und richtige Lösungen mit "1" bewertet. Durch den Antwort-Typ kann es jedoch auch Wertungen zwischen 0 und 1 geben,
+     wenn Antworten teilweise richtig oder teilweise falsch sind. Die Gesamt-Punktzahl ist dabei der Quotient aus der Summe der Einzelwertungen
+     aller Fragen und der Anzahl der Fragen. Sie wird unter "user/meta/score" ungerundet gespeichert (so wie in herkömlichen Applet-Aufgaben).
+     Unbeantwortete Antworten werden dabei als falsch bewertet.
+     Wenn das ganze Problem nicht bearbeitet wurde aber trotzdem Antworten richtig sein sollten, werden diese nicht gewertet.
+
+    3.1 Anwort-Typ "unique"
+        Bewertet werden kann immer nur die ganze Frage, darum ist die Punktzahl entweder "0" oder "1".
+
+    3.2 Anwort-Typ "multiple"
+        Für jede richtige Antwort gibt es nur einen Bruchteil von Punkten, nämlich genau den Quotienten aus 1 und der Anzahl der Antworten.
+
+    3.3 Anwort-Typ "yesno"
+        Für jede richtige Antwort gibt es nur einen Bruchteil von Punkten, nämlich genau den Quotienten aus 1 und der Anzahl der Antworten.
+
+    3.4 Anwort-Typ "text"
+        Da solche Fragen immer benutzerdefiniert bewertet werden, ist die Punktzahl vom jeweiligen Corrector anhängig.
+
+  4. Beantwortung der Frage
+     Die Beantwortungsdaten werden im "marking"-Teil des vom Corrector ausgehenden Datasheets gespeichert (so wie in herkömlichen Applet-Aufgaben).
+     Dafür wird auch hier der "MarkingDocBuilder" benutzt, um die Korrektur mit den herkömlichen Techniken darstellen zu können.
+     Die Beantwortung wird automatisch für alle Aufgaben-Typen bis auf TEXT-MC-Fragen getätigt.
+     Dabei werden für jede Frage die Benutzer-Antworten und die Muster-Antworten (falls sie abweichen) ausgebeben.
+
+FIN

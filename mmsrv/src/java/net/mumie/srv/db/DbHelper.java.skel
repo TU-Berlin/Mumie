@@ -1,0 +1,105 @@
+package net.mumie.srv.db;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Map;
+import net.mumie.srv.notions.ProblemDataType;
+import net.mumie.srv.notions.DbColumn;
+import net.mumie.srv.util.Identifyable;
+import org.apache.avalon.framework.service.ServiceException;
+
+/**
+ * <p> 
+ *   The <em>DbHelper</em> is the link between components (in the Avalon sence) and the
+ *   database. It provides methods to retrieve information from the db, and to store data in
+ *   the db, while hiding the implementation in JDBC and SQL (or whatever API is used) to the
+ *   components. By this means, the code of the components remains independent of the DBMS and
+ *   the way the DBMS is accessed. If you change the latter, you may have to change the
+ *   DbHelper, but not the other components.
+ * </p>
+ *
+ * @author Tilman Rassy <a href="mailto:rassy@math.tu-berlin.de">rassy@math.tu-berlin.de</a>
+ * @author Fritz Lehmann-Grube <a href="mailto:lehmannf@math.tu-berlin.de">lehmannf@math.tu-berlin.de</a>
+ * @author Uwe Sinha <a href="mailto:sinha@math.tu-berlin.de">sinha@math.tu-berlin.de</a>
+ * @author Andreas Hoffmann <a href="mailto:hoffmana@ma.tum.de">hoffmana@ma.tum.de</a>
+ * @version <span class="file">$Id: DbHelper.java.skel,v 1.7 2009/10/26 00:20:06 rassy Exp $</span>
+ */
+
+public interface DbHelper extends Identifyable 
+{
+  // --------------------------------------------------------------------------------
+  // Static constants
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Role of implementing classes as an Avalon component. Value is
+   * <span class="string">"net.mumie.srv.db.DbHelper"</span>.
+   */
+
+  String ROLE = "net.mumie.srv.db.DbHelper";
+
+  // --------------------------------------------------------------------------------
+  // h1: Transactions
+  // --------------------------------------------------------------------------------
+
+  /**
+   * Starts a transaction. The transaction isolation is set to
+   * {@link Connection#TRANSACTION_SERIALIZABLE TRANSACTION_SERIALIZABLE}, the autocommit
+   * state is set to false. The old transaction isolation and autocommit state are saved in
+   * the variabled {@link #oldAutoCommitState oldAutoCommitState} and
+   * {@link #oldIsolationLevel oldIsolationLevel}, respectively.
+   *
+   * @throws SQLException if the modification of the transaction isolation or the autocommit
+   *   state fails
+   * @throws IllegalStateException If a transaction is already in progress
+   */
+
+  public void beginTransaction ()
+    throws SQLException, IllegalStateException;
+
+  /**
+   * Ends a transaction. All statements of the transaction are committed and the transaction
+   * isolation and autocommit state are reset to the values before the transaction.
+   *
+   * @throws SQLException if the commit, the setting the transaction isolation, or the
+   *   setting of the autocommit state fails
+   * @throws IllegalStateException If no transaction is in progress
+   */
+
+  public void endTransaction ()
+    throws SQLException, IllegalStateException;
+
+  /**
+   * Aborts a transaction. Rolls back all statements of the transaction and resets the
+   * transaction isolation and autocommit state to the values before the transaction.
+   *
+   * @throws SQLException if the rollback or the setting of the autocommit state fails
+   *   (exceptions while setting the isolation level only result in a warning in the logs)
+   * @throws IllegalStateException If no transaction is in progress
+   */
+
+  public void abortTransaction ()
+    throws SQLException, IllegalStateException;
+
+  /**
+   * Returns true if a transaction is in progress, otherwise false.
+   */
+
+  public boolean transactionInProgress ();
+
+  // ================================================================================
+  // Autocoded methods start
+  // ================================================================================
+
+  //#AUTOCODED
+
+  // ================================================================================
+  // Autocoded methods end
+  // ================================================================================
+}

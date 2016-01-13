@@ -1,0 +1,648 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\newcommand{\elemref}[1]{\href{\##1_element}{dbh:#1}}
+
+\begin{document}
+
+\title{DbHelper-Autocoding}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: db_helper_autocoding.tex,v 1.5 2006/08/11 16:18:22 rassy Exp $}
+
+Diese Spezifikation beschreibt das XML für das Autocoding des DbHelpers sowie
+die \emph{PreSQL} genannte Sprache zur dynamischen
+Generierung von SQL-Kommandos.
+
+\tableofcontents
+
+\section{Funktionsweise}
+
+Das Autocoding erzeugt aus einer XML-Quelldatei, \file{DbHelper.xml},
+drei Java-Quelldateien:
+
+\begin{enumerate}
+\item\label{DbHelper.java} \file{DbHelper.java} (das Interface),
+\item\label{AbstractDbHelper.java} \file{AbstractDbHelper.java}
+  (DBMS-unabhängige Implementationen), 
+\item\label{PostgreSQLDbHelper.java} \file{PostgreSQLDbHelper.java}
+  (Postgres-spezifische Implementationen).
+\end{enumerate}
+
+Für jede Java-Quelldatei \file{Xxxx.java} gibt es eine sogennante
+\emph{Gerüstdatei} \file{Xxxx.skeleton}. Diese enthält den nicht automatisch
+generierten Code der Java-Quelldatei. Die Gerüstdatei muss
+mindestens die Package- und Importanweisungen sowie den Rumpf der
+Klassen-Definition enthalten. Weiterer Java-Code, z.B. für globale Kontstanten und
+Variablen, Hilfsmethoden usw., ist erlaubt. An genau einer Stelle der
+Gerüstdatei muss der Ausdruck
+
+\begin{preformatted}[code]%
+  //\#AUTOCODED
+\end{preformatted}
+
+stehen. Dieser Ausdruck wird durch den automatisch generierten Code ersetzt.
+Der automatisch generierte Code besteht aus Methoden, die in XML/PreSQL-Form in
+\file{DbHelper.xml} definiert sind.
+
+Die Erzeugung der Java-Quelldateien erfolgt mittels XSL-Transformation. Das
+Stylesheet, \file{DbHelper.xsl}, wird auf die XML-Quelldatei
+(\file{DbHelper.xml}) angewandt. ein Parameter steuert, welche der drei
+Java-Quelldateien erzeugt wird. Die Transformation muss alo insgesamt drei mal
+vorgenommen werden.
+
+\section{Namesraum und grundsätzliche Struktur}
+
+Der Namensraum des DbHelper-XMLs lautet:\\
+\val{http://www.mumie.net/xml-namespace/db-helper}
+Der übliche Prefix ist: \val{dbh}. Das DbHelper-XML wird normalerweise mit
+Prefixes geschrieben.
+
+Das Root-Element ist \element{DbHelper}. Darunter befinden sich beliebig viele
+\element{method}-Kindelemente. Jedes definiert eine Java-Methode.
+
+
+\section{Definition von Methoden}\label{Methoden}
+
+\subsection{Das "method"-Element}\label{method}
+
+Methoden werden durch das \element{method}-Element definiert. Es hat folgende
+Attribute:
+
+\begin{enumerate}
+\item\label{method_name} \attrib{name} -- Name der Methode
+\item\label{method_logging} \attrib{logging} -- Ob die Methode Log-Meldungen
+  schreiben soll. Mögliche Werte: \val{yes} oder \val{no}. Optional, Default:
+  \val{yes}
+\item\label{method_target} \attrib{target} -- In welche Quelldatei die
+  \emph{Implementation} der Methode eingefügt werden soll. Mögliche Werte:
+  \val{AbstractDbHelper} oder \val{PostgreSQLDbHelper}. Optional, Default:
+  \val{AbstractDbHelper}. In das Interface (\file {DbHelper.java}) wird die
+  \emph{Deklaration} der Methode immer eingefügt, es sei denn, das Attribut
+  \attrib{toInterface} (s.u) ist \val{no}.
+\item\label{method_returnType} \attrib{returnType} -- Typ des Rückgabewerts.
+  Optional, Default: \val{ResultSet}
+\item\label{method_toInterface} \attrib{toInterface} -- Ob die Deklaration
+  der Methode in das Interface (\file {DbHelper.java}) eingefügt werden soll.
+  Mögliche Werte: \val{yes} oder \val{no}. Optional, Default: \val{yes}
+\end{enumerate}
+
+Das \element{method}-Element hat folgende Kindelemente:
+
+\begin{enumerate}
+\setcounter{enumi}{5}
+\item \element{params} -- Definiert die Parameter der Methode (optional)
+\item \element{throws} -- Gibt die Throwables (insbesondere Exceptions) an, die
+  von der Methode geworfen werden können (optional)
+\item \element{doc} -- Enthält die API-Documentation der Methode (optional)
+\item \element{body} -- Der Methoden-Rumpf
+\end{enumerate}
+
+Sie werden in den folgenden Unterabschnitten erklärt.
+
+\subsection{Das "params"-Element}\label{params}
+
+Das \element{params}-Element hat beliebig viele
+\element{param}-Kindelemente. Jedes \element{param}-Element definiert einen
+Parameter. Es hat folgende Attribute:
+
+\begin{enumerate}
+\item \attrib{type} -- Typ des Parameters
+\item \attrib{name} -- Name des Parameters
+\item \attrib{hint} -- Hinweis, als was der Parameter in den Log-Meldungen
+  interpretiert werden soll. Mögliche Werte: \val{Identifyable} - als Object
+  einer Klasse, die das Interface \code{Identifyable} implementiert, \val{time}
+  - als \code{long}-Wert, der eine Zeit darstellt, \val{array} - als Array. Optional.
+\item \attrib{log} -- Ob dieser Parameter bei der Ausgabe der Parameter in den
+  Log-Meldungen berücksichtigt werden soll. Mögliche Werte: \val{yes} oder
+  \val{no}. Optional, Default: \val{yes}
+\end{enumerate}
+
+Das \element{params}-Element ist immer leer.
+
+\subsection{Das "throws"-Element}
+
+Das \element{throws}-Element enthält beliebig viele
+\element{throwable}-Kindelemente. Jedes entspricht einem Throwable, das von der
+Methode geworfen werden kann. Es hat folgende Attribute:
+
+\begin{enumerate}
+\item \attrib{name} -- Klassen-Name des Throwables
+\item \attrib{doc} -- Dokumentation (für Javadoc-Tag \code{@throws}). Optional
+\end{enumerate}
+
+Das \element{throwable}-Element ist immer leer.
+
+\subsection{Das "doc"-Element}
+
+Das \element{doc}-Element enthält die API-Dokumentation der Methode.
+Javadoc-Tags (z.B. \code{@link}) sind erlaubt. Um HTML-Elemente einzufügen,
+müssen diese mit dem Namnesraum
+
+\val{http://www.mumie.net/xml-namespace/html-in-javadoc}
+
+versehen werden. Üblicherweise wird dieser Namesraum im Root-Element an den
+Prefix \val{h} gebunden, so dass HTML-Elemente in der Form
+
+\begin{preformatted}%
+  <h:\var{name}> ... </h:\var{name}>
+\end{preformatted}
+
+eingefügt werden können, wobei \var{name} für den Namen des Elements steht
+(vgl. \ref{meth_beispiel}).
+
+\label{body}
+\subsection{Das "body"-Element}
+
+Das \element{body}-Element enthält den Methodenrumpf. Das Element kann Text-
+und Elementknoten als Kinder enthalten. Die Textknoten enthalten Java-Code. Als
+Kindelemente sind erlaubt:
+
+\begin{enumerate}
+\item\label{body_sqlComposer} \element{sqlComposer} -- Enthält PreSQL-Code.
+  Darf beliebig oft vorkommen. Näheres s. \ref{sqlComposer}.
+\item\label{body_log} \element{log} -- Erzeugt Java-Code für das Schreiben
+  einer Log-Meldung.  Darf beliebig oft vorkommen. Näheres s.
+  \ref{log_meldungen}.
+\item\label{body_returnResultSet} \element{returnResultSet} -- Erzeugt
+  Java-Code für die Ausführung des SQL-Kommandos mit \code{executeQuery} und
+  die Rückgabe des entsprechenden ResultSets; ggf. wird eine LogMeldung
+  geschrieben. Darf höchstens einmal vorkommen. Wenn es vorkommt, muss es am
+  Ende des \element{body}-Elements stehen. Darf nicht zusammen mit
+  \element{executeInsertAndReturnId}, \element{pgExecuteInsertAndReturnId} oder
+  \element{executeUpdate} (s.u.)  verwendet werden. Näheres s.
+  \ref{returnResultSet}.
+\item\label{body_executeInsertAndReturnId} \element{executeInsertAndReturnId}
+  -- Erzeugt Java-Code für die Ausführung des SQL-Kommandos mit
+  \code{executeUpdate} und die Rückgabe der Id des neu angelegten Datensatzes;
+  ggf. werden Log-Meldungen geschrieben. Darf höchstens einmal vorkommen. Wenn
+  es vorkommt, muss es am Ende des \element{body}-Elements stehen. Darf nicht
+  zusammen mit \element{returnResultSet} (s.o),
+  \element{pgExecuteInsertAndReturnId} oder \element{executeUpdate} (s.u.)
+  verwendet werden. Näheres s.  \ref{executeInsertAndReturnId}.
+\item\label{body_pgExecuteInsertAndReturnId}
+  \element{pgExecuteInsertAndReturnId} -- Gleicher Effekt wie
+  \element{executeInsertAndReturnId} (s.o), erzeugt aber Postgres-spezifischen
+  Code. Darf höchstens einmal vorkommen. Wenn es vorkommt, muss es am Ende des
+  \element{body}-Elements stehen. Darf nicht zusammen mit
+  \element{returnResultSet}, \element{executeInsertAndReturnId} (s.o) oder
+  \element{executeUpdate} (s.u.) verwendet werden. Näheres s.
+  \ref{pgExecuteInsertAndReturnId}.
+\item\label{body_executeUpdate} \element{executeUpdate} -- Erzeugt Java-Code
+  für die Ausführung des SQL-Kommandos mit \code{executeUpdate} ; ggf. werden
+  Log-Meldungen geschrieben. Darf höchstens einmal vorkommen. Wenn es vorkommt,
+  muss es am Ende des \element{body}-Elements stehen. Darf nicht zusammen mit
+  \element{returnResultSet}, \element{executeInsertAndReturnId} oder
+  \element{pgExecuteInsertAndReturnId} (s.o.) verwendet werden. Näheres s.
+  \ref{executeUpdate}.
+\end{enumerate}
+
+\subsection{Beispiel}\label{meth_beispiel}
+
+\begin{preformatted}[code]
+  <dbh:method name="queryData">
+    <dbh:params>
+      <dbh:param name="docType" type="int"/>
+      <dbh:param name="columns" type="String[]"/>
+      <dbh:param name="onlyLatest" type="boolean"/>
+    </dbh:params>
+    <dbh:throws>
+      <dbh:throwable name="SQLException"/>
+    </dbh:throws>
+    <dbh:doc>
+      * Returns the data specified by <h:code>columns</h:code> of the
+      * documents with the specified type. If <h:code>onlyLatest</h:code>
+      * is true, only latest versions of the documents are considered.
+    </dbh:doc>
+    <dbh:body>
+      if ( ! DocType.exists(docType) )
+        throw new IllegalArgumentException
+          ("Illegal document type: " + docType);
+      <dbh:sqlComposer>
+        SELECT
+        columns(columns)
+        FROM
+        table(this.getTableName(docType, onlyLatest))
+      </dbh:sqlComposer>
+      <dbh:returnResultSet/>
+    </dbh:body>
+  </dbh:method>
+\end{preformatted}
+
+\section{Erzeugen von SQL-Kommandos mit PreSQL}\label{PreSQL}
+
+\subsection{Die PreSQL-Sprache}\label{PreSQL_Sprache}
+
+PreSQL-Code wird zur Build-Zeit in Java-Code umgewandelt. Dieser erzeugt dann
+zur Laufzeit SQL-Code. Letzterer hängt in der Regel von gewissen Java-Variablen
+ab.  Die Verwendung von PreSQL ist also immer dann sinnvoll, wenn eine solche
+Variablen-Abhängigkeit besteht, der SQL-Code also dynamisch erzeugt werden
+muss.
+
+Der Java-Code, in den PreSQL übersetzt wird, besteht aus Methodenaufrufen der
+Klasse:
+
+\begin{preformatted}%
+  net.mumie.sql.SQLComposer
+\end{preformatted}
+
+Die Übersetzung besorgt die Klasse:
+
+\begin{preformatted}%
+  net.mumie.sql.SQLComposerAutocoder
+\end{preformatted}
+
+Die Syntax von PreSQL ist einer Mischung von SQL und Java ähnlich. Es lassen
+sich zwei Gruppen von PreSQL-Ausdrücken unterscheiden:
+
+\emph{Ausdrücke ohne Parameter:} Diese fügen feste SQL-Tokens ein. Die
+Ausdrücke haben, bis auf eine Ausnahme, dieselben Namen wie die entsprechenden
+SQL-Tokens. Beispiele: \sql{SELECT}, \sql{UPDATE}, \sql{=}, \sql{!=}. Die
+einzige Ausnahme sind die Ausdrücke \sql{\{} und \sql{\}}. Diese erzeugen die
+SQL-Tokens \sql{(} bzw. \sql{)}.
+
+\emph{Ausdrücke mit Parametern:} Diese fügen dynamischen SQL-Code ein,
+z.B. Spalten-Namen, Spalten-Werte oder Tabellen-Namen. Die Ausdrücke haben
+folgende Gestalt:
+
+\begin{preformatted}[code]%
+  \var{name}(\var{param1}, \var{param2}, ...)
+\end{preformatted}
+
+Hierbei ist \var{name} der Name des Ausdrucks, während  \var{param1},
+\var{param2} usw. die Parameter bezeichnen. Die Parameter können beliebiger
+Java-Code sein, der aber einen bestimmten Java-Typ zurückliefern muss. Der Typ
+hängt vom PreSQL-Ausdruck und vom Parameter ab.
+
+Beispiel: Der PreSQL-Ausdruck
+
+\begin{preformatted}[code]%
+  columns(\var{param1})
+\end{preformatted}
+
+fügt eine Liste von Spalten-Namen in den SQL-Code ein. Er hat einen Parameter
+(\var{param1}). Dieser muss vom Typ \code{String[]} sein.
+
+
+\subsection{Verwendung im DbHelper}\label{PreSQL_im_DbHelper}
+
+Jede Instanz der Klasse \code{AbstractDbHelper} hat eine globale Variable
+namens \code{sqlComposer} vom Typ \code{net.mumie.sql.SQLComposer}. Sie heisst
+\emph{SQL-Composer} des DbHelpers. Der SQL-Composer ist \code{protected} und
+damit auch in abgeleiteten Klassen, insbesondere \code{PostgreSQLDbHelper},
+sichtbar. Das PreSQL in der XML-Quelldatei (\file{DbHelper.xml}) wird in
+Methodenaufrufe des SQL-Composers umgewandelt. Dieser erzeugt dann zur Laufzeit
+SQL (vgl. \ref{PreSQL_Sprache}).
+
+
+\subsection{Das "{}sqlComposer"-Element}\label{sqlComposer}
+
+(S. auch \ref{body_sqlComposer}.)
+
+Das \element{sqlComposer}-Element dient zur Aufnahme von PreSQL-Code. Es hat
+nur Text-Inhalt (den PreSQL-Code) und ein Attribut:
+
+\begin{enumerate}
+\item \attrib{clear} -- Ob der interne Buffer des SQL-Composers vorher geleert
+  wird oder nicht. Mögliche Werte: \val{yes} oder \val{no}. Default: Falls dies
+  das erste \element{sqlComposer}-Element im laufenden \element{body}-Element
+  ist: \val{yes}; sonst: \val{no}.
+\end{enumerate}
+
+Ein Wert \val{yes} dieses Attributs bedeutet praktisch, dass mit diesem
+\element{sqlComposer}-Element ein neues SQL-Kommando begonnen
+wird. Anderenfalls wird das vorige SQL-Kommando fortgesetzt.
+
+
+\section{Einfügen von Code-Blöcken}
+
+Für ständig wiederkehrende Blöcke von Java-Code gibt es spezielle XML-Elemente,
+nämlich die bereits weiter oben (\ref{body}) erwähnten Kindelemente des
+\element{body}-Elements \element{returnResultSet},
+\element{executeInsertAndReturnId}, \element{pgExecuteInsertAndReturnId} und
+\element{executeUpdate}. Sie werden im Folgenden genauer erläutert.
+
+
+\subsection{Das "returnResultSet"-Element}\label{returnResultSet}
+
+(S. auch \ref{body_returnResultSet}.)
+
+Das \element{returnResultSet}-Element erzeugt Java-Code für die Ausführung
+eines zuvor in PreSQL formulierten SQL-Kommandos mittels \code{executeQuery}
+und die Rückgabe des entsprechenden \code{ResultSet}-Objekts. Ggf. wird eine
+LogMeldung geschrieben.
+
+Das Element ist immer leer, kann aber folgendes Attribut haben:
+
+\begin{enumerate}
+\item \attrib{withLogNumber} -- Nummer der Log-Meldung. Optional, Default:
+  \val{2/2}
+\end{enumerate}
+
+Der erzeugte Java-Code hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  String query = this.sqlComposer.getCode();
+  this.logDebug(METHOD_NAME + " \var{number}: " + "query = " + query);
+  return this.connection.createStatement().executeQuery(query);
+\end{preformatted}
+
+Hierbei ist \var{number} die Nummer der Log-Meldung. Der Aufruf der Methode
+\code{logDebug} (zweite Zeile) wird nur eingefügt, wenn das Attribut
+\attrib{logging} des \element{method}-Elements den Wert \val{yes} hat (oder
+fehlt, in welchem Fall der Default, nämlich \val{yes}, eingesetzt wird). Vgl.
+\ref{method_logging}.
+
+
+\subsection{Das "executeInsertAndReturnId"-Element}\label{executeInsertAndReturnId}
+
+(S. auch \ref{body_executeInsertAndReturnId}.)
+
+Das \element{executeInsertAndReturnId}-Element erzeugt Java-Code für die
+Ausführung eines zuvor in PreSQL formulierten SQL-Kommandos mittels
+\code{executeUpdate} und die Rückgabe der Id des neu angelegten Datensatzes.
+Ggf. werden zwei Log-Meldungen geschrieben.
+
+Das Element ist immer leer, hat aber folgendes Attribut:
+
+\begin{enumerate}
+\item\label{executeInsertAndReturnId_withLogNumber} \attrib{withLogNumber} -- Nummer der ersten
+  Log-Meldung. Muss die Form \code{\var{n}/\var{m}} haben, wobei \var{n} und
+  \var{m} ganze Zahlen sind (sinnvollerweise so, dass $0 \le $ \var{n} $\le$
+  \var{m}). Optional, Default: \val{2/3}
+\end{enumerate}
+
+Der erzeugte Java-Code hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  String query = this.sqlComposer.getCode();
+  this.logDebug(METHOD_NAME + " \var{n}/\var{m}: " + "query = " + query);
+  Statement statement = this.connection.createStatement();
+  statement.executeUpdate(query, Statement.RETURN_GENERATED_KEYS);
+  ResultSet resultSet = statement.getGeneratedKeys();
+  if ( !resultSet.next() )
+    throw new SQLException("Can not get generated id (result set empty)");
+  int id = resultSet.getInt(DbColumn.ID);
+  if ( resultSet.wasNull() )
+    throw new SQLException("Can not get generated id (column SQL NULL)");
+  statement.close();
+  this.logDebug(METHOD_NAME + " \var{n}/\var{m'}: " + "Done. id = " + id);
+  return id;
+\end{preformatted}
+
+Hierbei ist \code{\var{n}/\var{m}} die Nummer der ersten Log-Meldung (s.
+\ref{executeInsertAndReturnId_withLogNumber}). Für \var{m'} gilt: \var{m'} =
+\var{m} + 1.  Die Aufrufe der Methode \code{logDebug} (Zeilen 2 und 12) werden
+nur eingefügt, wenn das Attribut \attrib{logging} des \element{method}-Elements
+den Wert \val{yes} hat (oder fehlt, in welchem Fall der Default, nämlich
+\val{yes}, eingesetzt wird).  Vgl.  \ref{method_logging}.
+
+
+\subsection{Das "pgExecuteInsertAndReturnId"-Element}\label{pgExecuteInsertAndReturnId}
+
+(S. auch \ref{body_pgExecuteInsertAndReturnId}.)
+
+Das \element{pgExecuteInsertAndReturnId}-Element erzeugt Postgres-spezifischen
+Java-Code für die Ausführung eines zuvor in PreSQL formulierten SQL-Kommandos
+mittels \code{executeUpdate} und die Rückgabe der Id des neu angelegten
+Datensatzes.  Ggf. werden zwei Log-Meldungen geschrieben.
+
+Dieses Element existiert, da die Postgres den Flag
+\code{Statement.RETURN_GENERATED_KEYS} nicht implementiert. Die neue Id kann
+aber über die OID ermittelt werden.
+
+Das Element ist immer leer, hat aber folgende Attribute:
+
+\begin{enumerate}
+\item\label{pgExecuteInsertAndReturnId_withLogNumber} \attrib{withLogNumber} --
+  Nummer der ersten Log-Meldung. Muss die Form \code{\var{n}/\var{m}} haben,
+  wobei \var{n} und \var{m} ganze Zahlen sind (sinnvollerweise so, dass $0 \le
+  $ \var{n} $\le$ \var{m}). Optional, Default: \val{2/3}
+\item\label{pgExecuteInsertAndReturnId_table} \attrib{table} - Name der
+  Datenbank-Tabelle, in der die neue Id nachgeschlagen werden soll.
+\end{enumerate}
+
+Der erzeugte Java-Code hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  String query = this.sqlComposer.getCode();
+  this.logDebug(METHOD_NAME + " \var{n}/\var{m}: " + "query = " + query);
+  Statement statement = this.connection.createStatement();
+  statement.executeUpdate(query);
+  int id = this.getIdForOid(((PGStatement)statement).getLastOID(), \var{table});
+  this.logDebug(METHOD_NAME + " \var{n}/\var{m'}: " + "Done. id = " + id);
+  return id;
+\end{preformatted}
+
+Hierbei ist \code{\var{n}/\var{m}} die Nummer der ersten Log-Meldung (s.
+\ref{pgExecuteInsertAndReturnId_withLogNumber}). Für \var{m'} gilt: \var{m'} =
+\var{m} + 1. \var{table} ist der Name der Datenbank-Tabelle, in der die neue Id
+nachgeschlagen wird (s.  \ref{pgExecuteInsertAndReturnId_table}). Die Aufrufe
+der Methode \code{logDebug} (Zeilen 2 und 12) werden nur eingefügt, wenn das
+Attribut \attrib{logging} des \element{method}-Elements den Wert \val{yes} hat
+(oder fehlt, in welchem Fall der Default, nämlich \val{yes}, eingesetzt wird).
+Vgl.  \ref{method_logging}.
+
+
+\subsection{Das "executeUpdate"-Element}\label{executeUpdate}
+
+(S. auch \ref{body_executeUpdate}.)
+
+Das \element{executeUpdate}-Element erzeugt Java-Code für die Ausführung eines
+zuvor in PreSQL formulierten SQL-Kommandos mittels \code{executeUpdate}. Ggf.
+werden zwei Log-Meldungen geschrieben
+
+Das Element ist immer leer, hat aber folgendes Attribut:
+
+\begin{enumerate}
+\item\label{executeUpdate_withLogNumber} \attrib{withLogNumber} -- Nummer der
+  ersten Log-Meldung. Muss die Form \code{\var{n}/\var{m}} haben, wobei \var{n}
+  und \var{m} ganze Zahlen sind (sinnvollerweise so, dass $0 \le $ \var{n}
+  $\le$ \var{m}). Optional, Default: \val{2/3}
+\end{enumerate}
+
+Der erzeugte Java-Code hat folgende Gestalt:
+
+\begin{preformatted}[code]%
+  String query = sqlComposer.getCode();
+  this.logDebug(METHOD_NAME + " \var{n}/\var{m}: " + "query = " + query);
+  Statement statement = this.connection.createStatement();
+  statement.executeUpdate(query);
+  statement.close();
+  this.logDebug(METHOD_NAME + " \var{n}/\var{m'}: " + "Done");
+\end{preformatted}
+
+Hierbei ist \code{\var{n}/\var{m}} die Nummer der ersten Log-Meldung (s.
+\ref{executeUpdate_withLogNumber}). Für \var{m'} gilt: \var{m'} = \var{m} + 1.
+Die Aufrufe der Methode \code{logDebug} (Zeilen 2 und 6) werden nur eingefügt,
+wenn das Attribut \attrib{logging} des \element{method}-Elements den Wert
+\val{yes} hat (oder fehlt, in welchem Fall der Default, nämlich \val{yes},
+eingesetzt wird).  Vgl. \ref{method_logging}.
+
+\section{Erzeugen von Log-Meldungen}\label{log_meldungen}
+
+Grundsätzlich gilt: Code zum Schreiben von Log-Meldungen wird nur eingefügt,
+wenn das Attribut \attrib{logging} des \element{method}-Elements den Wert
+\val{yes} hat (oder fehlt, in welchem Fall der Default, nämlich \val{yes},
+eingesetzt wird). Vgl. \ref{method_logging}. Ist das der Fall, so erzeugt jedes
+\element{log}-Element eine Log-Meldung. Unter bestimmten Voraussetzungen werden
+Log-Meldungen auch automatisch eingefügt (s.u.).
+
+\subsection{Das "log"-Element}
+
+Das \element{log}-Element hat folgende Attribute:
+
+\begin{enumerate}
+  \item \attrib{number} -- Nummer der Log-Meldung,
+    z.B. \code{2/5}. Optional. Wird normalerweise automatisch gesetzt.
+  \item \attrib{printParams} -- Ob die Parameter der Methode mit dieser
+    Log-Meldung ausgegeben werden sollen. Mögliche Werte: \val{yes} oder
+    \val{no}. Optional, Default: \val{no}
+\end{enumerate}
+
+Als Kinder sind nur Textknoten erlaubt. Diese müssen Java-Code ergeben, der einen
+String zurückgibt. Dieser String ist die eigentliche Log-Meldung.
+
+Das \element{log}-Element erzeugt Java-Code der folgenden Form:
+
+\begin{preformatted}[code]%
+  this.logDebug(\var{method} + " " + \var{number} + ": " + \var{message}
+                \meta{[} + ". " + \var{params} \meta{]});
+\end{preformatted}
+
+Hierbei sind \var{method} der Methoden-Name, \var{number} die Nummer der
+Log-Meldung, \var{message} die eigentliche Log-Meldung und \var{params} die
+Parameter in Name=Wert-Form. Der optionale Teil wird nur eingefügt, wenn
+\attrib{printParams} den Wert \val{yes} hat.
+
+Beispiele:
+
+\begin{preformatted}[code]%
+  <dbh:log printParams="yes">"Started"</dbh:log>
+
+  <dbh:log>"{}Ok. foo = " + foo</dbh:log>
+
+  <dbh:log number="2/4">"Value not found"</dbh:log>
+\end{preformatted}
+
+BITTE BEACHTEN: Bei Verwendung von String-Literalen im Inhalt von \element{log} die
+Anführungszeichen nicht vergessen! (Vgl. Beispiele.)
+
+\subsection{Automatisches Einfügen von Log-Meldungen}
+
+Unter der am Anfang von \ref{log_meldungen} genannten Voraussetzung
+(\attrib{logging}-Attribut = \val{yes}) gelten folgende Regeln für das
+automatische Einfügen von Log-Meldungen:
+
+\begin{enumerate}
+\item Hat das \element{body}-Element keine \element{log}-Kindelemente, so
+  wird am Anfang des Methodenrumpfs eine Log-Meldung eingefügt. Diese ist
+  derart, als wäre sie mit
+  \begin{preformatted}%
+    <dbh:log number="1/\var{max}" printParams="yes>"Started"</dbh:log>%
+  \end{preformatted}
+  erzeugt worden. \var{max} ist die Maximalzahl der zu erwartenden
+  Log-Meldungen in dieser Methode. Der Wert ergibt sich wie folgt: Hat das
+  \element{body}-Element ein \element{returnResultSet}-Kindelement, so ist
+  \var{max} = 2. Hat das \element{body}-Element ein
+  \element{executeInsertAndReturnId}-, \element{pgExecuteInsertAndReturnId}-,
+  oder \element{executeUpdate}-Kindelement, so ist \var{max} = 3. Andernfalls
+  ist \var{max} = 1.
+\item Das \element{returnResultSet}-Element fügt eine Log-Meldung ein. Näheres
+  s. \ref{returnResultSet}.
+\item Das \element{executeInsertAndReturnId}-Element fügt zwie Log-Meldungen
+  ein. Näheres s. \ref{executeInsertAndReturnId}.
+\item Das \element{pgExecuteInsertAndReturnId}-Element fügt zwie Log-Meldungen
+  ein. Näheres s. \ref{pgExecuteInsertAndReturnId}.
+\item Das \element{executeUpdate}-Element fügt zwie Log-Meldungen ein. Näheres
+  s. \ref{executeUpdate}.
+\end{enumerate}
+
+
+\section{Verzeichnis aller XML-Elemente}
+
+Alle Elemente des DbHelper-XMLs in alphabetischer Reihenfolge:
+
+\subsection{dbh:DbHelper}\label{method_DbHelper}
+
+Wurzel-Element. Prototyp:
+
+\begin{preformatted}[code]%
+  <dbh:DbHelper>
+    <!-- Content: \elemref{method}\meta{*} -->
+  </dbh:DbHelper>
+\end{preformatted}
+
+\subsection{dbh:method}\label{method_element}
+
+Definiert eine Java-Methode. Prototyp:
+
+\begin{preformatted}[code]%
+  <dbh:method name="\var{name}"
+              \optional{logging="\alt{{yes}{no}}"}
+              \optional{target="\alt{{DbHelper}{AbstractDbHelper}{PostgreSQLDbHelper}}"}
+              \optional{returnType="\var{type}"}
+              \optional{toInterface="\alt{{yes}{no}}"}>
+    <!-- Content: \elemref{params}\meta{?} \elemref{throws}\meta{?} \elemref{doc}\meta{?} \elemref{body} -->
+  </dbh:method>
+\end{preformatted}
+
+Hierbei ist \var{name} der Name und \var{type} der Rückgabetyp der Methode. Die
+Defaultwerte der optionalen Attribute sind wie folgt:
+
+\begin{table}
+  \head
+    Attribut & Default
+  \body
+    \attrib{logging} & \val{yes} \\
+    \attrib{target} & \val{AbstractDbHelper} \\
+    \attrib{returnType} & \val{ResultSet} \\
+    \attrib{toInterface} & \val{yes}
+\end{table}
+
+S. auch \ref{method}.
+
+\subsection{dbh:param}\label{param_element}
+
+Definiert einen Methoden-Parameter. Prototyp:
+
+\begin{preformatted}[code]%
+  <dbh:param type="\var{type}"
+             name="\var{name}"
+             \optional{hint="\alt{{Identifyable}{time}{array}}"}
+             \optional{log="\alt{{yes}{no}}"}/>
+\end{preformatted}
+
+Hierbei ist \var{name} der Name und \var{type} der Typ des Parameters. Die
+Defaultwerte der optionalen Attribute sind wie folgt:
+
+\begin{table}
+  \head
+    Attribut & Default
+  \body
+    \attrib{hint} & -kein Default- \\
+    \attrib{log} & \val{yes}
+\end{table}
+
+S. auch \ref{params}.
+
+
+\subsection{dbh:params}\label{params_element}
+
+Liste der Parameter einer Methode. Prototyp:
+
+\begin{preformatted}[code]%
+  <dbh:params>
+    <!-- Content: \elemref{param}\meta{*} -->
+  </dbh:params>
+\end{preformatted}
+
+\section{Verzeichnis aller PreSQL-Befehle}
+
+-- ENDE DER DATEI --
+
+\end{document}

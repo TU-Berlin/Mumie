@@ -1,0 +1,186 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\newcommand{\b}{\backslash}
+\newcommand{\c}[1]{\backslash#1}
+\newcommand{\cmdref}[1]{\href{\#cmd_#1}{\backslash\/#1}}
+\newcommand{\envref}[1]{\href{\#env_#1}{#1}}
+
+\begin{document}
+
+\title{Generische TeX-Befehle und -Umgebungen}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: generische_tex_bef_umg.tex,v 1.4 2007/09/24 12:57:20 rassy Exp $}
+
+Diese Spezifikation beschreibt die "generischen" TeX-Befehle und -Umgebungen;
+das sind solche, die nicht für einen bestimmten Dokumnettyp oder eine bestimmte
+Kategorie spezifisch sind. Es handelt sich dabei um Texthervorhebungen, Listen,
+Tabellen u.ä.
+
+\tableofcontents
+
+\section{Befehle}
+
+\subsection{\c{align}}\label{cmd_align}
+
+Spezifiziert die horizontale Ausrichtung einer Tabelle. Prototyp:
+
+\begin{preformatted}[code]%
+  \c{align}\{\var{align}\}
+\end{preformatted}
+
+\var{align} darf die Werte \code{r}, \code{c} und \code{l} annehmen. Deren
+Bedeutung ist "rechts" bzw. "zentriert" bzw. "links". Der Befehl ist nur im
+optionalen Argument \var{style} der \envref{table}-Umgebung erlaubt.
+
+Beispiele:
+
+\begin{preformatted}[code]%
+  \c{begin}\{table\}[\c{align}\{l\}]
+    L11 \& L12  \b\b
+    L21 \& L22
+  \c{end}\{table\}
+
+  \c{begin}\{table\}[\c{align}\{c\}]
+    C11 \& C12  \b\b
+    C21 \& C22
+  \c{end}\{table\}
+
+  \c{begin}\{table\}[\c{align}\{r\}]
+    R11 \& R12  \b\b
+    R21 \& R22
+  \c{end}\{table\}
+\end{preformatted}
+
+Die Beispiele würden in etwa so dargestellt:
+
+\begin{table}[\align{l}]
+  L11 & L12 \\
+  L21 & L22
+\end{table}
+
+\begin{table}[\align{c}]
+  C11 & C12 \\
+  C21 & C22
+\end{table}
+
+\begin{table}[\align{r}]
+  R11 & R12 \\
+  R21 & R22
+\end{table}
+
+Das genaue Aussehen hängt natürlich von den XSL- und CSS-Stylesheets ab.
+
+
+\subsection{\c{emph}}
+
+Hebt ein Textstück hervor. Prototyp:
+
+\begin{preformatted}[code]%
+  \c{emph}\{\var{text}\}
+\end{preformatted}
+
+Hierbei ist \var{text} das hervorzuhebende Textstück. Es wird üblicherweise
+fett und/oder kursiv gesetzt.
+
+\subsection{\c{mark}}
+
+Markiert ein Textstück. Prototyp:
+
+\begin{preformatted}[code]%
+  \c{mark}[\var{num}]\{\var{text}\}
+\end{preformatted}
+
+Hierbei ist \var{text} das zu markierende Textstück. Es stehen insgesamt zehn
+verschiedene Markierungsarten zur Verfügung. Mit dem optionalen Argument
+\var{num} kann eine davon ausgewählt werden. \var{num} darf die Werte 0,
+\ldots, 9 annehmen; Default ist 0.
+
+
+\subsection{\c{valign}}\label{cmd_valign}
+
+[Z.z. noch nicht vollständig implementiert.]
+
+
+\section{Umgebungen}
+
+\subsection{table}\label{env_table}
+
+Erzeugt eine Tabelle. Prototypen:
+
+\begin{preformatted}[code]%
+  \c{begin}\{table\}[\var{class}][\var{style}]
+    \meta{[}\cmdref{head}
+      \var{h11} \& \var{h12} \& \meta{...} \b\b
+       \meta{.     .}
+       \meta{.     .}
+       \meta{.     .}
+      \var{hN1} \& \var{hN2} \& \meta{... ]} 
+    \meta{[}\cmdref{body}
+      \var{b11} \& \var{b12} \& \meta{...} \b\b
+       \meta{.     .}
+       \meta{.     .}
+       \meta{.     .}
+      \var{bN1} \& \var{bN2} \& \meta{... ]} 
+    \meta{[}\cmdref{foot}
+      \var{f11} \& \var{f12} \& \meta{...} \b\b
+       \meta{.     .}
+       \meta{.     .}
+       \meta{.     .}
+      \var{fN1} \& \var{fN2} \& \meta{... ]} 
+  \c{end}\{table\}
+
+  \c{begin}\{table\}[\var{class}][\var{style}]
+    \var{b11} \& \var{b12} \& \meta{...} \b\b
+     \meta{.     .}
+     \meta{.     .}
+     \meta{.     .}
+    \var{bN1} \& \var{bN2} \& \meta{...} 
+  \c{end}\{table\}
+\end{preformatted}
+
+Das optionale Argument \var{class} weist der Tabelle eine Klasse zu. Mit dem
+zweiten optionalen Argument, \var{style}, kann der Tabellenstil beeinflusst
+werden. \var{style} darf die Befehle \cmdref{align}, \cmdref{valign},
+\cmdref{cellclasses}, \cmdref{cellaligns}, \cmdref{cellvaligns} enthalten.
+
+\var{h11}, \var{b11}, \var{f11} usw. sind Tabellenzellen.
+
+Mit Hilfe der Befehle \cmdref{head}, \cmdref{body} und \cmdref{foot} lässt sich
+die Tabelle in einen Kopf-, Haupt- und Fussbereich unterteilen. Jeder dieser
+Bereiche darf auch weggelassen werden.
+
+Beispiel:
+
+\begin{preformatted}[code]%
+  \c{begin}\{table\}
+    \c{head}
+      Name \& Vorname \& Id
+    \c{body}
+      Müller \& Hans \& 123 \b\b
+      Meier \& Marta \& 456 \b\b
+      Schmidt \& Erna \& 789
+  \c{end}\{table\}
+\end{preformatted}
+
+Das Beispiel würde in etwa so dargestellt:
+
+\begin{table}
+  \head
+    Name & Vorname & Id
+  \body
+    Müller & Hans & 123 \\
+    Meier & Marta & 456 \\
+    Schmidt & Erna & 789
+\end{table}
+
+Das genaue Aussehen hängt natürlich von den XSL- und CSS-Stylesheets ab.
+
+-- ENDE DER DATEI --
+
+\end{document}

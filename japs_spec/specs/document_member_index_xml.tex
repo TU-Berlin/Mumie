@@ -1,0 +1,129 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Document-Member-Index-XML}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+\end{authors}
+
+\version{$Id: document_member_index_xml.tex,v 1.2 2006/08/11 16:18:22 rassy Exp $}
+
+\tableofcontents
+
+Ein \emph{Document-Member-Index} listet die Mitglieder eines Dokuments. Dies
+ist nur möglich bei Dokumenttypen, die Mitglieder zulassen, was im Moment nur
+für den Dokumenttyp \code{course} der Fall ist. Diese Spezifikation beschreibt
+das XML, in dem Document-Member-Indexes geschrieben werden.
+
+\section{Grundsätzliche Struktur}
+
+\begin{enumerate}
+  
+\item Namensraum ist der des Metainfo-XMLs, also:\\
+  \val{http://www.mumie.net/xml-namespace/document/metainfo}.
+
+  Üblicher Prefix: \val{mumie}.
+
+  Das Document-Member-Index-XML wird normalerweise mit Prefixes geschrieben.
+
+\item Root-Element: \element{mumie:document_member_index}. Keine Attribute.
+
+\item Darunter: Genau ein \element{mumie:document} und genau ein
+  \element{mumie:members}-Kindelement.
+  
+\item \label{document_element} Das \element{mumie:document}-Element enthält
+  genau ein Kindelement, und zwar das Dokument, zu dem der Index gehört, in
+  seiner Standard-XML-Darstellung (einschliesslich Root-Element) in einem
+  Use-Mode, der frei gewählt werden kann. \label{document_use_mode} Dieser
+  Use-Mode heisst \emph{Document-Use-Mode}. Sein Default ist \val{link}.
+  
+\item \label{members_element} Das \element{mumie:members}-Element enthält die
+  Einträge des Index in Form von \element{mumie:user}-Kindelementen. Jedes
+  solche Element entspricht einem Benutzer in seiner Standard-XML-Darstellung
+  in einem Use-Mode, der frei gewählt werden kann, aber für alle Index-Einträge
+  gleich sein muss. \label{member_use_mode} Dieser Use-Mode heisst
+  \emph{Member-Use-Mode}. Sein Default ist \val{component}.
+
+\end{enumerate}
+
+\section{Default-Struktur beim Dokumenttyp \code{course}}
+
+Ist der Dokumenttyp \code{course} und haben der Document- und Member-Use-Mode
+ihre Default-Werte \val{link} bzw. \val{component} (s. \ref{document_use_mode}
+und \ref{member_use_mode}), so sieht der Member-Index wie folgt aus:
+
+\begin{enumerate}
+
+\item Grundsätzliche Struktur wie oben.
+
+\item Das \element{mumie:document}-Element (s. \ref{document_element}) enthält
+  ein \element{mumie:course}-Kindelement. Dieses hat keinen Inhalt, aber zwei
+  Attribute: \attrib{id}, die Id des Documents, und \attrib{use_mode}, den
+  Document-Use-Mode als numerischen Code.
+
+\item Die \element{mumie:user}-Kindelemente des
+  \element{mumie:members}-Elements haben ein \attrib{id}-Attribut, das die Id
+  des Benutzers enthält, und folgende Kindelemente:
+
+  \begin{enumerate}
+
+    \item \element{mumie:login_name}: Enthält den Login-Namen des Benutzees als
+      Text-Knoten. Keine Attribute, keine Kindelemente.
+
+    \item \element{mumie:first_name}: Enthält den Vornamen des Benutzees als
+      Text-Knoten. Keine Attribute, keine Kindelemente.
+
+    \item \element{mumie:surname}: Enthält den Nachnamen des Benutzees als
+      Text-Knoten. Keine Attribute, keine Kindelemente.
+  
+    \item \element{email}: Enthält die E-Mail_Adddresse des Benutzees als
+      Text-Knoten. Keine Attribute, keine Kindelemente.
+      
+    \item \element{mumie:theme}: Gibt das Theme des Benutzers an. Ein Attribut:
+      \attrib{id}, die Id des Themes. Keine weiteren Attribute, kein Inhalt.
+
+    \item \element{mumie:role}: Gibt die \emph{User-Role} des Benutzers als
+      Mitglied des Kurses an. Zwei Attribute: \attrib{id}, die Id der
+      User-Role, und \attrib{name}, der Name der User-Role.
+
+  \end{enumerate}
+
+\end{enumerate}
+
+\section{Beispiel}
+
+\begin{preformatted}[code]%
+<mumie:document_member_index
+  xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo">
+  <mumie:document>
+    <mumie:course use_mode="2" id="12"/>
+  </mumie:document>
+  <mumie:members>
+    <mumie:user id="41">
+      <mumie:login_name>muellerm</mumie:login_name>
+      <mumie:first_name>Marion</mumie:first_name>
+      <mumie:surname>M\&\#252;ller</mumie:surname>
+      <mumie:email>marion_mueller@provider.net</mumie:email>
+      <mumie:theme id="0"/>
+      <mumie:role id="3" name="attendee"/>
+    </mumie:user>
+    <mumie:user id="45">
+      <mumie:login_name>schmidts</mumie:login_name>
+      <mumie:first_name>Stephan</mumie:first_name>
+      <mumie:surname>Schmidt</mumie:surname>
+      <mumie:email>stephan23@foo.com</mumie:email>
+      <mumie:theme id="0"/>
+      <mumie:role id="3" name="attendee"/>
+    </mumie:user>
+  </mumie:members>
+</mumie:document_member_index>
+\end{preformatted}
+
+
+-- ENDE DER DATEI --
+
+\end{document}

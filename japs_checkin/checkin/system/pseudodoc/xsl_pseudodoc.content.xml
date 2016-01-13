@@ -1,0 +1,582 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<!DOCTYPE stylesheet
+  [
+   <!ENTITY br  "&#xA;">
+   <!ENTITY sp  "  ">
+  ]
+>
+
+<!--
+   Author:  Tilman Rassy
+
+   $Id: xsl_pseudodoc.content.xml,v 1.6 2010/01/05 12:35:19 linges Exp $
+-->
+
+<xsl:stylesheet version="1.0"
+                xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+                xmlns:xsl-ext="http://www.mumie.net/xml-namespace/xsl-ext"
+                xmlns:mumie="http://www.mumie.net/xml-namespace/document/metainfo"
+                xmlns="http://www.w3.org/1999/xhtml"
+                exclude-result-prefixes="mumie">
+
+<xsl-ext:import lid="xsl-util" internal="yes"/>
+<xsl-ext:import lid="xsl-pseudodoc-i18n" internal="yes"/>
+
+<xsl:output method="xml"
+            doctype-public="-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+            doctype-system="http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd"
+            encoding="ASCII"/>
+
+<xsl-ext:insert-japs-xsl-lib/>
+
+<!-- ================================================================================ -->
+<!-- h1: Global variables                                                             -->
+<!-- ================================================================================ -->
+
+<!-- Whether the top bar shall be displayed: -->
+<xsl:variable name="with-top-bar">
+  <xsl:call-template name="xsl.boolean-to-yes-or-no">
+    <xsl:with-param name="boolean">
+      <xsl:call-template name="xsl.get-param-from-dynamic-data">
+        <xsl:with-param name="name">with-top-bar</xsl:with-param>
+        <xsl:with-param name="default">yes</xsl:with-param>
+      </xsl:call-template>
+    </xsl:with-param>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- The pseudo-document type: -->
+<xsl:variable name="type" select="local-name(/*)"/>
+
+<!-- Id of the section containing the pseudo-document: -->
+<xsl:variable name="section-id" select="/*/mumie:contained_in/@id"/>
+
+<!-- URL of the section containing the pseudo-document: -->
+<xsl:variable name="section-url">
+  <xsl:call-template name="xsl.pseudodoc-url">
+    <xsl:with-param name="type-name" select="'section'"/>
+    <xsl:with-param name="context" select="'info'"/>
+    <xsl:with-param name="id" select="$section-id"/>
+  </xsl:call-template>
+</xsl:variable>
+
+<!-- Number of columns of tables: -->
+<xsl:variable name="cols-count">4</xsl:variable>
+
+<!-- ================================================================================ -->
+<!-- h1: Main template                                                                -->
+<!-- ================================================================================ -->
+
+<xsl:template match="/">
+
+  <html>
+
+    <head>
+      <title>
+        <xsl:value-of select="/*/mumie:name"/>
+      </title>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-base"/></xsl:attribute>
+      </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href"><xsl-ext:url lid="css-pseudodoc"/></xsl:attribute>
+      </link>
+    </head>
+
+    <body>
+
+      <xsl:if test="$with-top-bar = 'yes'">
+        <xsl:call-template name="top-bar"/>
+      </xsl:if>
+
+      <div class="main-indented">
+
+        <h1><xsl:value-of select="/*/mumie:pure_name"/></h1>
+
+        <div class="link-area">
+          <xsl:value-of select="$i18n-metainfos"/>
+          <span class="sep">|</span>
+          <a href="TODO"><xsl:value-of select="$i18n-content"/></a>
+        </div>
+
+        <table class="noindent list">
+
+          <xsl:choose>
+
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+            <!-- h2: Class                                                    -->
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+            <xsl:when test="$type = 'class'">
+              <xsl:call-template name="standard-metainfos"/>
+              <xsl:call-template name="separator"/>
+              <tr>
+                <!-- Semester: -->
+                <td class="list-label"><xsl:value-of select="$i18n-semester"/>:</td>
+                <td>
+                  <a>
+                    <xsl:attribute name="href">
+                      <xsl:call-template name="xsl.pseudodoc-url">
+                        <xsl:with-param name="type-name" select="'semester'"/>
+                        <xsl:with-param name="context" select="'info'"/>
+                        <xsl:with-param name="id" select="/*/mumie:semester/@id"/>
+                      </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:value-of select="/*/mumie:semester/mumie:name"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <xsl:choose>
+                  <!-- Lecturers: -->
+                  <xsl:when test="count(/*/mumie:lecturers/*) &gt; 1">
+                    <td class="list-label"><xsl:value-of select="$i18n-lecturers"/>:</td>
+                    <td>    
+                      <xsl:for-each select="/*/mumie:lecturers/*">
+                        <xsl:call-template name="user-link">
+                          <xsl:with-param name="user" select="."/>
+                        </xsl:call-template>
+                      </xsl:for-each>
+                      <br />
+                    </td>  
+                  </xsl:when>
+                  <!-- Lecturer: -->
+                  <xsl:otherwise>
+                    <td class="list-label"><xsl:value-of select="$i18n-lecturer"/>:</td>
+                    <td>
+                      <xsl:call-template name="user-link">
+                        <xsl:with-param name="user" select="/*/mumie:lecturers/mumie:user"/>
+                      </xsl:call-template>
+                    </td>
+                  </xsl:otherwise>
+                </xsl:choose>
+              </tr>
+              <tr>
+                <!-- Tutorials: -->
+                <td class="list-label"><xsl:value-of select="$i18n-tutorials"/>:</td>
+                <td>
+                  <xsl:for-each select="/*/mumie:tutorials/*">
+                    <a>
+                      <xsl:attribute name="href">
+                        <xsl:call-template name="xsl.pseudodoc-url">
+                          <xsl:with-param name="type-name" select="'tutorial'"/>
+                          <xsl:with-param name="context" select="'info'"/>
+                          <xsl:with-param name="id" select="@id"/>
+                        </xsl:call-template>
+                      </xsl:attribute>
+                      <xsl:value-of select="mumie:name"/>
+                    </a>
+                    <br />
+                  </xsl:for-each>
+                </td>
+              </tr>
+
+              <!-- Members: -->
+              <xsl:call-template name="members"/>
+              <xsl:call-template name="separator"/>
+              <xsl:call-template name="permissions"/>
+            </xsl:when>
+
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+            <!-- h2: Tutorial                                                 -->
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+            <xsl:when test="$type = 'tutorial'">
+              <xsl:call-template name="standard-metainfos"/>
+              <xsl:call-template name="separator"/>
+              <tr>
+                <!-- Class: -->
+                <td class="list-label"><xsl:value-of select="$i18n-class"/>:</td>
+                <td>
+                  <a>
+                    <xsl:attribute name="href">
+                      <xsl:call-template name="xsl.pseudodoc-url">
+                        <xsl:with-param name="type-name" select="'class'"/>
+                        <xsl:with-param name="context" select="'info'"/>
+                        <xsl:with-param name="id" select="/*/mumie:class/@id"/>
+                      </xsl:call-template>
+                    </xsl:attribute>
+                    <xsl:value-of select="/*/mumie:class/mumie:name"/>
+                  </a>
+                </td>
+              </tr>
+              <tr>
+                <!-- Tutor: -->
+                <td class="list-label"><xsl:value-of select="$i18n-tutor"/>:</td>
+                <td>
+                  <xsl:call-template name="user-link">
+                    <xsl:with-param name="user" select="/*/mumie:tutor/mumie:user"/>
+                  </xsl:call-template>
+                </td>
+              </tr>
+              <tr>
+                <!-- Capacity: -->
+                <xsl:variable name="capacity" select="/*/mumie:capacity/@value"/>
+                <td class="list-label"><xsl:value-of select="$i18n-capacity"/>:</td>
+                <td>
+                  <xsl:choose>
+                    <xsl:when test="$capacity and $capacity != ''">
+                      <xsl:value-of select="$capacity"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                      <xsl:value-of select="$i18n-unlimited"/>
+                    </xsl:otherwise>
+                  </xsl:choose>
+                </td>
+              </tr>
+              <tr>
+                <!-- Occupancy: -->
+                <td class="list-label"><xsl:value-of select="$i18n-occupancy"/>:</td>
+                <td><xsl:value-of select="/*/mumie:occupancy/@value"/></td>
+              </tr>
+              <!-- Members: -->
+              <xsl:call-template name="members"/>
+              <xsl:call-template name="separator"/>
+              <xsl:call-template name="permissions"/>
+            </xsl:when>
+
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+            <!-- h2: User                                                     -->
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+            <xsl:when test="$type = 'user'">
+              <!-- Path: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-path"/>:</td>
+                <td>
+                  <xsl:call-template name="print-path"/>
+                </td>
+              </tr>
+              <!-- Type: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-type"/>:</td>
+                <td><xsl:value-of select="$type"/></td>
+              </tr>
+              <!-- Id: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-id"/>:</td>
+                <td><xsl:value-of select="/*/@id"/></td>
+              </tr>
+              <!-- Account: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-account"/>:</td>
+                <td><xsl:value-of select="/*/mumie:login_name"/></td>
+              </tr>
+              <!-- Surname: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-surname"/>:</td>
+                <td><xsl:value-of select="/*/mumie:surname"/></td>
+              </tr>
+              <!-- First name: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-first-name"/>:</td>
+                <td><xsl:value-of select="/*/mumie:first_name"/></td>
+              </tr>
+              <!-- Description: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-description"/>:</td>
+                <td><xsl:value-of select="/*/mumie:description"/></td>
+              </tr>
+              <!-- Pure name: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-pure-name"/>:</td>
+                <td><xsl:value-of select="/*/mumie:pure_name"/></td>
+              </tr>
+              <!-- Section: -->
+              <xsl:call-template name="section"/>
+              <!-- E-mail: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-e-mail"/>:</td>
+                <td><a href="mailto:{/*/mumie:email}"><xsl:value-of select="/*/mumie:email"/></a></td>
+              </tr>
+              <!-- Groups: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-groups"/>:</td>
+                <td>
+                  <xsl:for-each select="/*/mumie:user_groups/*">
+                    <a>
+                      <xsl:attribute name="href">
+                        <xsl:call-template name="xsl.pseudodoc-url">
+                          <xsl:with-param name="type-name" select="'user_group'"/>
+                          <xsl:with-param name="context" select="'info'"/>
+                          <xsl:with-param name="id" select="@id"/>
+                        </xsl:call-template>
+                      </xsl:attribute>
+                      <xsl:value-of select="mumie:name"/>
+                    </a>
+                    <br />
+                  </xsl:for-each>
+                </td>
+              </tr>
+              <!-- Created: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-created"/>:</td>
+                <td><xsl:value-of select="/*/mumie:created/@value"/></td>
+              </tr>
+              <!-- Last modified: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-last-modified"/>:</td>
+                <td><xsl:value-of select="/*/mumie:last_modified/@value"/></td>
+              </tr>
+              <!-- Sync id: -->
+              <tr>
+                <td class="list-label"><xsl:value-of select="$i18n-sync-id"/>:</td>
+                <td><xsl:value-of select="/*/mumie:sync_id"/></td>
+              </tr>
+              <xsl:call-template name="separator"/>
+              <xsl:call-template name="permissions"/>
+            </xsl:when>
+
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+            <!-- h2: Other                                                    -->
+            <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+
+            <xsl:otherwise>
+              <xsl:call-template name="standard-metainfos"/>
+              <xsl:call-template name="separator"/>
+              <xsl:call-template name="permissions"/>
+            </xsl:otherwise>
+
+          </xsl:choose>
+
+        </table>
+
+        <div class="button-area">
+          <a class="button" href="javascript:history.back()" title="{$i18n-back}">
+            <xsl:value-of select="$i18n-back"/>
+          </a>
+        </div>
+
+      </div>
+      
+    </body>
+  </html>
+</xsl:template>
+
+<!-- ================================================================================ -->
+<!-- h1: Auxiliaries                                                                  -->
+<!-- ================================================================================ -->
+
+<xsl:template name="separator">
+  <tr><td colspan="2" class="separator"/></tr>
+</xsl:template>
+
+<xsl:template name="standard-metainfos">
+  <!-- Path: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-path"/>:</td>
+    <td>
+      <xsl:call-template name="print-path"/>
+    </td>
+  </tr>
+  <!-- Type: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-type"/>:</td>
+    <td><xsl:value-of select="$type"/></td>
+  </tr>
+  <!-- Id: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-id"/>:</td>
+    <td><xsl:value-of select="/*/@id"/></td>
+  </tr>
+  <!-- Name: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-name"/>:</td>
+    <td><xsl:value-of select="/*/mumie:name"/></td>
+  </tr>
+  <!-- Description: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-description"/>:</td>
+    <td><xsl:value-of select="/*/mumie:description"/></td>
+  </tr>
+  <!-- Pure name: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-pure-name"/>:</td>
+    <td><xsl:value-of select="/*/mumie:pure_name"/></td>
+  </tr>
+  <!-- Section: -->
+  <xsl:call-template name="section"/>
+  <!-- Created: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-created"/>:</td>
+    <td><xsl:value-of select="/*/mumie:created/@value"/></td>
+  </tr>
+  <!-- Last modified: -->
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-last-modified"/>:</td>
+    <td><xsl:value-of select="/*/mumie:last_modified/@value"/></td>
+  </tr>
+</xsl:template>
+
+<xsl:template name="section">
+  <tr>
+    <td class="list-label"><xsl:value-of select="$i18n-section"/>:</td>
+    <td>
+      <a href="{$section-url}" title="{$i18n-section-expl}">
+        <xsl:value-of select="$section-id"/>
+      </a>
+    </td>
+  </tr>
+</xsl:template>
+
+<xsl:template name="permissions">
+  <tr>
+    <!-- Read permissions: -->
+    <td class="list-label"><xsl:value-of select="$i18n-read-permissions"/>:</td>
+    <td>
+      <xsl:choose>
+        <xsl:when test="/*/mumie:read_permissions/*">
+          <xsl:for-each select="/*/mumie:read_permissions/*">
+            <xsl:sort select="@path"/>
+            <a>
+              <!-- 'href' attribute: -->
+              <xsl:attribute name="href">
+                <xsl:call-template name="xsl.pseudodoc-url">
+                  <xsl:with-param name="type-name" select="local-name()"/>
+                  <xsl:with-param name="context" select="'info'"/>
+                  <xsl:with-param name="id" select="@id"/>
+                </xsl:call-template>
+              </xsl:attribute>
+              <!-- 'title' attribute: -->
+              <xsl:attribute name="title">
+                <xsl:value-of select="@path"/>
+              </xsl:attribute>
+              <!-- Link text: -->
+              <xsl:value-of select="mumie:name"/>
+            </a>
+            <br/>
+          </xsl:for-each>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$i18n-none"/>                        
+        </xsl:otherwise>
+      </xsl:choose>
+    </td>
+  </tr>
+</xsl:template>
+
+<xsl:template name="path-to-pure-name">
+  <xsl:param name="path" select="@path"/>
+  <xsl:choose>
+    <xsl:when test="contains($path, '/')">
+      <xsl:call-template name="path-to-pure-name">
+        <xsl:with-param name="path" select="substring-after($path, '/')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$path"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="print-path">
+  <xsl:param name="path" select="/*/@path"/>
+  <xsl:variable name="first-part" select="substring-before($path, '/')"/>
+  <xsl:choose>
+    <xsl:when test="$first-part != ''">
+      <xsl:value-of select="$first-part"/>
+      <span class="file-sep">/</span>
+      <xsl:call-template name="print-path">
+        <xsl:with-param name="path" select="substring-after($path, '/')"/>
+      </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$path"/>
+    </xsl:otherwise>
+  </xsl:choose>
+</xsl:template>
+
+<xsl:template name="user-link">
+  <xsl:param name="user"/>
+  <a>
+    <xsl:attribute name="href">
+      <xsl:call-template name="xsl.pseudodoc-url">
+        <xsl:with-param name="type-name" select="'user'"/>
+        <xsl:with-param name="context" select="'info'"/>
+        <xsl:with-param name="id" select="$user/@id"/>
+      </xsl:call-template>
+    </xsl:attribute>
+    <xsl:value-of select="$user/mumie:first_name"/>&#160;<xsl:value-of select="$user/mumie:surname"/>&#160;(<xsl:value-of select="$user/mumie:login_name"/>)
+  </a>
+</xsl:template>
+
+
+
+<xsl:template name="members-table">
+  <xsl:param name="col">1</xsl:param>
+  <xsl:param name="elm" select="/.."/>
+  
+  
+  <xsl:variable name="first" select="(($col - 1) * $cols-count) + 1"/>
+  <xsl:variable name="last" select="$first + $cols-count -1"/>
+  
+  <tr>
+    <xsl:for-each select="$elm">
+      <xsl:sort select="@path"/>
+      <xsl:if test="( position() &gt;= $first ) and ( position() &lt;= $last )">
+        <td>
+          <xsl:call-template name="user-link">
+            <xsl:with-param name="user" select="."/>
+          </xsl:call-template>
+        </td>
+      </xsl:if>
+    </xsl:for-each>
+  </tr>
+  
+  <xsl:if test="count($elm) &gt; $col * $cols-count">
+    <xsl:call-template name="members-table">
+      <xsl:with-param name="col" select="$col+1"/>
+      <xsl:with-param name="elm" select="$elm"/>
+    </xsl:call-template>
+  </xsl:if>
+  
+</xsl:template>
+
+<xsl:template name="members">
+  <tr> 
+    <td class="list-label"><xsl:value-of select="$i18n-members"/>:</td>
+    <td>
+      <xsl:choose>
+        <xsl:when test="/*/mumie:members/*">
+          <table class="multicol-list">
+            <xsl:call-template name="members-table">
+              <xsl:with-param name="elm" select="/*/mumie:members/*"/>
+            </xsl:call-template>
+          </table>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$i18n-none"/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </td>
+  </tr>
+</xsl:template>
+
+
+</xsl:stylesheet>

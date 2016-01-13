@@ -1,0 +1,255 @@
+#!/usr/bin/perl -w
+
+# The MIT License (MIT)
+# 
+# Copyright (c) 2010 Technische Universitaet Berlin
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+# Author: Tilman Rassy <rassy@math.tu-berlin.de>
+# $Id: mmcvsstat,v 1.1.1.1 2009/07/03 11:35:49 rassy Exp $
+
+use Getopt::Long;
+use Term::ANSIColor;
+
+# The status characters:
+%status_chars =
+  (
+   'Up-to-date'                  => ' ',
+   'Locally Modified'            => 'M',
+   'Locally Added'               => 'A',
+   'Locally Removed'             => 'R',
+   'Needs Checkout'              => 'U',
+   'Needs Patch'                 => 'U',
+   'Needs Merge'                 => 'U',
+   'Unresolved Conflict'         => 'C',
+   'File had conflicts on merge' => 'C',
+  );
+
+# The status colors:
+%status_colors =
+  (
+   'Up-to-date'                  => '',
+   'Locally Modified'            => 'magenta',
+   'Locally Added'               => 'green',
+   'Locally Removed'             => 'green reverse',
+   'Needs Checkout'              => 'red',
+   'Needs Patch'                 => 'red',
+   'Needs Merge'                 => 'red',
+   'Unresolved Conflict'         => 'red on_yellow',
+   'File had conflicts on merge' => 'red on_yellow',
+  );
+
+# Character and color for unregistered statuses (i.e., statuses that are not known
+# to this program)
+$unregistered_status_char = 'X';
+$unregistered_status_color = 'black on_yellow';
+
+# Printed in the help text as a placeholder for an unregistered status
+$unregistered_status = "OTHER";
+
+# Maximum width of the status strings (needed for formatting).
+$status_width = 0;
+foreach my $status (keys(%status_chars), $unregistered_status)
+  {
+    $status_width = length($status) if ( length($status) > $status_width );
+  }
+
+# Returns the character for $status
+sub get_status_char
+  {
+    my $status = $_[0];
+    return ($status_chars{$status} || $unregistered_status_char);
+  }
+
+# Returns the color for $status
+sub get_status_color
+  {
+    my $status = $_[0];
+    return ($status_colors{$status} || $unregistered_status_color);
+  }
+
+# Adds spaces to $string so that its length equals $status_width (needed for formatting).
+sub fill_to_status_width
+  {
+    my ($string) = @_;
+    return($string . ' ' x ($status_width-length($string)));
+  }
+
+# Returns a string containing a table showing the status character for each
+# status string.
+sub get_status_table
+  {
+    foreach my $status (sort(keys(%status_chars)), $unregistered_status)
+      {
+        $table .= "\n  " . fill_to_status_width($status)
+               . ' : "' . get_status_char($status) . '"';
+      }
+    return($table);
+  }
+
+# Turns $status_char_filter from the form the user specified it in the command line to a
+# regular expression. In particular, replaces 'A' by ' ', checks if $status_char_filter contains
+# only status characters (aborts with an error message otherwise), composes the regular expression
+# and returns it. The latter takes in account the $invert flag by adding a '^' if that flag is
+# set.
+sub process_status_char_filter
+  {
+    my ($status_char_filter) = @_;
+    $status_char_filter =~ s/_/ /g;
+    my $regexp = '^[' . join('', values(%status_chars)). $unregistered_status_char . ']*$';
+    die ("Invalid status filter: $status_char_filter\n")
+      if ( $status_char_filter !~ m/$regexp/ );
+    return('[' . ($invert ? '^' : '') . $status_char_filter . ']');
+  }
+
+# Prints the output line for $file. $status is its status.
+sub print_file_status
+  {
+    my ($file, $status) = @_;
+    my $status_char = get_status_char($status);
+    my $status_color = get_status_color($status);
+    print(color($status_color)) if ( $use_colors && $status_color );
+    print($status_char);
+    print(' (', $status, ')') if ( $long );
+    print(' ', $file);
+    print(color('reset')) if ( $use_colors && $status_color );
+    print("\n");
+  }
+
+# Does the actual task of this program, i.e, prints the status of each file.
+sub cvs_status
+  {
+    my $status_char_filter = shift(@ARGV);
+    if ( defined($status_char_filter) )
+      {
+        $status_char_filter = process_status_char_filter($status_char_filter);
+      }
+    my $cmdline = 'cvs status' . ($recursive ? ' -R' : ' ') . ' 2>&1 |';
+    open(INPUT, $cmdline);
+    my $dir = '';
+    while ( <INPUT> )
+      {
+        if ( $_ =~ m/^cvs\s+status:\s+Examining\s+(\S.*?)\s*$/ )
+          {
+            $dir = $1;
+            $dir .= '/' unless ( $dir =~ m/\/$/ );
+          }
+        elsif ( $_ =~ m/^File:\s+(\S+)\s+Status:\s+(.+\S)/ )
+          {
+            my ($file, $status) = ($1, $2);
+            my $status_char = get_status_char($status);
+            if ( ( ( !defined($status_char_filter) ) ||
+                   ( $status_char =~ m/$status_char_filter/ ) ) &&
+                 !( ( $status_char eq ' ' ) && ( $suppress_up_to_date ) ) )
+              {
+                print_file_status("$dir$file", $status);
+              }
+          }
+        elsif ( $_=~ m/^cvs\s+\[status\s+aborted\]:/ )
+          {
+            die("\nERROR: While examining $dir: $_\n");
+          }
+      }
+    close(INPUT);
+  }
+
+sub show_help
+  {
+    print(
+"Usage:
+  $program_name \[OPTIONS\] \[FILTER\]
+  $program_name \[--version|-v|--help|-h]
+Description:
+  Prints the cvs status of files.
+    By default, the status of each file cvs knows of in the current directory
+  is printed. The output is one line per file, starting with a one-character
+  code for the status (see \"Status codes\" below), optionally followd by the
+  verbose status name, then followed by the filename.
+    If FILTER is specified, it should be a string of status codes, where \"_\"
+  can be used to specify the status code \" \".  Only files with a status code
+  in that string are listed, then.
+Options:
+  --color, -c
+      Use colors to distinguish statuses.
+  --color-off, -C
+      Switch off colors (default).
+  --invert, -i
+      Invert the meaning of FILTER, i.e., list only files with a status code
+      not in FILTER.
+  --invert-off, -I
+      Switch off the \"invert\" flag (default).
+  --long, -l
+      Print long output, i.e., include the verbose status names.
+  --long-off, -L
+      Switch of the \"long\" flag (default).
+  --suppress-up-to-date, -s
+      Suppress output of files that are up-to-date
+  --show-up-to-date, -S
+      Do not suppress output of files that are up-to-date (default).
+  --recursive, -r
+      Run recursively, i.e., process subdirectories, subsubdirectories,
+      etc.
+  --recursive-off, -R
+      Do not work recursively (default).
+  --help, -h
+      Print this help text and exit.
+  --version
+      Print version information and exit.
+Status codes:",
+get_status_table(), "
+  (where ", $unregistered_status, " stands for any other status).
+");
+  }
+
+sub show_version
+  {
+    print('$Revision: 1.1.1.1 $', "\n");
+  }
+
+$program_name = 'mmcvsstat';
+$user_config_file = $ENV{HOME} . '/.' . $program_name . 'rc';
+$task = \&cvs_status;
+$recursive = 0;
+$suppress_up_to_date = 0;
+$long = 0;
+$invert = 0;
+$use_colors = 0;
+
+require($user_config_file ) if ( -e $user_config_file );
+
+Getopt::Long::Configure("default", "bundling");
+GetOptions
+  (
+   'long|l' => \$long,
+   'long-off|L' => sub { $long = 0 },
+   'invert|i' => \$invert,
+   'invert-off|I' => sub { $invert = 0 },
+   'color|c' => \$use_colors,
+   'color-off|C' => sub { $use_colors = 0 },
+   'suppress-up-to-date|s' => \$suppress_up_to_date,
+   'show-up-to-date|S' => sub { $suppress_up_to_date = 0 },
+   'recursive|r' => \$recursive,
+   'recursive-off|R' => sub { $recursive = 0 },
+   'version|v' => sub { $task = \&show_version },
+   'help|h' => sub { $task = \&show_help },
+  )
+  or exit($!);
+
+&{$task}();

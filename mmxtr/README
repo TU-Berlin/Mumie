@@ -1,0 +1,65 @@
+Author: Tilman Rassy <rassy@math.tu-berlin.de>
+$Id: README,v 1.1.1.1 2006/10/22 23:17:13 rassy Exp $
+
+
+
+                                     MMXTR
+
+
+
+1. Introduction
+   ============
+
+Mmxtr provides two command line tools: mmxtr and mmckxsl. The former performs
+XSL transformations, the latter checks XSL files for correct XSL. The
+executables mmxtr and mmckxsl are Bash scripts which start certain Java
+classes.
+
+
+2. Usage
+   =====
+
+The typical usage of mmxtr is
+
+  $ mmxtr -s XSLFILE -o OUTPUT SOURCE
+
+This applies the stylesheet XSLFILE to the file SOURCE and writes the result to
+the file OUTPUT. For more information on mmxtr, type
+
+  $ mmxtr -h
+
+This prints a short help text to stdout.
+
+The typical usage of mmckxsl is
+
+  $ mmckxsl XSLFILE
+
+This checks XSLFILE for correct XSL. If no error is found, the command simly
+returns. Otherwise, the errors are reported to stderr. For more information on
+mmckxsl, type
+
+  $ mmckxsl -h
+
+This prints a short help text to stdout.
+
+
+3. Installation
+   ============
+
+See the file INSTALL for installation instuctions.
+
+
+4. Backgrounds
+   ===========
+
+The Java class behind mmxtr uses a javax.xml.transform.Transformer object to
+carry out the transformation. This object is created by an instance of the
+platform default implementation of javax.xml.transform.TransformerFactory.
+
+The Java class behind mmckxsl checks XSL files by trying to create
+javax.xml.transform.Transformer objects from them. These objects are obtained
+by an instance of the platform default implementation of
+javax.xml.transform.TransformerFactory.
+
+
+-- END OF FILE --

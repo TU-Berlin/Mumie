@@ -1,0 +1,256 @@
+\documentclass{generic}
+
+\input{../resources/macros.tex}
+
+\begin{document}
+
+\title{Mathlet-Server-Kommunikation}
+
+\begin{authors}
+  \author[rassy@math.tu-berlin.de]{Tilman Rassy}
+  \author[gronau@math.tu-berlin.de]{Markus Gronau}
+\end{authors}
+
+\version{$Id: mathlet_server_kom.tex,v 1.2 2006/08/11 16:18:22 rassy Exp $}
+
+Dieses Dokument beschreibt die Kommunikation zwischen Mathlets und dem
+Japs-Server.
+
+\tableofcontents
+
+\section{Applet-Parameter}
+
+Applet-seitig wird die Kommunikation durch eine Reihe von Parametern
+gesteuert:
+\begin{enumerate}
+\item\label{param_homeworkMode} \prm{homeworkMode} - \val{true} oder \val{false}. Falls
+  \val{true}, wird der Hausaufgabenmodus des Applets aktiviert und das Applet in
+  diesem Modus gestartet. Default ist \val{false}.
+
+  Für Applets, mit denen Aufgaben bearbeitet werden sollen, muss also dieser
+  Parameter immer gesetzt und gleich \val{true} sein.
+\item\label{param_urlPrefix} \prm{urlPrefix} - Der URL-Prefix des Japs, z.B.
+  \code{http://japs.mumie.net/cocoon}.
+\item\label{param_problemRef} \prm{problemRef} - Eine Datenbank-Id. Bezeichnet
+  die Referenz vom übergeordneten Übungssblatt auf diese Aufgabe. Wird für die
+  korrekte Zuordnung der Anfragen beim Japs benötigt.
+\end{enumerate}
+
+Folgende Parameter können nur im Debug-Modus (s. \ref{param_debug} )benutzt werden:
+\begin{enumerate}
+\setcounter{enumi}{3}
+\item\label{param_debug} \prm{debug} - \val{true} oder \val{false}. Falls
+  \val{true}, wird der Debug-Modus des Applets aktiviert. Auf diese Weise
+  können Funktionalitäten, für die normalerweise Serververbindung benötigt
+  wird, ohne Serververbindung getestet werden. Es wird dann im Applet ein
+  "Select"-Button angezeigt.  Default ist \val{false}.
+\item\label{param_correctorClass} \prm{correctorClass} - Der vollständige
+  Klassenname der Corrector-Klasse in Java-Notation (Packages durch Punkte
+  getrennt, keine \code{.java}-Endung), z.B.
+  \code{net.mumie.corrector.BasisInR3}.
+\item\label{param_debugSheetURL} \prm{debugSheetURL} - Enthält die URL zum
+  Input-Data-Sheet; setzt die Parameter \ref{param_urlPrefix},
+  \ref{param_problemRef} und \ref{param_debugSheetFile} ausser Kraft.
+\item\label{param_debugSheetFile} \prm{debugSheetFile} - Enthält den Datei-Pfad
+  zum Input-Data-Sheet; setzt die Parameter \ref{param_urlPrefix},
+  \ref{param_problemRef} und \ref{param_debugSheetURL} ausser Kraft.
+\end{enumerate}
+
+\section{Download des Input-Data-Sheets}\label{upload}
+
+Die URL, unter der das Input-Data-Sheet heruntergeladen werden kann, wird aus
+dem URL-Prefix (s. \ref{param_urlPrefix}) und dem Pfad
+
+\begin{preformatted}[code]%
+  protected/homework/problem-data
+\end{preformatted}
+
+gebildet. Für letzteren steht in Java die statische Konstante
+
+\begin{preformatted}[code]%
+  JapsPath.PROBLEM_DATA
+\end{preformatted}
+
+zur Verfügung. Die Klasse \code{JapsPath} befindet sich im Package
+\code{net.mumie.japs.datasheet}. Die URL muss mit folgendem Request-Parameter
+versehen werden:
+
+\begin{enumerate}
+\item\label{req_param_ref} \prm{ref} - Wert des Applet-Parameters
+  \prm{problemRef} (s.  \ref{param_problemRef})
+\end{enumerate}
+
+Für den Namen des Request-Parameters steht in Java die statische Konstante
+
+\begin{preformatted}[code]%
+  Japs.RequestParam.PROBLEM_REF
+\end{preformatted}
+
+zur Verfügung. Die Klasse \code{JapsRequestParam} befindet sich im Package
+\code{net.mumie.japs.datasheet}.
+
+\section{Upload des Antwort-Data-Sheets}
+
+BEMERKUNG: Technisch gesehen handelt es sich nicht um einen Upload im üblichen
+Sinne, da der Content-Type nicht "multipart/form-data", sondern
+"application/x-www-form-urlencoded" ist, die Daten also wie HTML-Formlulardaten
+übertragen werden. Die Bezeichnung ist aber gerechtfertigt, da ein
+Datei-ähnliches Gebilde auf den Server hochgeladen wird.
+
+Die URL, unter der das Antwort-Data-Sheet an den Japs geschickt werden muss,
+wird aus dem URL-Prefix (s. \ref{param_urlPrefix}) und dem Pfad
+
+\begin{preformatted}[code]%
+  protected/homework/store-problem-answers
+\end{preformatted}
+
+gebildet. Für letzteren steht in Java die statische Konstante
+
+\begin{preformatted}[code]%
+  JapsPath.STORE_PROBLEM_ANSWERS
+\end{preformatted}
+
+zur Verfügung. Für die Klasse \code{JapsPath} s. \ref{upload}. Es müssen folgende
+Request-Parameter gesetzt werden:
+
+\begin{enumerate}
+\item \prm{ref} - S. \ref{req_param_ref}
+\item \prm{content} - XML-Code des Data-Sheets
+\end{enumerate}
+
+Auch für den Namen des Request-Parameters \prm{content} steht in Java eine
+statische Konstante zur Verfügung:
+
+\begin{preformatted}[code]%
+  JapsRequestParam.CONTENT
+\end{preformatted}
+
+Für die Klasse \code{JapsRequestParam} s. \ref{upload}.
+
+Die Request-Methode sollte POST und der Content-Type
+"application/x-www-form-urlencoded" sein (die Daten werden also wie bei einem
+HTML-Formular übertragen). Den Content-Type setzt der JapsClient automatisch
+richtig (korrekte Anwendung vorausgesetzt, vgl. \ref{beispiele}).
+
+Die Response des Servers auf den Upload enthält einen zusätzlichen Header mit
+dem Namen
+
+\begin{preformatted}[code]%
+  X-Mumie-Status
+\end{preformatted}
+
+Bei der Verarbeitung der Response sollte zuerst dieser Header gelesen werden
+(nachdem durch Prüfen des Server-Response-Codes sichergestellt ist, dass kein
+Http-Error aufgetreten ist; aber der \code{JapsClient} tut dies automatisch).
+Die möglichen Header-Werte sind:
+
+\begin{enumerate}
+\item\label{header_ok_issued_receipt} \val{"OK. Issued receipt"} - Das Data-Sheet
+  wurde erfolgreich in der Datenbank gespeichert. Der Japs hat über den Empfang
+  eine elektronisch signierte Quittung ausgestellt und zurückgeschickt.
+\item\label{header_ok} \val{"OK"} - Das Data-Sheet wurde erfolgreich in der
+  Datenbank gespeichert. Der Japs hat keine Quittung ausgestellt.
+\item\label{header_error_ncm} \val{"ERROR: Not a course member"} - Die Daten
+  konnten nicht gespeichert werden, da der Benutzer nicht Teilnehmer des Kurses
+  ist.
+\item\label{header_error_btf} \val{"ERROR: Before timeframe"} - Die Daten konnten
+  nicht gespeichert werden, da der Bearbeitungszeitraum noch nicht begonnen
+  hat.
+\item\label{header_error_atf} \val{"ERROR: After timeframe"} - Die Daten konnten
+  nicht gespeichert werden, da der Bearbeitungszeitraum bereits verstrichen
+  ist.
+%\item\label{header_error_http} \val{"ERROR: Http error: \var{code} \var{descr}"}
+%  - Ein Http-Fehler ist aufgetreten. \var{code} ist der Response-Code, \var{descr}
+%  eine Beschreibung des Fehlers (BEMERKUNG: Ob ein solcher Fehler aufgetreten
+%  ist, kann auch durch direktes Abfragen des Server Response Codes festgestellt
+%  werden).
+\end{enumerate}
+
+Im ersten Fall (\ref{header_ok_issued_receipt}) enthält der Response-Body die
+Quittung als Zip-Datei, in allen anderen einen String, der mit dem Header-Wert
+identisch ist.
+
+\section{Beispiele (Java-Code)}\label{beispiele}
+
+\subsection{Download des Input-Data-Sheets}
+
+\begin{preformatted}[code]%
+  // Initializing japs client:
+  JapsClient client = new AppletJapsClient(urlPrefix, this);
+
+  // Providing a document builder:
+  DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+  factory.setNamespaceAware(true);
+  DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+
+  // Loading data sheet:
+  DataSheet inputDataSheet = null;
+  Map params = new Hashtable();
+  params.put(JapsRequestParam.PROBLEM_REF, problemRef);
+  HttpURLConnection connection =
+    client.get(JapsPath.PROBLEM_DATA, params);
+  if ( connection != null )
+    \{
+      Document document = documentBuilder.parse(connection.getInputStream());
+      inputDataSheet = new DataSheet(document);
+      System.out.println("Loaded input data sheet from server");
+    \}
+  else
+    System.err.println("User has canceled login dialog");
+\end{preformatted}
+
+\subsection{Upload des Antwort-Data-Sheets}
+
+\begin{preformatted}[code]%
+  // Initializing japs client:
+  JapsClient client = new AppletJapsClient(urlPrefix, this);
+
+  // Sending data sheet:
+  Map params = new Hashtable();
+  params.put(JapsRequestParam.PROBLEM_REF, problemRef);
+  params.put(JapsRequestParam.CONTENT, answerDataSheet.toXMLCode());
+  HttpURLConnection connection =
+    client.post(JapsPath.STORE_PROBLEM_ANSWERS, params);
+  if ( connection != null )
+    \{
+      System.out.println("Sent answer data sheet to server");
+
+      // Check the X-Mumie-Status header:
+      String header = connection.getHeaderField(JapsResponseHeader.STATUS);
+      if ( header.equals("OK. Issued receipt") )
+        \{
+          // Handle that case here
+        \}
+      else if ( header.equals("OK") )
+        \{
+          // Handle that case here
+        \}
+      else if ( header.startsWith("ERROR: ") )
+        \{
+          // Handle that case here
+        \}
+      else
+        \{
+          // Should not happen
+        \}
+    \}
+  else
+    System.err.println("User has canceled login dialog");
+\end{preformatted}
+
+Um im ersten Fall die Quittung in einer Datei zu speichern, lässt man sich am besten
+vom \code{connection}-Object einen \code{InputStream} geben:
+
+\begin{preformatted}[code]%
+  InputStream in = connection.getInputStream();
+  FileOutputStream out = new FileOutputStream(filename);
+  byte[] buffer = new byte[1024];
+  int length;
+  while ( (length = in.read(buffer)) != -1 )
+    out.write(buffer, 0, length);
+\end{preformatted}
+
+
+-- ENDE DER DATEI --
+
+\end{document}

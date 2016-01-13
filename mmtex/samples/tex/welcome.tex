@@ -1,0 +1,243 @@
+\documentclass{webpage}
+
+\begin{document}
+Dies ist ein Test. Nach dem Punkt.
+
+\title{Welcome}
+
+\section{What is Mumie?}
+\emph{ An e-learning platform, developed to provide a student and teacher friendly environment for 
+learning and teaching.}
+
+If that's enough for you: alright. If not: read on and you will learn more
+about the features Mumie comes with, how to use it, the development of this project, 
+our intentions, our standards, the technology we use, why we use it and a lot more.
+
+\subsection{Features}
+Content is of course the big advantage Mumie comes with. We provide you with tons of
+applets, pictures, texts and \quoted{ready-to-learn} courses, that thus provide the default courses
+you can offer to your students, if you don't want to design your own courses.
+
+If you like the content but not the road the course suggests, you are free to rearrange the
+content in any manner you prefer.
+
+The technical side of Mumie basically consists of several \quoted{tools}, as we call them, which
+are in detail:
+
+\begin{enumerate}
+\item The Course Creator
+
+For teachers and their assistants. A Java[tm]-based software, designed to, well, create courses by 
+basically \quoted{drag and drop}. Here you can choose, what students should learn in your course, 
+set a path through the subjects, offer additional information or exercises.
+\item The Learning Tool
+
+As you guess: for students. After they selected a course they will be sent on \quoted{the journey}.
+On that journey they are free to just travel the path their teacher set for them, or perhaps, 
+\quoted{leave the road} to take a closer look at something they are interested in.
+
+\item The Training Tool
+
+Also for students. Exercises for everything they saw in the Learning Tool. Where possible with
+a practical background. These exercises can be designed by the teacher of the course, but it is
+also possible for the student to simply search for exercises on, e.g. Eigenvalues.
+\item The Lexicon Tool (Encyclopedia?)
+
+A place where students (or of course teachers ;-)) can look up a short but 
+precise definition of a mathematical term.
+For each definition they will find links that lead them
+to more information related to this subject.
+
+The second purpose of this tool is to offer interesting articles on modern mathematics, anecdotes,
+history of Math, etc.
+\item Communication
+
+Mumie provides lots of possibilities for communication. Once a student or a member of teaching 
+personel has created an account, they have full access on the forums, private messaging, email and
+chat.
+
+\item The MumieTeX to MumieXML Converter
+
+TeX is widely spread among people working with Mathematics so we had the idea that an author 
+shouldn't need to learn another language (like XML) to write a text on a topic. Therefore we developed 
+our \quoted{own} TeX-style, including tags for plugging in all types of pictures, animations and of 
+course interactive applets that could help explaining the mathematical content.
+
+It is easy to learn, and an author actually just has to press a button in order to convert it to 
+valid XML. %erwaehnen, dass man auch andere Konverter benutzen kann???
+\item Upload
+
+....t.b.c.....
+
+\item The Applet Factory
+
+....t.b.c.....
+\end{enumerate}
+
+\subsection{Requirements for using MuMIE}
+
+\subsubsection{Accessing the courses}
+We would love to say: a browser. But we don't spin the web and we have to deal with some 
+restrictions. Math in the web still is a problem for HTML has't been invented for more complex
+things than just plain text and math is more than text... We want to display formulas, equations,
+and everything else related to math. Also we want to access these mathematical objects with 
+JavaScript or Java, in order to get an \emph{ interactive} learning platform. So, what you need 
+for \emph{ optimal} access on all the possibilities of Mumie:
+
+\begin{enumerate}
+\item a MathML- capable Browser
+
+We recommend Mozilla 1.1 or above, as it is \quoted{ready to go} with its support for MathML integrated in the
+standard-version. Downloadable at: 
+
+www.mozilla.org
+
+If you insist on using IE you have to download a plug-in, ActiveX... that is able to display
+MathML. At the moment there are two InternetExplorer extensions available:
+
+Techexplorer (from IBM) for IE all Versions from 4.0 UP TO 5.1 (!!!). All higher Versions are not 
+yet supported, for Techexplorer is a classical plug-in which are no longer supported since IE 5.5!
+
+MathPlayer (by DesignScience) for all IE Version from 6.0 and higher.
+\item Browser needs Java 1.4 -plug-in (or higher)
+
+This is necessary for the applets embedded in the courses and the navigation we use.
+
+(Of course Java also has to be enabled in the browser...)You can download Java from
+
+www.java.sun.com
+
+for your specific Browser and operating system.
+\item JavaScript and Cookies enabled
+
+% THIS SENTENCE IS UTTER NONSENSE.  AT BEST, IT'S DANGEROUS.
+We know that enabling these by default is a security risk, but we garantee, that we will do no
+harm to your computer...:-)
+
+\end{enumerate}
+Remember: these are the OPTIMAL settings that we recommend. You can have a look at our site without 
+e.g. Java and MathML and yes, you will see something, but there are some features you will not be 
+able to use. Applets and formulas will be nothing more than pictures, and thus your possibilities of 
+interacting with these are restricted. (Examples???)
+
+\subsubsection{Setting up an own platform}
+Of course you need a computer that can work as a server and it should't be a 386 with 10 MB RAM...
+
+You have to consider, that this computer has to manage a complex database, do a lot \quoted{server-side}
+stuff (see next chapter on that) and of course has to deal with perhaps thousands of requests at a
+time.
+
+The operating system we used and thus tested thoroughly for our purposes is Suse Linux 7.(1??).
+Actually all the components we use don't \emph{ require} Linux, you can use any operating system you like
+but we can not guarantee it will work the way it should and can not fully support OS related problems
+that might occur (ARRGHS NEED HELP ON THAT!!!!).
+
+What else? Mumie, of course: go here 
+
+....t.b.c.....
+
+If you need help 
+
+.....t.b.c.......
+
+for full installation instructions go here:
+
+.....t.b.c.......
+
+for a detailed FAQ:
+
+.....t.b.c.......
+
+
+\subsection{Components and standards we use}
+
+\subsection{Getting started}
+.....
+\subsection{Why we developed a new platform - a history of Mumie}
+The idea of the project has been developed at the Technical University of Berlin, Department of 
+Mathematics, and in the beginning it wasn't intended to become such a \quoted{technical} thing.
+The question at hand was: How can we use the WWW and the new technologies coming along with it,
+for education? Or better: Does it make sense to use them in education and if yes, where would a 
+webbased tool help improve the learning process for students.
+
+Quite naturally we focussed on the Math training for engineers, since a lot of the people
+developing the original idea of Mumie were involved in this part of education.
+For most students, Math is one of the most challenging courses they have to pass. Whoever wants 
+to work in a technical or scientific job has to do at least a year of math (for Science two years).
+Among the students the interest for mathematics differs from: \quoted{Let me pass quickly, I don't care
+about the details!} to \quoted{Hey, what's that? Give me more!}. Along with the interest comes of course
+the fact that there are students/people who are definitely more talented or simply had a better 
+training before they went to university than others. Getting them all together is the challenge 
+of the teaching personel, from Professor to tutor, each semester. And ... it works. But, of
+course, you have to compromise. Some people are disappointed because they thought each step would 
+be proven, others need more training or simply more time to get comfortable with the content
+presented during lectures. Then, there is another, take it literally, big problem: communicating
+with every single student might work if you have a course where 30 people greet you in the morning.
+Having around 1200 students yelling their \quoted{Good Morning}, it could be difficult to shake each's 
+hand, ask if they have problems, or offer help.
+
+So: what would help?
+
+\begin{enumerate}
+\item An online learning course, reflecting what has been done during lectures
+
+(This of course shouldn't mean that the content of the lectures is put online and that's it.)
+\item An online teaching course, offering exercises
+\item Some sort of \quoted{glossary} where students can look up terms they didn't understand
+
+(The explanation should be more then a \quoted{translation}, it should lead to places of the platform
+where these terms are explained and trained in depth)
+\item A communication platform
+
+This includes everything from Chat, Forum to an easy \quoted{Messenger} sort of thing, as well as
+good old email (and, even older, telephone numbers...)
+\end{enumerate}
+Alright, you might say; where is the problem? The answer is; if we had found a (technical) platform 
+that offered everything we needed, we would now be producing content all day... But we aren't.
+We didn't find a technical solution for our needs, so we had to do it ourselves. To understand
+why we didn't take an existing platform, we have to examine our demands more thoroughly.
+
+\subsubsection{What we want}
+As mentioned before, our first intention was to create content. Create courses, images, texts, applets,
+sounds, whatever you might use to teach math. But very soon we realized that providing content
+means you have a technology that is able to serve your needs. 
+
+So, what \emph{ did} we need?
+\begin{enumerate}
+\item Reliability/Stability
+
+% Course, that isn't the real reason.  The real reason is that this is a
+% production system.  People work providing content (this costs money), people
+% use the platform to learn (this is what the money is spent on, so to speak).
+% Downtime therefore costs money.
+Learning Math with a server crashing constantly isn't that much fun.
+\item Many supported formats
+
+Might sound strange, but if you wish to create courses that consist of different \quoted{multimedia} 
+formats like applets, animation, normal pictures, sounds, you can not use a platform that does not
+allow, e.g. flash-movies to be integrated into a course. 
+\item Open to changing technology
+
+Can be understood combined with point 2. A new, better, faster format should not crash the system.
+Anyway, this \quoted{being open to new technology} can not be guaranteed, but should be an outline of 
+developent.
+\item Flexibility
+
+% TERRIBLE
+Of course, can not be missing.  Nowadays everybody has to be flexible.... 
+But that's not the way we mean it:
+
+We don't want the students to adapt to the platform, we want the platform to adapt to their demands.
+
+The teachers shouldn't be forced into a given, unbreakable structure for creating courses. 
+If they don't like the exsiting texts on differentiation, they can check in their own.
+\item Easy to use
+
+Doesn't need an explanation
+\item Seperation of style and content
+
+Makes life easier. This means that authors can write text and don't have to care how it looks in
+the end unless they really want to. 
+\end{enumerate}
+\end{document}
+

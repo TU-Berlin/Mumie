@@ -1,0 +1,209 @@
+\documentclass{generic}
+\input{../../japs_spec/resources/macros.tex}
+\begin{document}
+
+\title{Klassenstruktur}
+\tableofcontents
+\section{CellKlassen}
+\image{cells.png}
+\subsection{GraphCell}\label{graphcell}
+GraphCellKlassen sind die, die zu einem Graphen gehören, das heisst, sie treten
+als Knoten im Netzwerk auf. GraphCell ist abgeleitet von der JGraph-Klasse
+DefaultGraphCell und somit abstrakt. Sie verf\"ugen über eine 
+\begin{itemize}
+ \item \element{NodeID}, welche dazu verwendet wird, festzulegen, zwischen
+  welchen zwei Knoten eine Kante besteht (siehe kurs\_xml), und über
+ \item \element{posx,posy}, Koordinaten die die (x,y)-Position im GraphView festlegen.
+\end{itemize}
+Von der Klasse GraphCell sind abgeleitet BranchCell und MainComponentCell.
+
+\subsection{das Interface ComponentCell}
+ComponentCells sind die Klassen, die ''\"uber Inhalte verf\"ugen'', das heisst,
+Instanzen dieser Klassen wird ein Document aus dem Japs
+zugeordnet. ComponentCells haben folgende Variablen:
+
+\begin{itemize}
+ \item \val{doctype:} bestimmt die Art des Documentes, mögliche Werte sind Section,
+  Element, Problem, SubSection und SubElement
+ \item \element{category:} diese kommt vom Japs, und ist abhängig vom docType, mögliche
+  Werte sind definition, lemma, theorem, proof, pretest...
+ \item \element{lid:} die lokale ID
+ \item \element{id:} DatenbankID
+ \item \element{label:} Label
+\end{itemize}
+Zudem besitzt die Klasse eine \texenv{toXMLMeta} Methode, die das XML-Tag für
+die einzelnen Komponenten erzeugt.
+Die Klassen MainComponentCell und SubComponentCell impementieren ComponentCell.
+
+\section{Cells}
+Es gibt drei Klassen von Cells:
+Branchcells, MainCompomentCells und SubComponentCells.
+
+\subsection{BranchCell}
+Die Branchcell entspricht einem Verzweigungsknoten vom Typ ''Und'' oder
+''Oder''. Die Klasse ist abgeleitet von% \href{\#graphcell}
+ GraphCell. Die
+Klasse hat eine Variable
+\begin{itemize}
+\item \element{category:} bestimmt die Art des Knotens, m\"ogliche Werte sind
+  ''Und'' und ''Oder'' (ggf sinnvollerweise als Integer zu verwalten)
+\end{itemize}
+und folgende Methoden:
+\begin{itemize}
+\item \texenv{paint()}: die Paintmethode
+\item \texenv{toXMLContent}: diese Methode erzeugt einen String, der dem
+  XML-String nach der kurs_xml-spezifikation entspricht.
+\end{itemize}
+
+
+\subsection{MainComponentCell}
+Diese Klasse ist abgeleitet von ComponentCell und GraphCell. Sie hat 
+\begin{itemize}
+ \item \element{SubComponentCell[]}: eine List der SubComponentcells die zu
+   dieser Instanz geh\"oren.
+\end{itemize}
+
+und die Methoden:
+\begin{itemize}
+ \item \texenv{paint()}: die Paintmethode
+ \item \texenv{toXMLContent()}: diese Methode erzeugt einen String, der dem
+  XML-String nach der kurs_xml-spezifikation entspricht.
+\end{itemize}
+\subsection{SubComponentCell}
+Diese Klasse ist abgeleitet von ComponentCell. Sie hat 
+\begin{itemize}
+ \item \element{parent}: Die MainComponentcell die zu dieser Instanz geh\"ort.
+ \item \element{posx,posy}: Obwohl die Koordinaten von der zugeh\"origen
+   MainComponentCell abh\"angen, ben\"otigt die SubComponentCell zum Zeichnen
+   ebenfalls die Variablen.
+ 
+ \item \element{count}: gibt an, die wievielte SubKomponente diese ist. Z\"ahlung
+   von innen nach aussen, beginnend bei eins.
+\end{itemize}
+FIXME: align, count und parent erzeugen schon posx und posy..
+%TODO: 
+Sollte es m\"oglich sein, die Reihenfolge der SubKomponenten zu veraendern, so
+sind align und count sinnvoll. ist die Reihenfolge aber nicht relevant, so
+werden diese nicht notwendig ben\"otigt, die SubKomponenten werden einfach in
+beliebiger Reihenfolge verwaltet.
+\\Frage: sollte die Reihenfolge von SubKomponenten ver\"anderbar sein?
+
+und die Methoden:
+\begin{itemize}
+ \item \texenv{getGlobalKoordinates()}erzeugt aus parent, count und align die
+   globalen Koordinaten, die zum Zeichnen ben\"otigt werden. (siehe FIXME)
+ \item \element{getAlign()}: die Ausrichtung, ist abh\"angig von der
+   \element{category} dieser Instanz. m\"ogliche Werte sind topleft, topright,
+   bottomleft, bottomright //siehe FIXME
+ \item \texenv{paint()}: die Paintmethode
+ \item \texenv{toXMLContent}: diese Methode erzeugt einen String, der dem
+  XML-String nach der kurs_xml-Spezifikation entspricht.
+\end{itemize}
+
+\section{EdgeCell}
+Diese Klasse ist abgeleitet von DefaultEdge. Einen Kante ist orthogonal und
+gerichtet, sie ist also spezifiziert durch Start- und End-Graphcell, eine Liste
+von St\"utzpunkten und einer Farbe (eine Kante kann rot oder nicht rot sein,
+''existieren'' oder ''nicht existieren'' Kanten des Netzwerkes und der rote
+Faden unterscheiden sich nicht, nur in diesen beiden Variablen)\\
+
+Eine Kante wird per Mausklick auf der Oberfl\"ache erzeugt. Daher wird eine
+Kante erzeugt, indem zuerst der StartKnoten festgelegt wird, dann eine reihe
+von (orthogonalen) EckSt\"utzPunkten hinzugef\"ugt wird, dann ein EndKnoten
+festgelegt wird. Abschliessend wird ein eventuell letzter EckSt\"utzPunkt
+angehangen und die KantenSt\"utzPunkte werden berechnet.
+
+Variablen:
+\begin{itemize}
+ \item \element{startCell} vom Type GraphCell
+ \item \element{endCell} vom Type GraphCell
+ \item \element{points[]} Liste der St\"utzpunkte vom Typ Point
+ \item \element{isRed} gibt an, ob diese Kante rot ist.
+ \item \element{exists} gibt an, ob eine Kante im Netzwerk ist.
+ \item \element{isForward} gibt an, ob diese Kante vorw\"arts (also bei
+   StartCell beginnend) ist (sonst beginnend bei Endcell)
+\end{itemize}
+
+Methoden:
+\begin{itemize}
+\item \texenv{addPoint(Point)} f\"ugt einen St\"utzpunkt hinzu
+\item \texenv{getOrthogonalPoint(Point p)} berechnet zu p den orthogonalen
+  Punkt in Abh\"angigkeit zu dem letzten Punkt in der Liste.
+\item \texenv{concludeAdding()} f\"ugt, falls die bisherige Anzahl ungerade,
+  noch einen letzten EckSt\"utzPunkt mit der y-Koordinate des bisher lezten und
+  der x-Koordinate des Endvertexes hinzu (Orthogonale Kanten haben gerade Anzahl
+  von EckSt\"utzPunkten), und berechnet die KantenSt\"utzPunkte (Mittel des
+  vorhergehenden und nachfolgenden EckSt\"utzPunktes).
+\item \texenv{toggleDirection()} Dreht die Kante um. Switcht isForward
+  -moeglich w\"are auch tauschen von Start- und EndCell, aber dann muesste die
+  St\"utzPunkteListe auch umgedreht werden.
+\end{itemize}
+
+\section{NavGraph}
+Diese Klasse ist abgeleitet von der JGraph-Klasse und verwaltet einen Graphen
+(das Model vom Typ NavModel extends DefaultGraphModel), d.h eine Liste der
+Komponenten (Cellen) und Kanten, die zu diesem Graphen geh\"oren. Desweiteren von
+welchen Typ der Graph ist (Section vs Element), ..
+FIXME: Element ist kein sch\"oner Name f\"ur einen Graphen..
+
+Variablen:
+\begin{itemize}
+ \item \element{isSection}: gibt an, ob ein Graph eine Section ist, falls
+   nicht, ist der Graph ein ElementGraph. \\M\"ogliche Werte: \\
+   \val{true}: Section\\
+   \val{false}: Element
+ \item \element{Cells[]}: Liste aller Cellen in diesem Graphen (auch branchCells)
+ \item \element{Edges[]}: Liste aller Kanten in diesem Graphen
+
+\end{itemize}
+
+Zudem ben\"otigt die Klasse Methoden zur Manipulation des Graphen:
+
+\begin{itemize}
+ \item \texenv{insertComponent(cellType, category)}: erzeugt eine neue (leere)
+  Celle, wobei \element{cellType} angibt, ob es sich um eine Branchcell, eine
+  MainComponentCell oder eine SubComponentCell handelt, bei der ComponentCell
+  ist der docType eindeutig durch die Variable \element{isSection}
+  beschrieben. \element{category} ist kontextabh\"angig von \element{cellType}
+  und \element{isSection}
+ \item \texenv{insert(EdgeCell)}
+ \item \texenv{delete(selection)} loescht die Selection und, falls die
+   Selection vom Typ GraphCell ist, auch die anliegenden Kanten.
+ \item \texenv{connect(GraphCell1, GraphCell2,isRed,exists)} erzeugt Defaultkante und
+   verbindet zwei Zellen mit dieser Defaultkante
+ \item \texenv{connect(EdgeCell)} verbindet zwei Cellen mit dieser Kante
+\end{itemize}
+
+Ausserdem verf\"ugt der NavGraph \"uber den roten Faden\\
+Variablen:
+\begin{itemize}
+ \item \element{redLineCells[]} Liste der GraphCells auf dem roten Faden
+ \item \element{redLineEdges[]} Liste der Kanten auf dem roten Faden
+\end{itemize}
+und Methoden zur Manipulation:
+\begin{itemize}
+ \item \texenv{addToRedLine(Object)} f\"ugt GraphCell oder Edge zur redLineCells
+  oder redLineEdges hinzu
+ \item \texenv{deleteFromRedLine(Object)} l\"oscht GraphCell oder Edge aus
+  redLineCells oder redLineEdges
+ \item \texenv{clearRedLine()} l\"oescht redLineCells und redLineEdges
+\end{itemize}
+
+zudem gibt es noch Korrektheitsmethoden:
+\begin{itemize}
+ \item \texenv{checkRedLine()} \"uberpr\"uft, ob der Rote Faden korrekt
+   ist. \\
+   (1.) pr\"ufe, dass GraphCellen, die _nicht_ auf dem roten Faden liegen keine
+   roten Kanten haben\\
+   (2.) pr\"ufe, ob GraphCellen, die auf dem roten Faden liegen genau zwei rote
+   Kanten haben, bzw. genau zwei GraphCellen genau eine rote Kante
+   haben. letztere sind start und endCelle (merken)\\
+   (3.) Laufe von StartCelle aus \"uber alle Kanten und z\"ahle mit. entspricht
+   Anzahl der gr\"osse von redLineCell --> korrekt
+ \item \texenv{checkNet} pr\"uft, ob Netzwerk korrekt. \\ pr\"ufe, ob
+   gerichtete Kreise
+
+\end{itemize}
+
+%Zum Speichern des Graphen besitzt der NavGraph noch toXML-Methoden:
+\end{document}

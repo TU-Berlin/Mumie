@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="ASCII"?>
+
+
+<!--
+  The MIT License (MIT)
+  
+  Copyright (c) 2010 Technische Universitaet Berlin
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+-->
+
+<txt:document xmlns:txt="http://www.mumie.net/xml-namespace/text">
+
+<!-- ================================================================================ -->
+<!-- h1: Global variables                                                             -->
+<!-- ================================================================================ -->
+
+<!-- Contains the width of the navigation frame in the expanded state. This value
+  must be stored for the reason that it is needed when the frame is re-expanded after
+  it was folded. In that case, the width should be the same as before folding-->
+var frs_navFrameWidth = -1;
+
+<!-- Minimum width of the navigation frame when re-expanded. This value has the following
+  meaning: When the user reduces the navigation frame to width 0 by dragging it with the
+  mouse, than folds it, than re-expands it, it would be not visible because it has width
+  0. The same problem occurs when the width is not 0 but very small. To this end, we define
+  a minimum width of the re-expanded frame.  -->
+var frs_minNavFrameExpandWidth = 50;
+
+<!-- Whether the navigation frame is expanded. Needed to suppress expanding/folding when
+  already in expanded/folded state -->
+var frs_navFrameExpanded = true;
+
+<!-- Whether the top bar is expanded. Needed to suppress expanding/folding when already
+  in expanded/folded state -->
+var frs_topBarExpanded = true;
+
+<!-- HTML id of the expanded top bar -->
+var frs_expandedTopBarId = "_TOP_BAR_EXPANDED_";
+
+<!-- HTML id of the folded top bar -->
+var frs_foldedTopBarId = "_TOP_BAR_FOLDED_";
+
+<!-- HTML id of the outer frameset -->
+var frs_outerFramesetId = "outer-frameset";
+
+<!-- HTML id of the inner frameset -->
+var frs_innerFramesetId = "inner-frameset";
+
+<!-- ================================================================================ -->
+<!-- h1: Hover effect form icons                                                      -->
+<!-- ================================================================================ -->
+
+<!-- Enabled hover style for the icon with the specified id. -->
+function frs_startHover (id)
+{
+  document.getElementById(id + "-normal").style.display = "none";
+  document.getElementById(id + "-hover").style.display = "inline";
+}
+
+<!-- Disables hover style for the icon with the specified id, and returns to normal
+  style -->
+function frs_endHover (id)
+{
+  document.getElementById(id + "-hover").style.display = "none";
+  document.getElementById(id + "-normal").style.display = "inline";
+}
+
+<!-- ================================================================================ -->
+<!-- h1: Expanding and folding                                                        -->
+<!-- ================================================================================ -->
+
+<!-- Expands the top bar. -->
+function frs_expandTopBar ()
+{
+  if ( frs_topBarExpanded ) return;
+  document.getElementById(frs_foldedTopBarId).style.display = "none";
+  document.getElementById(frs_expandedTopBarId).style.display = "block";
+  var outerFrameset = top.document.getElementById(frs_outerFramesetId);
+  if ( outerFrameset ) outerFrameset.rows = "92,*";
+  frs_topBarExpanded = true;
+}
+
+<!-- Folds the top bar. -->
+function frs_foldTopBar ()
+{
+  if ( !frs_topBarExpanded ) return;
+  document.getElementById(frs_expandedTopBarId).style.display = "none";
+  document.getElementById(frs_foldedTopBarId).style.display = "block";
+  var outerFrameset = top.document.getElementById(frs_outerFramesetId);
+  if ( outerFrameset ) outerFrameset.rows = "22,*";
+  frs_topBarExpanded = false;
+}
+
+<!-- Toggles the top bar, i.e., folds it if it is expanded, expands it if it is
+  folded -->
+function frs_toggleTopBar ()
+{
+  if ( frs_topBarExpanded )
+    frs_foldTopBar();
+  else
+    frs_expandTopBar();
+}
+
+<!-- Expands the navigation frame -->
+function frs_expandNavFrame ()
+{
+  if ( frs_navFrameExpanded ) return;
+  var innerFrameset = top.document.getElementById(frs_innerFramesetId);
+  if ( !innerFrameset ) return;
+  var width = frs_navFrameWidth;
+  if ( width &lt; frs_minNavFrameExpandWidth ) width = frs_minNavFrameExpandWidth;
+  innerFrameset.cols = frs_navFrameWidth + ",*";
+  frs_navFrameExpanded = true;
+}
+
+<!-- Folds the navigation frame -->
+function frs_foldNavFrame ()
+{
+  if ( !frs_navFrameExpanded ) return;
+  var innerFrameset = top.document.getElementById(frs_innerFramesetId);
+  if ( !innerFrameset ) return;
+  frs_navFrameWidth = Number((/(.*),.*/.exec(innerFrameset.cols))[1]);
+  innerFrameset.cols = "0,*";
+  frs_navFrameExpanded = false;
+}
+
+<!-- Toggles the navigation frame, i.e., folds it if it is expanded, expands it if it
+  is folded -->
+function frs_toggleNavFrame ()
+{
+  if ( frs_navFrameExpanded )
+    frs_foldNavFrame();
+  else
+    frs_expandNavFrame();
+}
+
+<!-- ================================================================================ -->
+<!-- h1: Creating specific frame setups                                               -->
+<!-- ================================================================================ -->
+
+function frs_showTopMain ()
+{
+  frs_expandTopBar();
+  frs_foldNavFrame();
+}
+
+function frs_showMain ()
+{
+  frs_foldTopBar();
+  frs_foldNavFrame();
+}
+
+function frs_showNavMain ()
+{
+  frs_foldTopBar();
+  frs_expandNavFrame();
+}
+
+function frs_showTopNavMain ()
+{
+  frs_expandTopBar();
+  frs_expandNavFrame();
+}
+
+</txt:document>

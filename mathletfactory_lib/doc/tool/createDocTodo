@@ -1,0 +1,41 @@
+#!/bin/sh
+
+if test $JAVA_HOME
+	then
+		JAVA_HOME=$JAVA_HOME
+	else
+		if test $1=aachen
+			then
+				JAVA_HOME=/usr/mumie/java/current
+		else
+			JAVA_HOME=/net/multimedia/Java/jdk/current
+	    fi
+fi
+	
+if  test $JAVA_LIB_HOME
+	then
+		LIB_HOME=$JAVA_LIB_HOME
+	else
+		if test $1=aachen
+			then
+				LIB_HOME=$JAVA_HOME/jre/lib/ext
+			else
+				LIB_HOME=/net/multimedia/Java/
+			fi
+fi
+
+
+JAVAC=$JAVA_HOME/bin/javac
+JAVADOC=$JAVA_HOME/bin/javadoc
+JAVA_DOC_URL=$JAVA_HOME/docs/api
+
+cd taglet
+$JAVAC -classpath $JAVA_HOME/lib/tools.jar JavadocStatus.java
+cd ..
+
+$JAVADOC \
+  -doclet JavadocStatus -sort a,s -link ../apidoc $@ \
+  -docletpath taglet \
+  -classpath $LIB_HOME/log4j/log4j.jar:$LIB_HOME/junit/junit.jar:$LIB_HOME/layout/layout.jar \
+  -sourcepath ../../src \
+  -subpackages net.mumie 

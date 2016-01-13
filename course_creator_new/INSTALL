@@ -1,0 +1,87 @@
+Author: Marek Grudzinski <grudzin@math.tu-berlin.de>
+$Id: INSTALL,v 1.1 2007/08/08 13:01:12 grudzin Exp $
+Copyright (C) 2003 - 2006, Berlin University of Technology
+
+
+
+                        COURSE CREATOR INSTALLATION INSTRUCTIONS
+
+
+1.Requirements
+  ============
+
+  1.1. Java 6 JDK with Xalan updated to version 2.7.0 or better.
+
+  1.2. Japs Client (another Mumie software package)
+
+
+2. Installation location
+   =====================
+
+All files are installed under a directory <prefix> which defaults to
+/usr/local. If you want to change the default, you have two options:
+
+  2.1. Set the environment variable MM_BUILD_PREFIX, and give it the value
+       <my-prefix>, where <my-prefix> is the directory where you want the files
+       to be installed. This option has the advantage that MM_BUILD_PREFIX is
+       recognized by other build scripts of the MUMIE project, too.
+
+  2.2. Change to the root directory of the Course Creator distribution (the
+       directory this file is in), create a file named build.conf and add 
+       the following line to it: 
+
+         prefix=<my-prefix>
+
+       Remark: The build and installation are done by a Bash script which reads
+       the file build.conf by means of the 'source' command. Thus, you can use
+       shell substitution in build.conf. E.g.,
+
+         prefix=$HOME
+
+       would set the installation location to your home directory.
+
+If <prefix> is set both in build.conf and by the environment variable
+MM_BUILD_PREFIX, the setting in build.conf takes precedence.
+
+
+5. Build and Installation
+   ======================
+
+  5.1. Change to the root directory of the Course Creator distribution (the
+       directory this file is in).   
+
+  5.2. Type
+
+         $ ./build.sh all
+
+       This builds Course Creator. 
+
+  5.4. Make sure you have write permission in <prefix>. Switch user to root if
+       necessary.
+
+  5.5. Type
+
+         $ ./build.sh install
+
+       This installs Course Creator.
+
+  5.6. To install the other required parts, type
+
+         $ ./build.sh install-third-party-java
+
+       This installs some Jars.
+
+Remark: build.sh is Course Creator's build script. To get more information about it,
+type
+
+  $ ./build.sh -h
+
+
+6. Post-installation setup
+   =======================
+
+The executables are installed in <prefix>/bin. Make sure this is in yuor PATH
+environment variable if you want to be able to start the executables without
+specifying the path.
+
+-- END OF FILE --

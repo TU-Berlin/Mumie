@@ -1,0 +1,89 @@
+Autor: Markus Gronau &lt;gronau@math.tu-berlin.de&gt;<br>
+$Id: Making_Exercise_Objects.html,v 1.1 2006/06/14 12:15:17 gronau Exp $
+
+<html>
+<head>
+  <title>Mumie-Exercise Objekte erstellen</title>
+</head>
+<body>
+<h1 style="text-align: center;">Mumie-Exercise Objekte erstellen</h1>
+
+<pre>
+
+
+
+<b>1. Implementieren des Interfaces ExerciseObjectIF in die M- bzw. MM-Klasse</b>
+==========================================================================
+
+  1.1 Erzeugen eines privaten boolean-Felder "m_isEdited" mit "true" als Default-Wert.
+   
+  1.2 Implementieren der Methoden is-/setEdited, die dieses Feld beschreiben/lesen.
+   
+  1.3 Implementieren der Methoden get-/setMathMLNode, die XML-Inhalt ins Objekt einlesen bzw. den Inhalt des Objektes 
+      als XML-Inhalt ausgeben k&ouml;nnen.
+   
+   
+<b>Anmerkungen</b>:
+------------
+
+ - Objekte, die zur internen Repr&auml;sentation ein anderes MathML-f&auml;higes Objekt benutzen, sollten in diesen Methoden
+   (sofern dies funktioniert) auf die Methoden des jeweiligen anderen Objektes verweisen. Auch sollte versucht werden,
+   auf schon existierende Komponenten zur&uuml;ckzugreifen.
+   
+ - zu 1.1:
+   In mathematischen Objekten sollte der "edited"-Status lediglich durch die "setMathMLNode"-, "setEdited-" und
+   "propertyChanged"-Methoden ver&auml;ndert werden k&ouml;nnen.
+   
+ - zu 1.2:
+   Matrizen und Vekoren besitzen zus&auml;tzlich noch Methoden, um den "edited"-Status der einzelnen Subkomponenten 
+   zu &auml;ndern/abzufragen.
+   
+ - zu 1.3:
+   Zum Erzeugen eines nicht-editierten MathML-Knotens ("&lt;mi/&gt;") kann die Methode "XMLUtils.createUneditedNode()" 
+   benutzt werden.
+   
+ - zu 1.3:
+   Die "toString()"-Methode liefert unabh&auml;ngig vom gegenw&auml;rtigen Status immer den Inhalt des Objektes zur&uuml;ck.
+   "getMathMLNode()" liefert abh&auml;ngig vom gegenw&auml;rtigen Status entweder den XML-Inhalt oder ein "&lt;mi/&gt;"-Element zur&uuml;ck.
+
+
+
+
+<b>2. Anpassen von Methoden der bestehenden Klassen</b>
+================================================
+
+  2.1 "propertyChanged" in der MM-Klasse
+      Da diese Methode nur nach &Auml;nderungen durch den Benutzer aufgerufen wird muss am Ende ein "setEdited(true)" stehen.
+      
+  2.2 "render" im Transformer
+      Der aktuelle "edited"-Status des Masters wird ans Panel mittels der Panel-eigenen "setEdited"-Methode mitgeteilt.
+      Zus&auml;tzlich sollte die "render"-Methode des Panels aufgerufen werden.
+      
+  2.3 "render"-Methode im Panel
+      Erstellen, falls diese noch nicht existiert.
+      Die produzierte Panel-Methode sollte nur die Methode "setTextVisibility" aufrufen.
+      
+  2.4 "stopEditing" im Panel
+      Wenn das "edited"-Flag des Panels "false" ist, muss der alte Wert (der durch den Benutzer
+      ge&auml;ndert wurde) f&uuml;r das PropertyChangeEvent durch "null" ersetzt werden.
+      Am Ende muss zus&auml;tzlich ein "setEdited(true)" stehen.
+   
+   
+<b>Anmerkungen</b>:
+------------
+
+ - zu 2.3:
+   Diese Methode &uuml;berschreibt jene in der Panel-Basisklasse "MMPanel", welche auf die "render"-Methode des Masters
+   verweist. Durch Aufruf dieser Methode aus dem Transformer heraus w&uuml;rde ein Loop produziert werden.
+   
+ - zu 2.4:
+   In der Regel ist der alte Wert der aktuelle Wert des Masters, da die &Auml;nderungen des Benutzers noch nicht vom Panel
+   in den Master &uuml;bertragen worden ist.
+   Diese Anweisung ist notwendig, falls der Master noch nicht editiert worden ist. Da er seinen Inhalt vom dem 
+   Benutzer cachiert, sieht dieser nicht dessen aktuellen Inhalt. Wenn der Benutzer nun den aktuellen Inhalt des 
+   Masters eingibt, sind der alte wie auch der neue Wert gleich und das PropertyChangeEvent wird gefeuert aber kommt
+   nie im Master an. Kurzum das Objekt "vergisst" scheinbar die Eingabe und stellt wieder ein Fragezeichen dar.
+
+</pre>
+</body>
+</html>
